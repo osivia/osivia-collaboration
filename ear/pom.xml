@@ -18,10 +18,50 @@
     
     <dependencies>
         
-        <!-- Socle services -->
+        <!-- Calendar -->
         <dependency>
-            <groupId>org.osivia.services.directory.socle</groupId>
-            <artifactId>osivia-services-directory-socle-services</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-calendar</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        
+        <!-- FAQ -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-faq</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        
+        <!-- Forum -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-forum</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        
+        <!-- Statistics -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-statistics</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        
+        <!-- Taskbar -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-taskbar</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        
+        <!-- Widgets -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-widgets</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
@@ -40,9 +80,34 @@
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
                     <modules>
                         <webModule>
-                            <groupId>org.osivia.services.directory.socle</groupId>
-                            <artifactId>osivia-services-directory-socle-services</artifactId>
-                            <contextRoot>/osivia-services-directory-services</contextRoot>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-calendar</artifactId>
+                            <contextRoot>/osivia-services-calendar</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-faq</artifactId>
+                            <contextRoot>/osivia-services-faq</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-forum</artifactId>
+                            <contextRoot>/osivia-services-forum</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-statistics</artifactId>
+                            <contextRoot>/osivia-services-statistics</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-taskbar</artifactId>
+                            <contextRoot>/osivia-services-taskbar</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-widgets</artifactId>
+                            <contextRoot>/osivia-services-widgets</contextRoot>
                         </webModule>
                     </modules>
                 </configuration>

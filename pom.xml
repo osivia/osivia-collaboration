@@ -18,6 +18,12 @@
     
     
     <modules>
+        <module>calendar</module>
+        <module>faq</module>
+        <module>forum</module>
+        <module>statistics</module>
+        <module>taskbar</module>
+        <module>widgets</module>
         
         <module>ear</module>
     </modules>
@@ -43,7 +49,7 @@
         </dependencies>
     </dependencyManagement>
     
-    
+
     <build>
         <pluginManagement>
             <plugins>
