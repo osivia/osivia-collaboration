@@ -1,0 +1,21 @@
+
+Version 1.1-RC1
+================
+11/09/2014
+
+Dependencies
+------------
+Toutatice-cms > 3.3.0
+opentoutatice > 2.0.0
+collab-tools > 2.0.0
+
+Content
+------------
+[evol] avatar
+[evol] look bootstrap
+[evol] first message displayed in a thread
+
+
+About
+================
+Portlet forum
