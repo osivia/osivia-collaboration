@@ -24,7 +24,7 @@
         
             <li
                 <c:if test="${task.active}">class="active"</c:if>
-            >
+            	title="${task.name}" data-toggle="tooltip" data-placement="right" >
                 <a href="${startURL}" class="text-center">
                     <i class="${task.icon}"></i>
                     <span class="sr-only">${task.name}</span>
