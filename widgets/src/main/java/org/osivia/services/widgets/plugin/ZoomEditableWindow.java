@@ -38,8 +38,6 @@ public class ZoomEditableWindow extends EditableWindow {
     /** sch for fragment. */
     public static final String ZOOM_SCHEMA = "zfgt:zoomFragment";
 
-    /** sch for each link of the list . */
-    //public static final String ZOOM_LINKS = "zl:zoomLink";
 	
     public ZoomEditableWindow(String instancePortlet, String prefixWindow) {
         super(instancePortlet, prefixWindow);
@@ -56,7 +54,6 @@ public class ZoomEditableWindow extends EditableWindow {
 
         propsFilled.put("osivia.cms.style", mapListe.getString("view"));
         propsFilled.put("osivia.fragmentTypeId", ZoomFragmentModule.ID);
-        //propsFilled.put("osivia.propertyName", ZOOM_LINKS);
 
         return propsFilled;
 	}
@@ -72,12 +69,6 @@ public class ZoomEditableWindow extends EditableWindow {
 
         Integer findIndexByRefURI = EditableWindowHelper.findIndexByRefURI(doc, ZOOM_SCHEMA, refURI);
         propertiesToRemove.add(ZOOM_SCHEMA.concat("/").concat(findIndexByRefURI.toString()));
-		
-//        List<Integer> findIndexesByRefURI = EditableWindowHelper.findIndexesByRefURI(doc, ZOOM_LINKS, refURI);
-//
-//        for (Integer indexToRemove : findIndexesByRefURI) {
-//            propertiesToRemove.add(ZOOM_LINKS.concat("/").concat(indexToRemove.toString()));
-//        }
 
         // Bug automation, supprimer la liste de propriétés par son dernier élément, puis l'avant dernier, etc.
         // sinon décalage des n° d'index dans les propriétés

@@ -133,7 +133,15 @@ public class ZoomFragmentModule extends FragmentModule {
                                     // Image source
                                     String imageSource = null;
                                     if (StringUtils.isNotBlank(propertyMap.getString(PICTURE))) {
-                                        imageSource = nuxeoController.createAttachedPictureLink(nuxeoPath, propertyMap.getString(PICTURE));
+                                    	
+                                    	 // Computed path
+                                    	imageSource = nuxeoController.getComputedPath(propertyMap.getString(PICTURE));
+
+                                        if (StringUtils.startsWith(imageSource, "/nuxeo/")) {
+                                            // Portal path
+                                            imageSource = nuxeoController.transformNuxeoLink(imageSource);
+                                        }
+                                    	
                                     }
                                     request.setAttribute("imageSource", imageSource);
 

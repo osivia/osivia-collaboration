@@ -170,12 +170,17 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         // Zoom fragment
         fragmentTypes.add(new FragmentType(ZoomFragmentModule.ID, bundle.getString("FRAGMENT_TYPE_ZOOM"), new ZoomFragmentModule(portletContext)));
 
-        // =============== Links
+        
         // links editable window
         editableWindows.put("fgt.links", new LinksEditableWindow("toutatice-portail-cms-nuxeo-viewFragmentPortletInstance", "links_frag_"));
 
         // Links fragment
         fragmentTypes.add(new FragmentType(LinksFragmentModule.ID, bundle.getString("FRAGMENT_TYPE_LINKS"), new LinksFragmentModule(portletContext)));
+        
+        // =============== Summary
+        // Summary fragment
+        fragmentTypes.add(new FragmentType(SummaryFragmentModule.ID, bundle.getString("FRAGMENT_TYPE_SUMMARY"), new SummaryFragmentModule(portletContext)));
+
     }
 
 	/* (non-Javadoc)
