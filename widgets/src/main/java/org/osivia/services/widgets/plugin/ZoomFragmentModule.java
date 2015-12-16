@@ -139,6 +139,7 @@ public class ZoomFragmentModule extends FragmentModule {
 
                                         if (StringUtils.startsWith(imageSource, "/nuxeo/")) {
                                             // Portal path
+                                            nuxeoController.setCurrentDoc(document);
                                             imageSource = nuxeoController.transformNuxeoLink(imageSource);
                                         }
                                     	
