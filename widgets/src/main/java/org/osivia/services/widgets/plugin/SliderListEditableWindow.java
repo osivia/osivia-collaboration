@@ -72,15 +72,14 @@ public class SliderListEditableWindow extends CriteriaListEditableWindow {
         properties.put(SliderTemplateModule.SLIDER_TIMER, (String) displayCriteria.get("timer"));
         
         
-        
-        PropertyMap requestCriteria = (PropertyMap) schema.get("requestCriteria");
+        //PropertyMap requestCriteria = (PropertyMap) schema.get("requestCriteria");
         //properties.put(SliderTemplateModule.SLIDER_DOC_TYPE, StringUtils.lowerCase(requestCriteria.getString("docType")));
         
-        String style = "slider";
+        String style = (String) displayCriteria.get("style");
         // for specific types, show view-slider-picture, view-slider-annonce, ...
-        if (!ALL_DOC_TYPES.equals(requestCriteria.getString("docType"))) {
-        	style = style.concat("-").concat(requestCriteria.getString("docType"));
-        }
+//        if (!ALL_DOC_TYPES.equals(requestCriteria.getString("docType"))) {
+//        	style = style.concat("-").concat(requestCriteria.getString("docType"));
+//        }
         
 		properties.put(ViewList.TEMPLATE_WINDOW_PROPERTY, style);
         
