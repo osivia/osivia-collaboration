@@ -107,8 +107,14 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         // Picture book
         docTypes.put("PictureBook", new DocumentType("PictureBook", true, true, true, true, false, true, Arrays.asList("Picture", "PictureBook"), null,
                 "glyphicons glyphicons-picture"));
+        addSubType(context, "Workspace", "PictureBook");
+        
         // Picture
         docTypes.put("Picture",new DocumentType("Picture", false, false, false, false, false, true, new ArrayList<String>(0), null, "glyphicons glyphicons-picture"));
+ //       addSubType(context, "Folder", "Picture");
+        addSubType(context, "PortalSite", "Picture");
+        addSubType(context, "PortalPage", "Picture");
+        addSubType(context, "OrderedFolder", "Picture");
 
 
         Map<String, ListTemplate> templates = this.getListTemplates(context);
@@ -125,9 +131,14 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         // ============= Annonce
         // Annonce
         docTypes.put("Annonce",new DocumentType("Annonce", false, false, false, false, false, true, new ArrayList<String>(0), null, "glyphicons glyphicons-newspaper"));
+        docTypes.get("PortalSite").getPortalFormSubTypes().add("Annonce");            
+        docTypes.get("PortalPage").getPortalFormSubTypes().add("Annonce");       
+        
         // Annonce folder
         docTypes.put("AnnonceFolder",new DocumentType("AnnonceFolder", true, true, false, false, false, true, Arrays.asList("Annonce"), null,
                 "glyphicons glyphicons-newspaper"));
+        addSubType(context, "Workspace", "AnnonceFolder");        
+   
 
         players.add(new AnnounceFolderPlayer(this.getPortletContext()));
 
@@ -135,6 +146,9 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         // Document URL container
         docTypes.put("DocumentUrlContainer",new DocumentType("DocumentUrlContainer", true, true, true, true, false, true, Arrays.asList("DocumentUrlContainer", "ContextualLink"),
                 null, "glyphicons glyphicons-bookmark"));
+        addSubType(context, "Workspace", "DocumentUrlContainer");        
+        
+     
 
         players.add(new DocumentUrlContainerPlayer(this.getPortletContext()));
 
