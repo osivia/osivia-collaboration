@@ -93,7 +93,7 @@ public class ForumPlugin extends AbstractPluginPortlet {
         docTypes.put("Forum", new DocumentType("Forum", true, true, false, false, true, true, Arrays.asList("Thread"), null,
                 "glyphicons glyphicons-conversation"));
         // Forum thread
-        docTypes.put("Thread", new DocumentType("Thread", false, false, false, false, true, true, new ArrayList<String>(0), null, "glyphicons glyphicons-chat"));
+        docTypes.put("Thread", new DocumentType("Thread", false, false, false, false, true, true, new ArrayList<String>(0), null, "glyphicons glyphicons-chat",false,false));
 
 
         Map<String, ListTemplate> templates = getListTemplates(context);

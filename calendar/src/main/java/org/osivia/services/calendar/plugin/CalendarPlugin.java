@@ -58,7 +58,7 @@ public class CalendarPlugin extends AbstractPluginPortlet  {
 		// Doc types
 		Map<String, DocumentType> docTypes = this.getDocTypes(context);
         // Agenda
-		docTypes.put("Agenda",new DocumentType("Agenda", true, true, false, false, true, true, Arrays.asList("VEVENT"), null, "glyphicons glyphicons-calendar", false, false));
+		docTypes.put("Agenda",new DocumentType("Agenda", true, true, false, false, true, true, Arrays.asList("VEVENT"), null, "glyphicons glyphicons-calendar"));
         // Agenda event
 		docTypes.put("VEVENT",new DocumentType("VEVENT", false, false, false, false, true, true, new ArrayList<String>(0), null, "glyphicons glyphicons-calendar", false, false));
 
