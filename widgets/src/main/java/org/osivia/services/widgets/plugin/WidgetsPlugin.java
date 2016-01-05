@@ -110,7 +110,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         addSubType(context, "Workspace", "PictureBook");
         
         // Picture
-        docTypes.put("Picture",new DocumentType("Picture", false, false, false, false, false, true, new ArrayList<String>(0), null, "glyphicons glyphicons-picture"));
+        docTypes.put("Picture",new DocumentType("Picture", false, false, false, false, false, true, new ArrayList<String>(0), null, "glyphicons glyphicons-picture", false,true,true));
  //       addSubType(context, "Folder", "Picture");
         addSubType(context, "PortalSite", "Picture");
         addSubType(context, "PortalPage", "Picture");
