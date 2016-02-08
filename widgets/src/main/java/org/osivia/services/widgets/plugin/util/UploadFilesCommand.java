@@ -14,7 +14,7 @@
  *
  *    
  */
-package org.osivia.services.widgets.plugin;
+package org.osivia.services.widgets.plugin.util;
 
 import java.io.IOException;
 import java.util.List;

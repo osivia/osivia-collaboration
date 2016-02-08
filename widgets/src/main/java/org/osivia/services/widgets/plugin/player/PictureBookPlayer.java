@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  */
-package org.osivia.services.widgets.plugin;
+package org.osivia.services.widgets.plugin.player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +24,7 @@ import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
 import org.osivia.portal.api.player.Player;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.services.widgets.plugin.WidgetsPlugin;
 
 import fr.toutatice.portail.cms.nuxeo.api.FileBrowserView;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;

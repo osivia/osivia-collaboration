@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.osivia.services.widgets.plugin;
+package org.osivia.services.widgets.plugin.player;
 
 import java.util.HashMap;
 import java.util.Map;

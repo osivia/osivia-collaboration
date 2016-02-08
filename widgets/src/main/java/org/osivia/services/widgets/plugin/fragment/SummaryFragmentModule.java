@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.osivia.services.widgets.plugin;
+package org.osivia.services.widgets.plugin.fragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +23,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.services.widgets.plugin.ew.SummaryEditableWindow;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.domain.EditableWindowHelper;

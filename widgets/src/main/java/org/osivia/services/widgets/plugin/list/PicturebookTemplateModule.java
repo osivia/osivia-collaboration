@@ -14,7 +14,7 @@
  *
  *
  */
-package org.osivia.services.widgets.plugin;
+package org.osivia.services.widgets.plugin.list;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,6 +46,7 @@ import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.services.widgets.plugin.util.UploadFilesCommand;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;

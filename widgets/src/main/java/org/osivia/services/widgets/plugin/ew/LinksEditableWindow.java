@@ -14,7 +14,7 @@
  *
  *    
  */
-package org.osivia.services.widgets.plugin;
+package org.osivia.services.widgets.plugin.ew;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +24,7 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
+import org.osivia.services.widgets.plugin.fragment.LinksFragmentModule;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.EditableWindow;
 import fr.toutatice.portail.cms.nuxeo.api.domain.EditableWindowHelper;

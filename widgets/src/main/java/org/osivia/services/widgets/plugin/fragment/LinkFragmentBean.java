@@ -1,4 +1,4 @@
-package org.osivia.services.widgets.plugin;
+package org.osivia.services.widgets.plugin.fragment;
 
 import org.osivia.portal.api.urls.Link;
 
