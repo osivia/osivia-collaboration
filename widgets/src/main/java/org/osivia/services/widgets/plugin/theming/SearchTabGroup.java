@@ -61,16 +61,7 @@ public class SearchTabGroup implements TabGroup {
      * {@inheritDoc}
      */
     @Override
-    public boolean contains(PortalControllerContext portalControllerContext, EcmDocument document) {
-        return false;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean contains(PortalControllerContext portalControllerContext, String type, Map<String, String> pageProperties) {
+    public boolean contains(PortalControllerContext portalControllerContext, EcmDocument document, String type, Map<String, String> pageProperties) {
         return NAME.equals(type);
     }
 
@@ -79,7 +70,7 @@ public class SearchTabGroup implements TabGroup {
      * {@inheritDoc}
      */
     @Override
-    public boolean maintains(PortalControllerContext portalControllerContext, EcmDocument document) {
+    public boolean maintains(PortalControllerContext portalControllerContext, EcmDocument document, String type, Map<String, String> pageProperties) {
         return false;
     }
 
