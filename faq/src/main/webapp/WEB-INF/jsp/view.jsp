@@ -21,7 +21,7 @@
                 <portlet:param name="curItemPath" value="${summaryQuestion.path}" />
             </portlet:renderURL>
 
-            <a href="${url}" class="list-group-item">
+            <a href="${url}" class="list-group-item no-ajax-link">
                 <c:choose>
                     <c:when test="${summaryQuestion.id eq question.id}">
                         <strong class="text-primary">${summaryQuestion.title}</strong>

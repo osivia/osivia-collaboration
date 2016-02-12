@@ -24,13 +24,11 @@ $JQry(function() {
 			$container.affix({
 				offset: {
 					top: function() {
-						var top = null;
-						
 						if (document.body.clientWidth >= 768) {
-							top = Math.round($container.parent().offset().top - navbarHeight);
+							return Math.round($container.parent().offset().top - navbarHeight);
+						} else {
+							return 0;
 						}
-						
-						return top;
 					},
 					bottom: function() {
 						var bottom = null;
@@ -114,6 +112,12 @@ $JQry(window).resize(function() {
  * @param $row taskbar content row
  */
 function updateTaskbarStyles($container, $row) {
+	if (document.body.clientWidth < 768) {
+		$container.css({
+			top: 0
+		});
+	}
+	
 	$container.parent().css({
 		"min-height": ((document.body.clientWidth >= 768) ? $row.height() : "auto")
 	});
