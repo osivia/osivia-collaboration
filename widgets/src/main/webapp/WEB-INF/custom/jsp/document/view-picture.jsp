@@ -11,7 +11,7 @@
 <c:set var="mediumPictureURL"><ttc:documentLink document="${document}" picture="true" displayContext="Medium" /></c:set>
 <c:set var="description" value="${document.properties['dc:description']}" />
 
-<ttc:addMenubarItem id="DOWNLOAD" labelKey="DOWNLOAD" order="20" url="${pictureURL}" glyphicon="download_alt" />
+<ttc:addMenubarItem id="DOWNLOAD" labelKey="DOWNLOAD" order="20" url="${pictureURL}" glyphicon="glyphicons glyphicons-download-alt" />
 
 
 <div>
