@@ -162,7 +162,6 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         DocumentType picturebook = new DocumentType("PictureBook", true, true, true, true, false, true, Arrays.asList(picture.getName(), "PictureBook"), null,
                 "glyphicons glyphicons-picture");
         types.put(picturebook.getName(), picturebook);
-        this.addSubType(context, "Workspace", picturebook.getName());
 
         // Annonce
         DocumentType annonce = new DocumentType("Annonce", false, false, false, false, false, true, new ArrayList<String>(0), null,
@@ -175,13 +174,11 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         DocumentType annonceFolder = new DocumentType("AnnonceFolder", true, true, false, false, false, true, Arrays.asList(annonce.getName()), null,
                 "glyphicons glyphicons-newspaper");
         types.put(annonceFolder.getName(), annonceFolder);
-        this.addSubType(context, "Workspace", annonceFolder.getName());
 
         // Document URL container
         DocumentType urlContainer = new DocumentType("DocumentUrlContainer", true, true, true, true, false, true, Arrays.asList("DocumentUrlContainer",
                 "ContextualLink"), null, "glyphicons glyphicons-bookmark");
         types.put("DocumentUrlContainer", urlContainer);
-        this.addSubType(context, "Workspace", urlContainer.getName());
     }
 
 
