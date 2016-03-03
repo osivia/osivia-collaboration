@@ -163,6 +163,24 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
                 "glyphicons glyphicons-picture");
         types.put(picturebook.getName(), picturebook);
 
+        // Audio
+        DocumentType audio = new DocumentType("Audio", false, false, false, false, false, true, new ArrayList<String>(0), null,
+                "glyphicons glyphicons-headphones", false, true, true);
+        types.put(audio.getName(), audio);
+        this.addSubType(context, "PortalSite", audio.getName());
+        this.addSubType(context, "PortalPage", audio.getName());
+        this.addSubType(context, "Folder", audio.getName());
+        this.addSubType(context, "OrderedFolder", audio.getName());
+
+        // Video
+        DocumentType video = new DocumentType("Video", false, false, false, false, false, true, new ArrayList<String>(0), null, "glyphicons glyphicons-film",
+                false, true, true);
+        types.put(video.getName(), video);
+        this.addSubType(context, "PortalSite", video.getName());
+        this.addSubType(context, "PortalPage", video.getName());
+        this.addSubType(context, "Folder", video.getName());
+        this.addSubType(context, "OrderedFolder", video.getName());
+
         // Annonce
         DocumentType annonce = new DocumentType("Annonce", false, false, false, false, false, true, new ArrayList<String>(0), null,
                 "glyphicons glyphicons-newspaper");
