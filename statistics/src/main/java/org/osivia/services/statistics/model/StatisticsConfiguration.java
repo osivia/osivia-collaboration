@@ -13,6 +13,8 @@ public class StatisticsConfiguration {
     private String request;
     /** Version. */
     private StatisticsVersion version;
+    /** View. */
+    private StatisticsView view;
 
 
     /**
@@ -75,6 +77,24 @@ public class StatisticsConfiguration {
      */
     public void setVersion(StatisticsVersion version) {
         this.version = version;
+    }
+
+    /**
+     * Getter for view.
+     * 
+     * @return the view
+     */
+    public StatisticsView getView() {
+        return view;
+    }
+
+    /**
+     * Setter for view.
+     * 
+     * @param view the view to set
+     */
+    public void setView(StatisticsView view) {
+        this.view = view;
     }
 
 }

@@ -10,6 +10,7 @@ import net.sf.json.JSONObject;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.statistics.model.StatisticsConfiguration;
+import org.osivia.services.statistics.model.StatisticsView;
 import org.osivia.services.statistics.repository.IStatisticsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,16 +43,23 @@ public class StatisticsServiceImpl implements IStatisticsService {
     @Override
     public String loadData(PortalControllerContext portalControllerContext, StatisticsConfiguration configuration) throws PortletException {
         // Documents count by periods
-        Map<String, Integer> periods = this.repository.getDocumentsCountByPeriods(portalControllerContext, configuration);
+        Map<String, Integer[]> periods = this.repository.getDocumentsCountsByPeriods(portalControllerContext, configuration);
+
+        int index;
+        if (StatisticsView.DIFFERENTIAL.equals(configuration.getView())) {
+            index = 0;
+        } else {
+            index = 1;
+        }
 
         // Labels
         JSONArray labels = new JSONArray();
         // Values
         JSONArray values = new JSONArray();
 
-        for (Entry<String, Integer> period : periods.entrySet()) {
+        for (Entry<String, Integer[]> period : periods.entrySet()) {
             labels.add(period.getKey());
-            values.add(period.getValue());
+            values.add(period.getValue()[index]);
         }
 
         // Dataset

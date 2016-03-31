@@ -35,14 +35,14 @@ public interface IStatisticsRepository {
 
 
     /**
-     * Get documents count by periods.
+     * Get documents counts by periods.
      *
      * @param portalControllerContext portal controller context
      * @param configuration statistics configuration
-     * @return documents count
+     * @return documents counts
      * @throws PortletException
      */
-    Map<String, Integer> getDocumentsCountByPeriods(PortalControllerContext portalControllerContext, StatisticsConfiguration configuration)
+    Map<String, Integer[]> getDocumentsCountsByPeriods(PortalControllerContext portalControllerContext, StatisticsConfiguration configuration)
             throws PortletException;
 
 }

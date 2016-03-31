@@ -2,8 +2,12 @@ package org.osivia.services.statistics.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
@@ -16,12 +20,15 @@ import javax.portlet.ResourceResponse;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.statistics.model.StatisticsConfiguration;
+import org.osivia.services.statistics.model.StatisticsView;
 import org.osivia.services.statistics.repository.IStatisticsRepository;
 import org.osivia.services.statistics.service.IStatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import org.springframework.web.portlet.context.PortletConfigAware;
@@ -88,17 +95,34 @@ public class StatisticsViewController extends CMSPortlet implements PortletConte
 
 
     /**
+     * Change view action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param configuration configuration model attribute
+     * @throws PortletException
+     */
+    @ActionMapping(value = "changeView")
+    public void changeView(ActionRequest request, ActionResponse response, @ModelAttribute(value = "configuration") StatisticsConfiguration configuration)
+            throws PortletException {
+        // Do nothing
+    }
+
+
+    /**
      * Load statistics resource mapping.
      *
      * @param request resource request
      * @param response resource response
      * @param configuration statistics configuration model attribute
+     * @param value view value request parameter
      * @throws PortletException
      * @throws IOException
      */
     @ResourceMapping(value = "loadStatistics")
     public void loadStatistics(ResourceRequest request, ResourceResponse response,
-            @ModelAttribute(value = "configuration") StatisticsConfiguration configuration) throws PortletException, IOException {
+            @ModelAttribute(value = "configuration") StatisticsConfiguration configuration, @RequestParam(value = "view", required = false) String value)
+            throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
@@ -120,15 +144,38 @@ public class StatisticsViewController extends CMSPortlet implements PortletConte
      *
      * @param request portlet request
      * @param response portlet response
+     * @param value view value request parameter
      * @return configuration
      * @throws PortletException
      */
     @ModelAttribute(value = "configuration")
-    public StatisticsConfiguration getConfiguration(PortletRequest request, PortletResponse response) throws PortletException {
+    public StatisticsConfiguration getConfiguration(PortletRequest request, PortletResponse response,
+            @RequestParam(value = "view", required = false) String value) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        return this.repository.getConfiguration(portalControllerContext);
+        // View
+        StatisticsView view = StatisticsView.fromValue(value);
+
+        // Configuration
+        StatisticsConfiguration configuration = this.repository.getConfiguration(portalControllerContext);
+        configuration.setView(view);
+
+        return configuration;
+    }
+
+
+    /**
+     * Get statistics views model attribute.
+     * 
+     * @param request portlet request
+     * @param response portlet response
+     * @return views
+     * @throws PortletException
+     */
+    @ModelAttribute(value = "views")
+    public List<StatisticsView> getViews(PortletRequest request, PortletResponse response) throws PortletException {
+        return Arrays.asList(StatisticsView.values());
     }
 
 

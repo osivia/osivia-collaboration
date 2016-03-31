@@ -34,6 +34,7 @@ import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.statistics.model.StatisticsConfiguration;
 import org.osivia.services.statistics.model.StatisticsVersion;
+import org.osivia.services.statistics.model.StatisticsView;
 import org.osivia.services.statistics.util.NXQLFormater;
 import org.springframework.stereotype.Repository;
 
@@ -114,20 +115,22 @@ public class StatisticsRepositoryImpl implements IStatisticsRepository {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Integer> getDocumentsCountByPeriods(PortalControllerContext portalControllerContext, StatisticsConfiguration configuration)
+    public Map<String, Integer[]> getDocumentsCountsByPeriods(PortalControllerContext portalControllerContext, StatisticsConfiguration configuration)
             throws PortletException {
         // Results
-        Map<String, Integer> results = new LinkedHashMap<String, Integer>(configuration.getNumber());
+        Map<String, Integer[]> results = new LinkedHashMap<String, Integer[]>(configuration.getNumber());
 
         // Locale
         Locale locale = portalControllerContext.getRequest().getLocale();
         // Periods
-        List<Period> periods = this.getPeriods(Calendar.WEEK_OF_YEAR, configuration.getNumber(), locale);
+        List<Period> periods = this.getPeriods(Calendar.MONTH, configuration.getNumber() + 1, locale);
         Iterator<Period> iterator = periods.iterator();
+        Period firstPeriod = iterator.next();
         Period period = iterator.next();
 
-        // Count
-        int count = 0;
+        // Counts
+        int periodCount = 0;
+        int aggregateCount = 0;
 
         // Documents
         List<Document> documents = this.getDocuments(portalControllerContext, configuration);
@@ -135,20 +138,45 @@ public class StatisticsRepositoryImpl implements IStatisticsRepository {
             // Date
             Date date = document.getDate("dc:created");
             if (date != null) {
-                while (period.startDate.before(date) && iterator.hasNext()) {
-                    results.put(period.name, count);
-                    period = iterator.next();
+                if (firstPeriod != null) {
+                    if (firstPeriod.startDate.after(date)) {
+                        aggregateCount++;
+                        continue;
+                    } else {
+                        firstPeriod = null;
+                    }
                 }
-                count++;
+
+                while (period.startDate.before(date) && iterator.hasNext()) {
+                    Integer[] counts = new Integer[2];
+                    counts[0] = periodCount;
+                    counts[1] = aggregateCount;
+                    results.put(period.name, counts);
+                    period = iterator.next();
+                    
+                    if (StatisticsView.DIFFERENTIAL.equals(configuration.getView())) {
+                        periodCount = 0;
+                    }
+                }
+
+                periodCount++;
+                aggregateCount++;
             }
         }
 
         // Complete periods
         while (iterator.hasNext()) {
-            results.put(period.name, count);
+            Integer[] counts = new Integer[2];
+            counts[0] = periodCount;
+            counts[1] = aggregateCount;
+            results.put(period.name, counts);
             period = iterator.next();
         }
-        results.put(period.name, count);
+
+        Integer[] counts = new Integer[2];
+        counts[0] = periodCount;
+        counts[1] = aggregateCount;
+        results.put(period.name, counts);
 
         return results;
     }
@@ -202,6 +230,8 @@ public class StatisticsRepositoryImpl implements IStatisticsRepository {
         if (Calendar.WEEK_OF_YEAR == type) {
             Bundle bundle = this.bundleFactory.getBundle(locale);
             dateFormat = new SimpleDateFormat("'" + bundle.getString("WEEK") + "' w", locale);
+        } else if (Calendar.MONTH == type) {
+            dateFormat = new SimpleDateFormat("MMM yyyy");
         } else {
             dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, locale);
         }
