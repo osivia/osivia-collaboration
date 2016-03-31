@@ -36,8 +36,9 @@
     <c:choose>
         <c:when test="${(mimeType eq 'video/mp4') or (mimeType eq 'video/webm') or (mimeType eq 'video/ogg')}">
             <div class="embed-responsive embed-responsive-16by9">
-                <video src="${url}" controls="controls" preload="metadata" class="embed-responsive-item">
+                <video controls="controls" preload="metadata" class="embed-responsive-item">
                     <source src="${url}" type="${mimeType}">
+                    <op:translate key="MESSAGE_VIDEO_CANNOT_BE_PLAYED" />
                 </video>
             </div>
         </c:when>
