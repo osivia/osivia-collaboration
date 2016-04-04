@@ -8,7 +8,10 @@ import javax.portlet.PortletException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.services.statistics.model.StatisticsConfiguration;
 import org.osivia.services.statistics.model.StatisticsView;
 import org.osivia.services.statistics.repository.IStatisticsRepository;
@@ -64,7 +67,7 @@ public class StatisticsServiceImpl implements IStatisticsService {
 
         // Dataset
         JSONObject dataset = new JSONObject();
-        dataset.put("label", "Exemple");
+        dataset.put("label", "-");
         dataset.put("fillColor", "rgba(151, 187, 205, 0.5)");
         dataset.put("strokeColor", "rgba(151, 187, 205, 0.8");
         dataset.put("highlightFill", "rgba(151, 187, 205, 0.75");
@@ -75,10 +78,30 @@ public class StatisticsServiceImpl implements IStatisticsService {
         JSONArray datasets = new JSONArray();
         datasets.add(dataset);
 
+        // Chart
+        JSONObject chart = new JSONObject();
+        chart.put("labels", labels);
+        chart.put("datasets", datasets);
+
+        // Table
+        Element tbody = DOM4JUtils.generateElement("tbody", null, StringUtils.EMPTY);
+        for (Entry<String, Integer[]> period : periods.entrySet()) {
+            Element tr = DOM4JUtils.generateElement("tr", null, null);
+            tbody.add(tr);
+            
+            Element label = DOM4JUtils.generateElement("td", null, period.getKey());
+            tr.add(label);
+            
+            for (int i = 0; i < 2; i++) {
+                Element value = DOM4JUtils.generateElement("td", null, String.valueOf(period.getValue()[i]));
+                tr.add(value);
+            }
+        }
+
         // Data
         JSONObject data = new JSONObject();
-        data.put("labels", labels);
-        data.put("datasets", datasets);
+        data.put("chart", chart);
+        data.put("table", DOM4JUtils.write(tbody));
 
         return data.toString();
     }

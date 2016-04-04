@@ -24,39 +24,38 @@
 </c:if>
 
 
-<form:form action="${changeViewUrl}" method="post" modelAttribute="configuration" onchange="$JQry(this).find('button[type=submit]').click()" cssClass="form-inline" role="form">
-    <div class="form-group">
-        <c:forEach var="view" items="${views}">
-            <label class="radio-inline">
-                <form:radiobutton path="view" value="${view.value}" />
-                <op:translate key="${view.key}" />
-            </label>
-        </c:forEach>
+<div class="statistics">
+    <form:form action="${changeViewUrl}" method="post" modelAttribute="configuration" onchange="$JQry(this).find('button[type=submit]').click()" cssClass="form-inline" role="form">
+        <div class="form-group">
+            <c:forEach var="view" items="${views}">
+                <label class="radio-inline">
+                    <form:radiobutton path="view" value="${view.value}" />
+                    <op:translate key="${view.key}" />
+                </label>
+            </c:forEach>
+        </div>
+        
+        <div class="form-group hidden">
+            <button type="submit" class="btn btn-default"><op:translate key="SAVE"/></button>
+        </div>
+    </form:form>
+    
+    <div class="chart-container">
+        <div class="clearfix">
+            <canvas class="chart bar-chart" height="400" data-url="${loadStatisticsUrl}"></canvas>
+        </div>
+        
     </div>
     
-    <div class="form-group hidden">
-        <button type="submit" class="btn btn-default"><op:translate key="SAVE"/></button>
-    </div>
-</form:form>
-
-<div class="chart-container">
-    <div class="clearfix">
-        <canvas class="chart bar-chart" height="400" data-url="${loadStatisticsUrl}"></canvas>
+    <div class="table-responsive">
+        <table class="table table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th><op:translate key="DIFFERENTIAL" /></th>
+                    <th><op:translate key="AGGREGATE" /></th>
+                </tr>
+            </thead>
+        </table>
     </div>
 </div>
-
-<!-- <div class="table-responsive">
-    <table class="table table-condensed">
-        <thead>
-            <tr>
-                <th></th>
-                <th><op:translate key="DIFFERENTIAL" /></th>
-                <th><op:translate key="AGGREGATE" /></th>
-            </tr>
-        </thead>
-        
-        <tbody>
-            
-        </tbody>
-    </table>
-</div> -->

@@ -108,6 +108,8 @@ $JQry(function() {
 		var chartContext = element.getContext("2d"),
 			$chart = $JQry(element),
 			url = $chart.data("url"),
+			$statistics = $chart.closest(".statistics"),
+			$table = $statistics.find("table"),
 			xhttp = new XMLHttpRequest();
 		
 		xhttp.onreadystatechange = function() {
@@ -115,8 +117,10 @@ $JQry(function() {
 				var data = JSON.parse(xhttp.responseText);
 				
 				if ($chart.hasClass("bar-chart")) {
-					new Chart(chartContext).Bar(data, options);
+					new Chart(chartContext).Bar(data["chart"], options);
 				}
+				
+				$table.append(data["table"]);
 		    }
 		};
 		xhttp.open("GET", url, true);
