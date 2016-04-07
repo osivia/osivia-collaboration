@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 Académie de Rennes (http://www.ac-rennes.fr/), OSIVIA (http://www.osivia.com) and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -61,6 +61,7 @@ public class CriteriaListEditableWindow extends EditableWindow {
         properties.put(Constants.WINDOW_PROP_VERSION, "__inherited");
 
         /* Display */
+        properties.put(ViewList.TEMPLATE_WINDOW_PROPERTY, schema.getString("style"));
         properties.putAll(fillDisplayProperties(schema, new HashMap<String, String>()));
 
         /* Technical */
@@ -78,9 +79,9 @@ public class CriteriaListEditableWindow extends EditableWindow {
 
         return properties;
     }
-    
+
     /**
-     * 
+     *
      * @param doc
      * @param fragment
      * @return the list schema.
@@ -94,14 +95,13 @@ public class CriteriaListEditableWindow extends EditableWindow {
      */
     protected Map<String, String> fillDisplayProperties(PropertyMap schema, Map<String, String> properties) {
         PropertyMap displayCriteria = (PropertyMap) schema.get("displayCriteria");
-        properties.put(ViewList.TEMPLATE_WINDOW_PROPERTY, (String) displayCriteria.get("style"));
         properties.put(ViewList.RESULTS_LIMIT_WINDOW_PROPERTY, (String) displayCriteria.get("nbItems"));
         properties.put(ViewList.NORMAL_PAGINATION_WINDOW_PROPERTY, (String) displayCriteria.get("nbItemsPerPage"));
         return properties;
     }
-    
+
     /**
-     * 
+     *
      * @param requestCriteria
      * @return the list resquest.
      */
@@ -110,39 +110,39 @@ public class CriteriaListEditableWindow extends EditableWindow {
         String currentDocId = (String) requestCriteria.get("currentDocId");
         String currentSpaceId = (String) requestCriteria.get("currentSpaceId");
 
-        Object docTypes = getDocTypes(requestCriteria); 
+        Object docTypes = getDocTypes(requestCriteria);
         PropertyList keyWords = (PropertyList) requestCriteria.get("keyWords");
         String searchArea = (String) requestCriteria.get("searchArea");
         String order = (String) requestCriteria.get("order");
 
-        String docTypesCriterion = this.getDocTypesCriterion(new StringBuffer(), docTypes);
-        String keyWordsCriterion = this.getKeyWordsCriterion(new StringBuffer(), keyWords, StringUtils.isBlank(docTypesCriterion));
-        String searchAreaCriterion = this.getSearchAreaCriterion(new StringBuffer(), searchArea, currentDocId, currentSpaceId,
+        String docTypesCriterion = getDocTypesCriterion(new StringBuffer(), docTypes);
+        String keyWordsCriterion = getKeyWordsCriterion(new StringBuffer(), keyWords, StringUtils.isBlank(docTypesCriterion));
+        String searchAreaCriterion = getSearchAreaCriterion(new StringBuffer(), searchArea, currentDocId, currentSpaceId,
                 StringUtils.isBlank(docTypesCriterion) && keyWords.isEmpty());
-        String orderCriterion = this.getOrderCriterion(new StringBuffer(), order);
+        String orderCriterion = getOrderCriterion(new StringBuffer(), order);
 
         StringBuffer clause = new StringBuffer().append(docTypesCriterion).append(keyWordsCriterion).append(searchAreaCriterion).append(orderCriterion);
 
         return clause.toString();
     }
-    
+
     /**
-     * 
+     *
      * @param requestCriteria
      * @return docTypes for request;
      */
     protected Object getDocTypes(PropertyMap requestCriteria){
         return requestCriteria.get("docTypes");
     }
-    
+
     /**
-     * 
+     *
      * @param docTypesCriterion
      * @param docTypes
      * @return the criterion's request on doctypes.
      */
     protected String getDocTypesCriterion(StringBuffer docTypesCriterion, Object docTypes) {
-        if (docTypes != null && docTypes instanceof PropertyList) {
+        if ((docTypes != null) && (docTypes instanceof PropertyList)) {
             PropertyList docTypesList = (PropertyList) docTypes;
             if (!docTypesList.isEmpty()) {
                 docTypesCriterion.append(" ecm:primaryType in (").append(generateQuotedList(new StringBuffer(), docTypesList)).append(")");
@@ -150,9 +150,9 @@ public class CriteriaListEditableWindow extends EditableWindow {
         }
         return docTypesCriterion.toString();
     }
-    
+
     /**
-     * 
+     *
      * @param keyWordsCriterion
      * @param keyWords
      * @param firstCriterion
@@ -167,9 +167,9 @@ public class CriteriaListEditableWindow extends EditableWindow {
         }
         return keyWordsCriterion.toString();
     }
-    
+
     /**
-     * 
+     *
      * @param searchAreaCriterion
      * @param searchArea
      * @param currentDocId
@@ -195,9 +195,9 @@ public class CriteriaListEditableWindow extends EditableWindow {
         }
         return searchAreaCriterion.toString();
     }
-    
+
     /**
-     * 
+     *
      * @param orderCriterion
      * @param order
      * @return the criterion's request on order.
@@ -210,7 +210,7 @@ public class CriteriaListEditableWindow extends EditableWindow {
     }
 
     /**
-     * 
+     *
      * @return a quoted list of properties with "," separator.
      */
     protected StringBuffer generateQuotedList(StringBuffer criterion, PropertyList properties) {
@@ -232,7 +232,7 @@ public class CriteriaListEditableWindow extends EditableWindow {
     public List<String> prepareDelete(Document doc, String refURI) {
 
         List<String> propertiesToRemove = new ArrayList<String>();
-        this.prepareDeleteGeneric(propertiesToRemove, doc, refURI);
+        prepareDeleteGeneric(propertiesToRemove, doc, refURI);
 
         Integer indexToRemove = EditableWindowHelper.findIndexByRefURI(doc, CRITERIA_LIST_SCHEMA, refURI);
         propertiesToRemove.add(CRITERIA_LIST_SCHEMA.concat("/").concat(indexToRemove.toString()));
