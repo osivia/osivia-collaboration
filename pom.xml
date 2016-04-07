@@ -4,14 +4,14 @@
     
     <groupId>org.osivia.services</groupId>
     <artifactId>osivia-services-collaboration-parent</artifactId>
-    <version>4.2.5-SNAPSHOT</version>
+    <version>4.2.6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OSIVIA Services - Collaboration parent</name>
     
     
     <properties>
-        <toutatice.version>4.2.4</toutatice.version>
+        <toutatice.version>4.2.6-SNAPSHOT</toutatice.version>
     </properties>
     
     
