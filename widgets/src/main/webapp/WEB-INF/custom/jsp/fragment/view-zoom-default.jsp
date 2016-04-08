@@ -10,7 +10,7 @@
 </c:if>
 
 
-<h2><a href="${url}">${title}</a></h2>
+<h2><a href="${url}" class="no-ajax-link">${title}</a></h2>
 
 
 <!-- Content -->

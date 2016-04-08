@@ -12,7 +12,7 @@
     
     
         <li>
-            <a href="${link.url}" target="${target}">
+            <a href="${link.url}" target="${target}" class="no-ajax-link">
                 <c:if test="${not empty link.glyphicon}">
                     <i class="glyphicons ${link.glyphicon}"></i>
                 </c:if>

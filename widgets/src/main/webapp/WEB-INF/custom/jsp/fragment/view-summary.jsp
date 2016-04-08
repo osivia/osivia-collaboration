@@ -13,7 +13,7 @@
 		<c:forEach var="fragment" items="${fragments}">
 			<li>
 				<p>
-					<a href="${fragment.key}">
+					<a href="${fragment.key}" class="no-ajax-link">
 					    <span>${fragment.value}</span>
 					</a>
 				</p>
