@@ -56,8 +56,8 @@ public class ForumPlugin extends AbstractPluginPortlet {
     public static final String STYLE_FORUM = "forum";
 
 
-    /** Default schemas. */
-    public static final String DEFAULT_SCHEMAS = "dublincore, common, toutatice, file";
+    /** Schemas. */
+    public static final String SCHEMAS = "dublincore, common, toutatice, file, thread_toutatice";
 
     /** Bundle factory. */
     protected IBundleFactory bundleFactory;
@@ -99,7 +99,7 @@ public class ForumPlugin extends AbstractPluginPortlet {
         Map<String, ListTemplate> templates = getListTemplates(context);
 
 
-        templates.put(STYLE_FORUM, new ListTemplate(STYLE_FORUM, bundle.getString("LIST_TEMPLATE_FORUM"), DEFAULT_SCHEMAS));
+        templates.put(STYLE_FORUM, new ListTemplate(STYLE_FORUM, bundle.getString("LIST_TEMPLATE_FORUM"), SCHEMAS));
  
 
         List<IPlayerModule> modules = getPlayers(context);
