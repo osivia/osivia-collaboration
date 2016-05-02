@@ -6,43 +6,44 @@
 <%@ page isELIgnored="false"%>
 
 
-<c:set var="imageURL"><ttc:pictureLink document="${document}" property="annonce:image" /></c:set>
-<c:set var="author" value="${document.properties['dc:creator']}" />
-<c:set var="date" value="${document.properties['dc:created']}" />
-<c:set var="resume" value="${document.properties['annonce:resume']}" />
+<c:set var="created"><fmt:formatDate value="${document.properties['dc:created']}" type="date" dateStyle="long" /></c:set>
+<c:set var="modified"><fmt:formatDate value="${document.properties['dc:modified']}" type="date" dateStyle="long" /></c:set>
+<c:set var="imageUrl"><ttc:pictureLink document="${document}" property="annonce:image" /></c:set>
 <c:set var="content"><ttc:transform document="${document}" property="note:note" /></c:set>
-
-<c:set var="contentClass" value="col-xs-12" />
 
 
 <article class="annonce">
-    <div class="row">
-        <!-- Title -->
-        <h3 class="hidden">${document.title}</h3>
+    <!-- Title -->
+    <h3 class="hidden">${document.title}</h3>
+    
+    <!-- Date -->
+    <p class="text-muted">
+        <span>${created}</span>
         
-        <!-- Image -->
-        <c:if test="${not empty imageURL}">
-            <c:set var="contentClass" value="col-xs-12 col-md-8" />
-            
-            <div class="col-xs-12 col-md-4">
-                <img src="${imageURL}" alt="" class="img-responsive">
+        <c:if test="${created ne modified}">
+            <span>&ndash;</span>
+            <span><op:translate key="UPDATED_ON" args="${modified}" /></span>
+        </c:if>
+    </p>
+    
+    <div class="row">
+        <c:if test="${not empty imageUrl}">
+            <div class="col-md-4 col-lg-3">
+                <div class="thumbnail">
+                    <!-- Image -->
+                    <img src="${imageUrl}" alt="" class="img-responsive center-block">
+                </div>
             </div>
         </c:if>
         
-        <div class="${contentClass}">
-            <!-- Resume -->
-            <div class="lead">${resume}</div>
-            
+        <div
+            <c:choose>
+                <c:when test="${not empty imageUrl}">class="col-md-8 col-lg-9"</c:when>
+                <c:otherwise>class="col-md-12"</c:otherwise>
+            </c:choose>
+        >
             <!-- Content -->
             <div>${content}</div>
         </div>
     </div>
-    
-    <!-- Edition informations -->
-    <p class="small test-right">
-<%--         <span><op:translate key="CREATED_BY" /></span> --%>
-<%--         <ttc:user name="${author}"/> --%>
-        <span><op:translate key="DATE_ARTICLE_PREFIX" /></span>
-        <span><fmt:formatDate value="${date}" type="date" dateStyle="long" /></span>
-    </p>
 </article>

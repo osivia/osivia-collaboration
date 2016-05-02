@@ -12,54 +12,48 @@
 <div class="bxslider-container">
     <ul class="list-unstyled bxfgtSlider clearfix" data-timer="${timer}">
         <c:forEach var="document" items="${documents}" varStatus="status">
+            <!-- Document properties -->
+            <c:set var="imageUrl"><ttc:pictureLink document="${document}" property="annonce:image" /></c:set>
+            <c:set var="created"><fmt:formatDate value="${document.properties['dc:created']}" type="date" dateStyle="long" /></c:set>
+            <c:set var="modified"><fmt:formatDate value="${document.properties['dc:modified']}" type="date" dateStyle="long" /></c:set>
+            <c:set var="resume"><ttc:transform document="${document}" property="annonce:resume"/></c:set>
+
+
             <li class="bxslider-slide">
-                <article class="clearfix">
-                	<!-- To use in included jsp -->
-                	<c:set var="doc" value="${document}" scope="request" />
-					<c:set var="imageURL">
-						<ttc:pictureLink document="${doc}" property="annonce:image" />
-					</c:set>
-					<c:set var="date" value="${doc.properties['dc:issued']}" />
-					<ttc:documentLink document="${doc}" var="link" />
-					<c:set var="resume" value="${doc.properties['annonce:resume']}" />
-
-
-
-					<div class="media">
-						<c:if test="${not empty imageURL}">
-							<div class="media-left">
-								<img src="${imageURL}" alt="" class="media-object">
-							</div>
-						</c:if>
-					
-						<div class="media-body">
-							<!-- Title -->
-							<h3 class="media-heading">
-					            <a href="${link.url}"
-					                <c:if test="${link.external}">target="_blank"</c:if>> <span>${doc.title}</span>
-					            </a>
-					
-					            <c:if test="${link.external}">
-					                <i class="glyphicons halflings new_window"></i>
-					            </c:if>
-					            
-					
-					        </h3>
-					        
-					        <!-- Resume -->
-					    	<p class="lead">${resume}</p>
-					        
-							<!-- Date -->
-							<p class="text-muted">
-								<fmt:formatDate value="${date}" type="date" dateStyle="long" />
-							</p>
-							
-							        
-						</div>
-						
-					
-					</div>
-				
+                <article>
+                    <div class="row">
+                        <c:if test="${not empty imageUrl}">
+                            <div class="col-md-4 col-lg-3">
+                                <!-- Image -->
+                                <img src="${imageUrl}" alt="" class="img-responsive pull-right">
+                            </div>
+                        </c:if>
+                        
+                        <div
+                            <c:choose>
+                                <c:when test="${not empty imageUrl}">class="col-md-8 col-lg-9"</c:when>
+                                <c:otherwise>class="col-md-12"</c:otherwise>
+                            </c:choose>
+                        >
+                            <!-- Title -->
+                            <h3 class="h4">
+                                <span><ttc:title document="${document}" /></span>
+                            </h3>
+                            
+                            <!-- Date -->
+                            <p class="text-muted">
+                                <span>${created}</span>
+                                
+                                <c:if test="${created ne modified}">
+                                    <span>&ndash;</span>
+                                    <span><op:translate key="UPDATED_ON" args="${modified}" /></span>
+                                </c:if>
+                            </p>
+                        
+                            <!-- Resume -->
+                            <div>${resume}</div>
+                        </div>
+                    </div>
 				</article>
 			</li>
 		</c:forEach>
