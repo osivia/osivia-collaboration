@@ -10,12 +10,12 @@
 
 
 <p class="text-danger">
-    <i class="glyphicons halflings exclamation-sign"></i>
+    <i class="glyphicons glyphicons-remove-sign"></i>
     <span>${message}</span>
 </p>
 
 
 <a href="${back}" class="btn btn-default">
-    <i class="glyphicons halflings arrow-left"></i>
+    <i class="glyphicons glyphicons-arrow-left"></i>
     <span><op:translate key="BACK" /></span>
 </a>

@@ -1,5 +1,9 @@
 package fr.toutatice.faq.portail;
 
+import java.util.List;
+
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentAttachmentDTO;
+
 
 /**
  * FAQ question view-object.
@@ -17,7 +21,7 @@ public class Question {
     /** Message. */
     private String message;
     /** Attachments. */
-    private String attachments;
+    private List<DocumentAttachmentDTO> attachments;
 
 
     /**
@@ -105,7 +109,7 @@ public class Question {
      * 
      * @return the attachments
      */
-    public String getAttachments() {
+    public List<DocumentAttachmentDTO> getAttachments() {
         return this.attachments;
     }
 
@@ -114,7 +118,7 @@ public class Question {
      * 
      * @param attachments the attachments to set
      */
-    public void setAttachments(String attachments) {
+    public void setAttachments(List<DocumentAttachmentDTO> attachments) {
         this.attachments = attachments;
     }
 

@@ -89,7 +89,7 @@
                                     <c:if test="${fn:length(eventsData.mappedEvents[key]) > 2}">
                                         <div class="hidden-xs">
                                             <a href="${viewDay}" class="btn btn-default btn-xs">
-                                                <i class="glyphicons more"></i>
+                                                <i class="glyphicons glyphicons-more"></i>
                                             </a>
                                         </div>
                                     </c:if>

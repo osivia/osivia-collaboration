@@ -7,7 +7,7 @@
 <portlet:defineObjects />
 
 
-<p class="lead text-danger">
-    <i class="glyphicons halflings exclamation-sign"></i>
+<p class="text-danger">
+    <i class="halflings halflings-remove-sign"></i>
     <span><op:translate key="${errorKey}" /></span>
 </p>

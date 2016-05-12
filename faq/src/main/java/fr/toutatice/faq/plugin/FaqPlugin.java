@@ -48,10 +48,10 @@ public class FaqPlugin extends AbstractPluginPortlet{
 		// ==== doc types
         // FAQ folder
 		docTypes.put("FaqFolder", new DocumentType("FaqFolder", true, false, false, true, false, true, Arrays.asList("Question"), null,
-                "glyphicons glyphicons-circle-question-mark"));
+                "glyphicons glyphicons-question-sign"));
         // FAQ question
 		docTypes.put("Question", new DocumentType("Question", false, false, false, false, false, true, new ArrayList<String>(0), null,
-                "glyphicons glyphicons-circle-question-mark"));
+                "glyphicons glyphicons-question-sign"));
 		
 		
 		// ==== players

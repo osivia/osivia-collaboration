@@ -11,20 +11,22 @@
 
 <form action="${saveAdminURL}" method="post" class="form-horizontal" role="form">
     <div class="form-group">
-        <label for="path" class="control-label col-sm-3"><op:translate key=""/> key="PATH" /></label>
+        <label for="path" class="control-label col-sm-3"><op:translate key="PATH" /></label>
         <div class="col-sm-9">
             <input id="path" type="text" name="path" value="${path}" class="form-control">
         </div>
     </div>
     
-    <div class="row">
+    <div class="form-group">
         <div class="col-sm-offset-3 col-sm-9">
             <button type="submit" class="btn btn-primary">
-                <i class="glyphicons halflings floppy_disk"></i>
+                <i class="glyphicons glyphicons-floppy-disk"></i>
                 <span><op:translate key="SAVE" /></span>
             </button>
             
-            <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
+            <button type="button" class="btn btn-default" onclick="closeFancybox()">
+                <span><op:translate key="CANCEL" /></span>
+            </button>
         </div>
     </div>
 </form>

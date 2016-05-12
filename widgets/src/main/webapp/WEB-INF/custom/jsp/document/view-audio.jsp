@@ -44,7 +44,7 @@
         
         <c:otherwise>
             <div class="alert alert-info">
-                <i class="glyphicons glyphicons-circle-info"></i>
+                <i class="glyphicons glyphicons-info-sign"></i>
                 <span><op:translate key="MESSAGE_AUDIO_CANNOT_BE_PLAYED" /></span>
             </div>
         </c:otherwise>

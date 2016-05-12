@@ -11,8 +11,10 @@
 <!-- Summary -->
 <div class="panel panel-default">
     <div class="panel-heading">
-        <i class="glyphicons halflings uni-bookmark"></i>
-        <span>${faq.title} - <op:translate key="SUMMARY" /></span>
+        <i class="glyphicons glyphicons-list"></i>
+        <span>${faq.title}</span>
+        <span>-</span>
+        <span><op:translate key="SUMMARY" /></span>
     </div>
     
     <div class="list-group">
@@ -40,21 +42,23 @@
 <!-- Current question -->
 <c:if test="${not empty question}">
     <p class="lead">${question.title}</p>
-    <div>${question.message}</div>
+    
+    <p>${question.message}</p>
     
     <c:if test="${not empty question.attachments}">
         <hr>
     
         <div class="panel panel-default">
             <div class="panel-heading">
-                <i class="glyphicons halflings uni-paperclip"></i>
-                <span><op:translate key="ATTACHMENTS" /></span>
+                <h3 class="panel-title">
+                    <i class="glyphicons glyphicons-paperclip"></i>
+                    <span><op:translate key="ATTACHMENTS" /></span>
+                </h3>
             </div>
             
             <div class="list-group">
                 <c:forEach var="attachment" items="${question.attachments}">
                     <a href="${attachment.url}" class="list-group-item">
-                        <i class="glyphicons halflings file"></i>
                         <span>${attachment.name}</span>
                     </a>
                 </c:forEach>

@@ -66,7 +66,7 @@
                 <!-- Attachment -->
                 <c:if test="${not empty post.attachmentURL}">
                     <p>
-                        <i class="halflings halflings-glyph-paperclip"></i>
+                        <i class="halflings halflings-paperclip"></i>
                         <a href="${post.attachmentURL}">${post.attachmentName}</a>
                     </p>
                 </c:if>

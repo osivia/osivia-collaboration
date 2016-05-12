@@ -161,12 +161,12 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
 
         // Picture book
         DocumentType picturebook = new DocumentType("PictureBook", true, true, true, true, false, true, Arrays.asList(picture.getName(), "PictureBook"), null,
-                "glyphicons glyphicons-picture");
+                "glyphicons glyphicons-pictures");
         types.put(picturebook.getName(), picturebook);
 
         // Audio
-        DocumentType audio = new DocumentType("Audio", false, false, false, false, false, true, new ArrayList<String>(0), null,
-                "glyphicons glyphicons-headphones", false, true, true);
+        DocumentType audio = new DocumentType("Audio", false, false, false, false, false, true, new ArrayList<String>(0), null, "glyphicons glyphicons-music",
+                false, true, true);
         types.put(audio.getName(), audio);
         addSubType(context, "PortalSite", audio.getName());
         addSubType(context, "PortalPage", audio.getName());

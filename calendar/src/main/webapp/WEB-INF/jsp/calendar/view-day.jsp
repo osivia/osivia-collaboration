@@ -42,13 +42,13 @@
                                                 
                                                     <div class="daily-event bg-primary ${eventClass}">
                                                         <c:if test="${not event.begin}">
-                                                            <i class="glyphicons left_arrow"></i>
+                                                            <i class="glyphicons glyphicons-arrow-left"></i>
                                                         </c:if>
                                                     
                                                         <span>${event.time}</span>
                                                         
                                                         <c:if test="${not event.end}">
-                                                            <i class="glyphicons right_arrow"></i>
+                                                            <i class="glyphicons glyphicons-arrow-right"></i>
                                                         </c:if>
                                                         
                                                         <span> - </span>
