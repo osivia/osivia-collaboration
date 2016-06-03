@@ -7,10 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.PortalException;
@@ -21,6 +18,9 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.taskbar.TaskbarFactory;
+import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
@@ -28,7 +28,6 @@ import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.taskbar.common.model.Task;
 import org.osivia.services.taskbar.common.model.TaskbarConfiguration;
 import org.osivia.services.taskbar.common.model.TaskbarView;
-import org.osivia.services.taskbar.common.service.ITaskbarPortletService;
 import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
@@ -114,7 +113,7 @@ public class TaskbarRepositoryImpl implements ITaskbarRepository {
     private List<String> initOrder() {
         List<String> orderedTasks = new ArrayList<String>(2);
         orderedTasks.add(ITaskbarService.HOME_TASK_ID);
-        orderedTasks.add(ITaskbarPortletService.CMS_NAVIGATION_TASK_ID);
+        orderedTasks.add(ITaskbarRepository.CMS_NAVIGATION_TASK_ID);
         return orderedTasks;
     }
 
@@ -141,7 +140,7 @@ public class TaskbarRepositoryImpl implements ITaskbarRepository {
     @Override
     public List<TaskbarTask> getNavigationTasks(PortalControllerContext portalControllerContext) throws PortletException {
         // Nuxeo controller
-        NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         // Base path
         String basePath = nuxeoController.getBasePath();
 
@@ -165,12 +164,34 @@ public class TaskbarRepositoryImpl implements ITaskbarRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<TaskbarTask> getCustomTasks(PortalControllerContext portalControllerContext) throws PortletException {
+    public TaskbarTask createRemainingTask(PortalControllerContext portalControllerContext, TaskbarItem item) throws PortletException {
+        // Factory
+        TaskbarFactory factory = this.taskbarService.getFactory();
+
+        // Task
+        TaskbarTask task;
         try {
-            return this.taskbarService.getCustomTasks(portalControllerContext);
+            task = factory.createTaskbarTask(item, null, false);
+        } catch (ReflectiveOperationException e) {
+            throw new PortletException(e);
+        }
+
+        return task;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TaskbarItems getTaskbarItems(PortalControllerContext portalControllerContext) throws PortletException {
+        TaskbarItems items;
+        try {
+            items = this.taskbarService.getItems(portalControllerContext);
         } catch (PortalException e) {
             throw new PortletException(e);
         }
+        return items;
     }
 
 
@@ -180,7 +201,11 @@ public class TaskbarRepositoryImpl implements ITaskbarRepository {
     @Override
     public void updateTasks(PortalControllerContext portalControllerContext, List<Task> tasks) throws PortletException {
         // Nuxeo controller
-        NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        // Locale
+        Locale locale = portalControllerContext.getRequest().getLocale();
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(locale);
 
         // Active task identifier
         String activeId;
@@ -194,23 +219,27 @@ public class TaskbarRepositoryImpl implements ITaskbarRepository {
             // Active indicator
             task.setActive(StringUtils.equals(activeId, task.getId()));
 
-            // Internationalized name
-            this.updateTaskName(portalControllerContext, task);
-
-
-            // Home task
-            if (ITaskbarService.HOME_TASK_ID.equals(task.getId())) {
-                task.setPath(nuxeoController.getBasePath());
+            // Display name
+            String displayName;
+            if (task.getKey() != null) {
+                displayName = bundle.getString(task.getKey(), task.getCustomizedClassLoader());
+            } else {
+                displayName = task.getTitle();
             }
+            task.setDisplayName(displayName);
 
-
-            if (task.getPath() != null) {
+            // URL
+            String url;
+            if (ITaskbarService.HOME_TASK_ID.equals(task.getId())) {
+                // Home task
+                url = this.portalURLFactory.getCMSUrl(portalControllerContext, null, nuxeoController.getBasePath(), null, null, "taskbar", null, null, "1",
+                        null);
+            } else if (task.getPath() != null) {
                 // CMS URL
-                String url = this.portalURLFactory.getCMSUrl(portalControllerContext, null, task.getPath(), null, null, "taskbar", null, null, "1", null);
-                task.setUrl(url);
-            } else if (task.getMaximizedPlayer() != null) {
+                url = this.portalURLFactory.getCMSUrl(portalControllerContext, null, task.getPath(), null, null, "taskbar", null, null, "1", null);
+            } else if (task.getPlayer() != null) {
                 // Start portlet URL
-                PanelPlayer player = task.getMaximizedPlayer();
+                PanelPlayer player = task.getPlayer();
 
                 // Window properties
                 Map<String, String> properties = new HashMap<String, String>();
@@ -218,19 +247,22 @@ public class TaskbarRepositoryImpl implements ITaskbarRepository {
                     properties.putAll(player.getProperties());
                 }
                 properties.put(ITaskbarService.TASK_ID_WINDOW_PROPERTY, task.getId());
-                if (task.getName() != null) {
-                    properties.put("osivia.title", task.getName());
+                if (task.getDisplayName() != null) {
+                    properties.put("osivia.title", task.getDisplayName());
                 }
                 properties.put("osivia.back.reset", String.valueOf(true));
                 properties.put("osivia.navigation.reset", String.valueOf(true));
 
                 try {
-                    String url = this.portalURLFactory.getStartPortletUrl(portalControllerContext, player.getInstance(), properties, false);
-                    task.setUrl(url);
+                    url = this.portalURLFactory.getStartPortletUrl(portalControllerContext, player.getInstance(), properties, false);
                 } catch (PortalException e) {
                     throw new PortletException(e);
                 }
+            } else {
+                // Unknown case
+                url = "#";
             }
+            task.setUrl(url);
         }
     }
 
@@ -239,35 +271,12 @@ public class TaskbarRepositoryImpl implements ITaskbarRepository {
      * {@inheritDoc}
      */
     @Override
-    public void updateTaskName(PortalControllerContext portalControllerContext, Task task) throws PortletException {
-        if (task.getKey() != null) {
-            // Bundle
-            Locale locale = portalControllerContext.getRequest().getLocale();
-            Bundle bundle = this.bundleFactory.getBundle(locale);
+    public TaskbarItem createVirtualItem(PortalControllerContext portalControllerContext) throws PortletException {
+        // Factory
+        TaskbarFactory factory = this.taskbarService.getFactory();
 
-            String name = bundle.getString(task.getKey());
-            if (name != null) {
-                task.setName(name);
-            }
-        }
-    }
-
-
-    /**
-     * Get Nuxeo controller.
-     *
-     * @param portalControllerContext portal controller context
-     * @return Nuxeo controller
-     */
-    private NuxeoController getNuxeoController(PortalControllerContext portalControllerContext) {
-        // Request
-        PortletRequest request = portalControllerContext.getRequest();
-        // Response
-        PortletResponse response = portalControllerContext.getResponse();
-        // Portlet context
-        PortletContext portletContext = portalControllerContext.getPortletCtx();
-
-        return new NuxeoController(request, response, portletContext);
+        // Taskbar item
+        return factory.createTransversalTaskbarItem(CMS_NAVIGATION_TASK_ID, "CMS_NAVIGATION_TASK", "glyphicons glyphicons-magic", null);
     }
 
 }

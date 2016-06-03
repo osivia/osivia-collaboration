@@ -42,10 +42,10 @@
                             <p class="text-muted"><op:translate key="ORDERED_TASKS_HELP" /></p>
                             
                             <ul class="list-sortable taskbar-ordered-tasks taskbar-sortable">
-                                <c:forEach var="task" items="${orderedTasks}">
-                                    <li data-id="${task.id}">
-                                        <i class="${task.icon}"></i>
-                                        <span>${task.name}</span>
+                                <c:forEach var="item" items="${orderedItems}">
+                                    <li data-id="${item.id}">
+                                        <i class="${item.icon}"></i>
+                                        <span><op:translate key="${item.key}" /></span>
                                     </li>
                                 </c:forEach>
                             </ul>
@@ -62,10 +62,10 @@
                             <p class="text-muted"><op:translate key="AVAILABLE_TASKS_HELP" /></p>
                             
                             <ul class="list-sortable taskbar-sortable">
-                                <c:forEach var="task" items="${availableTasks}">
-                                    <li data-id="${task.id}">
-                                        <i class="${task.icon}"></i>
-                                        <span>${task.name}</span>
+                                <c:forEach var="item" items="${availableItems}">
+                                    <li data-id="${item.id}">
+                                        <i class="${item.icon}"></i>
+                                        <span><op:translate key="${item.key}" /></span>
                                     </li>
                                 </c:forEach>
                             </ul>

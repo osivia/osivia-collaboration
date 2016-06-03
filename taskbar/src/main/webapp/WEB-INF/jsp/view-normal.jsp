@@ -27,7 +27,7 @@
             >
                 <a href="${startURL}">
                     <i class="${task.icon}"></i>
-                    <span>${task.name}</span>
+                    <span>${task.displayName}</span>
                 </a>
             </li>
         </c:forEach>

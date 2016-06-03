@@ -1,9 +1,7 @@
 package org.osivia.services.taskbar.common.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.portlet.PortletException;
 
@@ -11,6 +9,9 @@ import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.panels.IPanelsService;
+import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItemType;
+import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.services.taskbar.common.model.Task;
 import org.osivia.services.taskbar.common.model.TaskbarConfiguration;
@@ -55,33 +56,55 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
         TaskbarConfiguration configuration = this.taskbarRepository.getConfiguration(portalControllerContext);
         // Order
         List<String> order = configuration.getOrder();
+        // Identifiers of remaining tasks
+        List<String> remainingIds = new ArrayList<String>(order);
+        remainingIds.remove(ITaskbarRepository.CMS_NAVIGATION_TASK_ID);
 
-        // CMS tasks
-        List<TaskbarTask> cmsTasks = this.taskbarRepository.getNavigationTasks(portalControllerContext);
+        // Navigation tasks
+        List<TaskbarTask> navigationTasks = this.taskbarRepository.getNavigationTasks(portalControllerContext);
+        List<TaskbarTask> displayedTasks = new ArrayList<TaskbarTask>(navigationTasks.size());
+        for (TaskbarTask navigationTask : navigationTasks) {
+            if (TaskbarItemType.TRANSVERSAL.equals(navigationTask.getType())) {
+                remainingIds.remove(navigationTask.getId());
+            }
 
-        // Custom tasks
-        List<TaskbarTask> customTasks = this.taskbarRepository.getCustomTasks(portalControllerContext);
-        Map<String, TaskbarTask> customTasksMap = new HashMap<String, TaskbarTask>(customTasks.size());
-        for (TaskbarTask customTask : customTasks) {
-            customTasksMap.put(customTask.getId(), customTask);
+            if (!navigationTask.isDisabled()) {
+                displayedTasks.add(navigationTask);
+            }
+        }
+
+
+        // Remaining tasks
+        if (!remainingIds.isEmpty()) {
+            TaskbarItems items = this.taskbarRepository.getTaskbarItems(portalControllerContext);
+            List<TaskbarTask> remainingTasks = new ArrayList<TaskbarTask>(remainingIds.size());
+            boolean before = true;
+            for (String id : order) {
+                if (ITaskbarRepository.CMS_NAVIGATION_TASK_ID.equals(id)) {
+                    displayedTasks.addAll(0, remainingTasks);
+                    remainingTasks.clear();
+                    before = false;
+                } else if (remainingIds.contains(id)) {
+                    TaskbarItem item = items.get(id);
+                    if (item != null) {
+                        TaskbarTask remainingTask = this.taskbarRepository.createRemainingTask(portalControllerContext, item);
+                        remainingTasks.add(remainingTask);
+                    }
+                }
+            }
+            if (before) {
+                displayedTasks.addAll(0, remainingTasks);
+            } else {
+                displayedTasks.addAll(remainingTasks);
+            }
         }
 
 
         // Tasks
-        List<Task> tasks = new ArrayList<Task>(Math.max((cmsTasks.size() + order.size()) - 1, 0));
-        for (String id : order) {
-            if (CMS_NAVIGATION_TASK_ID.equals(id)) {
-                for (TaskbarTask cmsTask : cmsTasks) {
-                    Task task = new Task(cmsTask);
-                    tasks.add(task);
-                }
-            } else {
-                TaskbarTask customTask = customTasksMap.get(id);
-                if (customTask != null) {
-                    Task task = new Task(customTask);
-                    tasks.add(task);
-                }
-            }
+        List<Task> tasks = new ArrayList<Task>(displayedTasks.size());
+        for (TaskbarTask displayedTask : displayedTasks) {
+            Task task = new Task(displayedTask);
+            tasks.add(task);
         }
 
         return tasks;
@@ -134,40 +157,34 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
      * {@inheritDoc}
      */
     @Override
-    public List<Task> getOrderedTasks(PortalControllerContext portalControllerContext) throws PortletException {
+    public List<TaskbarItem> getOrderedItems(PortalControllerContext portalControllerContext) throws PortletException {
         // Configuration
         TaskbarConfiguration configuration = this.taskbarRepository.getConfiguration(portalControllerContext);
         // Order
         List<String> order = configuration.getOrder();
-        // Custom tasks
-        List<TaskbarTask> customTasks = this.taskbarRepository.getCustomTasks(portalControllerContext);
-        Map<String, TaskbarTask> customTasksMap = new HashMap<String, TaskbarTask>(customTasks.size());
-        for (TaskbarTask customTask : customTasks) {
-            customTasksMap.put(customTask.getId(), customTask);
-        }
 
-        // Ordered tasks
-        List<Task> orderedTasks = new ArrayList<Task>(order.size());
+        // Taskbar items
+        TaskbarItems items = this.taskbarRepository.getTaskbarItems(portalControllerContext);
+
+        // Ordered taskbar items
+        List<TaskbarItem> orderedItems = new ArrayList<TaskbarItem>();
         for (String id : order) {
-            Task task;
-            if (CMS_NAVIGATION_TASK_ID.equals(id)) {
-                task = this.createNavigationTask();
+            TaskbarItem item;
+            if (ITaskbarRepository.CMS_NAVIGATION_TASK_ID.equals(id)) {
+                item = this.taskbarRepository.createVirtualItem(portalControllerContext);
             } else {
-                TaskbarTask customTask = customTasksMap.get(id);
-                if (customTask != null) {
-                    task = new Task(customTask);
-                } else {
-                    task = null;
+                item = items.get(id);
+                if ((item != null) && !TaskbarItemType.TRANSVERSAL.equals(item.getType())) {
+                    item = null;
                 }
             }
 
-            if (task != null) {
-                this.taskbarRepository.updateTaskName(portalControllerContext, task);
-                orderedTasks.add(task);
+            if (item != null) {
+                orderedItems.add(item);
             }
         }
 
-        return orderedTasks;
+        return orderedItems;
     }
 
 
@@ -175,46 +192,28 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
      * {@inheritDoc}
      */
     @Override
-    public List<Task> getAvailableTasks(PortalControllerContext portalControllerContext) throws PortletException {
+    public List<TaskbarItem> getAvailableItems(PortalControllerContext portalControllerContext) throws PortletException {
         // Configuration
         TaskbarConfiguration configuration = this.taskbarRepository.getConfiguration(portalControllerContext);
         // Order
         List<String> order = configuration.getOrder();
-        // Custom tasks
-        List<TaskbarTask> customTasks = this.taskbarRepository.getCustomTasks(portalControllerContext);
 
-        // Available tasks
-        List<Task> availableTasks = new ArrayList<Task>(customTasks.size() + 1);
+        // Taskbar items
+        TaskbarItems items = this.taskbarRepository.getTaskbarItems(portalControllerContext);
 
-        if (!order.contains(CMS_NAVIGATION_TASK_ID)) {
-            Task task = this.createNavigationTask();
-            this.taskbarRepository.updateTaskName(portalControllerContext, task);
-            availableTasks.add(task);
+        // Available taskbar items
+        List<TaskbarItem> availableItems = new ArrayList<TaskbarItem>();
+        if (!order.contains(ITaskbarRepository.CMS_NAVIGATION_TASK_ID)) {
+            TaskbarItem item = this.taskbarRepository.createVirtualItem(portalControllerContext);
+            availableItems.add(item);
         }
-
-        for (TaskbarTask customTask : customTasks) {
-            if (!order.contains(customTask.getId())) {
-                Task task = new Task(customTask);
-                this.taskbarRepository.updateTaskName(portalControllerContext, task);
-                availableTasks.add(task);
+        for (TaskbarItem item : items.getAll()) {
+            if (TaskbarItemType.TRANSVERSAL.equals(item.getType()) && !order.contains(item.getId())) {
+                availableItems.add(item);
             }
         }
 
-        return availableTasks;
-    }
-
-
-    /**
-     * Create CMS navigation virtual task.
-     *
-     * @return task
-     */
-    private Task createNavigationTask() {
-        Task task = new Task();
-        task.setId(CMS_NAVIGATION_TASK_ID);
-        task.setKey("CMS_NAVIGATION_TASK");
-        task.setIcon("glyphicons glyphicons-magic");
-        return task;
+        return availableItems;
     }
 
 

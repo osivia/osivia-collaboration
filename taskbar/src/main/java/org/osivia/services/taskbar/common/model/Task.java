@@ -1,18 +1,17 @@
 package org.osivia.services.taskbar.common.model;
 
-import javax.portlet.PortletException;
-
-import org.apache.commons.beanutils.BeanUtils;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 
 /**
  * Task java-bean.
  *
  * @author Cédric Krommenhoek
- * @see TaskbarTask
+ * @see TaskbarTaskDecorator
  */
-public class Task extends TaskbarTask {
+public class Task extends TaskbarTaskDecorator {
 
+    /** Display name. */
+    private String displayName;
     /** URL. */
     private String url;
     /** Active indicator. */
@@ -22,27 +21,28 @@ public class Task extends TaskbarTask {
     /**
      * Constructor.
      */
-    public Task() {
-        super();
+    public Task(TaskbarTask task) {
+        super(task);
     }
 
 
     /**
-     * Constructor.
-     *
-     * @param task taskbar task
-     * @throws PortletException
+     * Getter for displayName.
+     * 
+     * @return the displayName
      */
-    public Task(TaskbarTask task) throws PortletException {
-        this();
-
-        try {
-            BeanUtils.copyProperties(this, task);
-        } catch (Exception e) {
-            throw new PortletException(e);
-        }
+    public String getDisplayName() {
+        return this.displayName;
     }
 
+    /**
+     * Setter for displayName.
+     * 
+     * @param displayName the displayName to set
+     */
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 
     /**
      * Getter for url.

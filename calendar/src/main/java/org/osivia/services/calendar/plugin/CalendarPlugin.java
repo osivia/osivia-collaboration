@@ -25,6 +25,9 @@ import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.customization.Plugin;
 import org.osivia.portal.api.player.IPlayerModule;
+import org.osivia.portal.api.taskbar.TaskbarFactory;
+import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItems;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 
@@ -37,14 +40,20 @@ import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 @Plugin("calendar.plugin")
 public class CalendarPlugin extends AbstractPluginPortlet  {
 
+    /** Plugin name. */
 	private static final String PLUGIN_NAME = "calendar.plugin";
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see fr.toutatice.portail.cms.nuxeo.api.domain.CMSCustomizerPortlet#
-	 * customizeCMSProperties(java.lang.String,
-	 * org.osivia.portal.api.customization.CustomizationContext)
+
+    /**
+     * Constructor.
+     */
+    public CalendarPlugin() {
+        super();
+    }
+
+
+    /**
+	 * {@inheritDoc}
 	 */
 	@Override
 	protected void customizeCMSProperties(String customizationID,
@@ -63,8 +72,11 @@ public class CalendarPlugin extends AbstractPluginPortlet  {
 		docTypes.put("VEVENT",new DocumentType("VEVENT", false, false, false, false, true, true, new ArrayList<String>(0), null, "glyphicons glyphicons-calendar", false, false));
 
 
-
-
+		// Taskbar items
+		TaskbarItems taskbarItems = this.getTaskbarItems(context);
+        TaskbarFactory factory = this.getTaskbarService().getFactory();
+        TaskbarItem agenda = factory.createCmsTaskbarItem("CALENDAR", "CALENDAR_TASK", "glyphicons glyphicons-calendar", "Agenda");
+        taskbarItems.add(agenda);
 	}
 
 	/* (non-Javadoc)

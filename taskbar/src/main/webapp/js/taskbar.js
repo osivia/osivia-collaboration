@@ -22,15 +22,15 @@ $JQry(function() {
 				navbarHeight = Math.round(($navbarAffix.length > 0) ? $navbarAffix.outerHeight(true) : 0);
 			
 			$container.affix({
-				offset: {
-					top: function() {
+				offset : {
+					top : function() {
 						if (document.body.clientWidth >= 768) {
 							return Math.round($container.parent().offset().top - navbarHeight);
 						} else {
 							return 0;
 						}
 					},
-					bottom: function() {
+					bottom : function() {
 						var bottom = null;
 						
 						if (document.body.clientWidth >= 768) {
@@ -48,13 +48,13 @@ $JQry(function() {
 			
 			$container.on("affix.bs.affix", function(event) {
 				$container.css({
-					top: navbarHeight
+					top : navbarHeight
 				});
 			});
 			
 			$container.on("affix-top.bs.affix", function(event) {
 				$container.css({
-					top: "auto"
+					top : "auto"
 				});
 			});
 		}
@@ -63,13 +63,13 @@ $JQry(function() {
 
 	// Sortable
 	$JQry(".taskbar-sortable").sortable({
-		connectWith: ".taskbar-sortable",
-		cursor: "move",
-		forcePlaceholderSize: true,
-		placeholder: "list-sortable-placeholder bg-info",
-		tolerance: "pointer",
+		connectWith : ".taskbar-sortable",
+		cursor : "move",
+		forcePlaceholderSize : true,
+		placeholder : "list-sortable-placeholder bg-info",
+		tolerance : "pointer",
 		
-		update: function(event, ui) {
+		update : function(event, ui) {
 			var $form = $JQry(this).closest("form"),
 				$input = $form.find("input[name=order]");
 				$orderedTasks = $form.find(".taskbar-ordered-tasks"),

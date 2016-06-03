@@ -5,6 +5,8 @@ import java.util.List;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.services.taskbar.common.model.Task;
 import org.osivia.services.taskbar.common.model.TaskbarConfiguration;
@@ -15,6 +17,10 @@ import org.osivia.services.taskbar.common.model.TaskbarConfiguration;
  * @author Cédric Krommenhoek
  */
 public interface ITaskbarRepository {
+
+    /** CMS navigation virtual task identifier. */
+    String CMS_NAVIGATION_TASK_ID = "CMS_NAVIGATION";
+
 
     /**
      * Get taskbar configuration.
@@ -37,23 +43,34 @@ public interface ITaskbarRepository {
 
 
     /**
-     * Get CMS tasks.
+     * Get navigation taskbar tasks.
      *
      * @param portalControllerContext portal controller context
-     * @return tasks
+     * @return taskbar tasks
      * @throws PortletException
      */
     List<TaskbarTask> getNavigationTasks(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**
-     * Get customized tasks.
+     * Create remaining task.
      *
      * @param portalControllerContext portal controller context
-     * @return tasks
+     * @param taskbarItem taskbar item
+     * @return taskbar task
      * @throws PortletException
      */
-    List<TaskbarTask> getCustomTasks(PortalControllerContext portalControllerContext) throws PortletException;
+    TaskbarTask createRemainingTask(PortalControllerContext portalControllerContext, TaskbarItem item) throws PortletException;
+
+
+    /**
+     * Get taskbar items.
+     *
+     * @param portalControllerContext portal controller context
+     * @return taskbar items
+     * @throws PortletException
+     */
+    TaskbarItems getTaskbarItems(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**
@@ -67,12 +84,12 @@ public interface ITaskbarRepository {
 
 
     /**
-     * Update task name.
+     * Create virtual taskbar item.
      *
      * @param portalControllerContext portal controller context
-     * @param task task
+     * @return taskbar item
      * @throws PortletException
      */
-    void updateTaskName(PortalControllerContext portalControllerContext, Task task) throws PortletException;
+    TaskbarItem createVirtualItem(PortalControllerContext portalControllerContext) throws PortletException;
 
 }

@@ -17,7 +17,7 @@ import javax.portlet.WindowState;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.portlet.PortalGenericPortlet;
-import org.osivia.services.taskbar.common.model.Task;
+import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.services.taskbar.common.model.TaskbarConfiguration;
 import org.osivia.services.taskbar.common.model.TaskbarView;
 import org.osivia.services.taskbar.common.service.ITaskbarPortletService;
@@ -70,12 +70,12 @@ public class TaskbarAdminController extends PortalGenericPortlet implements Port
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         // Ordered tasks
-        List<Task> orderedTasks = this.taskbarService.getOrderedTasks(portalControllerContext);
-        request.setAttribute("orderedTasks", orderedTasks);
+        List<TaskbarItem> orderedTasks = this.taskbarService.getOrderedItems(portalControllerContext);
+        request.setAttribute("orderedItems", orderedTasks);
 
         // Available tasks
-        List<Task> availableTasks = this.taskbarService.getAvailableTasks(portalControllerContext);
-        request.setAttribute("availableTasks", availableTasks);
+        List<TaskbarItem> availableTasks = this.taskbarService.getAvailableItems(portalControllerContext);
+        request.setAttribute("availableItems", availableTasks);
 
         return "admin";
     }

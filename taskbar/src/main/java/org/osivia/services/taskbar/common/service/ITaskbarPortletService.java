@@ -5,6 +5,7 @@ import java.util.List;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.services.taskbar.common.model.Task;
 import org.osivia.services.taskbar.common.model.TaskbarConfiguration;
 
@@ -14,10 +15,6 @@ import org.osivia.services.taskbar.common.model.TaskbarConfiguration;
  * @author Cédric Krommenhoek
  */
 public interface ITaskbarPortletService {
-
-    /** CMS navigation virtual task identifier. */
-    String CMS_NAVIGATION_TASK_ID = "CMS_NAVIGATION";
-
 
     /**
      * Get tasks.
@@ -51,23 +48,23 @@ public interface ITaskbarPortletService {
 
 
     /**
-     * Get ordonned tasks.
+     * Get ordonned taskbar items.
      *
      * @param portalControllerContext portal controller context
-     * @return tasks
+     * @return taskbar items
      * @throws PortletException
      */
-    List<Task> getOrderedTasks(PortalControllerContext portalControllerContext) throws PortletException;
+    List<TaskbarItem> getOrderedItems(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**
-     * Get available tasks.
+     * Get available taskbar items.
      *
      * @param portalControllerContext portal controller context
-     * @return tasks
+     * @return taskbar items
      * @throws PortletException
      */
-    List<Task> getAvailableTasks(PortalControllerContext portalControllerContext) throws PortletException;
+    List<TaskbarItem> getAvailableItems(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**
