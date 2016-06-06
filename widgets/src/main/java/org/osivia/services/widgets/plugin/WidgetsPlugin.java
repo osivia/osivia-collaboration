@@ -32,6 +32,9 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.player.IPlayerModule;
+import org.osivia.portal.api.taskbar.TaskbarFactory;
+import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.services.widgets.plugin.ew.CriteriaListEditableWindow;
 import org.osivia.services.widgets.plugin.ew.LinksEditableWindow;
@@ -108,7 +111,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         // Bundle factory
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
-        bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
 
@@ -127,17 +130,19 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
     @Override
     protected void customizeCMSProperties(String customizationId, CustomizationContext context) {
         // Document types
-        customizeDocumentTypes(context);
+        this.customizeDocumentTypes(context);
         // Players
-        customizePlayers(context);
+        this.customizePlayers(context);
         // List templates
-        customizeListTemplates(context);
+        this.customizeListTemplates(context);
         // Fragments types
-        customizeFragmentTypes(context);
+        this.customizeFragmentTypes(context);
         // Editable windows
-        customizeEditableWindows(context);
+        this.customizeEditableWindows(context);
         // Tab groups
-        customizeTabGroups(context);
+        this.customizeTabGroups(context);
+        // Taskbar items
+        this.customizeTaskbarItems(context);
     }
 
 
@@ -148,16 +153,16 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
      */
     private void customizeDocumentTypes(CustomizationContext context) {
         // Document types
-        Map<String, DocumentType> types = getDocTypes(context);
+        Map<String, DocumentType> types = this.getDocTypes(context);
 
         // Picture
         DocumentType picture = new DocumentType("Picture", false, false, false, false, false, true, new ArrayList<String>(0), null,
                 "glyphicons glyphicons-picture", false, true, true);
         types.put(picture.getName(), picture);
-        addSubType(context, "PortalSite", picture.getName());
-        addSubType(context, "PortalPage", picture.getName());
-        addSubType(context, "Folder", picture.getName());
-        addSubType(context, "OrderedFolder", picture.getName());
+        this.addSubType(context, "PortalSite", picture.getName());
+        this.addSubType(context, "PortalPage", picture.getName());
+        this.addSubType(context, "Folder", picture.getName());
+        this.addSubType(context, "OrderedFolder", picture.getName());
 
         // Picture book
         DocumentType picturebook = new DocumentType("PictureBook", true, true, true, true, false, true, Arrays.asList(picture.getName(), "PictureBook"), null,
@@ -168,26 +173,26 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         DocumentType audio = new DocumentType("Audio", false, false, false, false, false, true, new ArrayList<String>(0), null, "glyphicons glyphicons-music",
                 false, true, true);
         types.put(audio.getName(), audio);
-        addSubType(context, "PortalSite", audio.getName());
-        addSubType(context, "PortalPage", audio.getName());
-        addSubType(context, "Folder", audio.getName());
-        addSubType(context, "OrderedFolder", audio.getName());
+        this.addSubType(context, "PortalSite", audio.getName());
+        this.addSubType(context, "PortalPage", audio.getName());
+        this.addSubType(context, "Folder", audio.getName());
+        this.addSubType(context, "OrderedFolder", audio.getName());
 
         // Video
         DocumentType video = new DocumentType("Video", false, false, false, false, false, true, new ArrayList<String>(0), null, "glyphicons glyphicons-film",
                 false, true, true);
         types.put(video.getName(), video);
-        addSubType(context, "PortalSite", video.getName());
-        addSubType(context, "PortalPage", video.getName());
-        addSubType(context, "Folder", video.getName());
-        addSubType(context, "OrderedFolder", video.getName());
+        this.addSubType(context, "PortalSite", video.getName());
+        this.addSubType(context, "PortalPage", video.getName());
+        this.addSubType(context, "Folder", video.getName());
+        this.addSubType(context, "OrderedFolder", video.getName());
 
         // Annonce
         DocumentType annonce = new DocumentType("Annonce", false, false, false, false, false, true, new ArrayList<String>(0), null,
                 "glyphicons glyphicons-newspaper");
         types.put(annonce.getName(), annonce);
-        addSubType(context, "PortalSite", annonce.getName());
-        addSubType(context, "PortalPage", annonce.getName());
+        this.addSubType(context, "PortalSite", annonce.getName());
+        this.addSubType(context, "PortalPage", annonce.getName());
 
         // Annonce folder
         DocumentType annonceFolder = new DocumentType("AnnonceFolder", true, true, false, false, false, true, Arrays.asList(annonce.getName()), null,
@@ -208,11 +213,11 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
      */
     private void customizePlayers(CustomizationContext context) {
         // Portlet context
-        PortletContext portletContext = getPortletContext();
+        PortletContext portletContext = this.getPortletContext();
 
         // Players
         @SuppressWarnings("rawtypes")
-        List<IPlayerModule> players = getPlayers(context);
+        List<IPlayerModule> players = this.getPlayers(context);
 
         // Picture book
         PictureBookPlayer picturebook = new PictureBookPlayer(portletContext);
@@ -235,12 +240,12 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
      */
     private void customizeListTemplates(CustomizationContext context) {
         // Portlet context
-        PortletContext portletContext = getPortletContext();
+        PortletContext portletContext = this.getPortletContext();
         // Bundle
-        Bundle bundle = bundleFactory.getBundle(context.getLocale());
+        Bundle bundle = this.bundleFactory.getBundle(context.getLocale());
 
         // List templates
-        Map<String, ListTemplate> templates = getListTemplates(context);
+        Map<String, ListTemplate> templates = this.getListTemplates(context);
 
         // Picture book
         ListTemplate picturebook = new ListTemplate(STYLE_PICTUREBOOK, bundle.getString("LIST_TEMPLATE_PICTUREBOOK"), SCHEMAS_PICTUREBOOK);
@@ -271,12 +276,12 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
      */
     private void customizeFragmentTypes(CustomizationContext context) {
         // Portlet context
-        PortletContext portletContext = getPortletContext();
+        PortletContext portletContext = this.getPortletContext();
         // Bundle
-        Bundle bundle = bundleFactory.getBundle(context.getLocale());
+        Bundle bundle = this.bundleFactory.getBundle(context.getLocale());
 
         // Fragment types
-        List<FragmentType> types = getFragmentTypes(context);
+        List<FragmentType> types = this.getFragmentTypes(context);
 
         // Zoom
         FragmentType zoom = new FragmentType(ZoomFragmentModule.ID, bundle.getString("FRAGMENT_TYPE_ZOOM"), new ZoomFragmentModule(portletContext));
@@ -299,7 +304,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
      */
     private void customizeEditableWindows(CustomizationContext context) {
         // Editable windows
-        Map<String, EditableWindow> editableWindows = getEditableWindows(context);
+        Map<String, EditableWindow> editableWindows = this.getEditableWindows(context);
 
         // Slider
         SliderListEditableWindow slider = new SliderListEditableWindow("toutatice-portail-cms-nuxeo-viewListPortletInstance", "slider_liste_Frag_");
@@ -331,11 +336,36 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
      */
     private void customizeTabGroups(CustomizationContext context) {
         // Tab groups
-        Map<String, TabGroup> tabGroups = getTabGroups(context);
+        Map<String, TabGroup> tabGroups = this.getTabGroups(context);
 
         // Search
         TabGroup search = new SearchTabGroup();
         tabGroups.put(search.getName(), search);
+    }
+
+
+    /**
+     * Customize taskbar items.
+     * 
+     * @param context customization context
+     */
+    private void customizeTaskbarItems(CustomizationContext context) {
+        // Taskbar items
+        TaskbarItems items = this.getTaskbarItems(context);
+        // Factory
+        TaskbarFactory factory = this.getTaskbarService().getFactory();
+
+        // Gallery
+        TaskbarItem gallery = factory.createDefaultCmsTaskbarItem("GALLERY", "GALLERY_TASK", "glyphicons glyphicons-pictures", "PictureBook", 2);
+        items.add(gallery);
+
+        // News
+        TaskbarItem news = factory.createCmsTaskbarItem("NEWS", "NEWS_TASK", "glyphicons glyphicons-newspaper", "AnnonceFolder");
+        items.add(news);
+
+        // Bookmarks
+        TaskbarItem bookmarks = factory.createCmsTaskbarItem("BOOKMARKS", "BOOKMARKS_TASK", "glyphicons glyphicons-bookmark", "DocumentUrlContainer");
+        items.add(bookmarks);
     }
 
 }

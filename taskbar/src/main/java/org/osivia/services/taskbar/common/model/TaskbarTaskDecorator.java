@@ -94,6 +94,24 @@ public abstract class TaskbarTaskDecorator implements TaskbarTask {
      * {@inheritDoc}
      */
     @Override
+    public boolean isDefault() {
+        return this.task.isDefault();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getOrder() {
+        return this.task.getOrder();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getTitle() {
         return this.task.getTitle();
     }

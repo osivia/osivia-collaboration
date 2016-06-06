@@ -75,7 +75,7 @@ public class CalendarPlugin extends AbstractPluginPortlet  {
 		// Taskbar items
 		TaskbarItems taskbarItems = this.getTaskbarItems(context);
         TaskbarFactory factory = this.getTaskbarService().getFactory();
-        TaskbarItem agenda = factory.createCmsTaskbarItem("CALENDAR", "CALENDAR_TASK", "glyphicons glyphicons-calendar", "Agenda");
+        TaskbarItem agenda = factory.createDefaultCmsTaskbarItem("CALENDAR", "CALENDAR_TASK", "glyphicons glyphicons-calendar", "Agenda", 3);
         taskbarItems.add(agenda);
 	}
 

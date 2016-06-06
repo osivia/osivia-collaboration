@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.osivia.services</groupId>
+        <artifactId>osivia-services-collaboration-parent</artifactId>
+        <version>4.4.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.osivia.services.workspace</groupId>
+    <artifactId>osivia-services-workspace-parent</artifactId>
+    <packaging>pom</packaging>
+
+    <name>OSIVIA Services - Workspace - Parent</name>
+
+
+    <modules>
+        <module>creation</module>
+    </modules>
+
+
+    <dependencies>
+        
+        <!-- Directory -->
+        <dependency>
+            <groupId>org.osivia.services.directory.socle</groupId>
+            <artifactId>osivia-services-directory-socle-interfaces</artifactId>
+            <version>${directory.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+    </dependencies>
+
+</project>
+

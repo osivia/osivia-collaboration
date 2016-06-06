@@ -6,14 +6,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.osivia.services</groupId>
-        <artifactId>osivia-services-collaboration-parent</artifactId>
+        <groupId>org.osivia.services.workspace</groupId>
+        <artifactId>osivia-services-workspace-parent</artifactId>
         <version>4.4.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>osivia-services-faq</artifactId>
+    <artifactId>osivia-services-workspace-creation</artifactId>
     <packaging>war</packaging>
 
-    <name>OSIVIA Services - FAQ</name>
+    <name>OSIVIA Services - Workspace - Creation</name>
 
 </project>

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -15,43 +18,15 @@
 
 
     <dependencies>
-    
-        <!-- Toutatice -->
-        <dependency>
-            <groupId>toutatice-portail.cms</groupId>
-            <artifactId>toutatice-portail-cms-nuxeo-dependencies</artifactId>
-        </dependency>
 
         <!-- File upload -->
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>1.3.1</version>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.3.1</version>
             <scope>compile</scope>
-		</dependency>
-        
+        </dependency>
+
     </dependencies>
 
-
-    <build>
-        <plugins>
-
-            <!-- WAR -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-            </plugin>
-            
-            <!-- Eclipse -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <configuration>
-                    <wtpversion>2.0</wtpversion>
-                </configuration>
-            </plugin>
-
-        </plugins>
-    </build>
-    
 </project>
