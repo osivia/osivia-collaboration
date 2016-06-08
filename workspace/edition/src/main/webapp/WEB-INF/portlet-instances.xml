@@ -6,10 +6,10 @@
     <deployment>
         <if-exists>overwrite</if-exists>
         <instance>
-            <display-name xml:lang="en">OSIVIA - Workspace creation</display-name>
-            <display-name xml:lang="fr">OSIVIA - Création d'un espace de travail</display-name>
-            <instance-id>osivia-services-workspace-creation-instance</instance-id>
-            <portlet-ref>osivia-services-workspace-creation</portlet-ref>
+            <display-name xml:lang="en">OSIVIA - Workspace edition</display-name>
+            <display-name xml:lang="fr">OSIVIA - Modification d'un espace de travail</display-name>
+            <instance-id>osivia-services-workspace-edition-instance</instance-id>
+            <portlet-ref>osivia-services-workspace-edition</portlet-ref>
             <security-constraint>
                 <policy-permission>
                     <action-name>view</action-name>

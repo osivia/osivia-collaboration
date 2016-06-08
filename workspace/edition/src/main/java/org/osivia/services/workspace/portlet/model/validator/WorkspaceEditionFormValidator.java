@@ -1,6 +1,6 @@
-package org.osivia.services.workspace.validator;
+package org.osivia.services.workspace.portlet.model.validator;
 
-import org.osivia.services.workspace.model.WorkspaceCreationForm;
+import org.osivia.services.workspace.portlet.model.WorkspaceEditionForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -13,12 +13,12 @@ import org.springframework.validation.Validator;
  * @see Validator
  */
 @Component
-public class WorkspaceCreationFormValidator implements Validator {
+public class WorkspaceEditionFormValidator implements Validator {
 
     /**
      * Constructor.
      */
-    public WorkspaceCreationFormValidator() {
+    public WorkspaceEditionFormValidator() {
         super();
     }
 
@@ -28,7 +28,7 @@ public class WorkspaceCreationFormValidator implements Validator {
      */
     @Override
     public boolean supports(Class<?> clazz) {
-        return clazz.isAssignableFrom(WorkspaceCreationForm.class);
+        return clazz.isAssignableFrom(WorkspaceEditionForm.class);
     }
 
 

@@ -7,7 +7,7 @@
     version="2.0">
 
     <portlet>
-        <portlet-name>osivia-services-workspace-creation</portlet-name>
+        <portlet-name>osivia-services-workspace-edition</portlet-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 
         <init-param>
@@ -16,7 +16,7 @@
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>
-            <value>org.osivia.services.workspace.configuration.WorkspaceCreationConfiguration</value>
+            <value>org.osivia.services.workspace.portlet.configuration.WorkspaceEditionConfiguration</value>
         </init-param>
 
         <expiration-cache>180</expiration-cache>
@@ -27,7 +27,23 @@
         </supports>
 
         <portlet-info>
-            <title>Workspace creation</title>
+            <title>Workspace edition</title>
+        </portlet-info>
+    </portlet>
+    
+    
+    <portlet>
+        <portlet-name>osivia-services-workspace-edition-plugin</portlet-name>
+        <portlet-class>org.osivia.services.workspace.plugin.WorkspaceEditionPlugin</portlet-class>
+        
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+
+        <portlet-info>
+            <title>Workspace edition plugin</title>
         </portlet-info>
     </portlet>
 

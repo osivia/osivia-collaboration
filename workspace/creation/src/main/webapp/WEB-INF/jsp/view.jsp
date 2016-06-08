@@ -18,19 +18,19 @@
             <span><op:translate key="WORKSPACE_CREATION_LEGEND" /></span>
         </legend>
 
-        <!-- Name -->
-        <c:set var="placeholder"><op:translate key="WORKSPACE_NAME_PLACEHOLDER" /></c:set>
-        <spring:bind path="name">
+        <!-- Title -->
+        <c:set var="placeholder"><op:translate key="WORKSPACE_TITLE_PLACEHOLDER" /></c:set>
+        <spring:bind path="title">
             <div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
-                <form:label path="name" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_NAME" /></form:label>
+                <form:label path="title" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_TITLE" /></form:label>
                 <div class="col-sm-9">
-                    <form:input path="name" cssClass="form-control" placeholder="${placeholder}" />
+                    <form:input path="title" cssClass="form-control" placeholder="${placeholder}" />
                     <c:if test="${status.error}">
                         <span class="form-control-feedback">
                             <i class="glyphicons glyphicons-remove"></i>
                         </span>
                     </c:if>
-                    <form:errors path="name" cssClass="help-block" />
+                    <form:errors path="title" cssClass="help-block" />
                 </div>
             </div>
         </spring:bind>
@@ -51,6 +51,11 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="glyphicons glyphicons-floppy-disk"></i>
                     <span><op:translate key="SAVE" /></span>
+                </button>
+                
+                <!-- Cancel -->
+                <button type="button" class="btn btn-default" onclick="closeFancybox()">
+                    <span><op:translate key="CANCEL" /></span>
                 </button>
             </div>
         </div>

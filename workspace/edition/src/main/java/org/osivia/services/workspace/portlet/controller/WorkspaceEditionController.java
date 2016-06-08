@@ -1,4 +1,6 @@
-package org.osivia.services.workspace.controller;
+package org.osivia.services.workspace.portlet.controller;
+
+import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 import javax.portlet.ActionRequest;
@@ -11,15 +13,17 @@ import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.workspace.model.WorkspaceCreationForm;
-import org.osivia.services.workspace.service.WorkspaceCreationService;
-import org.osivia.services.workspace.validator.WorkspaceCreationFormValidator;
+import org.osivia.services.workspace.portlet.model.WorkspaceEditionForm;
+import org.osivia.services.workspace.portlet.model.validator.WorkspaceEditionFormValidator;
+import org.osivia.services.workspace.portlet.service.WorkspaceEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,17 +37,17 @@ import org.springframework.web.portlet.context.PortletContextAware;
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 
 /**
- * Workspace creation controller.
+ * Workspace edition controller.
  *
  * @author Cédric Krommenhoek
  * @see CMSPortlet
- * @see PortletContextAware
+ * @see PortletConfigAware
  * @see PortletContextAware
  */
 @Controller
 @RequestMapping("VIEW")
 @SessionAttributes("form")
-public class WorkspaceCreationController extends CMSPortlet implements PortletConfigAware, PortletContextAware {
+public class WorkspaceEditionController extends CMSPortlet implements PortletConfigAware, PortletContextAware {
 
     /** Portlet config. */
     private PortletConfig portletConfig;
@@ -52,17 +56,17 @@ public class WorkspaceCreationController extends CMSPortlet implements PortletCo
 
     /** Form validator. */
     @Autowired
-    private WorkspaceCreationFormValidator formValidator;
+    private WorkspaceEditionFormValidator formValidator;
 
-    /** Workspace creation service. */
+    /** Workspace edition service. */
     @Autowired
-    private WorkspaceCreationService service;
+    private WorkspaceEditionService service;
 
 
     /**
      * Constructor.
      */
-    public WorkspaceCreationController() {
+    public WorkspaceEditionController() {
         super();
     }
 
@@ -92,26 +96,71 @@ public class WorkspaceCreationController extends CMSPortlet implements PortletCo
 
 
     /**
+     * Portlet exception handler.
+     *
+     * @param request portlet request
+     * @param response portlet response
+     * @param exception portlet exception
+     * @return error path
+     */
+    @ExceptionHandler(PortletException.class)
+    public String handlePortletException(PortletRequest request, PortletResponse response, PortletException exception) {
+        request.setAttribute("exception", exception);
+        request.setAttribute("back", StringUtils.isNotEmpty(request.getParameter(ActionRequest.ACTION_NAME)));
+        return "error";
+    }
+
+
+    /**
      * Save action mapping.
      *
      * @param request action request
      * @param response action response
-     * @param form form model attribute
+     * @param form form
      * @param result binding result
      * @param sessionStatus session status
      * @throws PortletException
+     * @throws IOException
      */
-    @ActionMapping("save")
-    public void save(ActionRequest request, ActionResponse response, @ModelAttribute("form") @Validated WorkspaceCreationForm form, BindingResult result,
-            SessionStatus sessionStatus) throws PortletException {
+    @ActionMapping(name = "save", params = "save")
+    public void save(ActionRequest request, ActionResponse response, @ModelAttribute("form") @Validated WorkspaceEditionForm form, BindingResult result,
+            SessionStatus sessionStatus) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         if (!result.hasErrors()) {
-            this.service.create(portalControllerContext, form);
+            this.service.save(portalControllerContext, form);
 
             sessionStatus.setComplete();
+
+            // Redirection
+            String url = this.service.getWorkspaceUrl(portalControllerContext, form);
+            response.sendRedirect(url);
         }
+    }
+
+
+    /**
+     * Cancel action mapping.
+     *
+     * @param request action request
+     * @param response action response
+     * @param form form
+     * @param sessionStatus session status
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ActionMapping(name = "save", params = "cancel")
+    public void cancel(ActionRequest request, ActionResponse response, @ModelAttribute("form") WorkspaceEditionForm form, SessionStatus sessionStatus)
+            throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        sessionStatus.setComplete();
+
+        // Redirection
+        String url = this.service.getWorkspaceUrl(portalControllerContext, form);
+        response.sendRedirect(url);
     }
 
 
@@ -121,10 +170,14 @@ public class WorkspaceCreationController extends CMSPortlet implements PortletCo
      * @param request portlet request
      * @param response portlet response
      * @return form
+     * @throws PortletException
      */
     @ModelAttribute("form")
-    public WorkspaceCreationForm getForm(PortletRequest request, PortletResponse response) {
-        return new WorkspaceCreationForm();
+    public WorkspaceEditionForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        return this.service.getForm(portalControllerContext);
     }
 
 
@@ -135,6 +188,7 @@ public class WorkspaceCreationController extends CMSPortlet implements PortletCo
      */
     @InitBinder("form")
     public void localGroupInitBinder(WebDataBinder binder) {
+        binder.setDisallowedFields("path");
         binder.addValidators(this.formValidator);
     }
 

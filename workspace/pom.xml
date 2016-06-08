@@ -20,6 +20,7 @@
 
     <modules>
         <module>creation</module>
+        <module>edition</module>
     </modules>
 
 

@@ -1,25 +1,49 @@
-package org.osivia.services.workspace.model;
+package org.osivia.services.workspace.portlet.model;
+
+import java.util.List;
 
 /**
- * Workspace creation form java-bean.
+ * Workspace edition form java-bean.
  *
  * @author Cédric Krommenhoek
  */
-public class WorkspaceCreationForm {
+public class WorkspaceEditionForm {
 
+    /** Workspace path. */
+    private String path;
     /** Workspace title. */
     private String title;
     /** Workspace description. */
     private String description;
+    /** Workspace tasks. */
+    private List<Task> tasks;
 
 
     /**
      * Constructor.
      */
-    public WorkspaceCreationForm() {
+    public WorkspaceEditionForm() {
         super();
     }
 
+
+    /**
+     * Getter for path.
+     *
+     * @return the path
+     */
+    public String getPath() {
+        return this.path;
+    }
+
+    /**
+     * Setter for path.
+     *
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
 
     /**
      * Getter for title.
@@ -55,6 +79,24 @@ public class WorkspaceCreationForm {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * Getter for tasks.
+     * 
+     * @return the tasks
+     */
+    public List<Task> getTasks() {
+        return this.tasks;
+    }
+
+    /**
+     * Setter for tasks.
+     * 
+     * @param tasks the tasks to set
+     */
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 
 }

@@ -84,11 +84,11 @@ public class WorkspaceCreationCommand implements INuxeoCommand {
 
         // Properties
         PropertyMap properties = new PropertyMap();
-        properties.set("dc:title", this.form.getName());
+        properties.set("dc:title", this.form.getTitle());
         properties.set("dc:description", this.form.getDescription());
 
         // Name
-        String name = this.generateNameFromTitle(this.form.getName());
+        String name = this.generateNameFromTitle(this.form.getTitle());
 
         // Workspace creation
         Document workspace = documentService.createDocument(container, "Workspace", name, properties);
