@@ -21,6 +21,7 @@
     <modules>
         <module>creation</module>
         <module>edition</module>
+        <module>acl-management</module>
     </modules>
 
 

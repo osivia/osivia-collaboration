@@ -60,7 +60,7 @@ public class WorkspaceEditionMenubarModule implements MenubarModule {
      * {@inheritDoc}
      */
     @Override
-    public void customizeMenubar(PortalControllerContext portalControllerContext, List<MenubarItem> menubar,
+    public void customizeSpace(PortalControllerContext portalControllerContext, List<MenubarItem> menubar,
             DocumentContext<? extends EcmDocument> spaceDocumentContext) throws PortalException {
         if (spaceDocumentContext != null) {
             // Space document
@@ -80,6 +80,7 @@ public class WorkspaceEditionMenubarModule implements MenubarModule {
                         // Window properties
                         Map<String, String> properties = new HashMap<String, String>();
                         properties.put("osivia.title", bundle.getString("WORKSPACE_EDITION_TITLE"));
+                        properties.put("osivia.ajaxLink", "1");
                         properties.put("osivia.back.reset", String.valueOf(true));
                         properties.put("osivia.navigation.reset", String.valueOf(true));
 
@@ -101,6 +102,16 @@ public class WorkspaceEditionMenubarModule implements MenubarModule {
                 }
             }
         }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void customizeDocument(PortalControllerContext portalControllerContext, List<MenubarItem> menubar,
+            DocumentContext<? extends EcmDocument> documentContext) throws PortalException {
+        // Do nothing
     }
 
 }
