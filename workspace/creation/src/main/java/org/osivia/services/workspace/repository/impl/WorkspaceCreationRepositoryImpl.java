@@ -3,6 +3,9 @@ package org.osivia.services.workspace.repository.impl;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.SortedSet;
 
@@ -10,6 +13,8 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.directory.v2.model.CollabProfile;
+import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
@@ -113,7 +118,7 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
      * {@inheritDoc}
      */
     @Override
-    public void createGroups(PortalControllerContext portalControllerContext, WorkspaceCreationForm form, Document workspace) throws PortletException {
+    public void createGroups(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
         // Person
@@ -123,7 +128,44 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
         String identifier = workspace.getString("webc:url");
 
         // LDAP groups creation
-        this.workspaceService.create(identifier, form.getDescription(), person);
+        this.workspaceService.create(identifier, person);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updatePermissions(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
+
+        // Workspace identifier
+        String identifier = workspace.getString("webc:url");
+
+        // Groups
+        List<CollabProfile> groups = this.workspaceService.findByWorkspaceId(identifier);
+
+        // Permissions
+        List<Permission> permissions = new ArrayList<>(groups.size() + 1);
+        permissions.add(Permission.getInheritanceBlocking());
+
+        for (CollabProfile group : groups) {
+            // Role
+            WorkspaceRole role = group.getRole();
+
+            if (role != null) {
+                Permission permission = new Permission();
+                permission.setName(group.getCn());
+                permission.setValues(Arrays.asList(role.getPermissions()));
+                permissions.add(permission);
+            }
+        }
+
+        // Nuxeo command
+        INuxeoCommand command = new WorkspacePermissionsCommand(workspace, permissions);
+        nuxeoController.executeNuxeoCommand(command);
     }
 
 }

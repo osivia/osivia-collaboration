@@ -40,7 +40,9 @@ public class WorkspaceCreationServiceImpl implements WorkspaceCreationService {
         // Create workspace Nuxeo document
         Document workspace = this.repository.createDocument(portalControllerContext, form);
         // Create LDAP groups
-        this.repository.createGroups(portalControllerContext, form, workspace);
+        this.repository.createGroups(portalControllerContext, workspace);
+        // Update permissions
+        this.repository.updatePermissions(portalControllerContext, workspace);
     }
 
 }
