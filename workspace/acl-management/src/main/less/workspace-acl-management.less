@@ -1,0 +1,32 @@
+//
+// Workspace ACL management
+// --------------------------------------------------
+
+
+@screen-sm-min: 768px;
+@screen-xs-max: (@screen-sm-min - 1);
+
+
+.workspace-acl-management {
+    
+    fieldset[disabled] {
+        opacity: 0.3;   
+    }
+    
+    
+    @media screen and (max-width: @screen-xs-max) {
+        .workspace-record {
+            margin-bottom: 3px;
+        }
+    }
+    
+}
+
+
+.workspace-record {
+    .icon {
+        width: 20px;
+        
+        margin-right: 6px;
+    }
+}
