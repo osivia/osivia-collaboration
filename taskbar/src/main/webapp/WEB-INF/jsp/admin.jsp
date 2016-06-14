@@ -35,7 +35,7 @@
             <div class="row">
                 <!-- Ordered tasks -->
                 <div class="col-xs-6">
-                    <div class="panel panel-success">
+                    <div class="panel panel-primary">
                         <div class="panel-heading"><op:translate key="ORDERED_TASKS" /></div>
                         
                         <div class="panel-body">
@@ -55,7 +55,7 @@
                 
                 <!-- Available tasks -->
                 <div class="col-xs-6">
-                    <div class="panel panel-danger">
+                    <div class="panel panel-default">
                         <div class="panel-heading"><op:translate key="AVAILABLE_TASKS" /></div>
                         
                         <div class="panel-body">
