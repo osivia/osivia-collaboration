@@ -48,7 +48,7 @@ public class AddPermissionsCommand implements INuxeoCommand {
                 if (permission.isGranted()) {
                     documentService.addPermission(this.document, permission.getName(), value);
                 } else {
-                    documentService.setPermission(this.document, permission.getName(), value, permission.isGranted());
+                    documentService.setPermission(this.document, permission.getName(), value, false);
                 }
             }
         }
