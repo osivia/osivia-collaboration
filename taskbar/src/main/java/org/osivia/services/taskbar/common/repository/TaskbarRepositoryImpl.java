@@ -150,7 +150,7 @@ public class TaskbarRepositoryImpl implements ITaskbarRepository {
             navigationTasks = new ArrayList<TaskbarTask>(0);
         } else {
             try {
-                navigationTasks = this.taskbarService.getNavigationTasks(portalControllerContext, basePath);
+                navigationTasks = this.taskbarService.getTasks(portalControllerContext, basePath, true);
             } catch (PortalException e) {
                 throw new PortletException(e);
             }
@@ -168,15 +168,7 @@ public class TaskbarRepositoryImpl implements ITaskbarRepository {
         // Factory
         TaskbarFactory factory = this.taskbarService.getFactory();
 
-        // Task
-        TaskbarTask task;
-        try {
-            task = factory.createTaskbarTask(item, null, false);
-        } catch (ReflectiveOperationException e) {
-            throw new PortletException(e);
-        }
-
-        return task;
+        return factory.createTaskbarTask(item, null, false);
     }
 
 
