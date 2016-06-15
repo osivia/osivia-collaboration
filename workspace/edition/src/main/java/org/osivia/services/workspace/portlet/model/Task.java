@@ -1,14 +1,17 @@
 package org.osivia.services.workspace.portlet.model;
 
-import org.osivia.portal.api.taskbar.TaskbarTask;
+import org.osivia.portal.api.taskbar.TaskbarItem;
 
 /**
  * Task java-bean.
  *
  * @author Cédric Krommenhoek
+ * @see TaskbarItemDecorator
  */
-public class Task {
+public class Task extends TaskbarItemDecorator {
 
+    /** Path. */
+    private String path;
     /** Display name. */
     private String displayName;
     /** Active indicator. */
@@ -16,26 +19,34 @@ public class Task {
     /** Order. */
     private int order;
 
-    /** Identifier. */
-    private final String id;
-    /** Icon. */
-    private final String icon;
-    /** Path. */
-    private final String path;
-
 
     /**
      * Constructor.
      *
-     * @param task taskbar task
+     * @param item taskbar item
      */
-    public Task(TaskbarTask task) {
-        super();
-        this.id = task.getId();
-        this.icon = task.getIcon();
-        this.path = task.getPath();
+    public Task(TaskbarItem item) {
+        super(item);
     }
 
+
+    /**
+     * Getter for path.
+     *
+     * @return the path
+     */
+    public String getPath() {
+        return this.path;
+    }
+
+    /**
+     * Setter for path.
+     *
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
 
     /**
      * Getter for displayName.
@@ -78,6 +89,7 @@ public class Task {
      *
      * @return the order
      */
+    @Override
     public int getOrder() {
         return this.order;
     }
@@ -89,33 +101,6 @@ public class Task {
      */
     public void setOrder(int order) {
         this.order = order;
-    }
-
-    /**
-     * Getter for id.
-     *
-     * @return the id
-     */
-    public String getId() {
-        return this.id;
-    }
-
-    /**
-     * Getter for icon.
-     *
-     * @return the icon
-     */
-    public String getIcon() {
-        return this.icon;
-    }
-
-    /**
-     * Getter for path.
-     * 
-     * @return the path
-     */
-    public String getPath() {
-        return this.path;
     }
 
 }
