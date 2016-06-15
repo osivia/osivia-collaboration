@@ -25,10 +25,12 @@
         </portlet-info>
     </portlet>
 
+
 	<portlet>
 		<portlet-name>osivia-services-calendarPlugin</portlet-name>
 		<portlet-class>org.osivia.services.calendar.plugin.CalendarPlugin</portlet-class>
-		<expiration-cache>180</expiration-cache>
+		
+        <expiration-cache>180</expiration-cache>
 
 		<supports>
 			<mime-type>text/html</mime-type>
@@ -37,6 +39,6 @@
 		<portlet-info>
 			<title>Calendar plugin</title>
 		</portlet-info>
-	</portlet>    
+	</portlet>
     
 </portlet-app>

@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  *
- *    
+ *
  */
 package fr.toutatice.faq.plugin;
 
@@ -25,46 +25,108 @@ import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.customization.Plugin;
 import org.osivia.portal.api.player.IPlayerModule;
+import org.osivia.portal.api.taskbar.TaskbarFactory;
+import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItems;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 
 /**
- * @author lbillon
+ * FAQ plugin.
  *
+ * @author Loïc Billon
+ * @author Cédric Krommenhoek
+ * @see AbstractPluginPortlet
  */
 @Plugin("faq.plugin")
-public class FaqPlugin extends AbstractPluginPortlet{
+public class FaqPlugin extends AbstractPluginPortlet {
 
-	private static final String PLUGIN_NAME = "faq.plugin";
+    /** Plugin name. */
+    private static final String PLUGIN_NAME = "faq.plugin";
 
-	/* (non-Javadoc)
-	 * @see fr.toutatice.portail.cms.nuxeo.api.domain.CMSCustomizerPortlet#customizeCMSProperties(java.lang.String, org.osivia.portal.api.customization.CustomizationContext)
-	 */
-	@Override
-	protected void customizeCMSProperties(String customizationID,
-			CustomizationContext context) {
 
-		Map<String, DocumentType> docTypes = getDocTypes(context);
-		// ==== doc types
-        // FAQ folder
-		docTypes.put("FaqFolder", new DocumentType("FaqFolder", true, false, false, true, false, true, Arrays.asList("Question"), null,
-                "glyphicons glyphicons-question-sign"));
+    /**
+     * Constructor.
+     */
+    public FaqPlugin() {
+        super();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void customizeCMSProperties(String customizationID, CustomizationContext context) {
+        // Document types
+        this.customizeDocumentTypes(context);
+        // Players
+        this.customizePlayers(context);
+        // Taskbar items
+        this.customizeTaskbarItems(context);
+    }
+
+
+    /**
+     * Customize document types.
+     *
+     * @param context customization context
+     */
+    private void customizeDocumentTypes(CustomizationContext context) {
+        // Document types
+        Map<String, DocumentType> types = this.getDocTypes(context);
+
         // FAQ question
-		docTypes.put("Question", new DocumentType("Question", false, false, false, false, false, true, new ArrayList<String>(0), null,
-                "glyphicons glyphicons-question-sign"));
-		
-		
-		// ==== players
-		List<IPlayerModule> players = getPlayers(context);
-		players.add(new FaqPlayer());
-	}
+        DocumentType faqQuestion = new DocumentType("Question", false, false, false, false, false, true, new ArrayList<String>(0), null,
+                "glyphicons glyphicons-question-sign");
+        types.put(faqQuestion.getName(), faqQuestion);
 
-	/* (non-Javadoc)
-	 * @see fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet#getPluginName()
-	 */
-	@Override
-	protected String getPluginName() {
-		return PLUGIN_NAME;
-	}
+        // FAQ folder
+        DocumentType faqFolder = new DocumentType("FaqFolder", true, false, false, true, false, true, Arrays.asList(faqQuestion.getName()), null,
+                "glyphicons glyphicons-question-sign");
+        types.put(faqFolder.getName(), faqFolder);
+    }
+
+
+    /**
+     * Customize players.
+     *
+     * @param context customize players
+     */
+    private void customizePlayers(CustomizationContext context) {
+        // Players
+        @SuppressWarnings("rawtypes")
+        List<IPlayerModule> players = this.getPlayers(context);
+
+        // FAQ player
+        FaqPlayer faq = new FaqPlayer();
+        players.add(faq);
+    }
+
+
+    /**
+     * Customize taskbar items.
+     *
+     * @param context customization context
+     */
+    private void customizeTaskbarItems(CustomizationContext context) {
+        // Taskbar items
+        TaskbarItems items = this.getTaskbarItems(context);
+        // Factory
+        TaskbarFactory factory = this.getTaskbarService().getFactory();
+
+        // FAQ
+        TaskbarItem faq = factory.createCmsTaskbarItem("FAQ", "FAQ_TASK", "glyphicons glyphicons-question-sign", "FaqFolder");
+        items.add(faq);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getPluginName() {
+        return PLUGIN_NAME;
+    }
 
 }

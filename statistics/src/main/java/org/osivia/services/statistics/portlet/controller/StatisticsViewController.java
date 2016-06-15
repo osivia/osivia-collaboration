@@ -1,4 +1,4 @@
-package org.osivia.services.statistics.controller;
+package org.osivia.services.statistics.portlet.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,10 +19,10 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.statistics.model.StatisticsConfiguration;
-import org.osivia.services.statistics.model.StatisticsView;
-import org.osivia.services.statistics.repository.IStatisticsRepository;
-import org.osivia.services.statistics.service.IStatisticsService;
+import org.osivia.services.statistics.portlet.model.StatisticsConfiguration;
+import org.osivia.services.statistics.portlet.model.StatisticsView;
+import org.osivia.services.statistics.portlet.repository.IStatisticsRepository;
+import org.osivia.services.statistics.portlet.service.IStatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;

@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  *
- *    
+ *
  */
 package org.osivia.services.forum.plugin;
 
@@ -21,18 +21,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletException;
-
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
-import org.osivia.portal.api.customization.ICustomizationModule;
 import org.osivia.portal.api.customization.Plugin;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.player.IPlayerModule;
+import org.osivia.portal.api.taskbar.TaskbarFactory;
+import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItems;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
@@ -40,32 +39,33 @@ import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
 
 /**
  * Technical portlet for attributes bundles customization.
- * 
+ *
  * @author Jean-Sébastien steux
- * @see GenericPortlet
- * @see ICustomizationModule
+ * @see AbstractPluginPortlet
  */
 @Plugin("forum.plugin")
 public class ForumPlugin extends AbstractPluginPortlet {
 
-    /** Customizer name. */
+    /** Forum list template. */
+    public static final String FORUM_LIST_TEMPLATE = "forum";
+
+
+    /** Plugin name. */
     private static final String PLUGIN_NAME = "forum.plugin";
 
-
-    /** Forum list template. */
-    public static final String STYLE_FORUM = "forum";
-
-
     /** Schemas. */
-    public static final String SCHEMAS = "dublincore, common, toutatice, file, thread_toutatice";
+    private static final String SCHEMAS = "dublincore, common, toutatice, file, thread_toutatice";
+
 
     /** Bundle factory. */
-    protected IBundleFactory bundleFactory;
+    private final IBundleFactory bundleFactory;
 
 
-    @Override
-    public void init() throws PortletException {
-        super.init();
+    /**
+     * Constructor.
+     */
+    public ForumPlugin() {
+        super();
 
         // Bundle factory
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
@@ -78,39 +78,93 @@ public class ForumPlugin extends AbstractPluginPortlet {
      * {@inheritDoc}
      */
     @Override
-    //@PluginRegistration
     protected void customizeCMSProperties(String customizationID, CustomizationContext context) {
+        // Document types
+        this.customizeDocumentTypes(context);
+        // Players
+        this.customizePlayers(context);
+        // List templates
+        this.customizeListTemplates(context);
+        // Taskbar items
+        this.customizeTaskbarItems(context);
+    }
 
-        // save current class loader
+
+    /**
+     * Customize document types.
+     *
+     * @param context customization context
+     */
+    private void customizeDocumentTypes(CustomizationContext context) {
+        // Document types
+        Map<String, DocumentType> types = this.getDocTypes(context);
+
+        // Forum thread
+        DocumentType thread = new DocumentType("Thread", false, false, false, false, true, true, new ArrayList<String>(0), null, "glyphicons glyphicons-chat",
+                false, false);
+        types.put(thread.getName(), thread);
+
+        // Forum
+        DocumentType forum = new DocumentType("Forum", true, true, false, false, true, true, Arrays.asList(thread.getName()), null,
+                "glyphicons glyphicons-conversation");
+        types.put(forum.getName(), forum);
+    }
 
 
+    /**
+     * Customize players.
+     *
+     * @param context customize players
+     */
+    private void customizePlayers(CustomizationContext context) {
+        // Players
+        @SuppressWarnings("rawtypes")
+        List<IPlayerModule> players = this.getPlayers(context);
+
+        // Forum player
+        ForumPlayer forum = new ForumPlayer(this.getPortletContext());
+        players.add(forum);
+    }
+
+
+    /**
+     * Customize list templates.
+     *
+     * @param context customization context
+     */
+    private void customizeListTemplates(CustomizationContext context) {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(context.getLocale());
 
+        // List templates
+        Map<String, ListTemplate> templates = this.getListTemplates(context);
 
-        Map<String, DocumentType> docTypes = getDocTypes(context);
-
-        docTypes.put("Forum", new DocumentType("Forum", true, true, false, false, true, true, Arrays.asList("Thread"), null,
-                "glyphicons glyphicons-conversation"));
-        // Forum thread
-        docTypes.put("Thread", new DocumentType("Thread", false, false, false, false, true, true, new ArrayList<String>(0), null, "glyphicons glyphicons-chat",false,false));
-
-
-        Map<String, ListTemplate> templates = getListTemplates(context);
-
-
-        templates.put(STYLE_FORUM, new ListTemplate(STYLE_FORUM, bundle.getString("LIST_TEMPLATE_FORUM"), SCHEMAS));
- 
-
-        List<IPlayerModule> modules = getPlayers(context);
-        // ! insertion au début
-        modules.add(0, new ForumPlayer(getPortletContext()));
-
+        // Forum list template
+        ListTemplate forum = new ListTemplate(FORUM_LIST_TEMPLATE, bundle.getString("LIST_TEMPLATE_FORUM"), SCHEMAS);
+        templates.put(forum.getKey(), forum);
     }
 
-	/* (non-Javadoc)
-	 * @see fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet#getPluginName()
-	 */
+
+    /**
+     * Customize taskbar items.
+     *
+     * @param context customization context
+     */
+    private void customizeTaskbarItems(CustomizationContext context) {
+        // Taskbar items
+        TaskbarItems items = this.getTaskbarItems(context);
+        // Factory
+        TaskbarFactory factory = this.getTaskbarService().getFactory();
+
+        // Forum
+        TaskbarItem forum = factory.createCmsTaskbarItem("FORUM", "FORUM_TASK", "glyphicons glyphicons-conversation", "Forum");
+        items.add(forum);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
 	@Override
 	protected String getPluginName() {
 		return PLUGIN_NAME;

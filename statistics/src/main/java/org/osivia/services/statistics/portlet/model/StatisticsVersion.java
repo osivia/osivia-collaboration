@@ -1,4 +1,4 @@
-package org.osivia.services.statistics.model;
+package org.osivia.services.statistics.portlet.model;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.math.NumberUtils;

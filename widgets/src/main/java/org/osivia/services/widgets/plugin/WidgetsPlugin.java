@@ -346,7 +346,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
 
     /**
      * Customize taskbar items.
-     * 
+     *
      * @param context customization context
      */
     private void customizeTaskbarItems(CustomizationContext context) {
@@ -356,7 +356,8 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         TaskbarFactory factory = this.getTaskbarService().getFactory();
 
         // Gallery
-        TaskbarItem gallery = factory.createDefaultCmsTaskbarItem("GALLERY", "GALLERY_TASK", "glyphicons glyphicons-pictures", "PictureBook", 2);
+        TaskbarItem gallery = factory.createCmsTaskbarItem("GALLERY", "GALLERY_TASK", "glyphicons glyphicons-pictures", "PictureBook");
+        gallery.setToDefault(2);
         items.add(gallery);
 
         // News

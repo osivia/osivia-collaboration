@@ -85,6 +85,15 @@ public abstract class TaskbarTaskDecorator implements TaskbarTask {
      * {@inheritDoc}
      */
     @Override
+    public String getTemplate() {
+        return this.task.getTemplate();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getDocumentType() {
         return this.task.getDocumentType();
     }
@@ -132,6 +141,15 @@ public abstract class TaskbarTaskDecorator implements TaskbarTask {
     @Override
     public boolean isDisabled() {
         return this.task.isDisabled();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setToDefault(int order) {
+        // Do nothing
     }
 
 }

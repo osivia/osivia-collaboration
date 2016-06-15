@@ -1,4 +1,4 @@
-package org.osivia.services.statistics.model;
+package org.osivia.services.statistics.portlet.model;
 
 /**
  * Statistics view enumeration.

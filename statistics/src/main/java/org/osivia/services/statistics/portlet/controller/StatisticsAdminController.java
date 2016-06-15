@@ -1,4 +1,4 @@
-package org.osivia.services.statistics.controller;
+package org.osivia.services.statistics.portlet.controller;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -12,9 +12,9 @@ import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.statistics.model.StatisticsConfiguration;
-import org.osivia.services.statistics.model.StatisticsVersion;
-import org.osivia.services.statistics.repository.IStatisticsRepository;
+import org.osivia.services.statistics.portlet.model.StatisticsConfiguration;
+import org.osivia.services.statistics.portlet.model.StatisticsVersion;
+import org.osivia.services.statistics.portlet.repository.IStatisticsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;

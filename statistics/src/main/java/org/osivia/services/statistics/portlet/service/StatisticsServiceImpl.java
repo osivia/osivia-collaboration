@@ -1,4 +1,4 @@
-package org.osivia.services.statistics.service;
+package org.osivia.services.statistics.portlet.service;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,9 +12,9 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.DOM4JUtils;
-import org.osivia.services.statistics.model.StatisticsConfiguration;
-import org.osivia.services.statistics.model.StatisticsView;
-import org.osivia.services.statistics.repository.IStatisticsRepository;
+import org.osivia.services.statistics.portlet.model.StatisticsConfiguration;
+import org.osivia.services.statistics.portlet.model.StatisticsView;
+import org.osivia.services.statistics.portlet.repository.IStatisticsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

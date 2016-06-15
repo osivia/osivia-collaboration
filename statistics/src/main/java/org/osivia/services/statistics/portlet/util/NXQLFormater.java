@@ -14,7 +14,7 @@
  *
  *
  */
-package org.osivia.services.statistics.util;
+package org.osivia.services.statistics.portlet.util;
 
 import java.text.ParseException;
 import java.util.ArrayList;

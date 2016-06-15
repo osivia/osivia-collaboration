@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.portlet.PortletContext;
+
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.customization.Plugin;
@@ -32,10 +34,11 @@ import org.osivia.portal.api.taskbar.TaskbarItems;
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 
 /**
- * Add integration in toutatice-cms :
- * Défine Calendar and calendar events, enable calendar to be played with the specific player
- * @author lbillon
+ * Add integration in toutatice-cms: define Calendar and calendar events, enable calendar to be played with the specific player.
  *
+ * @author Loïc Billon
+ * @author Cédric Krommenhoek
+ * @see AbstractPluginPortlet
  */
 @Plugin("calendar.plugin")
 public class CalendarPlugin extends AbstractPluginPortlet  {
@@ -53,35 +56,80 @@ public class CalendarPlugin extends AbstractPluginPortlet  {
 
 
     /**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void customizeCMSProperties(String customizationID,
-			CustomizationContext context) {
-
-		// Players
-        List<IPlayerModule> modules = this.getPlayers(context);
-
-		modules.add(0, new CalendarPlayer(this.getPortletContext()));
-
-		// Doc types
-		Map<String, DocumentType> docTypes = this.getDocTypes(context);
-        // Agenda
-		docTypes.put("Agenda",new DocumentType("Agenda", true, true, false, false, true, true, Arrays.asList("VEVENT"), null, "glyphicons glyphicons-calendar"));
-        // Agenda event
-		docTypes.put("VEVENT",new DocumentType("VEVENT", false, false, false, false, true, true, new ArrayList<String>(0), null, "glyphicons glyphicons-calendar", false, false));
+     * {@inheritDoc}
+     */
+    @Override
+    protected void customizeCMSProperties(String customizationID, CustomizationContext context) {
+        // Document types
+        this.customizeDocumentTypes(context);
+        // Players
+        this.customizePlayers(context);
+        // Taskbar items
+        this.customizeTaskbarItems(context);
+    }
 
 
-		// Taskbar items
-		TaskbarItems taskbarItems = this.getTaskbarItems(context);
+    /**
+     * Customize document types.
+     *
+     * @param context customization context
+     */
+    private void customizeDocumentTypes(CustomizationContext context) {
+        // Document types
+        Map<String, DocumentType> types = this.getDocTypes(context);
+
+        // Calendar event
+        DocumentType event = new DocumentType("VEVENT", false, false, false, false, true, true, new ArrayList<String>(0), null,
+                "glyphicons glyphicons-important-day", false, false);
+        types.put(event.getName(), event);
+
+        // Calendar
+        DocumentType calendar = new DocumentType("Agenda", true, true, false, false, true, true, Arrays.asList(event.getName()), null,
+                "glyphicons glyphicons-calendar");
+        types.put(calendar.getName(), calendar);
+    }
+
+
+    /**
+     * Customize players.
+     *
+     * @param context customize players
+     */
+    private void customizePlayers(CustomizationContext context) {
+        // Portlet context
+        PortletContext portletContext = this.getPortletContext();
+
+        // Players
+        @SuppressWarnings("rawtypes")
+        List<IPlayerModule> players = this.getPlayers(context);
+
+        // Calendar player
+        CalendarPlayer calendar = new CalendarPlayer(portletContext);
+        players.add(calendar);
+    }
+
+
+    /**
+     * Customize taskbar items.
+     *
+     * @param context customization context
+     */
+    private void customizeTaskbarItems(CustomizationContext context) {
+        // Taskbar items
+        TaskbarItems items = this.getTaskbarItems(context);
+        // Factory
         TaskbarFactory factory = this.getTaskbarService().getFactory();
-        TaskbarItem agenda = factory.createDefaultCmsTaskbarItem("CALENDAR", "CALENDAR_TASK", "glyphicons glyphicons-calendar", "Agenda", 3);
-        taskbarItems.add(agenda);
-	}
 
-	/* (non-Javadoc)
-	 * @see fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet#getPluginName()
-	 */
+        // Agenda
+        TaskbarItem agenda = factory.createCmsTaskbarItem("CALENDAR", "CALENDAR_TASK", "glyphicons glyphicons-calendar", "Agenda");
+        agenda.setToDefault(3);
+        items.add(agenda);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
 	@Override
 	protected String getPluginName() {
 		return PLUGIN_NAME;

@@ -1,11 +1,11 @@
-package org.osivia.services.statistics.repository;
+package org.osivia.services.statistics.portlet.repository;
 
 import java.util.Map;
 
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.statistics.model.StatisticsConfiguration;
+import org.osivia.services.statistics.portlet.model.StatisticsConfiguration;
 
 /**
  * Statistics repository interface.

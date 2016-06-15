@@ -83,7 +83,7 @@ public class ForumPlayer implements INuxeoPlayerModule {
 
         Map<String, String> windowProperties = new HashMap<String, String>();
         windowProperties.put("osivia.nuxeoRequest", this.createForumPlayerRequest(docCtx));
-        windowProperties.put("osivia.cms.style", ForumPlugin.STYLE_FORUM);
+        windowProperties.put("osivia.cms.style", ForumPlugin.FORUM_LIST_TEMPLATE);
         windowProperties.put("osivia.hideDecorators", "1");
         windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
         windowProperties.put(Constants.WINDOW_PROP_SCOPE, navigationInfos.getScope());

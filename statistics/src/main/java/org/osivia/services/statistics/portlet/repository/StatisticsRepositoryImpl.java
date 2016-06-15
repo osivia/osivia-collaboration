@@ -1,4 +1,4 @@
-package org.osivia.services.statistics.repository;
+package org.osivia.services.statistics.portlet.repository;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -32,10 +32,10 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
-import org.osivia.services.statistics.model.StatisticsConfiguration;
-import org.osivia.services.statistics.model.StatisticsVersion;
-import org.osivia.services.statistics.model.StatisticsView;
-import org.osivia.services.statistics.util.NXQLFormater;
+import org.osivia.services.statistics.portlet.model.StatisticsConfiguration;
+import org.osivia.services.statistics.portlet.model.StatisticsVersion;
+import org.osivia.services.statistics.portlet.model.StatisticsView;
+import org.osivia.services.statistics.portlet.util.NXQLFormater;
 import org.springframework.stereotype.Repository;
 
 import bsh.EvalError;
