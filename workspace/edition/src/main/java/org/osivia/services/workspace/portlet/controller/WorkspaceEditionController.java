@@ -27,8 +27,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletConfigAware;
@@ -46,7 +44,6 @@ import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
  */
 @Controller
 @RequestMapping("VIEW")
-@SessionAttributes("form")
 public class WorkspaceEditionController extends CMSPortlet implements PortletConfigAware, PortletContextAware {
 
     /** Portlet config. */
@@ -118,20 +115,17 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
      * @param response action response
      * @param form form
      * @param result binding result
-     * @param sessionStatus session status
      * @throws PortletException
      * @throws IOException
      */
     @ActionMapping(name = "save", params = "save")
-    public void save(ActionRequest request, ActionResponse response, @ModelAttribute("form") @Validated WorkspaceEditionForm form, BindingResult result,
-            SessionStatus sessionStatus) throws PortletException, IOException {
+    public void save(ActionRequest request, ActionResponse response, @ModelAttribute("form") @Validated WorkspaceEditionForm form, BindingResult result)
+            throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         if (!result.hasErrors()) {
             this.service.save(portalControllerContext, form);
-
-            sessionStatus.setComplete();
 
             // Redirection
             String url = this.service.getWorkspaceUrl(portalControllerContext, form);
@@ -146,17 +140,13 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
      * @param request action request
      * @param response action response
      * @param form form
-     * @param sessionStatus session status
      * @throws PortletException
      * @throws IOException
      */
     @ActionMapping(name = "save", params = "cancel")
-    public void cancel(ActionRequest request, ActionResponse response, @ModelAttribute("form") WorkspaceEditionForm form, SessionStatus sessionStatus)
-            throws PortletException, IOException {
+    public void cancel(ActionRequest request, ActionResponse response, @ModelAttribute("form") WorkspaceEditionForm form) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        sessionStatus.setComplete();
 
         // Redirection
         String url = this.service.getWorkspaceUrl(portalControllerContext, form);

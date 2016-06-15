@@ -60,7 +60,12 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
      */
     @Override
     public WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
-        return this.repository.getForm(portalControllerContext);
+        WorkspaceEditionForm form = this.repository.getForm(portalControllerContext);
+
+        // Sort tasks
+        Collections.sort(form.getTasks(), this.tasksComparator);
+
+        return form;
     }
 
 

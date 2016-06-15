@@ -12,6 +12,9 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItemType;
+import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.services.workspace.portlet.model.Task;
 import org.osivia.services.workspace.portlet.model.WorkspaceEditionForm;
@@ -71,35 +74,67 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         // Nuxeo document
         Document workspace = documentContext.getDoc();
 
-        // Tasks
-        List<TaskbarTask> navigationTasks;
+
+        // Taskbar tasks & taskbar items
+        List<TaskbarTask> taskbarTasks;
+        TaskbarItems taskbarItems;
         try {
-            navigationTasks = this.taskbarService.getNavigationTasks(portalControllerContext, basePath);
+            taskbarTasks = this.taskbarService.getTasks(portalControllerContext, basePath, false);
+            taskbarItems = this.taskbarService.getItems(portalControllerContext);
         } catch (PortalException e) {
             throw new PortletException(e);
         }
-        List<Task> tasks = new ArrayList<Task>(navigationTasks.size());
+
+
+        // Available taskbar items
+        List<TaskbarItem> availableItems = new ArrayList<>(taskbarItems.getAll().size());
+        for (TaskbarItem item : taskbarItems.getAll()) {
+            if (!TaskbarItemType.TRANSVERSAL.equals(item.getType())) {
+                availableItems.add(item);
+            }
+        }
+        for (TaskbarTask taskbarTask : taskbarTasks) {
+            TaskbarItem item = taskbarItems.get(taskbarTask.getId());
+            if (item != null) {
+                availableItems.remove(item);
+            }
+        }
+
+
+        // Tasks
+        List<Task> tasks = new ArrayList<Task>(taskbarTasks.size() + availableItems.size());
         int order = 1;
-        for (TaskbarTask navigationTask : navigationTasks) {
-            Task task = new Task(navigationTask);
+        for (TaskbarTask taskbarTask : taskbarTasks) {
+            Task task = new Task(taskbarTask);
+            task.setPath(taskbarTask.getPath());
 
             // Display name
             String displayName;
-            if (navigationTask.getKey() != null) {
-                displayName = bundle.getString(navigationTask.getKey(), navigationTask.getCustomizedClassLoader());
+            if (taskbarTask.getKey() != null) {
+                displayName = bundle.getString(taskbarTask.getKey(), taskbarTask.getCustomizedClassLoader());
             } else {
-                displayName = navigationTask.getTitle();
+                displayName = taskbarTask.getTitle();
             }
             task.setDisplayName(displayName);
 
             // Order
-            if (!navigationTask.isDisabled()) {
-                task.setActive(!navigationTask.isDisabled());
+            if (!taskbarTask.isDisabled()) {
+                task.setActive(!taskbarTask.isDisabled());
                 task.setOrder(order++);
             }
 
             tasks.add(task);
         }
+        for (TaskbarItem item : availableItems) {
+            Task task = new Task(item);
+
+            // Display name
+            String displayName = bundle.getString(item.getKey(), item.getCustomizedClassLoader());
+            task.setDisplayName(displayName);
+
+            tasks.add(task);
+        }
+
 
         // Form
         WorkspaceEditionForm form = new WorkspaceEditionForm();
@@ -121,8 +156,11 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
         // Nuxeo command
-        INuxeoCommand command = new WorkspaceEditionCommand(form);
+        INuxeoCommand command = new WorkspaceEditionCommand(form, bundle);
         nuxeoController.executeNuxeoCommand(command);
     }
 
