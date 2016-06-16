@@ -22,10 +22,12 @@
                 <div class="row">
                     <div class="col-sm-8">
                         <!-- ACL entry identifiers selector -->
+                        <c:set var="placeholder"><op:translate key="ADD_ACL_ENTRIES_PLACEHOLDER" /></c:set>
+                        <c:set var="noResults"><op:translate key="SELECT2_NO_RESULTS" /></c:set>
                         <spring:bind path="identifiers">
                             <div class="form-group ${status.error ? 'has-error' : ''}">
                                 <form:label path="identifiers" cssClass="control-label"><op:translate key="ADD_ACL_ENTRIES_LABEL" /></form:label>
-                                <form:select path="identifiers" cssClass="form-control select2" multiple="multiple">
+                                <form:select path="identifiers" cssClass="form-control select2" multiple="multiple" data-placeholder="${placeholder}" data-no-results="${noResults}">
                                     <c:forEach var="record" items="${addForm.records}">
                                         <option value="${record.id}" data-type="${record.type}" data-displayname="${record.displayName}" data-avatar="${record.avatar}" data-extra="${record.extra}">${record.displayName} - ${record.id} - ${record.extra}</option>
                                     </c:forEach>

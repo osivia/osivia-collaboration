@@ -77,7 +77,7 @@
                     <!-- Table -->
                     <div class="table">
                         <!-- Header -->
-                        <div class="table-header">
+                        <div class="table-row table-header">
                             <div class="row">
                                 <!-- Entry -->
                                 <div class="col-sm-8">
@@ -115,49 +115,46 @@
                                 <c:set var="collapseStatus" value="in" />
                             </c:if>
                         
-                            <div class="row">
+                            <div class="table-row">
                                 <form:hidden path="entries[${status.index}].updated" />
                                 <form:hidden path="entries[${status.index}].deleted" />
     
                                 <fieldset>
-                                    <!-- Entry -->
-                                    <div class="col-sm-8">
-                                        <div class="workspace-record clearfix">
-                                            <!-- Avatar or icon -->
-                                            <div class="form-control-static pull-left text-center icon">
-                                                <c:choose>
-                                                    <c:when test="${'GROUP' eq entry.type}"><i class="glyphicons glyphicons-group"></i></c:when>
-                                                    <c:when test="${not empty entry.avatar}"><img src="${entry.avatar}" alt="" class="avatar"></c:when>
-                                                    <c:otherwise><i class="glyphicons glyphicons-user"></i></c:otherwise>
-                                                </c:choose>
+                                    <div class="row">
+                                        <!-- Entry -->
+                                        <div class="col-xs-12 col-sm-8">
+                                            <div class="person">
+                                                <div class="person-avatar">
+                                                    <c:choose>
+                                                        <c:when test="${'GROUP' eq entry.type}"><i class="glyphicons glyphicons-group"></i></c:when>
+                                                        <c:when test="${not empty entry.avatar}"><img src="${entry.avatar}" alt=""></c:when>
+                                                        <c:otherwise><i class="glyphicons glyphicons-user"></i></c:otherwise>
+                                                    </c:choose>
+                                                </div>
+                                                <div class="person-title">${entry.displayName}</div>
+                                                <c:if test="${not empty entry.extra}">
+                                                    <div class="person-extra">${entry.extra}</div>
+                                                </c:if>
                                             </div>
-                                        
-                                            <!-- Display name -->
-                                            <div class="text-overflow ${empty entry.extra ? 'form-control-static' : ''}">${entry.displayName}</div>
-                                            
-                                            <!-- Extra informations -->
-                                            <c:if test="${not empty entry.extra}">
-                                                <div class="text-overflow small text-muted">${entry.extra}</div>
-                                            </c:if>
                                         </div>
-                                    </div>
-                                    
-                                    <!-- Role -->
-                                    <div class="col-xs-10 col-sm-3">
-                                        <form:label path="entries[${status.index}].role" cssClass="sr-only"><op:translate key="ROLE"/></form:label>
-                                        <form:select path="entries[${status.index}].role" cssClass="form-control">
-                                            <c:forEach var="role" items="${roles}">
-                                                <form:option value="${role.id}">${role.displayName}</form:option>
-                                            </c:forEach>
-                                        </form:select>
-                                    </div>
-                                    
-                                    <!-- Deletion -->
-                                    <div class="col-xs-2 col-sm-1">
-                                        <button type="button" class="btn btn-default delete">
-                                            <i class="glyphicons glyphicons-remove"></i>
-                                            <span class="sr-only"><op:translate key="DELETE" /></span>
-                                        </button>
+                                        
+                                        <!-- Role -->
+                                        <div class="col-xs-10 col-sm-3">
+                                            <form:label path="entries[${status.index}].role" cssClass="sr-only"><op:translate key="ROLE"/></form:label>
+                                            <form:select path="entries[${status.index}].role" cssClass="form-control">
+                                                <c:forEach var="role" items="${roles}">
+                                                    <form:option value="${role.id}">${role.displayName}</form:option>
+                                                </c:forEach>
+                                            </form:select>
+                                        </div>
+                                        
+                                        <!-- Deletion -->
+                                        <div class="col-xs-2 col-sm-1">
+                                            <button type="button" class="btn btn-default delete">
+                                                <i class="glyphicons glyphicons-remove"></i>
+                                                <span class="sr-only"><op:translate key="DELETE" /></span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </fieldset>
                             </div>
@@ -165,8 +162,10 @@
                         
                         <!-- No results -->
                         <c:if test="${empty entries.entries}">
-                            <div class="row">
-                                <div class="col-xs-12 text-center"><op:translate key="NO_ACL_ENTRIES" /></div>
+                            <div class="table-row">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center"><op:translate key="NO_ACL_ENTRIES" /></div>
+                                </div>
                             </div>
                         </c:if>
                     </div>

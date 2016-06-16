@@ -29,46 +29,42 @@ $JQry(function() {
 				}
 				
 				
-				$result.addClass("workspace-record clearfix");
+				$result.addClass("person");
 				
-				// Icon container
-				$iconContainer = $JQry(document.createElement("div"));
-				$iconContainer.addClass("form-control-static pull-left text-center icon");
-				$iconContainer.appendTo($result)
+				// Person avatar
+				$personAvatar = $JQry(document.createElement("div"));
+				$personAvatar.addClass("person-avatar");
+				$personAvatar.appendTo($result);
 				
 				if (type === "GROUP") {
 					$icon = $JQry(document.createElement("i"));
 					$icon.addClass("glyphicons glyphicons-group")
 					$icon.text("");
-					$icon.appendTo($iconContainer);
+					$icon.appendTo($personAvatar);
 				} else if (avatar) {
 					$avatar = $JQry(document.createElement("img"));
-					$avatar.addClass("avatar");
 					$avatar.attr("src", avatar);
 					$avatar.attr("alt", "");
-					$avatar.appendTo($iconContainer);
+					$avatar.appendTo($personAvatar);
 				} else {
 					$icon = $JQry(document.createElement("i"));
 					$icon.addClass("glyphicons glyphicons-user")
 					$icon.text("");
-					$icon.appendTo($iconContainer);
+					$icon.appendTo($personAvatar);
 				}
 
-				// Display name
-				$displayName = $JQry(document.createElement("div"));
-				$displayName.addClass("text-overflow");
-				if (!extra) {
-					$displayName.addClass("form-control-static");
-				}
-				$displayName.text(displayName);
-				$displayName.appendTo($result);
+				// Person title
+				$personName = $JQry(document.createElement("div"));
+				$personName.addClass("person-title");
+				$personName.text(displayName);
+				$personName.appendTo($result);
 				
-				// Extra
+				// Person extra
 				if (extra) {
-					$extra = $JQry(document.createElement("div"));
-					$extra.addClass("text-overflow text-muted small");
-					$extra.text(extra);
-					$extra.appendTo($result);
+					$personExtra = $JQry(document.createElement("div"));
+					$personExtra.addClass("person-extra");
+					$personExtra.text(extra);
+					$personExtra.appendTo($result);
 				}
 			}
 
@@ -84,33 +80,48 @@ $JQry(function() {
 				avatar = $element.data("avatar");
 
 			// Selection
-			$selection = $JQry(document.createElement("div"));		
+			$selection = $JQry(document.createElement("div"));	
+			$selection.addClass("person");
+			
+			// Person avatar
+			$personAvatar = $JQry(document.createElement("div"));
+			$personAvatar.addClass("person-avatar");
+			$personAvatar.appendTo($selection);
 			
 			if (type === "GROUP") {
 				$icon = $JQry(document.createElement("i"));
 				$icon.addClass("glyphicons glyphicons-group")
 				$icon.text("");
-				$icon.appendTo($selection);
+				$icon.appendTo($personAvatar);
 			} else if (avatar) {
 				$avatar = $JQry(document.createElement("img"));
-				$avatar.addClass("avatar");
 				$avatar.attr("src", avatar);
 				$avatar.attr("alt", "");
-				$avatar.appendTo($selection);
+				$avatar.appendTo($personAvatar);
 			} else {
 				$icon = $JQry(document.createElement("i"));
 				$icon.addClass("glyphicons glyphicons-user")
 				$icon.text("");
-				$icon.appendTo($selection);
+				$icon.appendTo($personAvatar);
 			}
 
-			// Display name
-			$displayName = $JQry(document.createElement("span"));
-			$displayName.text(" " + displayName);
-			$displayName.appendTo($selection);
+			// Person title
+			$personName = $JQry(document.createElement("div"));
+			$personName.addClass("person-title");
+			$personName.text(displayName);
+			$personName.appendTo($selection);
 			
 			return $selection;
 		};
+		
+		
+		// Internationalization
+		options["language"] = {};
+		if ($element.data("no-results") !== undefined) {
+			options["language"]["noResults"] = function() {
+				return $element.data("no-results");
+			}
+		}
 		
 		
 		// Force width to 100%
@@ -121,7 +132,7 @@ $JQry(function() {
 		
 		$element.select2(options);
 		
-		
+
 		// Display collapsed buttons
 		$element.on("select2:opening", function(event) {
 			var $form = $element.closest("form"),
@@ -137,7 +148,7 @@ $JQry(function() {
 	$JQry(".workspace-acl-management select").change(function(event) {
 		var $target = $JQry(event.target),
 			$fieldset = $target.closest("fieldset"),
-			$row = $fieldset.closest(".row"),
+			$row = $fieldset.closest(".table-row"),
 			$updated = $row.find("input[type=hidden][name$=updated]"),
 			$form = $target.closest("form"),
 			$collapse = $form.find(".collapse");
@@ -153,7 +164,7 @@ $JQry(function() {
 	$JQry(".workspace-acl-management button.delete").click(function(event) {
 		var $target = $JQry(event.target),
 			$fieldset = $target.closest("fieldset"),
-			$row = $fieldset.closest(".row"),
+			$row = $fieldset.closest(".table-row"),
 			$deleted = $row.find("input[type=hidden][name$=deleted]"),
 			$form = $target.closest("form"),
 			$collapse = $form.find(".collapse");
