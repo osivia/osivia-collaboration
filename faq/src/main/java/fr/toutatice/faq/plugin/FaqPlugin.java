@@ -85,6 +85,8 @@ public class FaqPlugin extends AbstractPluginPortlet {
         DocumentType faqFolder = new DocumentType("FaqFolder", true, false, false, true, false, true, Arrays.asList(faqQuestion.getName()), null,
                 "glyphicons glyphicons-question-sign");
         types.put(faqFolder.getName(), faqFolder);
+        this.addSubType(context, "Workspace", faqFolder.getName());
+        this.addSubType(context, "Room", faqFolder.getName());
     }
 
 

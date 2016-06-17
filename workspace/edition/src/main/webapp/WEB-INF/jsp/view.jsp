@@ -192,9 +192,9 @@
                                 <c:forEach var="type" items="${createTaskForm.types}">
                                     <div class="radio">
                                         <label>
-                                            <form:radiobutton path="createdType" value="${type.key.name}" />
-                                            <i class="${type.key.glyph}"></i>
-                                            <span>${type.value}</span>
+                                            <form:radiobutton path="createdType" value="${type.value.name}" />
+                                            <i class="${type.value.glyph}"></i>
+                                            <span>${type.key}</span>
                                         </label>
                                     </div>
                                 </c:forEach>

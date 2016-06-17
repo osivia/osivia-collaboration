@@ -1,6 +1,6 @@
 package org.osivia.services.workspace.portlet.model;
 
-import java.util.Map;
+import java.util.SortedMap;
 
 import org.osivia.portal.api.cms.DocumentType;
 
@@ -19,7 +19,7 @@ public class CreateTaskForm {
     /** Created task document type. */
     private String createdType;
     /** Document types. */
-    private Map<DocumentType, String> types;
+    private SortedMap<String, DocumentType> types;
     /** Has errors indicator. */
     private boolean hasErrors;
 
@@ -91,7 +91,7 @@ public class CreateTaskForm {
      * 
      * @return the types
      */
-    public Map<DocumentType, String> getTypes() {
+    public SortedMap<String, DocumentType> getTypes() {
         return types;
     }
 
@@ -100,7 +100,7 @@ public class CreateTaskForm {
      * 
      * @param types the types to set
      */
-    public void setTypes(Map<DocumentType, String> types) {
+    public void setTypes(SortedMap<String, DocumentType> types) {
         this.types = types;
     }
 

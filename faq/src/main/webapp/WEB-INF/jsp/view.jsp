@@ -11,7 +11,7 @@
 <!-- Summary -->
 <div class="panel panel-default">
     <div class="panel-heading">
-        <i class="glyphicons glyphicons-list"></i>
+        <i class="glyphicons glyphicons-hash"></i>
         <span>${faq.title}</span>
         <span>-</span>
         <span><op:translate key="SUMMARY" /></span>

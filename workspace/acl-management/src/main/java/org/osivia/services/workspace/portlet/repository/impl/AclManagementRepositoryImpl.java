@@ -10,6 +10,7 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceGroupType;
@@ -18,6 +19,7 @@ import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cache.services.CacheInfo;
+import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.internationalization.Bundle;
@@ -98,16 +100,25 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
         CMSServiceCtx cmsContext = nuxeoController.getCMSCtx();
 
         // Workspace Nuxeo document
-        Document workspace;
+        Document workspace = null;
         try {
-            // Publication infos
-            CMSPublicationInfos publicationInfos = cmsService.getPublicationInfos(cmsContext, path);
-            // Base path
-            String basePath = publicationInfos.getPublishSpacePath();
-            // Space config
-            CMSItem spaceConfig = cmsService.getSpaceConfig(cmsContext, basePath);
-            // Space config document
-            workspace = (Document) spaceConfig.getNativeItem();
+            while ((workspace == null) && StringUtils.isNotEmpty(path)) {
+                // Publication infos
+                CMSPublicationInfos publicationInfos = cmsService.getPublicationInfos(cmsContext, path);
+                // Base path
+                String basePath = publicationInfos.getPublishSpacePath();
+                // Space config
+                CMSItem spaceConfig = cmsService.getSpaceConfig(cmsContext, basePath);
+                // Document type
+                DocumentType documentType = spaceConfig.getType();
+
+                if ((documentType != null) && ("Workspace".equals(documentType.getName()))) {
+                    workspace = (Document) spaceConfig.getNativeItem();
+                } else {
+                    // Loop on parent path
+                    path = publicationInfos.getParentSpaceID();
+                }
+            }
         } catch (CMSException e) {
             throw new PortletException(e);
         }

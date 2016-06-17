@@ -1,9 +1,9 @@
 package org.osivia.services.workspace.portlet.service.impl;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.portlet.PortletException;
 
@@ -19,6 +19,7 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.workspace.portlet.model.CreateTaskForm;
 import org.osivia.services.workspace.portlet.model.Task;
 import org.osivia.services.workspace.portlet.model.WorkspaceEditionForm;
+import org.osivia.services.workspace.portlet.model.comparator.AlphaOrderComparator;
 import org.osivia.services.workspace.portlet.model.comparator.TasksComparator;
 import org.osivia.services.workspace.portlet.repository.WorkspaceEditionRepository;
 import org.osivia.services.workspace.portlet.service.WorkspaceEditionService;
@@ -41,6 +42,10 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
     /** Tasks comparator. */
     @Autowired
     private TasksComparator tasksComparator;
+
+    /** Alpha order comparator. */
+    @Autowired
+    private AlphaOrderComparator alphaOrderComparator;
 
     /** Portal URL factory. */
     @Autowired
@@ -89,11 +94,11 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
         List<DocumentType> documentTypes = this.repository.getTaskTypes(portalControllerContext);
 
         // Types
-        Map<DocumentType, String> types = new HashMap<>(documentTypes.size());
+        SortedMap<String, DocumentType> types = new TreeMap<>(this.alphaOrderComparator);
         for (DocumentType type : documentTypes) {
             String displayName = bundle.getString(StringUtils.upperCase(type.getName()), type.getCustomizedClassLoader());
 
-            types.put(type, displayName);
+            types.put(displayName, type);
         }
         
         // Form

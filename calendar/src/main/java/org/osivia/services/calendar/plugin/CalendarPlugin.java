@@ -87,6 +87,8 @@ public class CalendarPlugin extends AbstractPluginPortlet  {
         DocumentType calendar = new DocumentType("Agenda", true, true, false, false, true, true, Arrays.asList(event.getName()), null,
                 "glyphicons glyphicons-calendar");
         types.put(calendar.getName(), calendar);
+        this.addSubType(context, "Workspace", calendar.getName());
+        this.addSubType(context, "Room", calendar.getName());
     }
 
 
