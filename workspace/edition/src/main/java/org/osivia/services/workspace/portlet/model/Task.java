@@ -14,6 +14,8 @@ public class Task extends TaskbarItemDecorator {
     private String path;
     /** Display name. */
     private String displayName;
+    /** Description. */
+    private String description;
     /** Active indicator. */
     private boolean active;
     /** Order. */
@@ -64,6 +66,24 @@ public class Task extends TaskbarItemDecorator {
      */
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    /**
+     * Getter for description.
+     * 
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Setter for description.
+     * 
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**

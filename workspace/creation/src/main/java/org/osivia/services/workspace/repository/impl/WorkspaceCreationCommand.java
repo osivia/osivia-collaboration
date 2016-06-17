@@ -29,7 +29,7 @@ public class WorkspaceCreationCommand implements INuxeoCommand {
     private final WorkspaceCreationForm form;
     /** Workspace parent path. */
     private final String parentPath;
-    /** Workspace taskbar items. */
+    /** Workspace default taskbar items. */
     private final SortedSet<TaskbarItem> items;
     /** Internationalization bundle. */
     private final Bundle bundle;
@@ -40,8 +40,8 @@ public class WorkspaceCreationCommand implements INuxeoCommand {
      *
      * @param form workspace creation form
      * @param parentPath workspace parent path
-     * @param items workspace taskbar items
-     * @param locale user locale
+     * @param items workspace default taskbar items
+     * @param bundle internationalization bundle
      */
     public WorkspaceCreationCommand(WorkspaceCreationForm form, String parentPath, SortedSet<TaskbarItem> items, Bundle bundle) {
         super();

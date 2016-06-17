@@ -17,6 +17,8 @@ public class WorkspaceEditionForm {
     private String description;
     /** Workspace tasks. */
     private List<Task> tasks;
+    /** Workspace type. */
+    private String type;
 
 
     /**
@@ -97,6 +99,24 @@ public class WorkspaceEditionForm {
      */
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    /**
+     * Getter for type.
+     * 
+     * @return the type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Setter for type.
+     * 
+     * @param type the type to set
+     */
+    public void setType(String type) {
+        this.type = type;
     }
 
 }

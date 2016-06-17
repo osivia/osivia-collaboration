@@ -69,7 +69,7 @@ public class WorkspaceEditionMenubarModule implements MenubarModule {
             if (space != null) {
                 // Check type
                 String type = space.getType();
-                if ("Workspace".equals(type)) {
+                if ("Workspace".equals(type) || "Room".equals(type)) {
                     // Check permissions
                     BasicPermissions permissions = spaceDocumentContext.getPermissions(BasicPermissions.class);
                     if (permissions.isManageableByUser()) {
@@ -78,9 +78,18 @@ public class WorkspaceEditionMenubarModule implements MenubarModule {
                         // Bundle
                         Bundle bundle = this.bundleFactory.getBundle(servletRequest.getLocale());
 
+                        // Internationalization fragment
+                        String fragment;
+                        if ("Room".equals(type)) {
+                            fragment = bundle.getString("WORKSPACE_EDITION_ROOM_FRAGMENT");
+                        } else {
+                            fragment = bundle.getString("WORKSPACE_EDITION_WORKSPACE_FRAGMENT");
+                        }
+
+
                         // Window properties
                         Map<String, String> properties = new HashMap<String, String>();
-                        properties.put("osivia.title", bundle.getString("WORKSPACE_EDITION_TITLE"));
+                        properties.put("osivia.title", bundle.getString("WORKSPACE_EDITION_TITLE", fragment));
                         properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
                         properties.put("osivia.ajaxLink", "1");
                         properties.put("osivia.back.reset", String.valueOf(true));
@@ -88,7 +97,7 @@ public class WorkspaceEditionMenubarModule implements MenubarModule {
 
                         // Menubar item
                         String id = "WORKSPACE_EDITION";
-                        String title = bundle.getString("WORKSPACE_EDITION_MENUBAR_ITEM");
+                        String title = bundle.getString("WORKSPACE_EDITION_MENUBAR_ITEM", fragment);
                         String icon = "halflings halflings-wrench";
                         MenubarContainer parent = this.menubarService.getDropdown(portalControllerContext, MenubarDropdown.CONFIGURATION_DROPDOWN_MENU_ID);
                         int order = 1;

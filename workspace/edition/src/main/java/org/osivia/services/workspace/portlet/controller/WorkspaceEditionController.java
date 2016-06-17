@@ -15,7 +15,9 @@ import javax.portlet.RenderResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.workspace.portlet.model.CreateTaskForm;
 import org.osivia.services.workspace.portlet.model.WorkspaceEditionForm;
+import org.osivia.services.workspace.portlet.model.validator.CreateTaskFormValidator;
 import org.osivia.services.workspace.portlet.model.validator.WorkspaceEditionFormValidator;
 import org.osivia.services.workspace.portlet.service.WorkspaceEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletConfigAware;
@@ -44,6 +47,7 @@ import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
  */
 @Controller
 @RequestMapping("VIEW")
+@SessionAttributes("form")
 public class WorkspaceEditionController extends CMSPortlet implements PortletConfigAware, PortletContextAware {
 
     /** Portlet config. */
@@ -54,6 +58,10 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
     /** Form validator. */
     @Autowired
     private WorkspaceEditionFormValidator formValidator;
+
+    /** Create task form validator. */
+    @Autowired
+    private CreateTaskFormValidator createTaskFormValidator;
 
     /** Workspace edition service. */
     @Autowired
@@ -109,11 +117,28 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
 
 
     /**
+     * Sort tasks action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param form form model attribute
+     * @throws PortletException
+     */
+    @ActionMapping(name = "save", params = "sort")
+    public void sort(ActionRequest request, ActionResponse response, @ModelAttribute("form") WorkspaceEditionForm form) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.sort(portalControllerContext, form);
+    }
+
+
+    /**
      * Save action mapping.
      *
      * @param request action request
      * @param response action response
-     * @param form form
+     * @param form form model attribute
      * @param result binding result
      * @throws PortletException
      * @throws IOException
@@ -139,7 +164,7 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
      *
      * @param request action request
      * @param response action response
-     * @param form form
+     * @param form form model attribute
      * @throws PortletException
      * @throws IOException
      */
@@ -150,6 +175,52 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
 
         // Redirection
         String url = this.service.getWorkspaceUrl(portalControllerContext, form);
+        response.sendRedirect(url);
+    }
+
+
+    /**
+     * Create task action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param form form model attribute
+     * @param createTaskForm create task form model attribute
+     * @param result binding result
+     * @throws PortletException
+     */
+    @ActionMapping(name = "create")
+    public void createTask(ActionRequest request, ActionResponse response, @ModelAttribute("form") WorkspaceEditionForm form,
+            @ModelAttribute("createTaskForm") @Validated CreateTaskForm createTaskForm, BindingResult result)
+            throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        if (result.hasErrors()) {
+            createTaskForm.setHasErrors(true);
+        } else {
+            this.service.createTask(portalControllerContext, form, createTaskForm);
+        }
+    }
+
+
+    /**
+     * Delete workspace action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param form form model attribute
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ActionMapping(name = "delete")
+    public void delete(ActionRequest request, ActionResponse response, @ModelAttribute("form") WorkspaceEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        String url = this.service.delete(portalControllerContext, form);
+
+        // Redirection
         response.sendRedirect(url);
     }
 
@@ -177,9 +248,38 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
      * @param binder web data binder
      */
     @InitBinder("form")
-    public void localGroupInitBinder(WebDataBinder binder) {
+    public void formInitBinder(WebDataBinder binder) {
         binder.setDisallowedFields("path");
         binder.addValidators(this.formValidator);
+    }
+
+
+    /**
+     * Get create task form model-attribute.
+     * 
+     * @param request portlet request
+     * @param response portlet response
+     * @return form
+     * @throws PortletException
+     */
+    @ModelAttribute("createTaskForm")
+    public CreateTaskForm getCreateTaskForm(PortletRequest request, PortletResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        return this.service.getCreateTaskForm(portalControllerContext);
+    }
+
+
+    /**
+     * Create task form init binder.
+     * 
+     * @param binder web data binder
+     */
+    @InitBinder("createTaskForm")
+    public void createTaskFormInitBinder(WebDataBinder binder) {
+        binder.setDisallowedFields("types");
+        binder.addValidators(this.createTaskFormValidator);
     }
 
 

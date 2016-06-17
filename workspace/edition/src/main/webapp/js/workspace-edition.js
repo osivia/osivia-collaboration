@@ -10,22 +10,40 @@ $JQry(function() {
 		
 		update : function(event, ui) {
 			var $target = $JQry(event.target),
-				$form = $target.closest("form"),
-				$activeTasks = $form.find("ul.active-tasks > li"),
-				$idleTasks = $form.find("ul.idle-tasks > li");
-			
+				$formGroup = $target.closest(".form-group"),
+				$activeTasks = $formGroup.find("ul.active-tasks > li"),
+				$idleTasks = $formGroup.find("ul.idle-tasks > li");
+
+			$activeTasks.find("input[type=hidden][name$=active]").val(true);
+			$idleTasks.find("input[type=hidden][name$=active]").val(false);
+		},
+		
+		stop : function(event, ui) {
+			var $target = $JQry(event.target),
+				$formGroup = $target.closest(".form-group"),
+				$activeTasks = $formGroup.find("ul.active-tasks > li")
+				$submit = $formGroup.find("input[type=submit][name=sort]");
+				
 			$activeTasks.each(function(index, element) {
 				var $element = $JQry(element),
-					$activeInput = $element.find("input[type=hidden][name$=active]");
 					$orderInput = $element.find("input[type=hidden][name$=order]");
 				
-				$activeInput.val(true);
 				$orderInput.val(index + 1);
 			});
 			
-			$idleTasks.find("input[type=hidden][name$=active]").val(false);
-		}		
+			$submit.click();
+		}
 	});
 	$JQry(".workspace-creation-sortable").disableSelection();
+	
+	
+	// Open modal on load
+	$JQry(".modal.opened").each(function(index, element) {
+		var $element = $JQry(element);
+		
+		$element.modal("show");
+		
+		$element.removeClass("opened");
+	});
 	
 });

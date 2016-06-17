@@ -3,6 +3,7 @@ package org.osivia.services.workspace.portlet.repository.impl;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Constants;
@@ -13,6 +14,7 @@ import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.services.workspace.portlet.model.Task;
 import org.osivia.services.workspace.portlet.model.WorkspaceEditionForm;
@@ -29,6 +31,8 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
 
     /** Form. */
     private final WorkspaceEditionForm form;
+    /** Default taskbar items. */
+    private final SortedSet<TaskbarItem> items;
     /** Internationalization bundle. */
     private final Bundle bundle;
 
@@ -37,11 +41,13 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
      * Constructor.
      *
      * @param form form
+     * @param items default taskbar items
      * @param bundle internationalization bundle
      */
-    public WorkspaceEditionCommand(WorkspaceEditionForm form, Bundle bundle) {
+    public WorkspaceEditionCommand(WorkspaceEditionForm form, SortedSet<TaskbarItem> items, Bundle bundle) {
         super();
         this.form = form;
+        this.items = items;
         this.bundle = bundle;
     }
 
@@ -139,19 +145,41 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
                     type = "Staple";
                 }
                 // Title
-                String title = this.bundle.getString(task.getKey(), task.getCustomizedClassLoader());
+                String title = task.getDisplayName();
                 // Name
                 String name = this.generateNameFromTitle(title);
                 // WebId
-                String webId = worskpaceId + "_" + StringUtils.lowerCase(task.getId());
+                String webId;
+                if (task.getId() == null) {
+                    webId = null;
+                } else {
+                    webId = worskpaceId + "_" + StringUtils.lowerCase(task.getId());
+                }
                 // Properties
                 PropertyMap properties = new PropertyMap();
                 properties.set("dc:title", title);
+                if (StringUtils.isNotBlank(task.getDescription())) {
+                    properties.set("dc:description", task.getDescription());
+                }
                 properties.set("ttc:showInMenu", true);
-                properties.set("ttc:webid", webId);
+                if (webId != null) {
+                    properties.set("ttc:webid", webId);
+                }
 
                 // Creation
                 Document document = documentService.createDocument(workspace, type, name, properties);
+
+                if ("Room".equals(type)) {
+                    // Update document
+                    OperationRequest request = nuxeoSession.newRequest("Document.FetchLiveDocument");
+                    request.setHeader(Constants.HEADER_NX_SCHEMAS, "*");
+                    request.set("value", document.getPath());
+                    document = (Document) request.execute();
+
+                    // Taskbar items
+                    this.createTaskbarItems(documentService, document);
+                }
+
 
                 // Update task
                 task.setPath(document.getPath());
@@ -184,6 +212,34 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
 
             // Execution
             request.execute();
+        }
+    }
+
+
+    /**
+     * Create taskbar items.
+     *
+     * @param documentService document service
+     * @param room room document
+     * @throws Exception
+     */
+    private void createTaskbarItems(DocumentService documentService, Document room) throws Exception {
+        // Workspace identifier
+        String identifier = room.getString("webc:url");
+
+        for (TaskbarItem item : this.items) {
+            String type = item.getDocumentType();
+            String title = this.bundle.getString(item.getKey(), item.getCustomizedClassLoader());
+            String name = this.generateNameFromTitle(title);
+            String webId = identifier + "_" + StringUtils.lowerCase(item.getId());
+
+            // Properties
+            PropertyMap properties = new PropertyMap();
+            properties.set("dc:title", title);
+            properties.set("ttc:showInMenu", true);
+            properties.set("ttc:webid", webId);
+
+            documentService.createDocument(room, type, name, properties);
         }
     }
 

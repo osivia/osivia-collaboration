@@ -1,15 +1,23 @@
 package org.osivia.services.workspace.portlet.service.impl;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletException;
 
+import org.apache.commons.lang.StringUtils;
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.services.workspace.portlet.model.CreateTaskForm;
+import org.osivia.services.workspace.portlet.model.Task;
 import org.osivia.services.workspace.portlet.model.WorkspaceEditionForm;
 import org.osivia.services.workspace.portlet.model.comparator.TasksComparator;
 import org.osivia.services.workspace.portlet.repository.WorkspaceEditionRepository;
@@ -73,6 +81,45 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
      * {@inheritDoc}
      */
     @Override
+    public CreateTaskForm getCreateTaskForm(PortalControllerContext portalControllerContext) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Task document types
+        List<DocumentType> documentTypes = this.repository.getTaskTypes(portalControllerContext);
+
+        // Types
+        Map<DocumentType, String> types = new HashMap<>(documentTypes.size());
+        for (DocumentType type : documentTypes) {
+            String displayName = bundle.getString(StringUtils.upperCase(type.getName()), type.getCustomizedClassLoader());
+
+            types.put(type, displayName);
+        }
+        
+        // Form
+        CreateTaskForm form = new CreateTaskForm();
+        form.setTypes(types);
+        return form;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void sort(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+        // Tasks
+        List<Task> tasks = form.getTasks();
+
+        // Sort tasks
+        Collections.sort(tasks, this.tasksComparator);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void save(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
@@ -83,9 +130,57 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
         // Save
         this.repository.save(portalControllerContext, form);
 
+
+        // Internationalization fragment
+        String fragment;
+        if ("Room".equals(form.getType())) {
+            fragment = bundle.getString("WORKSPACE_EDITION_ROOM_FRAGMENT");
+        } else {
+            fragment = bundle.getString("WORKSPACE_EDITION_WORKSPACE_FRAGMENT");
+        }
+
+
         // Notification
-        String message = bundle.getString("MESSAGE_WORKSPACE_EDITION_SUCCESS");
+        String message = bundle.getString("MESSAGE_WORKSPACE_EDITION_SUCCESS", fragment);
         this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createTask(PortalControllerContext portalControllerContext, WorkspaceEditionForm form, CreateTaskForm createTaskForm) throws PortletException {
+        // Tasks
+        List<Task> tasks = form.getTasks();
+
+        // New task
+        Task task = this.repository.createTask(portalControllerContext, createTaskForm);
+        task.setActive(true);
+        task.setOrder(tasks.size() + 1);
+
+        // Update tasks
+        tasks.add(task);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String delete(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+        // Delete
+        this.repository.delete(portalControllerContext, form);
+
+        // Redirection URL
+        String url;
+        try {
+            url = this.portalUrlFactory.getDestroyCurrentPageUrl(portalControllerContext);
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+
+        return url;
     }
 
 

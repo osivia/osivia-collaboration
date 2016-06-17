@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
  * Tasks comparator
  *
  * @author Cédric Krommenhoek
+ * @see Comparator
+ * @see Task
  */
 @Component
 public class TasksComparator implements Comparator<Task> {
