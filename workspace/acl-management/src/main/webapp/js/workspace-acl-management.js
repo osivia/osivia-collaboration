@@ -142,6 +142,10 @@ $JQry(function() {
 				$collapse.collapse("show");
 			}
 		});
+		
+		
+		// Update fancybox
+		parent.$JQry.fancybox.update();
 	});
 	
 	

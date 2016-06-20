@@ -30,7 +30,7 @@
 
 
 <!-- Inherited ACL information -->
-<c:if test="${entries.inherited}">
+<c:if test="${entries.inherited and not empty entries.entries}">
     <div class="alert alert-info" role="alert">
         <div class="media">
             <div class="media-left media-middle">
