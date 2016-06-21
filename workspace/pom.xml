@@ -21,6 +21,9 @@
     <modules>
         <module>creation</module>
         <module>edition</module>
+        <module>member-management</module>
+        <module>local-group-management</module>
+        <module>map</module>
         <module>acl-management</module>
     </modules>
 

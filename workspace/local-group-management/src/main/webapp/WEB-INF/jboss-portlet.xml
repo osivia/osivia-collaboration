@@ -2,7 +2,7 @@
 <portlet-app>
 
     <portlet>
-        <portlet-name>workspace-local-group-management</portlet-name>
+        <portlet-name>osivia-services-workspace-local-group-management</portlet-name>
 
         <transaction>
             <trans-attribute>Required</trans-attribute>

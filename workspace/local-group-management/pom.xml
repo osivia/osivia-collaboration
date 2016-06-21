@@ -6,15 +6,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.osivia.services.directory.workspace</groupId>
-        <artifactId>osivia-services-directory-workspace-parent</artifactId>
+        <groupId>org.osivia.services.workspace</groupId>
+        <artifactId>osivia-services-workspace-parent</artifactId>
         <version>4.4.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>osivia-services-directory-workspace-local-group-management</artifactId>
+    <artifactId>osivia-services-workspace-local-group-management</artifactId>
     <packaging>war</packaging>
 
-    <name>OSIVIA Services - Directory - Workspace local group management</name>
+    <name>OSIVIA Services - Workspace - Local group management</name>
 
 
     <build>

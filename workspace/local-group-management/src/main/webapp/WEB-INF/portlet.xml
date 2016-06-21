@@ -6,7 +6,7 @@
     version="2.0">
 
 	<portlet>
-        <portlet-name>workspace-local-group-management</portlet-name>
+        <portlet-name>osivia-services-workspace-local-group-management</portlet-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 
         <init-param>
@@ -15,7 +15,7 @@
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>
-            <value>org.osivia.services.directory.workspace.portlet.configuration.LocalGroupManagementConfiguration</value>
+            <value>org.osivia.services.workspace.portlet.configuration.LocalGroupManagementConfiguration</value>
         </init-param>
         
         <expiration-cache>180</expiration-cache>
@@ -32,8 +32,8 @@
     
     
     <portlet>
-        <portlet-name>workspace-local-group-management-plugin</portlet-name>
-        <portlet-class>org.osivia.services.directory.workspace.plugin.LocalGroupManagementPlugin</portlet-class>
+        <portlet-name>osivia-services-workspace-local-group-management-plugin</portlet-name>
+        <portlet-class>org.osivia.services.workspace.plugin.LocalGroupManagementPlugin</portlet-class>
         
         <expiration-cache>180</expiration-cache>
 

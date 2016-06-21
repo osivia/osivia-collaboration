@@ -3,10 +3,10 @@
     <deployment>
         <if-exists>overwrite</if-exists>
         <instance>
-            <display-name xml:lang="en">Directory - Workspace local group management</display-name>
-            <display-name xml:lang="fr">Annuaire - Gestion des groupes locaux d'un espace</display-name>
-            <instance-id>workspace-local-group-management-instance</instance-id>
-            <portlet-ref>workspace-local-group-management</portlet-ref>
+            <display-name xml:lang="en">OSIVIA - Workspace local group management</display-name>
+            <display-name xml:lang="fr">OSIVIA - Gestion des groupes locaux d'un espace</display-name>
+            <instance-id>osivia-services-workspace-local-group-management-instance</instance-id>
+            <portlet-ref>osivia-services-workspace-local-group-management</portlet-ref>
             <security-constraint>
                 <policy-permission>
                     <action-name>view</action-name>

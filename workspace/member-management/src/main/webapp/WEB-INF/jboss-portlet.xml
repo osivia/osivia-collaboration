@@ -3,7 +3,7 @@
 <portlet-app>
 
     <portlet>
-        <portlet-name>workspace-member-management</portlet-name>
+        <portlet-name>osivia-services-workspace-member-management</portlet-name>
 
         <transaction>
             <trans-attribute>Required</trans-attribute>

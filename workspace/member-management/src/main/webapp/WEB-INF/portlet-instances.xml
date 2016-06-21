@@ -5,10 +5,10 @@
     <deployment>
         <if-exists>overwrite</if-exists>
         <instance>
-            <display-name xml:lang="en">Directory - Workspace member management</display-name>
-            <display-name xml:lang="fr">Annuaire - Gestion des membres d'un espace</display-name>
-            <instance-id>workspace-member-management-instance</instance-id>
-            <portlet-ref>workspace-member-management</portlet-ref>
+            <display-name xml:lang="en">OSIVIA - Workspace member management</display-name>
+            <display-name xml:lang="fr">OSIVIA - Gestion des membres d'un espace</display-name>
+            <instance-id>osivia-services-workspace-member-management-instance</instance-id>
+            <portlet-ref>osivia-services-workspace-member-management</portlet-ref>
             <security-constraint>
                 <policy-permission>
                     <action-name>view</action-name>
