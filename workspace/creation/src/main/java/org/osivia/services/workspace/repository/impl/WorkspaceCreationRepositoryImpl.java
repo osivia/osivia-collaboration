@@ -49,10 +49,6 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
     private static final String PARENT_PATH_PROPERTY = "workspace.parentPath";
 
 
-    /** Properties. */
-    private final Properties properties;
-
-
     /** Workspace service. */
     @Autowired
     private WorkspaceService workspaceService;
@@ -64,6 +60,10 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
     /** Bundle factory. */
     @Autowired
     private IBundleFactory bundleFactory;
+
+
+    /** Properties. */
+    private final Properties properties;
 
 
     /**
