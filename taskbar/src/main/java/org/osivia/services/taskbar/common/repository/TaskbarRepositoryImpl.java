@@ -226,9 +226,6 @@ public class TaskbarRepositoryImpl implements ITaskbarRepository {
                 // Home task
                 url = this.portalURLFactory.getCMSUrl(portalControllerContext, null, nuxeoController.getBasePath(), null, null, "taskbar", null, null, "1",
                         null);
-            } else if (task.getPath() != null) {
-                // CMS URL
-                url = this.portalURLFactory.getCMSUrl(portalControllerContext, null, task.getPath(), null, null, "taskbar", null, null, "1", null);
             } else if (task.getPlayer() != null) {
                 // Start portlet URL
                 PanelPlayer player = task.getPlayer();
@@ -250,6 +247,9 @@ public class TaskbarRepositoryImpl implements ITaskbarRepository {
                 } catch (PortalException e) {
                     throw new PortletException(e);
                 }
+            } else if (task.getPath() != null) {
+                // CMS URL
+                url = this.portalURLFactory.getCMSUrl(portalControllerContext, null, task.getPath(), null, null, "taskbar", null, null, "1", null);
             } else {
                 // Unknown case
                 url = "#";
