@@ -6,6 +6,7 @@ import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.notifications.INotificationsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -91,6 +92,17 @@ public class WorkspaceMemberManagementConfiguration {
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
         return internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+    }
+
+
+    /**
+     * Get notifications service.
+     * 
+     * @return notification service
+     */
+    @Bean
+    public INotificationsService getNotificationService() {
+        return Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
     }
 
 }

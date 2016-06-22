@@ -6,7 +6,6 @@ import java.util.List;
 import javax.portlet.PortletException;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceGroupType;
 import org.osivia.directory.v2.model.ext.WorkspaceMember;
@@ -17,6 +16,8 @@ import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.services.workspace.portlet.model.AddForm;
 import org.osivia.services.workspace.portlet.model.MembersContainer;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
@@ -46,6 +47,10 @@ public class MemberManagementServiceImpl implements MemberManagementService {
     /** Bundle factory. */
     @Autowired
     private IBundleFactory bundleFactory;
+
+    /** Notifications service. */
+    @Autowired
+    private INotificationsService notificationsService;
 
 
     /**
@@ -77,6 +82,9 @@ public class MemberManagementServiceImpl implements MemberManagementService {
      */
     @Override
     public void update(PortalControllerContext portalControllerContext, MembersContainer container) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
         // Deleted member
         List<WorkspaceMember> deleted = new ArrayList<WorkspaceMember>();
         for (WorkspaceMember member : container.getMembers()) {
@@ -88,6 +96,10 @@ public class MemberManagementServiceImpl implements MemberManagementService {
             }
         }
         container.getMembers().removeAll(deleted);
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_MEMBERS_UPDATE_SUCCESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
     }
 
 
@@ -129,23 +141,6 @@ public class MemberManagementServiceImpl implements MemberManagementService {
         array.add(create);
 
         return array;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void delete(PortalControllerContext portalControllerContext, MembersContainer container, String name) throws PortletException {
-        List<WorkspaceMember> members = container.getMembers();
-        if (CollectionUtils.isNotEmpty(members)) {
-            for (WorkspaceMember member : members) {
-                if (StringUtils.equals(member.getMember().getUid(), name)) {
-                    member.setDeleted(true);
-                    break;
-                }
-            }
-        }
     }
 
 

@@ -4,12 +4,12 @@ import java.util.List;
 
 import javax.portlet.PortletException;
 
-import net.sf.json.JSONArray;
-
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.AddForm;
 import org.osivia.services.workspace.portlet.model.MembersContainer;
+
+import net.sf.json.JSONArray;
 
 /**
  * Member management service interface.
@@ -47,17 +47,6 @@ public interface MemberManagementService {
      * @throws PortletException
      */
     void update(PortalControllerContext portalControllerContext, MembersContainer container) throws PortletException;
-
-
-    /**
-     * Delete member.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param container member container
-     * @param name member name
-     * @throws PortletException
-     */
-    void delete(PortalControllerContext portalControllerContext, MembersContainer container, String name) throws PortletException;
 
 
     /**

@@ -17,8 +17,6 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
-import net.sf.json.JSONArray;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -47,6 +45,7 @@ import org.springframework.web.portlet.context.PortletContextAware;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import net.sf.json.JSONArray;
 
 /**
  * Workspace member management portlet view controller.
@@ -118,27 +117,6 @@ public class ViewMemberManagementController implements PortletContextAware {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         this.service.update(portalControllerContext, container);
-
-        this.copyRenderParameter(request, response);
-    }
-
-
-    /**
-     * Delete member action mapping.
-     *
-     * @param request action request
-     * @param response action response
-     * @param container members container model attribute
-     * @param name member name request parameter
-     * @throws PortletException
-     */
-    @ActionMapping(value = "update", params = "delete")
-    public void delete(ActionRequest request, ActionResponse response, @ModelAttribute(value = "container") MembersContainer container, @RequestParam(
-            value = "delete") String name) throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        this.service.delete(portalControllerContext, container, name);
 
         this.copyRenderParameter(request, response);
     }

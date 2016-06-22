@@ -7,6 +7,10 @@ import java.util.List;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.services.workspace.portlet.model.LocalGroup;
 import org.osivia.services.workspace.portlet.model.LocalGroupEditionForm;
 import org.osivia.services.workspace.portlet.model.LocalGroupListItem;
@@ -39,6 +43,14 @@ public class LocalGroupManagementServiceImpl implements LocalGroupManagementServ
     /** Local groups comparator. */
     @Autowired
     private LocalGroupsComparator localGroupsComparator;
+
+    /** Bundle factory. */
+    @Autowired
+    private IBundleFactory bundleFactory;
+
+    /** Notifications service. */
+    @Autowired
+    private INotificationsService notificationsService;
 
 
     /**
@@ -93,7 +105,14 @@ public class LocalGroupManagementServiceImpl implements LocalGroupManagementServ
      */
     @Override
     public void saveLocalGroups(PortalControllerContext portalControllerContext, LocalGroups localGroups) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
         this.repository.setLocalGroups(portalControllerContext, localGroups);
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_LOCAL_GROUPS_SAVE_SUCCESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
     }
 
 
@@ -102,7 +121,14 @@ public class LocalGroupManagementServiceImpl implements LocalGroupManagementServ
      */
     @Override
     public void createLocalGroup(PortalControllerContext portalControllerContext, LocalGroups localGroups, LocalGroup form) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
         LocalGroup localGroup = this.repository.createLocalGroup(portalControllerContext, localGroups, form);
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_LOCAL_GROUP_ADD_SUCCESS", form.getDisplayName());
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
 
         // Update model
         localGroups.getGroups().add(localGroup);
@@ -152,7 +178,14 @@ public class LocalGroupManagementServiceImpl implements LocalGroupManagementServ
      */
     @Override
     public void saveLocalGroup(PortalControllerContext portalControllerContext, LocalGroupEditionForm form) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
         this.repository.setLocalGroup(portalControllerContext, form);
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_LOCAL_GROUP_SAVE_SUCCESS", form.getDisplayName());
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
     }
 
 

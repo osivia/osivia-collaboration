@@ -6,6 +6,10 @@ import java.util.List;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.workspace.portlet.model.AclEntries;
 import org.osivia.services.workspace.portlet.model.AddForm;
@@ -32,6 +36,14 @@ public class AclManagementServiceImpl implements AclManagementService {
     /** Portal URL factory. */
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
+
+    /** Bundle factory. */
+    @Autowired
+    private IBundleFactory bundleFactory;
+
+    /** Notifications service. */
+    @Autowired
+    private INotificationsService notificationsService;
 
 
     /**
@@ -105,6 +117,9 @@ public class AclManagementServiceImpl implements AclManagementService {
      */
     @Override
     public void add(PortalControllerContext portalControllerContext, AclEntries entries, List<Role> roles, AddForm form) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
         // Selected records
         List<Record> selectedRecords = new ArrayList<>(form.getIdentifiers().size());
         for (Record record : form.getRecords()) {
@@ -114,6 +129,10 @@ public class AclManagementServiceImpl implements AclManagementService {
         }
 
         this.repository.add(portalControllerContext, entries, selectedRecords, form.getRole());
+
+        // Notification
+        String message = bundle.getString("MESSAGE_SUCCESS_ADD_ACL");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
     }
 
 

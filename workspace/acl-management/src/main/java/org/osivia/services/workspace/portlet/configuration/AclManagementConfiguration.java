@@ -5,6 +5,7 @@ import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.springframework.context.annotation.Bean;
@@ -105,5 +106,15 @@ public class AclManagementConfiguration {
         return internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
+
+    /**
+     * Get notifications service.
+     * 
+     * @return notification service
+     */
+    @Bean
+    public INotificationsService getNotificationService() {
+        return Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
+    }
 
 }
