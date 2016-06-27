@@ -1,8 +1,8 @@
 $JQry(function() {
 
 	// Sortable
-	$JQry(".workspace-creation-sortable").sortable({
-		connectWith : ".workspace-creation-sortable",
+	$JQry(".workspace-edition-sortable").sortable({
+		connectWith : ".workspace-edition-sortable",
 		cursor : "move",
 		forcePlaceholderSize : true,
 		placeholder : "list-sortable-placeholder bg-info",
@@ -34,16 +34,61 @@ $JQry(function() {
 			$submit.click();
 		}
 	});
-	$JQry(".workspace-creation-sortable").disableSelection();
+	$JQry(".workspace-edition-sortable").disableSelection();
 	
 	
-	// Open modal on load
-	$JQry(".modal.opened").each(function(index, element) {
-		var $element = $JQry(element);
+	$JQry(".workspace-edition button[name=openTaskCreation]").each(function(index, element) {
+		var $element = $JQry(element),
+			$submit = $element.siblings("input[type=submit][name=create]"),
+			loaded = $element.data("loaded");
 		
-		$element.modal("show");
+		if (!loaded) {
+			$element.click(function(event) {
+				var $target = $JQry(event.target),
+					loadUrl = $target.data("load-url"),
+					$form = $target.closest("form");
+					$modal = $JQry("#osivia-modal");
+	
+				$modal.data("load-url", loadUrl);
+				$modal.data("callback-function", "createWorkspaceTask");
+				$modal.data("callback-function-args", $form.attr("id") + "|" + $submit.attr("id"));
+				$modal.modal("show");
+			});
+			
+			$element.data("loaded", true);
+		}
+	});
+	
+	
+	$JQry("#osivia-modal .workspace-task-creation").each(function(index, element) {
+		var $element = $JQry(element),
+			$modal = $JQry("#osivia-modal");
 		
-		$element.removeClass("opened");
+		if ($element.data("close-modal")) {
+			$modal.modal("hide");
+		}
 	});
 	
 });
+
+
+function createWorkspaceTask(args) {
+	var array = args.split("|"),
+		$modal = $JQry("#osivia-modal"),
+		$source = $modal.find("form#taskCreationForm"),
+		$target = $JQry("#" + array[0]),
+		$submit = $JQry("#" + array[1]);
+	
+	if ($source.find("input[name=valid]").val()) {
+		// Title
+		$target.find("input[name='taskCreationForm.title']").val($source.find("input[name=title]").val());
+		// Description
+		$target.find("input[name='taskCreationForm.description']").val($source.find("textarea[name=description]").val());
+		// Type
+		$target.find("input[name='taskCreationForm.type']").val($source.find("input[name=type]:checked").val());
+		// Valid indicator
+		$target.find("input[name='taskCreationForm.valid']").val($source.find("input[name=valid]").val());
+		
+		$submit.click();
+	}
+}

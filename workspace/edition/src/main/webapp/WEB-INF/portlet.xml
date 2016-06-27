@@ -16,7 +16,7 @@
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>
-            <value>org.osivia.services.workspace.portlet.configuration.WorkspaceEditionConfiguration</value>
+            <value>org.osivia.services.workspace.edition.portlet.configuration.WorkspaceEditionConfiguration</value>
         </init-param>
 
         <expiration-cache>180</expiration-cache>
@@ -33,8 +33,34 @@
     
     
     <portlet>
+        <portlet-name>osivia-services-workspace-task-creation</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.workspace.task.creation.portlet.configuration.WorkspaceTaskCreationConfiguration</value>
+        </init-param>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+
+        <portlet-info>
+            <title>Workspace task creation</title>
+        </portlet-info>
+    </portlet>
+    
+    
+    <portlet>
         <portlet-name>osivia-services-workspace-edition-plugin</portlet-name>
-        <portlet-class>org.osivia.services.workspace.plugin.WorkspaceEditionPlugin</portlet-class>
+        <portlet-class>org.osivia.services.workspace.edition.plugin.WorkspaceEditionPlugin</portlet-class>
         
         <expiration-cache>180</expiration-cache>
 
