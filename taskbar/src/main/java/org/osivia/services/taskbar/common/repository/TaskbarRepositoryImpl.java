@@ -243,7 +243,7 @@ public class TaskbarRepositoryImpl implements ITaskbarRepository {
                 properties.put("osivia.navigation.reset", String.valueOf(true));
 
                 try {
-                    url = this.portalURLFactory.getStartPortletUrl(portalControllerContext, player.getInstance(), properties, false);
+                    url = this.portalURLFactory.getStartPortletUrl(portalControllerContext, player.getInstance(), properties);
                 } catch (PortalException e) {
                     throw new PortletException(e);
                 }

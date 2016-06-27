@@ -93,7 +93,7 @@ public class LocalGroupManagementMenubarModule implements MenubarModule {
                         MenubarContainer parent = this.menubarService.getDropdown(portalControllerContext, MenubarDropdown.CONFIGURATION_DROPDOWN_MENU_ID);
                         int order = 3;
                         String url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext,
-                                "osivia-services-workspace-local-group-management-instance", properties, false);
+                                "osivia-services-workspace-local-group-management-instance", properties);
                         String target = null;
                         String onclick = null;
                         String htmlClasses = null;

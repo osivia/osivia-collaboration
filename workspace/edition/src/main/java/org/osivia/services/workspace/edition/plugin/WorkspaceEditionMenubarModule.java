@@ -101,8 +101,8 @@ public class WorkspaceEditionMenubarModule implements MenubarModule {
                         String icon = "halflings halflings-wrench";
                         MenubarContainer parent = this.menubarService.getDropdown(portalControllerContext, MenubarDropdown.CONFIGURATION_DROPDOWN_MENU_ID);
                         int order = 1;
-                        String url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-workspace-edition-instance", properties,
-                                false);
+                        String url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-workspace-edition-instance",
+                                properties);
                         String target = null;
                         String onclick = null;
                         String htmlClasses = null;

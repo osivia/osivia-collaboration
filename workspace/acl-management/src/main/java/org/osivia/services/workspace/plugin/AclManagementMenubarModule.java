@@ -25,6 +25,7 @@ import org.osivia.portal.api.menubar.MenubarDropdown;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.urls.PortalUrlType;
 
 /**
  * Workspace ACL management menubar module.
@@ -105,7 +106,7 @@ public class AclManagementMenubarModule implements MenubarModule {
                         MenubarContainer parent = this.menubarService.getDropdown(portalControllerContext, MenubarDropdown.OTHER_OPTIONS_DROPDOWN_MENU_ID);
                         int order = 3;
                         String url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-workspace-acl-management-instance",
-                                properties, true);
+                                properties, PortalUrlType.POPUP);
                         String target = null;
                         String onclick = null;
                         String htmlClasses = "fancyframe_refresh";

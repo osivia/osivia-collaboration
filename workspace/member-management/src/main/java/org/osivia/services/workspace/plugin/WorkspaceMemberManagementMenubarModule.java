@@ -93,7 +93,7 @@ public class WorkspaceMemberManagementMenubarModule implements MenubarModule {
                         MenubarContainer parent = this.menubarService.getDropdown(portalControllerContext, MenubarDropdown.CONFIGURATION_DROPDOWN_MENU_ID);
                         int order = 2;
                         String url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-workspace-member-management-instance",
-                                properties, false);
+                                properties);
                         String target = null;
                         String onclick = null;
                         String htmlClasses = null;
