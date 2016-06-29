@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.portlet.PortletException;
 
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
@@ -18,11 +19,13 @@ import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
+import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 import org.osivia.services.workspace.edition.portlet.model.comparator.TasksComparator;
 import org.osivia.services.workspace.edition.portlet.repository.WorkspaceEditionRepository;
 import org.osivia.services.workspace.edition.portlet.service.WorkspaceEditionService;
 import org.osivia.services.workspace.task.creation.portlet.repository.WorkspaceTaskCreationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,6 +36,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
+
+    /** Application context. */
+    @Autowired
+    private ApplicationContext applicationContext;
 
     /** Workspace edition repository. */
     @Autowired
@@ -67,11 +74,39 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
      * {@inheritDoc}
      */
     @Override
-    public WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
-        WorkspaceEditionForm form = this.repository.getForm(portalControllerContext);
+    public WorkspaceEditionOptions getOptions(PortalControllerContext portalControllerContext) throws PortletException {
+        // Options
+        WorkspaceEditionOptions options = this.applicationContext.getBean(WorkspaceEditionOptions.class);
 
-        // Sort tasks
-        Collections.sort(form.getTasks(), this.tasksComparator);
+        // Workspace document
+        Document workspace = this.repository.getWorkspace(portalControllerContext);
+
+        options.setWorkspace(workspace);
+        options.setPath(workspace.getPath());
+        options.setType(workspace.getType());
+
+        return options;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException {
+        // Form
+        WorkspaceEditionForm form = this.applicationContext.getBean(WorkspaceEditionForm.class);
+
+        // Workspace document
+        Document workspace = options.getWorkspace();
+
+        form.setTitle(workspace.getTitle());
+        form.setDescription(workspace.getString("dc:description"));
+
+        // Tasks
+        List<Task> tasks = this.repository.getTasks(portalControllerContext, workspace.getPath());
+        Collections.sort(tasks, this.tasksComparator);
+        form.setTasks(tasks);
 
         return form;
     }
@@ -94,7 +129,7 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
      * {@inheritDoc}
      */
     @Override
-    public void save(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+    public void save(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options, WorkspaceEditionForm form) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
@@ -102,12 +137,12 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
         Collections.sort(form.getTasks(), this.tasksComparator);
 
         // Save
-        this.repository.save(portalControllerContext, form);
+        this.repository.save(portalControllerContext, options, form);
 
 
         // Internationalization fragment
         String fragment;
-        if ("Room".equals(form.getType())) {
+        if ("Room".equals(options.getType())) {
             fragment = bundle.getString("WORKSPACE_EDITION_ROOM_FRAGMENT");
         } else {
             fragment = bundle.getString("WORKSPACE_EDITION_WORKSPACE_FRAGMENT");
@@ -149,9 +184,9 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
      * {@inheritDoc}
      */
     @Override
-    public String delete(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+    public String delete(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException {
         // Delete
-        this.repository.delete(portalControllerContext, form);
+        this.repository.delete(portalControllerContext, options);
 
         // Redirection URL
         String url;
@@ -169,8 +204,8 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
      * {@inheritDoc}
      */
     @Override
-    public String getWorkspaceUrl(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
-        return this.portalUrlFactory.getCMSUrl(portalControllerContext, null, form.getPath(), null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null,
+    public String getWorkspaceUrl(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException {
+        return this.portalUrlFactory.getCMSUrl(portalControllerContext, null, options.getPath(), null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null,
                 null, null);
     }
 
@@ -179,10 +214,10 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
      * {@inheritDoc}
      */
     @Override
-    public String getTaskCreationUrl(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+    public String getTaskCreationUrl(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException {
         // Window properties
         Map<String, String> properties = new HashMap<>();
-        properties.put(WorkspaceTaskCreationRepository.WORKSPACE_TYPE_WINDOW_PROPERTY, form.getType());
+        properties.put(WorkspaceTaskCreationRepository.WORKSPACE_TYPE_WINDOW_PROPERTY, options.getType());
         
         String url;
         try {

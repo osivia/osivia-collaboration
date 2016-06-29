@@ -18,6 +18,7 @@ import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
+import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
@@ -29,6 +30,8 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
  */
 public class WorkspaceEditionCommand implements INuxeoCommand {
 
+    /** Options. */
+    private final WorkspaceEditionOptions options;
     /** Form. */
     private final WorkspaceEditionForm form;
     /** Default taskbar items. */
@@ -40,12 +43,14 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
     /**
      * Constructor.
      *
+     * @param options options
      * @param form form
      * @param items default taskbar items
      * @param bundle internationalization bundle
      */
-    public WorkspaceEditionCommand(WorkspaceEditionForm form, SortedSet<TaskbarItem> items, Bundle bundle) {
+    public WorkspaceEditionCommand(WorkspaceEditionOptions options, WorkspaceEditionForm form, SortedSet<TaskbarItem> items, Bundle bundle) {
         super();
+        this.options = options;
         this.form = form;
         this.items = items;
         this.bundle = bundle;
@@ -83,7 +88,7 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
     private Document getWorkspace(Session nuxeoSession) throws Exception {
         OperationRequest request = nuxeoSession.newRequest("Document.FetchLiveDocument");
         request.setHeader(Constants.HEADER_NX_SCHEMAS, "*");
-        request.set("value", this.form.getPath());
+        request.set("value", this.options.getPath());
         return (Document) request.execute();
     }
 
@@ -96,12 +101,8 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
      * @throws Exception
      */
     private void updateWorkspace(DocumentService documentService, Document workspace) throws Exception {
-        // Edited properties
-        PropertyMap properties = new PropertyMap();
-        properties.set("dc:title", this.form.getTitle());
-        properties.set("dc:description", this.form.getDescription());
-
-        documentService.update(workspace, properties);
+        documentService.setProperty(workspace, "dc:title", this.form.getTitle());
+        documentService.setProperty(workspace, "dc:description", this.form.getDescription());
     }
 
 
@@ -158,9 +159,6 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
                 // Properties
                 PropertyMap properties = new PropertyMap();
                 properties.set("dc:title", title);
-                if (StringUtils.isNotBlank(task.getDescription())) {
-                    properties.set("dc:description", task.getDescription());
-                }
                 properties.set("ttc:showInMenu", true);
                 if (webId != null) {
                     properties.set("ttc:webid", webId);
@@ -168,6 +166,10 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
 
                 // Creation
                 Document document = documentService.createDocument(workspace, type, name, properties);
+
+                if (StringUtils.isNotBlank(task.getDescription())) {
+                    documentService.setProperty(document, "dc:description", task.getDescription());
+                }
 
                 if ("Room".equals(type)) {
                     // Update document

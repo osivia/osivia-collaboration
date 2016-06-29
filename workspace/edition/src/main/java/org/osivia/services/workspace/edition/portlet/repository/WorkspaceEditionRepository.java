@@ -1,11 +1,15 @@
 package org.osivia.services.workspace.edition.portlet.repository;
 
+import java.util.List;
+
 import javax.portlet.PortletException;
 
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
+import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 
 /**
  * Workspace edition repository interface.
@@ -15,23 +19,35 @@ import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 public interface WorkspaceEditionRepository {
 
     /**
-     * Get workspace edtion form.
-     *
+     * Get workspace.
+     * 
      * @param portalControllerContext portal controller context
-     * @return form
+     * @return options
      * @throws PortletException
      */
-    WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext) throws PortletException;
+    Document getWorkspace(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Get tasks.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param basePath CMS base path
+     * @return tasks
+     * @throws PortletException
+     */
+    List<Task> getTasks(PortalControllerContext portalControllerContext, String basePath) throws PortletException;
 
 
     /**
      * Save edition.
      *
      * @param portalControllerContext portal controller context
+     * @param options options
      * @param form workspace edition form
      * @throws PortletException
      */
-    void save(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
+    void save(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options, WorkspaceEditionForm form) throws PortletException;
 
 
     /**
@@ -49,9 +65,9 @@ public interface WorkspaceEditionRepository {
      * Delete workspace.
      * 
      * @param portalControllerContext portal controller context
-     * @param form workspace edition form
+     * @param options options
      * @throws PortletException
      */
-    void delete(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
+    void delete(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException;
 
 }

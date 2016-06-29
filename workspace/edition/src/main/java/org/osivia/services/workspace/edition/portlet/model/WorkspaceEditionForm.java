@@ -3,16 +3,16 @@ package org.osivia.services.workspace.edition.portlet.model;
 import java.util.List;
 
 import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
+import org.springframework.stereotype.Component;
 
 /**
  * Workspace edition form java-bean.
  *
  * @author Cédric Krommenhoek
  */
+@Component
 public class WorkspaceEditionForm {
 
-    /** Workspace path. */
-    private String path;
     /** Workspace title. */
     private String title;
     /** Workspace description. */
@@ -21,8 +21,6 @@ public class WorkspaceEditionForm {
     private List<Task> tasks;
     /** Workspace task creation form. */
     private TaskCreationForm taskCreationForm;
-    /** Workspace type. */
-    private String type;
 
 
     /**
@@ -32,24 +30,6 @@ public class WorkspaceEditionForm {
         super();
     }
 
-
-    /**
-     * Getter for path.
-     *
-     * @return the path
-     */
-    public String getPath() {
-        return this.path;
-    }
-
-    /**
-     * Setter for path.
-     *
-     * @param path the path to set
-     */
-    public void setPath(String path) {
-        this.path = path;
-    }
 
     /**
      * Getter for title.
@@ -89,7 +69,7 @@ public class WorkspaceEditionForm {
 
     /**
      * Getter for tasks.
-     * 
+     *
      * @return the tasks
      */
     public List<Task> getTasks() {
@@ -98,7 +78,7 @@ public class WorkspaceEditionForm {
 
     /**
      * Setter for tasks.
-     * 
+     *
      * @param tasks the tasks to set
      */
     public void setTasks(List<Task> tasks) {
@@ -107,7 +87,7 @@ public class WorkspaceEditionForm {
 
     /**
      * Getter for taskCreationForm.
-     * 
+     *
      * @return the taskCreationForm
      */
     public TaskCreationForm getTaskCreationForm() {
@@ -116,29 +96,11 @@ public class WorkspaceEditionForm {
 
     /**
      * Setter for taskCreationForm.
-     * 
+     *
      * @param taskCreationForm the taskCreationForm to set
      */
     public void setTaskCreationForm(TaskCreationForm taskCreationForm) {
         this.taskCreationForm = taskCreationForm;
-    }
-
-    /**
-     * Getter for type.
-     * 
-     * @return the type
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * Setter for type.
-     * 
-     * @param type the type to set
-     */
-    public void setType(String type) {
-        this.type = type;
     }
 
 }

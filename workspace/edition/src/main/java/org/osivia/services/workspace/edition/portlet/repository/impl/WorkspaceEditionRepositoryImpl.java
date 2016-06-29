@@ -23,6 +23,7 @@ import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
+import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 import org.osivia.services.workspace.edition.portlet.repository.WorkspaceEditionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -61,7 +62,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
-    public WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
+    public Document getWorkspace(PortalControllerContext portalControllerContext) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -76,9 +77,18 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
 
         // Nuxeo document context
         NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(basePath, true);
-        // Nuxeo document
-        Document workspace = documentContext.getDoc();
 
+        return documentContext.getDoc();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Task> getTasks(PortalControllerContext portalControllerContext, String basePath) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
         // Taskbar tasks & taskbar items
         List<TaskbarTask> taskbarTasks;
@@ -140,16 +150,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
             tasks.add(task);
         }
 
-
-        // Form
-        WorkspaceEditionForm form = new WorkspaceEditionForm();
-        form.setPath(workspace.getPath());
-        form.setTitle(workspace.getTitle());
-        form.setDescription(workspace.getString("dc:description"));
-        form.setTasks(tasks);
-        form.setType(workspace.getType());
-
-        return form;
+        return tasks;
     }
 
 
@@ -157,7 +158,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
-    public void save(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+    public void save(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options, WorkspaceEditionForm form) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
@@ -174,7 +175,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         }
 
         // Nuxeo command
-        INuxeoCommand command = new WorkspaceEditionCommand(form, items, bundle);
+        INuxeoCommand command = new WorkspaceEditionCommand(options, form, items, bundle);
         nuxeoController.executeNuxeoCommand(command);
     }
 
@@ -212,13 +213,13 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
-    public void delete(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+    public void delete(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException {
      // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
         // Nuxeo command
-        INuxeoCommand command = new DeleteWorkspaceCommand(form.getPath());
+        INuxeoCommand command = new DeleteWorkspaceCommand(options.getPath());
         nuxeoController.executeNuxeoCommand(command);
     }
 

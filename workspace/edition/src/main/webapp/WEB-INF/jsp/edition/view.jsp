@@ -18,7 +18,7 @@
 
 
 <c:choose>
-    <c:when test="${editionForm.type eq 'Room'}"><c:set var="fragment"><op:translate key="WORKSPACE_EDITION_ROOM_FRAGMENT" /></c:set></c:when>
+    <c:when test="${options.type eq 'Room'}"><c:set var="fragment"><op:translate key="WORKSPACE_EDITION_ROOM_FRAGMENT" /></c:set></c:when>
     <c:otherwise><c:set var="fragment"><op:translate key="WORKSPACE_EDITION_WORKSPACE_FRAGMENT" /></c:set></c:otherwise>
 </c:choose>
 
@@ -30,7 +30,7 @@
         <form:hidden path="taskCreationForm.description" />
         <form:hidden path="taskCreationForm.type" />
         <form:hidden path="taskCreationForm.valid" />
-    
+
         <!-- Title -->
         <c:set var="placeholder"><op:translate key="WORKSPACE_TITLE_PLACEHOLDER" args="${fragment}" /></c:set>
         <spring:bind path="title">
@@ -69,11 +69,11 @@
                             <div class="panel-body">
                                 <p class="text-muted"><op:translate key="WORKSPACE_ACTIVE_TASKS_HELP" /></p>
                                 <ul class="list-sortable workspace-edition-sortable active-tasks">
-                                    <c:forEach var="task" items="${editionForm.tasks}" varStatus="status">
+                                    <c:forEach var="task" items="${editionForm.tasks}" varStatus="varStatus">
                                         <c:if test="${task.active}">
                                             <li>
-                                                <form:hidden path="tasks[${status.index}].active" />
-                                                <form:hidden path="tasks[${status.index}].order" />
+                                                <form:hidden path="tasks[${varStatus.index}].active" />
+                                                <form:hidden path="tasks[${varStatus.index}].order" />
                                             
                                                 <i class="${task.icon}"></i>
                                                 <span>${task.displayName}</span>
@@ -99,11 +99,11 @@
                             <div class="panel-body">
                                 <p class="text-muted"><op:translate key="WORKSPACE_IDLE_TASKS_HELP" /></p>
                                 <ul class="list-sortable workspace-edition-sortable idle-tasks">
-                                    <c:forEach var="task" items="${editionForm.tasks}" varStatus="status">
+                                    <c:forEach var="task" items="${editionForm.tasks}" varStatus="varStatus">
                                         <c:if test="${not task.active}">
                                             <li>
-                                                <form:hidden path="tasks[${status.index}].active" />
-                                                <form:hidden path="tasks[${status.index}].order" />
+                                                <form:hidden path="tasks[${varStatus.index}].active" />
+                                                <form:hidden path="tasks[${varStatus.index}].order" />
                                             
                                                 <i class="${task.icon}"></i>
                                                 <span>${task.displayName}</span>
