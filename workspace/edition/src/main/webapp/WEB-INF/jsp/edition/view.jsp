@@ -84,7 +84,8 @@
                             </div>
                             <div class="panel-footer">
                                 <!-- Create -->
-                                <button type="button" name="openTaskCreation" class="btn btn-default" data-load-url="${taskCreationUrl}">
+                                <c:set var="title"><op:translate key="WORKSPACE_CREATE_TASK_MODAL_TITLE" /></c:set>
+                                <button type="button" name="open-task-creation" class="btn btn-default" data-load-url="${taskCreationUrl}" data-title="${title}">
                                     <i class="glyphicons glyphicons-plus"></i>
                                     <span><op:translate key="WORKSPACE_CREATE_TASK" /></span>
                                 </button>
