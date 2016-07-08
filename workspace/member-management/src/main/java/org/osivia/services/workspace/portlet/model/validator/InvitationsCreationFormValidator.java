@@ -1,24 +1,24 @@
 package org.osivia.services.workspace.portlet.model.validator;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.osivia.services.workspace.portlet.model.AddForm;
+import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Add member form validator.
- *
+ * Invitations creation form validator.
+ * 
  * @author Cédric Krommenhoek
  * @see Validator
  */
 @Component
-public class AddFormValidator implements Validator {
+public class InvitationsCreationFormValidator implements Validator {
 
     /**
      * Constructor.
      */
-    public AddFormValidator() {
+    public InvitationsCreationFormValidator() {
         super();
     }
 
@@ -28,7 +28,7 @@ public class AddFormValidator implements Validator {
      */
     @Override
     public boolean supports(Class<?> clazz) {
-        return AddForm.class.equals(clazz);
+        return clazz.isAssignableFrom(InvitationsCreationForm.class);
     }
 
 
@@ -37,11 +37,7 @@ public class AddFormValidator implements Validator {
      */
     @Override
     public void validate(Object target, Errors errors) {
-        AddForm form = (AddForm) target;
-
-        if (CollectionUtils.isEmpty(form.getNames())) {
-            errors.rejectValue("names", "NotEmpty");
-        }
+        ValidationUtils.rejectIfEmpty(errors, "identifiers", "NotEmpty");
     }
 
 }

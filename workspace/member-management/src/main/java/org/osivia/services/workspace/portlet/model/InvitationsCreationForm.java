@@ -1,35 +1,47 @@
 package org.osivia.services.workspace.portlet.model;
 
-import org.osivia.directory.v2.model.ext.WorkspaceMember;
+import java.util.List;
+
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-/**
- * Member java-bean.
- * 
- * @author Cédric Krommenhoek
- * @see MemberObject
- */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class Member extends MemberObject {
+public class InvitationsCreationForm {
 
+    /** Person identifiers . */
+    private List<String> identifiers;
     /** Role. */
     private WorkspaceRole role;
 
 
     /**
      * Constructor.
-     * 
-     * @param workspaceMember workspace member
      */
-    public Member(WorkspaceMember workspaceMember) {
-        super(workspaceMember.getMember());
-        this.role = workspaceMember.getRole();
+    public InvitationsCreationForm() {
+        super();
     }
 
+
+    /**
+     * Getter for identifiers.
+     * 
+     * @return the identifiers
+     */
+    public List<String> getIdentifiers() {
+        return identifiers;
+    }
+
+    /**
+     * Setter for identifiers.
+     * 
+     * @param identifiers the identifiers to set
+     */
+    public void setIdentifiers(List<String> identifiers) {
+        this.identifiers = identifiers;
+    }
 
     /**
      * Getter for role.

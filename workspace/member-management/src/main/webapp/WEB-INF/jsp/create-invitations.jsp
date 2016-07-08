@@ -7,33 +7,37 @@
 <%@ page contentType="text/html" isELIgnored="false"%>
 
 
-<portlet:actionURL name="add" var="addUrl">
+<portlet:actionURL name="create" var="createUrl">
+    <portlet:param name="tab" value="invitations" />
     <portlet:param name="sort" value="${sort}" />
     <portlet:param name="alt" value="${alt}" />
 </portlet:actionURL>
 
 <portlet:resourceURL id="search" var="searchUrl" />
 
+
 <c:set var="namespace"><portlet:namespace /></c:set>
 
 
 <div class="well">
-    <form:form action="${addUrl}" method="post" modelAttribute="addForm" role="form">
+    <form:form action="${createUrl}" method="post" modelAttribute="creation" role="form">
         <fieldset>
-            <legend><op:translate key="ADD_MEMBERS_LEGEND" /></legend>
-        
+            <legend>
+                <span><op:translate key="CREATE_INVITATIONS_LEGEND" /></span>
+            </legend>
+            
             <div class="row">
                 <div class="col-sm-8">
-                    <!-- Member names selector -->
-                    <c:set var="placeholder"><op:translate key="ADD_MEMBERS_PLACEHOLDER" /></c:set>
+                    <!-- Persons -->
+                    <c:set var="placeholder"><op:translate key="CREATE_INVITATIONS_ADD_PERSONS_PLACEHOLDER" /></c:set>
                     <c:set var="inputTooShort"><op:translate key="SELECT2_INPUT_TOO_SHORT" args="3" /></c:set>
+                    <c:set var="noResults"><op:translate key="SELECT2_NO_RESULTS" /></c:set>
                     <c:set var="searching"><op:translate key="SELECT2_SEARCHING" /></c:set>
-                    <spring:bind path="names">
+                    <spring:bind path="identifiers">
                         <div class="form-group ${status.error ? 'has-error' : ''}">
-                            <form:label path="names" cssClass="control-label"><op:translate key="ADD_MEMBERS_LABEL" /></form:label>
-                            <form:select path="names" cssClass="form-control select2" multiple="multiple" data-placeholder="${placeholder}" data-url="${searchUrl}" data-input-too-short="${inputTooShort}" data-searching="${searching}">
-                            </form:select>
-                            <form:errors path="names" cssClass="help-block" />
+                            <form:label path="identifiers" cssClass="control-label"><op:translate key="CREATE_INVITATIONS_ADD_PERSONS_LABEL" /></form:label>
+                            <form:select path="identifiers" cssClass="form-control select2" data-placeholder="${placeholder}" data-url="${searchUrl}" data-input-too-short="${inputTooShort}" data-no-results="${noResults}" data-searching="${searching}"></form:select>
+                            <form:errors path="identifiers" cssClass="help-block" />
                         </div>
                     </spring:bind>
                 </div>
@@ -43,7 +47,7 @@
                     <div class="form-group">
                         <form:label path="role" cssClass="control-label"><op:translate key="ROLE" /></form:label>
                         <form:select path="role" cssClass="form-control">
-                            <c:forEach var="role" items="${roles}">
+                            <c:forEach var="role" items="${options.roles}">
                                 <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}"/></form:option>
                             </c:forEach>
                         </form:select>
@@ -53,15 +57,15 @@
             
             <!-- Buttons -->
             <spring:bind path="*">
-                <div class="collapse ${status.error ? 'in' : ''}">
+                <div id="${namespace}-creation-buttons" class="collapse ${status.error ? 'in' : ''}">
                     <!-- Save -->
-                    <button type="submit" name="save" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary">
                         <i class="glyphicons glyphicons-floppy-disk"></i>
-                        <span><op:translate key="SAVE" /></span>
+                        <span><op:translate key="INVITE" /></span>
                     </button>
                     
                     <!-- Cancel -->
-                    <button type="submit" name="cancel" class="btn btn-default">
+                    <button type="reset" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-creation-buttons">
                         <span><op:translate key="CANCEL" /></span>
                     </button>
                 </div>

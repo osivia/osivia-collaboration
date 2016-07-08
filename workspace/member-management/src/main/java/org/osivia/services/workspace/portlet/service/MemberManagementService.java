@@ -1,13 +1,12 @@
 package org.osivia.services.workspace.portlet.service;
 
-import java.util.List;
-
 import javax.portlet.PortletException;
 
-import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.workspace.portlet.model.AddForm;
-import org.osivia.services.workspace.portlet.model.MembersContainer;
+import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
+import org.osivia.services.workspace.portlet.model.InvitationsForm;
+import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
+import org.osivia.services.workspace.portlet.model.MembersForm;
 
 import net.sf.json.JSONArray;
 
@@ -19,53 +18,112 @@ import net.sf.json.JSONArray;
 public interface MemberManagementService {
 
     /**
-     * Get workspace members container.
+     * Get options.
      * 
      * @param portalControllerContext portal controller context
-     * @return members container
+     * @return options
      * @throws PortletException
      */
-    MembersContainer getMembersContainer(PortalControllerContext portalControllerContext, String workspaceId) throws PortletException;
+    MemberManagementOptions getOptions(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**
-     * Search members.
+     * Get members form.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return form
+     * @throws PortletException
+     */
+    MembersForm getMembersForm(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Sort members.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form members form
+     * @param sort sort property
+     * @param alt alternative sort indicator
+     * @throws PortletException
+     */
+    void sortMembers(PortalControllerContext portalControllerContext, MembersForm form, String sort, boolean alt) throws PortletException;
+
+
+    /**
+     * Update members.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param options options
+     * @param form members form
+     * @throws PortletException
+     */
+    void updateMembers(PortalControllerContext portalControllerContext, MemberManagementOptions options, MembersForm form) throws PortletException;
+
+
+    /**
+     * Get invitations form.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return form
+     * @throws PortletException
+     */
+    InvitationsForm getInvitationsForm(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Get invitations creation form.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return form
+     * @throws PortletException
+     */
+    InvitationsCreationForm getInvitationsCreationForm(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Search persons.
      * 
      * @param portalControllerContext portal controller context
      * @param filter search filter
-     * @return members
+     * @return JSON array
      * @throws PortletException
      */
-    JSONArray searchMembers(PortalControllerContext portalControllerContext, String filter) throws PortletException;
+    JSONArray searchPersons(PortalControllerContext portalControllerContext, String filter) throws PortletException;
 
 
     /**
-     * Update workspace members container.
+     * Sort invitations.
      * 
      * @param portalControllerContext portal controller context
-     * @param container members container
+     * @param form invitations form
+     * @param sort sort property
+     * @param alt alternative sort indicator
      * @throws PortletException
      */
-    void update(PortalControllerContext portalControllerContext, MembersContainer container) throws PortletException;
+    void sortInvitations(PortalControllerContext portalControllerContext, InvitationsForm form, String sort, boolean alt) throws PortletException;
 
 
     /**
-     * Add members.
+     * Update invitations.
      * 
      * @param portalControllerContext portal controller context
-     * @param container members container
-     * @param form form
+     * @param options options
+     * @param form invitations form
      * @throws PortletException
      */
-    void add(PortalControllerContext portalControllerContext, MembersContainer container, AddForm form) throws PortletException;
+    void updateInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form) throws PortletException;
 
 
-	/**
-	 * Return allowed roles in the workspace
-	 * 
-	 * @param workspaceId
-	 * @return
-	 */
-	List<WorkspaceRole> getAllowedRoles(String workspaceId);
+    /**
+     * Create invitations.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param options options
+     * @param invitationsForm invitations form
+     * @param creationForm invitations creation form
+     * @throws PortletException
+     */
+    void createInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm invitationsForm,
+            InvitationsCreationForm creationForm) throws PortletException;
 
 }

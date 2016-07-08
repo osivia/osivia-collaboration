@@ -188,7 +188,10 @@ $JQry(function() {
 		
 		$hidden.val(true);
 		$fieldset.prop("disabled", true);
-		$collapse.collapse("show");
+		
+		if (!$collapse.hasClass("in")) {
+			$collapse.collapse("show");
+		}
 	});
 	
 	
@@ -198,6 +201,7 @@ $JQry(function() {
 		
 		$form.find("fieldset[disabled]").prop("disabled", false);
 		$form.find("input[type=hidden][value=true]").val(false);
+		$form.find("select.select2").val(null).trigger("change");
 	});
 	
 });
