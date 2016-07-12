@@ -233,6 +233,15 @@ public class ForumServiceImpl implements IForumService {
             // Commentable
             boolean isCommentable = this.isThreadCommentable(nuxeoController, document);
             vo.setCommentable(isCommentable);
+            
+            // Attachment
+            String attachmentName = document.getString("file:filename");
+            if (attachmentName != null) {
+                vo.setAttachmentName(attachmentName);
+
+                String attachmentURL = nuxeoController.createFileLink(document.getPath(), "file:content", attachmentName);
+                vo.setAttachmentURL(attachmentURL);
+            }
 
             // Directory person
             IDirectoryService directoryService = this.directoryServiceLocator.getDirectoryService();

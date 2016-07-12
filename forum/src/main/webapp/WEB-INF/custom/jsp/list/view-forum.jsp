@@ -14,8 +14,8 @@
             <c:set var="url"><ttc:documentLink document="${document}" /></c:set>
             <c:set var="vignetteURL"><ttc:pictureLink document="${document}" property="ttc:vignette" /></c:set>
             <c:set var="description" value="${document.properties['dc:description']}" />
-            <c:set var="lastContributor" value="${document.properties['dc:lastContributor']}" />
-            <c:set var="modificationDate" value="${document.properties['dc:modified']}" />
+            <c:set var="creator" value="${document.properties['dc:creator']}" />
+            <c:set var="creationDate" value="${document.properties['dc:created']}" />
             <c:set var="nbAnswers" value="${document.properties['ttcth:nbComments']}" />
         
         
@@ -58,11 +58,9 @@
                                         </c:if>
                                         
                                         <div class="small">
-                                           <span><op:translate key="LAST_ANSWER" /></span>
+                                           <span><ttc:user name="${creator}" /></span>
                                            <span><op:translate key="DATE_ARTICLE_PREFIX" /></span>
-                                           <span><fmt:formatDate value="${modificationDate}" type="date" dateStyle="long" /></span>
-                                           <span><op:translate key="BY" /></span>
-                                           <span><ttc:user name="${lastContributor}" /></span>
+                                           <span><fmt:formatDate value="${creationDate}" type="date" dateStyle="long" /></span>
                                         </div>
                                     </div>
                                 </div>

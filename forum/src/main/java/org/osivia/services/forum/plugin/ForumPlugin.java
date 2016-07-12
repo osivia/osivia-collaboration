@@ -57,7 +57,7 @@ public class ForumPlugin extends AbstractPluginPortlet {
 
 
     /** Default schemas. */
-    public static final String DEFAULT_SCHEMAS = "dublincore, common, toutatice, file";
+    public static final String DEFAULT_SCHEMAS = "dublincore, common, toutatice, file, thread_toutatice";
 
     /** Bundle factory. */
     protected IBundleFactory bundleFactory;

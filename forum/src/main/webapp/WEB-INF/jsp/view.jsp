@@ -88,6 +88,14 @@
                     <!-- Message -->
                     <p>${thread.message}</p>
                     
+                    <!-- Attachment -->
+	                <c:if test="${not empty thread.attachmentURL}">
+	                    <p>
+	                        <i class="halflings halflings-glyph-paperclip"></i>
+	                        <a href="${thread.attachmentURL}">${thread.attachmentName}</a>
+	                    </p>
+	                </c:if>
+                    
                     <!-- Buttons -->
                     <c:if test="${thread.commentable}">
                         <div class="text-right">

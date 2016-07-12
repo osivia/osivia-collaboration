@@ -21,7 +21,10 @@ public abstract class ThreadObject {
     private String profileURL;
     /** Creation date. */
     private Date date;
-
+    /** Attachment name. */
+    private String attachmentName;
+    /** Attachment URL. */
+    private String attachmentURL;
 
     /**
      * Constructor.
@@ -49,7 +52,7 @@ public abstract class ThreadObject {
         this.message = message;
     }
 
-    /**
+	/**
      * Getter for author.
      * 
      * @return the author
@@ -119,6 +122,42 @@ public abstract class ThreadObject {
      */
     public void setDate(Date date) {
         this.date = date;
+    }
+    
+    /**
+     * Getter for attachmentName.
+     * 
+     * @return the attachmentName
+     */
+    public String getAttachmentName() {
+        return this.attachmentName;
+    }
+
+    /**
+     * Setter for attachmentName.
+     * 
+     * @param attachmentName the attachmentName to set
+     */
+    public void setAttachmentName(String attachmentName) {
+        this.attachmentName = attachmentName;
+    }
+
+    /**
+     * Getter for attachmentURL.
+     * 
+     * @return the attachmentURL
+     */
+    public String getAttachmentURL() {
+        return this.attachmentURL;
+    }
+
+    /**
+     * Setter for attachmentURL.
+     * 
+     * @param attachmentURL the attachmentURL to set
+     */
+    public void setAttachmentURL(String attachmentURL) {
+        this.attachmentURL = attachmentURL;
     }
 
 }

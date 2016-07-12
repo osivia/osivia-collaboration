@@ -14,10 +14,6 @@ public class ThreadPost extends ThreadObject {
     private String id;
     /** Deletable indicator. */
     private boolean deletable;
-    /** Attachment name. */
-    private String attachmentName;
-    /** Attachment URL. */
-    private String attachmentURL;
 
     /** Thread post children. */
     private final List<ThreadPost> children;
@@ -66,42 +62,6 @@ public class ThreadPost extends ThreadObject {
      */
     public void setDeletable(boolean deletable) {
         this.deletable = deletable;
-    }
-
-    /**
-     * Getter for attachmentName.
-     * 
-     * @return the attachmentName
-     */
-    public String getAttachmentName() {
-        return this.attachmentName;
-    }
-
-    /**
-     * Setter for attachmentName.
-     * 
-     * @param attachmentName the attachmentName to set
-     */
-    public void setAttachmentName(String attachmentName) {
-        this.attachmentName = attachmentName;
-    }
-
-    /**
-     * Getter for attachmentURL.
-     * 
-     * @return the attachmentURL
-     */
-    public String getAttachmentURL() {
-        return this.attachmentURL;
-    }
-
-    /**
-     * Setter for attachmentURL.
-     * 
-     * @param attachmentURL the attachmentURL to set
-     */
-    public void setAttachmentURL(String attachmentURL) {
-        this.attachmentURL = attachmentURL;
     }
 
     /**
