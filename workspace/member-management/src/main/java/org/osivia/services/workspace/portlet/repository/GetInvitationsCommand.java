@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 
 /**
  * Get invitations command.
@@ -45,15 +47,17 @@ public class GetInvitationsCommand implements INuxeoCommand {
     public Object execute(Session nuxeoSession) throws Exception {
         // Clause
         StringBuilder clause = new StringBuilder();
-        clause.append("ecm:primaryType = 'TaskDoc' ");
-        clause.append("AND nt:pi.pi:procedureModelPath = \"").append(this.modelPath).append("\" ");
-        clause.append("AND nt:pi.pi:globalVariablesValues.workspaceId = '").append(this.workspaceId).append("' ");
-        clause.append("AND ecm:currentLifeCycleState != 'ended' ");
+        clause.append("ecm:primaryType = 'ProcedureInstance' ");
+        clause.append("AND pi:procedureModelPath = '").append(this.modelPath).append("' ");
+        clause.append("AND pi:globalVariablesValues.workspaceId = '").append(this.workspaceId).append("' ");
+
+        // Filtered clause
+        String filteredClause = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE, clause.toString());
 
         // Operation request
         OperationRequest request = nuxeoSession.newRequest("Document.QueryES");
-        request.set(Constants.HEADER_NX_SCHEMAS, "*");
-        request.set("query", "SELECT * FROM Document WHERE " + clause);
+        request.set(Constants.HEADER_NX_SCHEMAS, "dublincore, procedureInstance");
+        request.set("query", "SELECT * FROM Document WHERE " + filteredClause);
 
         return request.execute();
     }

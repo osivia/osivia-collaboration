@@ -23,6 +23,8 @@ public interface MemberManagementRepository {
 
     /** Workspace identifier property. */
     String WORKSPACE_IDENTIFIER_PROPERTY = "workspaceId";
+    /** Workspace title property. */
+    String WORKSPACE_TITLE_PROPERTY = "workspaceTitle";
     /** Person UID property. */
     String PERSON_UID_PROPERTY = "uid";
     /** Invitation state property. */
