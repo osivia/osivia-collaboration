@@ -177,8 +177,11 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         // Invitations
         List<Invitation> invitations = new ArrayList<>(documents.size());
         for (Document document : documents.list()) {
+
+            PropertyMap procedureInstance = document.getProperties().getMap("nt:pi");
+
             // Variables
-            PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
+            PropertyMap variables = procedureInstance.getMap("pi:globalVariablesValues");
 
             // UID
             String uid = variables.getString(PERSON_UID_PROPERTY);
@@ -282,7 +285,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             } else {
                 // Variables
                 Map<String, String> variables = new HashMap<>();
-                variables.put("documentPath", workspace.getPath());
+                variables.put("workspaceTitle", workspace.getTitle());
                 variables.put(WORKSPACE_IDENTIFIER_PROPERTY, workspaceId);
                 variables.put(PERSON_UID_PROPERTY, identifier);
                 variables.put(INVITATION_STATE_PROPERTY, InvitationState.SENT.name());
