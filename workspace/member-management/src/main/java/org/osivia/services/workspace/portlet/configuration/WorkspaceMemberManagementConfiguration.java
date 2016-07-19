@@ -15,7 +15,6 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
-import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCustomizer;
 import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
 
 /**
@@ -105,8 +104,7 @@ public class WorkspaceMemberManagementConfiguration {
      */
     @Bean
     public IFormsService getFormsService(INuxeoService nuxeoService) {
-        INuxeoCustomizer cmsCustomizer = nuxeoService.getCMSCustomizer();
-        return cmsCustomizer.getFormsService();
+        return nuxeoService.getFormsService();
     }
 
 

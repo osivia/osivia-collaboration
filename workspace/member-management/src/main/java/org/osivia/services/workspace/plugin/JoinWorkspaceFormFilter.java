@@ -2,6 +2,7 @@ package org.osivia.services.workspace.plugin;
 
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterContext;
+import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterExecutor;
 
 /**
  * Join workspace form filter.
@@ -47,7 +48,7 @@ public class JoinWorkspaceFormFilter implements FormFilter {
      * {@inheritDoc}
      */
     @Override
-    public void execute(FormFilterContext context) {
+    public void execute(FormFilterContext context, FormFilterExecutor executor) {
         // TODO Auto-generated method stub
 
     }
