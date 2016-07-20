@@ -27,7 +27,7 @@
             </legend>
             
             <div class="row">
-                <div class="col-sm-8">
+                <div class="col-sm-8 col-lg-9">
                     <!-- Persons -->
                     <c:set var="placeholder"><op:translate key="CREATE_INVITATIONS_ADD_PERSONS_PLACEHOLDER" /></c:set>
                     <c:set var="inputTooShort"><op:translate key="SELECT2_INPUT_TOO_SHORT" args="3" /></c:set>
@@ -42,7 +42,7 @@
                     </spring:bind>
                 </div>
                 
-                <div class="col-sm-4">
+                <div class="col-sm-4 col-lg-3">
                     <!-- Role -->
                     <div class="form-group">
                         <form:label path="role" cssClass="control-label"><op:translate key="ROLE" /></form:label>

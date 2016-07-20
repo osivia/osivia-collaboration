@@ -1,5 +1,7 @@
 package org.osivia.services.workspace.portlet.model;
 
+import java.util.Date;
+
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.directory.v2.model.Person;
@@ -19,6 +21,8 @@ public class Invitation extends MemberObject {
 
     /** Document. */
     private Document document;
+    /** Date. */
+    private Date date;
     /** Role. */
     private WorkspaceRole role;
     /** State. */
@@ -51,6 +55,24 @@ public class Invitation extends MemberObject {
      */
     public void setDocument(Document document) {
         this.document = document;
+    }
+
+    /**
+     * Getter for date.
+     * 
+     * @return the date
+     */
+    public Date getDate() {
+        return date;
+    }
+
+    /**
+     * Setter for date.
+     * 
+     * @param date the date to set
+     */
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     /**

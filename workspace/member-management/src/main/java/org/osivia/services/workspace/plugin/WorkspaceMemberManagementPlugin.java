@@ -24,7 +24,7 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
     /** Menubar module. */
     private final MenubarModule menubarModule;
     /** Join workspace form filter. */
-    private final FormFilter joinWorkspaceFormFilter;
+    private final FormFilter acceptFormFilter;
 
 
     /**
@@ -33,7 +33,7 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
     public WorkspaceMemberManagementPlugin() {
         super();
         this.menubarModule = new WorkspaceMemberManagementMenubarModule();
-        this.joinWorkspaceFormFilter = new JoinWorkspaceFormFilter();
+        this.acceptFormFilter = new AcceptWorkspaceInvitationFormFilter();
     }
 
 
@@ -57,7 +57,7 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
 
         // Form filters
         Map<String, FormFilter> formFilters = this.getFormFilters(context);
-        formFilters.put(this.joinWorkspaceFormFilter.getId(), this.joinWorkspaceFormFilter);
+        formFilters.put(this.acceptFormFilter.getId(), this.acceptFormFilter);
     }
 
 }

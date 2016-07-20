@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.portlet.repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +93,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         String modelPath = this.getInvitationModelPath(portalControllerContext);
 
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, modelPath, workspaceId);
+        INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, modelPath, workspaceId, InvitationState.SENT);
         Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
 
         return documents.size();
@@ -191,9 +192,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 Invitation invitation = this.applicationContext.getBean(Invitation.class, person);
                 invitation.setDocument(document);
 
-                // Invitations state
-                InvitationState state = InvitationState.fromName(variables.getString(INVITATION_STATE_PROPERTY));
-                invitation.setState(state);
+                // Date
+                Date date = document.getDate("dc:modified");
+                invitation.setDate(date);
 
                 // Role
                 WorkspaceRole role = WorkspaceRole.fromId(variables.getString(ROLE_PROPERTY));
@@ -201,6 +202,10 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     role = WorkspaceRole.READER;
                 }
                 invitation.setRole(role);
+
+                // Invitations state
+                InvitationState state = InvitationState.fromName(variables.getString(INVITATION_STATE_PROPERTY));
+                invitation.setState(state);
 
                 invitations.add(invitation);
             }

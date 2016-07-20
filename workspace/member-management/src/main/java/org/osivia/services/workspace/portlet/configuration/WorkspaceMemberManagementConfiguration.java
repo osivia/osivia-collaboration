@@ -15,7 +15,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
-import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
+import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoServiceFactory;
 
 /**
  * Workspace member management configuration.
@@ -86,25 +86,13 @@ public class WorkspaceMemberManagementConfiguration {
 
 
     /**
-     * Get Nuxeo service.
-     * 
-     * @return Nuxeo service
-     */
-    @Bean
-    public INuxeoService getNuxeoService() {
-        return Locator.findMBean(INuxeoService.class, INuxeoService.MBEAN_NAME);
-    }
-
-
-    /**
      * Get forms service.
      * 
-     * @param nuxeoService Nuxeo service
      * @return forms service
      */
     @Bean
-    public IFormsService getFormsService(INuxeoService nuxeoService) {
-        return nuxeoService.getFormsService();
+    public IFormsService getFormsService() {
+        return NuxeoServiceFactory.getFormsService();
     }
 
 

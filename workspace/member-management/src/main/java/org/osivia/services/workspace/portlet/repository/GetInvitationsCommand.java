@@ -3,6 +3,7 @@ package org.osivia.services.workspace.portlet.repository;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
+import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,8 @@ public class GetInvitationsCommand implements INuxeoCommand {
     private final String modelPath;
     /** Workspace identifier. */
     private final String workspaceId;
+    /** Invitation state. */
+    private final InvitationState invitationState;
 
 
     /**
@@ -34,9 +37,21 @@ public class GetInvitationsCommand implements INuxeoCommand {
      * @param workspaceId workspace identifier
      */
     public GetInvitationsCommand(String modelPath, String workspaceId) {
+        this(modelPath, workspaceId, null);
+    }
+
+
+    /**
+     * Constructor.
+     *
+     * @param modelPath model path
+     * @param workspaceId workspace identifier
+     */
+    public GetInvitationsCommand(String modelPath, String workspaceId, InvitationState invitationState) {
         super();
         this.modelPath = modelPath;
         this.workspaceId = workspaceId;
+        this.invitationState = invitationState;
     }
 
 
@@ -50,6 +65,9 @@ public class GetInvitationsCommand implements INuxeoCommand {
         clause.append("ecm:primaryType = 'ProcedureInstance' ");
         clause.append("AND pi:procedureModelPath = '").append(this.modelPath).append("' ");
         clause.append("AND pi:globalVariablesValues.workspaceId = '").append(this.workspaceId).append("' ");
+        if (this.invitationState != null) {
+            clause.append("AND pi:globalVariablesValues.invitationState = '").append(this.invitationState.toString()).append("' ");
+        }
 
         // Filtered clause
         String filteredClause = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE, clause.toString());
@@ -74,6 +92,10 @@ public class GetInvitationsCommand implements INuxeoCommand {
         builder.append(this.modelPath);
         builder.append("/");
         builder.append(this.workspaceId);
+        if (this.invitationState != null) {
+            builder.append("/");
+            builder.append(this.invitationState.toString());
+        }
         return builder.toString();
     }
 

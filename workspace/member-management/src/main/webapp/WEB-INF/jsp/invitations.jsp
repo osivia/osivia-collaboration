@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
@@ -11,10 +12,10 @@
     <portlet:param name="sort" value="name" />
     <portlet:param name="alt" value="${sort eq 'name' and not alt}"/>
 </portlet:renderURL>
-<portlet:renderURL var="sortStateUrl">
+<portlet:renderURL var="sortDateUrl">
     <portlet:param name="tab" value="invitations" />
-    <portlet:param name="sort" value="state" />
-    <portlet:param name="alt" value="${sort eq 'state' and not alt}"/>
+    <portlet:param name="sort" value="date" />
+    <portlet:param name="alt" value="${sort ne 'date' or not alt}"/>
 </portlet:renderURL>
 <portlet:renderURL var="sortRoleUrl">
     <portlet:param name="tab" value="invitations" />
@@ -51,11 +52,11 @@
                     </c:if>
                 </div>
                 
-                <!-- Invitation state -->
-                <div class="col-xs-4 col-sm-2 col-lg-1">
-                    <a href="${sortStateUrl}"><op:translate key="INVITATION_STATE"/></a>
+                <!-- Date -->
+                <div class="col-xs-4 col-sm-2">
+                    <a href="${sortDateUrl}"><op:translate key="INVITATION_DATE"/></a>
                     
-                    <c:if test="${sort eq 'state'}">
+                    <c:if test="${sort eq 'date'}">
                         <small class="text-muted">
                             <c:choose>
                                 <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
@@ -69,7 +70,7 @@
                 <div class="clearfix visible-xs-block"></div>
                 
                 <!-- Role -->
-                <div class="col-xs-10 col-sm-3">
+                <div class="col-xs-10 col-sm-3 col-lg-2">
                     <a href="${sortRoleUrl}"><op:translate key="ROLE"/></a>
                     
                     <c:if test="${sort eq 'role'}">
@@ -85,9 +86,9 @@
         </div>
         
         <!-- Body -->
-        <c:forEach var="invitation" items="${invitations.invitations}" varStatus="status">
+        <c:forEach var="invitation" items="${invitations.pending}" varStatus="status">
             <div class="table-row">
-                <form:hidden path="invitations[${status.index}].deleted" />
+                <form:hidden path="pending[${status.index}].deleted" />
             
                 <fieldset>
                     <div class="row">
@@ -106,12 +107,10 @@
                             </div>
                         </div>
                         
-                        <!-- Invitation state -->
-                        <div class="col-xs-4 col-sm-2 col-lg-1">
+                        <!-- Date -->
+                        <div class="col-xs-4 col-sm-2">
                             <div class="form-control-static">
-                                <c:if test="${not empty invitation.state}">
-                                    <span class="${invitation.state.htmlClasses}"><op:translate key="${invitation.state.key}" /></span>
-                                </c:if>
+                                <span class="text-muted"><fmt:formatDate value="${invitation.date}" type="date" dateStyle="medium" /></span>
                             </div>
                         </div>
                         
@@ -119,9 +118,9 @@
                         <div class="clearfix visible-xs-block"></div>
                         
                         <!-- Role -->
-                        <div class="col-xs-10 col-sm-3">
-                            <form:label path="invitations[${status.index}].role" cssClass="sr-only"><op:translate key="ROLE" /></form:label>
-                            <form:select path="invitations[${status.index}].role" cssClass="form-control">
+                        <div class="col-xs-10 col-sm-3 col-lg-2">
+                            <form:label path="pending[${status.index}].role" cssClass="sr-only"><op:translate key="ROLE" /></form:label>
+                            <form:select path="pending[${status.index}].role" cssClass="form-control">
                                 <c:forEach var="role" items="${options.roles}">
                                     <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}" /></form:option>
                                 </c:forEach>
@@ -141,7 +140,7 @@
         </c:forEach>
         
         <!-- No results -->
-        <c:if test="${empty invitations.invitations}">
+        <c:if test="${empty invitations.pending}">
             <div class="table-row">
                 <div class="text-center"><op:translate key="NO_INVITATION" /></div>
             </div>
@@ -149,7 +148,7 @@
     </div>
     
     
-    <div id="${namespace}-buttons" class="form-group collapse">
+    <div id="${namespace}-pending-buttons" class="form-group collapse">
         <!-- Save -->
         <button type="submit" class="btn btn-primary">
             <i class="glyphicons glyphicons-floppy-disk"></i>
@@ -157,7 +156,7 @@
         </button>
         
         <!-- Cancel -->
-        <button type="reset" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-buttons">
+        <button type="reset" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-pending-buttons">
             <span><op:translate key="CANCEL" /></span>
         </button>
     </div>

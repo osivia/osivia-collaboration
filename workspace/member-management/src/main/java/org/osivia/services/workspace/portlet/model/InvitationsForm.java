@@ -15,8 +15,10 @@ import org.springframework.stereotype.Component;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class InvitationsForm {
 
-    /** Invitations. */
-    private List<Invitation> invitations;
+    /** Pending invitations. */
+    private List<Invitation> pending;
+    /** History invitations. */
+    private List<Invitation> history;
 
 
     /**
@@ -28,21 +30,39 @@ public class InvitationsForm {
 
 
     /**
-     * Getter for invitations.
+     * Getter for pending.
      * 
-     * @return the invitations
+     * @return the pending
      */
-    public List<Invitation> getInvitations() {
-        return invitations;
+    public List<Invitation> getPending() {
+        return pending;
     }
 
     /**
-     * Setter for invitations.
+     * Setter for pending.
      * 
-     * @param invitations the invitations to set
+     * @param pending the pending to set
      */
-    public void setInvitations(List<Invitation> invitations) {
-        this.invitations = invitations;
+    public void setPending(List<Invitation> pending) {
+        this.pending = pending;
+    }
+
+    /**
+     * Getter for history.
+     * 
+     * @return the history
+     */
+    public List<Invitation> getHistory() {
+        return history;
+    }
+
+    /**
+     * Setter for history.
+     * 
+     * @param history the history to set
+     */
+    public void setHistory(List<Invitation> history) {
+        this.history = history;
     }
 
 }

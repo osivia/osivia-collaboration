@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.portlet.model.comparator;
 
 import java.util.Comparator;
+import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.osivia.services.workspace.portlet.model.Invitation;
@@ -50,6 +51,12 @@ public class InvitationComparator implements Comparator<Invitation> {
             result = -1;
         } else if (invitation2 == null) {
             result = 1;
+        } else if ("date".equals(this.sort)) {
+            // Date
+            Date date1 = invitation1.getDate();
+            Date date2 = invitation2.getDate();
+
+            result = date1.compareTo(date2);
         } else if ("role".equals(this.sort)) {
             // Role
             Integer role1 = invitation1.getRole().getWeight();
