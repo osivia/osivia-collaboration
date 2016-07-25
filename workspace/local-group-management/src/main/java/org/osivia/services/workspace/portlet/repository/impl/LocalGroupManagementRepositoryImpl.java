@@ -146,7 +146,7 @@ public class LocalGroupManagementRepositoryImpl implements LocalGroupManagementR
 
         // Search members
         Person criteria = personService.getEmptyPerson();
-        criteria.setPortalPersonProfile(Arrays.asList(new Name[]{group.getDn()}));
+        criteria.setProfiles(Arrays.asList(new Name[]{group.getDn()}));
         List<Person> persons = personService.findByCriteria(criteria);
 
 
