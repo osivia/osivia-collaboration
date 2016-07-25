@@ -18,6 +18,8 @@ public class Member extends MemberObject {
 
     /** Role. */
     private WorkspaceRole role;
+    /** Editable. */
+    private boolean editable;
 
 
     /**
@@ -47,6 +49,24 @@ public class Member extends MemberObject {
      */
     public void setRole(WorkspaceRole role) {
         this.role = role;
+    }
+
+    /**
+     * Getter for editable.
+     * 
+     * @return the editable
+     */
+    public boolean isEditable() {
+        return editable;
+    }
+
+    /**
+     * Setter for editable.
+     * 
+     * @param editable the editable to set
+     */
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 
 }

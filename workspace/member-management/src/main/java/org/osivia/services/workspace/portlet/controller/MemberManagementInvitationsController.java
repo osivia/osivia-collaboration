@@ -98,12 +98,15 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
      * @param form invitations form model attribute
      * @param sort sort property request parameter
      * @param alt alternative sort indicator request parameter
+     * @param sort2 history sort property request parameter
+     * @param alt2 history alternative sort indicator request parameter
      * @return view path
      * @throws PortletException
      */
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response, @ModelAttribute("invitations") InvitationsForm form,
-            @RequestParam(value = "sort", defaultValue = "name") String sort, @RequestParam(value = "alt", required = false) String alt)
+            @RequestParam(value = "sort", defaultValue = "name") String sort, @RequestParam(value = "alt", required = false) String alt,
+            @RequestParam(value = "sort2", defaultValue = "name") String sort2, @RequestParam(value = "alt2", required = false) String alt2)
             throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
@@ -112,9 +115,11 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
         request.setAttribute("tab", "invitations");
 
         // Sort members
-        this.service.sortInvitations(portalControllerContext, form, sort, BooleanUtils.toBoolean(alt));
+        this.service.sortInvitations(portalControllerContext, form, sort, BooleanUtils.toBoolean(alt), sort2, BooleanUtils.toBoolean(alt2));
         request.setAttribute("sort", sort);
         request.setAttribute("alt", alt);
+        request.setAttribute("sort2", sort2);
+        request.setAttribute("alt2", alt2);
 
         return "view-invitations";
     }
@@ -135,18 +140,32 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.updateInvitations(portalControllerContext, options, form);
+        this.service.updatePendingInvitations(portalControllerContext, options, form);
 
         // Copy render parameter
-        response.setRenderParameter("tab", "invitations");
-        String sortParameter = request.getParameter("sort");
-        if (StringUtils.isNotEmpty(sortParameter)) {
-            response.setRenderParameter("sort", sortParameter);
-        }
-        String altParameter = request.getParameter("sort");
-        if (StringUtils.isNotEmpty(altParameter)) {
-            response.setRenderParameter("alt", altParameter);
-        }
+        copyRenderParameters(request, response);
+    }
+
+
+    /**
+     * Update invitations history.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param options options model attribute
+     * @param form invitations form model attribute
+     * @throws PortletException
+     */
+    @ActionMapping("updateHistory")
+    public void updateHistory(ActionRequest request, ActionResponse response, @ModelAttribute("options") MemberManagementOptions options,
+            @ModelAttribute("invitations") InvitationsForm form) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.updateHistoryInvitations(portalControllerContext, options, form);
+
+        // Copy render parameter
+        copyRenderParameters(request, response);
     }
 
 
@@ -173,14 +192,37 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
         }
 
         // Copy render parameter
+        copyRenderParameters(request, response);
+    }
+
+
+    /**
+     * Copy render parameters.
+     * 
+     * @param request action request
+     * @param response action response
+     */
+    private void copyRenderParameters(ActionRequest request, ActionResponse response) {
         response.setRenderParameter("tab", "invitations");
+
         String sortParameter = request.getParameter("sort");
         if (StringUtils.isNotEmpty(sortParameter)) {
             response.setRenderParameter("sort", sortParameter);
         }
-        String altParameter = request.getParameter("sort");
+
+        String altParameter = request.getParameter("alt");
         if (StringUtils.isNotEmpty(altParameter)) {
             response.setRenderParameter("alt", altParameter);
+        }
+
+        String sort2Parameter = request.getParameter("sort2");
+        if (StringUtils.isNotEmpty(sort2Parameter)) {
+            response.setRenderParameter("sort2", sort2Parameter);
+        }
+
+        String alt2Parameter = request.getParameter("alt2");
+        if (StringUtils.isNotEmpty(alt2Parameter)) {
+            response.setRenderParameter("alt2", alt2Parameter);
         }
     }
 

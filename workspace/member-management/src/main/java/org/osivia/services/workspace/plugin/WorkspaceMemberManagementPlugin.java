@@ -23,8 +23,10 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
 
     /** Menubar module. */
     private final MenubarModule menubarModule;
-    /** Join workspace form filter. */
+    /** Accept workspace invitation form filter. */
     private final FormFilter acceptFormFilter;
+    /** Decline workspace invitation form filter. */
+    private final FormFilter declineFormFilter;
 
 
     /**
@@ -34,6 +36,7 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
         super();
         this.menubarModule = new WorkspaceMemberManagementMenubarModule();
         this.acceptFormFilter = new AcceptWorkspaceInvitationFormFilter();
+        this.declineFormFilter = new DeclineWorkspaceInvitationFormFilter();
     }
 
 
@@ -58,6 +61,10 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
         // Form filters
         Map<String, FormFilter> formFilters = this.getFormFilters(context);
         formFilters.put(this.acceptFormFilter.getId(), this.acceptFormFilter);
+        formFilters.put(this.declineFormFilter.getId(), this.declineFormFilter);
+
+        // FIXME temporaire
+        formFilters.put("SET_ACTOR", new SetActorFormFilter());
     }
 
 }

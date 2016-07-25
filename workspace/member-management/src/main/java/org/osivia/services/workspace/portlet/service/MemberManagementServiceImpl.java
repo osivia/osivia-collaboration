@@ -219,9 +219,13 @@ public class MemberManagementServiceImpl implements MemberManagementService {
      * {@inheritDoc}
      */
     @Override
-    public void sortInvitations(PortalControllerContext portalControllerContext, InvitationsForm form, String sort, boolean alt) throws PortletException {
+    public void sortInvitations(PortalControllerContext portalControllerContext, InvitationsForm form, String sort, boolean alt, String sort2, boolean alt2)
+            throws PortletException {
         InvitationComparator comparator = this.applicationContext.getBean(InvitationComparator.class, sort, alt);
         Collections.sort(form.getPending(), comparator);
+
+        InvitationComparator comparator2 = this.applicationContext.getBean(InvitationComparator.class, sort2, alt2);
+        Collections.sort(form.getHistory(), comparator2);
     }
 
 
@@ -229,31 +233,47 @@ public class MemberManagementServiceImpl implements MemberManagementService {
      * {@inheritDoc}
      */
     @Override
-    public void updateInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form)
+    public void updatePendingInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form)
             throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
-        this.repository.updateInvitations(portalControllerContext, options.getWorkspaceId(), form.getPending());
+        this.repository.updateInvitations(portalControllerContext, options.getWorkspaceId(), form.getPending(), true);
 
         // Update model
         List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, options.getWorkspaceId());
         List<Invitation> pending = new ArrayList<>(invitations.size());
-        List<Invitation> history = new ArrayList<>(invitations.size());
         for (Invitation invitation : invitations) {
             if (InvitationState.SENT.equals(invitation.getState())) {
                 pending.add(invitation);
-            } else {
-                history.add(invitation);
             }
         }
         options.setInvitationsCount(pending.size());
         form.setPending(pending);
-        form.setHistory(history);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_UPDATE_SUCCESS");
         this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateHistoryInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form)
+            throws PortletException {
+        this.repository.updateInvitations(portalControllerContext, options.getWorkspaceId(), form.getHistory(), false);
+
+        // Update model
+        List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, options.getWorkspaceId());
+        List<Invitation> history = new ArrayList<>(invitations.size());
+        for (Invitation invitation : invitations) {
+            if (!InvitationState.SENT.equals(invitation.getState())) {
+                history.add(invitation);
+            }
+        }
+        form.setHistory(history);
     }
 
 
@@ -267,26 +287,28 @@ public class MemberManagementServiceImpl implements MemberManagementService {
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
         // Create invitations
-        this.repository.createInvitations(portalControllerContext, options.getWorkspaceId(), invitationsForm.getPending(), creationForm);
+        boolean created = this.repository.createInvitations(portalControllerContext, options.getWorkspaceId(), invitationsForm.getPending(), creationForm);
 
-        // Update model
-        List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, options.getWorkspaceId());
-        List<Invitation> pending = new ArrayList<>(invitations.size());
-        List<Invitation> history = new ArrayList<>(invitations.size());
-        for (Invitation invitation : invitations) {
-            if (InvitationState.SENT.equals(invitation.getState())) {
-                pending.add(invitation);
-            } else {
-                history.add(invitation);
+        if (created) {
+            // Update model
+            List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, options.getWorkspaceId());
+            List<Invitation> pending = new ArrayList<>(invitations.size());
+            List<Invitation> history = new ArrayList<>(invitations.size());
+            for (Invitation invitation : invitations) {
+                if (InvitationState.SENT.equals(invitation.getState())) {
+                    pending.add(invitation);
+                } else {
+                    history.add(invitation);
+                }
             }
-        }
-        options.setInvitationsCount(pending.size());
-        invitationsForm.setPending(pending);
-        invitationsForm.setHistory(history);
+            options.setInvitationsCount(pending.size());
+            invitationsForm.setPending(pending);
+            invitationsForm.setHistory(history);
 
-        // Notification
-        String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_CREATION_SUCCESS");
-        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+            // Notification
+            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_CREATION_SUCCESS");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        }
     }
 
 }

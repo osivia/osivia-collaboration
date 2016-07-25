@@ -9,29 +9,39 @@
 
 <portlet:renderURL var="sortNameUrl">
     <portlet:param name="tab" value="invitations" />
-    <portlet:param name="sort" value="name" />
-    <portlet:param name="alt" value="${sort eq 'name' and not alt}"/>
+    <portlet:param name="sort" value="${sort}" />
+    <portlet:param name="alt" value="${alt}" />
+    <portlet:param name="sort2" value="name" />
+    <portlet:param name="alt2" value="${sort2 eq 'name' and not alt2}"/>
 </portlet:renderURL>
 <portlet:renderURL var="sortDateUrl">
     <portlet:param name="tab" value="invitations" />
-    <portlet:param name="sort" value="date" />
-    <portlet:param name="alt" value="${sort ne 'date' or not alt}"/>
+    <portlet:param name="sort" value="${sort}" />
+    <portlet:param name="alt" value="${alt}" />
+    <portlet:param name="sort2" value="date" />
+    <portlet:param name="alt2" value="${sort2 ne 'date' or not alt2}"/>
 </portlet:renderURL>
 <portlet:renderURL var="sortStateUrl">
     <portlet:param name="tab" value="invitations" />
-    <portlet:param name="sort" value="state" />
-    <portlet:param name="alt" value="${sort eq 'state' and not alt}"/>
+    <portlet:param name="sort" value="${sort}" />
+    <portlet:param name="alt" value="${alt}" />
+    <portlet:param name="sort2" value="state" />
+    <portlet:param name="alt2" value="${sort2 eq 'state' and not alt2}"/>
 </portlet:renderURL>
 <portlet:renderURL var="sortRoleUrl">
     <portlet:param name="tab" value="invitations" />
-    <portlet:param name="sort" value="role" />
-    <portlet:param name="alt" value="${sort ne 'role' or not alt}"/>
+    <portlet:param name="sort" value="${sort}" />
+    <portlet:param name="alt" value="${alt}" />
+    <portlet:param name="sort2" value="role" />
+    <portlet:param name="alt2" value="${sort2 ne 'role' or not alt2}"/>
 </portlet:renderURL>
 
-<portlet:actionURL name="update" var="updateUrl">
+<portlet:actionURL name="updateHistory" var="updateUrl">
     <portlet:param name="tab" value="invitations" />
     <portlet:param name="sort" value="${sort}" />
     <portlet:param name="alt" value="${alt}" />
+    <portlet:param name="sort2" value="${sort2}" />
+    <portlet:param name="alt2" value="${alt2}" />
 </portlet:actionURL>
 
 
@@ -56,10 +66,10 @@
                             <div class="col-xs-8 col-sm-4 col-lg-5">
                                 <a href="${sortNameUrl}"><op:translate key="INVITATION"/></a>
                                 
-                                <c:if test="${sort eq 'name'}">
+                                <c:if test="${sort2 eq 'name'}">
                                     <small class="text-muted">
                                         <c:choose>
-                                            <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
+                                            <c:when test="${alt2}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
                                             <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
                                         </c:choose>
                                     </small>
@@ -70,10 +80,10 @@
                             <div class="col-xs-4 col-sm-2">
                                 <a href="${sortDateUrl}"><op:translate key="INVITATION_DATE"/></a>
                                 
-                                <c:if test="${sort eq 'date'}">
+                                <c:if test="${sort2 eq 'date'}">
                                     <small class="text-muted">
                                         <c:choose>
-                                            <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
+                                            <c:when test="${alt2}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
                                             <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
                                         </c:choose>
                                     </small>
@@ -87,10 +97,10 @@
                             <div class="col-xs-10 col-sm-2">
                                 <a href="${sortStateUrl}"><op:translate key="INVITATION_STATE"/></a>
                                 
-                                <c:if test="${sort eq 'state'}">
+                                <c:if test="${sort2 eq 'state'}">
                                     <small class="text-muted">
                                         <c:choose>
-                                            <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
+                                            <c:when test="${alt2}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
                                             <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
                                         </c:choose>
                                     </small>
@@ -101,10 +111,10 @@
                             <div class="hidden-xs col-sm-3 col-lg-2">
                                 <a href="${sortRoleUrl}"><op:translate key="ROLE"/></a>
                                 
-                                <c:if test="${sort eq 'role'}">
+                                <c:if test="${sort2 eq 'role'}">
                                     <small class="text-muted">
                                         <c:choose>
-                                            <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
+                                            <c:when test="${alt2}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
                                             <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
                                         </c:choose>
                                     </small>

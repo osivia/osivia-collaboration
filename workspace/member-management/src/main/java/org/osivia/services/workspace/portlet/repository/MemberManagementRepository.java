@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.portlet.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletException;
 
@@ -137,9 +138,11 @@ public interface MemberManagementRepository {
      * @param portalControllerContext portal controller context
      * @param workspaceId workspace identifier
      * @param invitations invitations
+     * @param pending pending invitations indicator
      * @throws PortletException
      */
-    void updateInvitations(PortalControllerContext portalControllerContext, String workspaceId, List<Invitation> invitations) throws PortletException;
+    void updateInvitations(PortalControllerContext portalControllerContext, String workspaceId, List<Invitation> invitations, boolean pending)
+            throws PortletException;
 
 
     /**
@@ -149,9 +152,19 @@ public interface MemberManagementRepository {
      * @param workspaceId workspace identifier
      * @param invitations invitations
      * @param form invitations creation form
+     * @return true if at least one invitation was created
      * @throws PortletException
      */
-    void createInvitations(PortalControllerContext portalControllerContext, String workspaceId, List<Invitation> invitations, InvitationsCreationForm form)
+    boolean createInvitations(PortalControllerContext portalControllerContext, String workspaceId, List<Invitation> invitations, InvitationsCreationForm form)
             throws PortletException;
+
+
+    /**
+     * Accept invitation.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param variables task variables
+     */
+    void acceptInvitation(PortalControllerContext portalControllerContext, Map<String, String> variables);
 
 }

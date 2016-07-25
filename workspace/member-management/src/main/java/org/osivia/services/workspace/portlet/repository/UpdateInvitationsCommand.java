@@ -18,7 +18,7 @@ import net.sf.json.JSONObject;
 
 /**
  * Update invitations Nuxeo command.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see INuxeoCommand
  */
@@ -28,16 +28,20 @@ public class UpdateInvitationsCommand implements INuxeoCommand {
 
     /** Invitations. */
     private final List<Invitation> invitations;
+    /** Pending invitations indicator. */
+    private final boolean pending;
 
 
     /**
      * Constructor.
-     * 
+     *
      * @param invitations invitations
+     * @param pending pending invitations indicator
      */
-    public UpdateInvitationsCommand(List<Invitation> invitations) {
+    public UpdateInvitationsCommand(List<Invitation> invitations, boolean pending) {
         super();
         this.invitations = invitations;
+        this.pending = pending;
     }
 
 
@@ -49,17 +53,17 @@ public class UpdateInvitationsCommand implements INuxeoCommand {
         // Document service
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
 
-        for (Invitation invitation : invitations) {
+        for (Invitation invitation : this.invitations) {
             // Document
             Document document = invitation.getDocument();
 
             if (invitation.isDeleted()) {
                 // TODO Pour David : changer "remove" en "cancel procedure". Have fun !
                 documentService.remove(document);
-            } else {
+            } else if (this.pending) {
                 // Variables
                 PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
-                variables.set("role", invitation.getRole().getId());
+                variables.set(MemberManagementRepository.ROLE_PROPERTY, invitation.getRole().getId());
 
                 // Properties
                 PropertyMap properties = new PropertyMap();
@@ -75,7 +79,7 @@ public class UpdateInvitationsCommand implements INuxeoCommand {
 
     /**
      * Generate variables JSON content.
-     * 
+     *
      * @param variables variables
      * @return JSON
      */

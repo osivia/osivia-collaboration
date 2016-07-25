@@ -1,8 +1,15 @@
 package org.osivia.services.workspace.portlet.repository;
 
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.client.adapters.DocumentService;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
+import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -13,46 +20,39 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 
 /**
- * Get invitations command.
- *
+ * Set procedure instance ACL.
+ * 
  * @author Cédric Krommenhoek
  * @see INuxeoCommand
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class GetInvitationsCommand implements INuxeoCommand {
+public class SetProcedureInstanceAcl implements INuxeoCommand {
 
     /** Model path. */
     private final String modelPath;
     /** Workspace identifier. */
     private final String workspaceId;
-    /** Invitation state. */
-    private final InvitationState invitationState;
+    /** Person UID. */
+    private final String uid;
+    /** Workspace groups. */
+    private final List<CollabProfile> groups;
 
 
     /**
      * Constructor.
-     *
+     * 
      * @param modelPath model path
      * @param workspaceId workspace identifier
+     * @param uid person UID
+     * @param workspace groups
      */
-    public GetInvitationsCommand(String modelPath, String workspaceId) {
-        this(modelPath, workspaceId, null);
-    }
-
-
-    /**
-     * Constructor.
-     *
-     * @param modelPath model path
-     * @param workspaceId workspace identifier
-     * @param invitationState invitation state
-     */
-    public GetInvitationsCommand(String modelPath, String workspaceId, InvitationState invitationState) {
+    public SetProcedureInstanceAcl(String modelPath, String workspaceId, String uid, List<CollabProfile> groups) {
         super();
         this.modelPath = modelPath;
         this.workspaceId = workspaceId;
-        this.invitationState = invitationState;
+        this.uid = uid;
+        this.groups = groups;
     }
 
 
@@ -61,15 +61,38 @@ public class GetInvitationsCommand implements INuxeoCommand {
      */
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
+        // Document service
+        DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
+
+        // Procedure instance document
+        Document instance = getProcedureInstance(nuxeoSession);
+
+        for (CollabProfile group : groups) {
+            documentService.addPermission(instance, group.getCn(), "Everything");
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Get procedure instance document.
+     * 
+     * @param nuxeoSession Nuxeo session
+     * @return document
+     * @throws Exception
+     */
+    private Document getProcedureInstance(Session nuxeoSession) throws Exception {
         // Clause
         StringBuilder clause = new StringBuilder();
         clause.append("ecm:primaryType = 'ProcedureInstance' ");
         clause.append("AND pi:procedureModelPath = '").append(this.modelPath).append("' ");
         clause.append("AND pi:globalVariablesValues.").append(MemberManagementRepository.WORKSPACE_IDENTIFIER_PROPERTY).append(" = '").append(this.workspaceId)
                 .append("' ");
-        if (this.invitationState != null) {
-            clause.append("AND pi:globalVariablesValues.").append(MemberManagementRepository.INVITATION_STATE_PROPERTY).append(" = '")
-                    .append(this.invitationState.toString()).append("' ");
+        clause.append("AND pi:globalVariablesValues.").append(MemberManagementRepository.INVITATION_STATE_PROPERTY).append(" = '")
+                .append(InvitationState.SENT.toString()).append("' ");
+        if (StringUtils.isNotEmpty(this.uid)) {
+            clause.append("AND pi:globalVariablesValues.").append(MemberManagementRepository.PERSON_UID_PROPERTY).append(" = '").append(this.uid).append("' ");
         }
 
         // Filtered clause
@@ -77,10 +100,11 @@ public class GetInvitationsCommand implements INuxeoCommand {
 
         // Operation request
         OperationRequest request = nuxeoSession.newRequest("Document.QueryES");
-        request.set(Constants.HEADER_NX_SCHEMAS, "dublincore, procedureInstance");
+        request.set(Constants.HEADER_NX_SCHEMAS, "dublincore");
         request.set("query", "SELECT * FROM Document WHERE " + filteredClause);
 
-        return request.execute();
+        Documents documents = (Documents) request.execute();
+        return documents.get(0);
     }
 
 
@@ -89,17 +113,7 @@ public class GetInvitationsCommand implements INuxeoCommand {
      */
     @Override
     public String getId() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(this.getClass().getName());
-        builder.append("/");
-        builder.append(this.modelPath);
-        builder.append("/");
-        builder.append(this.workspaceId);
-        builder.append("/");
-        if (this.invitationState != null) {
-            builder.append(this.invitationState.toString());
-        }
-        return builder.toString();
+        return null;
     }
 
 }

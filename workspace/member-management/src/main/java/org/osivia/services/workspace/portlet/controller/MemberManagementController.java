@@ -15,8 +15,13 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
+import org.osivia.services.workspace.util.ApplicationContextProvider;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,11 +34,13 @@ import org.springframework.web.portlet.context.PortletContextAware;
  * Workspace member management portlet view controller.
  *
  * @author Cédric Krommenhoek
+ * @see ApplicationContextAware
+ * @see PortletContextAware
  */
 @Controller
 @RequestMapping("VIEW")
 @SessionAttributes({"options", "members"})
-public class MemberManagementController implements PortletContextAware {
+public class MemberManagementController implements ApplicationContextAware, PortletContextAware {
 
     /** Portlet context. */
     private PortletContext portletContext;
@@ -78,6 +85,21 @@ public class MemberManagementController implements PortletContextAware {
         request.setAttribute("alt", alt);
 
         return "view-members";
+    }
+
+
+    /**
+     * Portlet exception handler.
+     *
+     * @param request portlet request
+     * @param response portlet response
+     * @param exception portlet exception
+     * @return error path
+     */
+    @ExceptionHandler(PortletException.class)
+    public String handlePortletException(PortletRequest request, PortletResponse response, PortletException exception) {
+        request.setAttribute("exception", exception);
+        return "error";
     }
 
 
@@ -142,6 +164,15 @@ public class MemberManagementController implements PortletContextAware {
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 
         return this.service.getMembersForm(portalControllerContext);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        ApplicationContextProvider.setApplicationContext(applicationContext);
     }
 
 

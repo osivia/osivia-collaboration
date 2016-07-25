@@ -98,20 +98,36 @@ public interface MemberManagementService {
      * @param form invitations form
      * @param sort sort property
      * @param alt alternative sort indicator
+     * @param sort2 history sort property
+     * @param alt2 history alternative sort indicator
      * @throws PortletException
      */
-    void sortInvitations(PortalControllerContext portalControllerContext, InvitationsForm form, String sort, boolean alt) throws PortletException;
+    void sortInvitations(PortalControllerContext portalControllerContext, InvitationsForm form, String sort, boolean alt, String sort2, boolean alt2)
+            throws PortletException;
 
 
     /**
-     * Update invitations.
+     * Update pending invitations.
      * 
      * @param portalControllerContext portal controller context
      * @param options options
      * @param form invitations form
      * @throws PortletException
      */
-    void updateInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form) throws PortletException;
+    void updatePendingInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form)
+            throws PortletException;
+
+
+    /**
+     * Update history invitations.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param options options
+     * @param form invitations form
+     * @throws PortletException
+     */
+    void updateHistoryInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form)
+            throws PortletException;
 
 
     /**

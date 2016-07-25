@@ -81,21 +81,33 @@
                         
                         <!-- Role -->
                         <div class="col-xs-10 col-sm-3">
-                            <form:label path="members[${status.index}].role" cssClass="sr-only"><op:translate key="ROLE" /></form:label>
-                            <form:select path="members[${status.index}].role" cssClass="form-control">
-                                <c:forEach var="role" items="${options.roles}">
-                                    <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}" /></form:option>
-                                </c:forEach>
-                            </form:select>
+                            <c:choose>
+                                <c:when test="${member.editable}">
+                                    <form:label path="members[${status.index}].role" cssClass="sr-only"><op:translate key="ROLE" /></form:label>
+                                    <form:select path="members[${status.index}].role" cssClass="form-control">
+                                        <c:forEach var="role" items="${options.roles}">
+                                            <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}" /></form:option>
+                                        </c:forEach>
+                                    </form:select>
+                                </c:when>
+                                
+                                <c:otherwise>
+                                    <div class="form-control-static">
+                                        <span><op:translate key="${member.role.key}" classLoader="${member.role.classLoader}" /></span>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                         
-                        <!-- Deletion -->
-                        <div class="col-xs-2 col-sm-1">
-                            <button type="button" class="btn btn-default delete">
-                                <i class="glyphicons glyphicons-remove"></i>
-                                <span class="sr-only"><op:translate key="DELETE" /></span>
-                            </button>
-                        </div>
+                        <c:if test="${member.editable}">
+                            <!-- Deletion -->
+                            <div class="col-xs-2 col-sm-1">
+                                <button type="button" class="btn btn-default delete">
+                                    <i class="glyphicons glyphicons-remove"></i>
+                                    <span class="sr-only"><op:translate key="DELETE" /></span>
+                                </button>
+                            </div>
+                        </c:if>
                     </div>
                 </fieldset>
             </div>

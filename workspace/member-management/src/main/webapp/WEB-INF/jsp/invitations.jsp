@@ -11,22 +11,30 @@
     <portlet:param name="tab" value="invitations" />
     <portlet:param name="sort" value="name" />
     <portlet:param name="alt" value="${sort eq 'name' and not alt}"/>
+    <portlet:param name="sort2" value="${sort2}" />
+    <portlet:param name="alt2" value="${alt2}" />
 </portlet:renderURL>
 <portlet:renderURL var="sortDateUrl">
     <portlet:param name="tab" value="invitations" />
     <portlet:param name="sort" value="date" />
     <portlet:param name="alt" value="${sort ne 'date' or not alt}"/>
+    <portlet:param name="sort2" value="${sort2}" />
+    <portlet:param name="alt2" value="${alt2}" />
 </portlet:renderURL>
 <portlet:renderURL var="sortRoleUrl">
     <portlet:param name="tab" value="invitations" />
     <portlet:param name="sort" value="role" />
     <portlet:param name="alt" value="${sort ne 'role' or not alt}"/>
+    <portlet:param name="sort2" value="${sort2}" />
+    <portlet:param name="alt2" value="${alt2}" />
 </portlet:renderURL>
 
 <portlet:actionURL name="update" var="updateUrl">
     <portlet:param name="tab" value="invitations" />
     <portlet:param name="sort" value="${sort}" />
     <portlet:param name="alt" value="${alt}" />
+    <portlet:param name="sort2" value="${sort2}" />
+    <portlet:param name="alt2" value="${alt2}" />
 </portlet:actionURL>
 
 

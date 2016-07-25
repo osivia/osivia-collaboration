@@ -36,7 +36,7 @@
         </a>
     </li>
     
-    <li role="presentation" class="${tab eq 'requests' ? 'active' : ''}">
+    <%-- <li role="presentation" class="${tab eq 'requests' ? 'active' : ''}">
         <a href="${requestsUrl}">
             <span><op:translate key="TAB_REQUESTS" /></span>
             
@@ -45,5 +45,5 @@
                 <span class="badge">${options.requestsCount}</span>
             </c:if>
         </a>
-    </li>
+    </li> --%>
 </ul>
