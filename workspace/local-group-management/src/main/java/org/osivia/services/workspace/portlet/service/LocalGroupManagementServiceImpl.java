@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.portlet.service.impl;
+package org.osivia.services.workspace.portlet.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,7 +18,6 @@ import org.osivia.services.workspace.portlet.model.LocalGroups;
 import org.osivia.services.workspace.portlet.model.Member;
 import org.osivia.services.workspace.portlet.model.comparator.LocalGroupsComparator;
 import org.osivia.services.workspace.portlet.repository.LocalGroupManagementRepository;
-import org.osivia.services.workspace.portlet.service.LocalGroupManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;

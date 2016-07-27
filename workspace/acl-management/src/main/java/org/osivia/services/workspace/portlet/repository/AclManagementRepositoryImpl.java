@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.portlet.repository.impl;
+package org.osivia.services.workspace.portlet.repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +37,6 @@ import org.osivia.services.workspace.portlet.model.AclEntry;
 import org.osivia.services.workspace.portlet.model.Record;
 import org.osivia.services.workspace.portlet.model.RecordType;
 import org.osivia.services.workspace.portlet.model.Role;
-import org.osivia.services.workspace.portlet.repository.AclManagementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

@@ -3,7 +3,7 @@ package org.osivia.services.workspace.portlet.model;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 
 /**
- * Permission java-bean.
+ * Role java-bean.
  *
  * @author Cédric Krommenhoek
  */
@@ -19,7 +19,7 @@ public class Role {
 
 
     /**
-     * Permission.
+     * Constructor.
      *
      * @param role workspace role
      */

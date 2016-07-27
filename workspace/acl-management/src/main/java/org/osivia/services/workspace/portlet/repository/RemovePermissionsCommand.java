@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.portlet.repository.impl;
+package org.osivia.services.workspace.portlet.repository;
 
 import java.util.List;
 

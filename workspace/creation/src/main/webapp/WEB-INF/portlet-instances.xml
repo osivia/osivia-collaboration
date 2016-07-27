@@ -19,7 +19,7 @@
             <preferences>
                 <preference>
                     <name>hide</name>
-                    <value>true</value>
+                    <value>false</value>
                 </preference>
             </preferences>
         </instance>

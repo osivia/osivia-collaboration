@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.portlet.repository.impl;
+package org.osivia.services.workspace.portlet.repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +23,6 @@ import org.osivia.services.workspace.portlet.model.LocalGroupEditionForm;
 import org.osivia.services.workspace.portlet.model.LocalGroupListItem;
 import org.osivia.services.workspace.portlet.model.LocalGroups;
 import org.osivia.services.workspace.portlet.model.Member;
-import org.osivia.services.workspace.portlet.repository.LocalGroupManagementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
