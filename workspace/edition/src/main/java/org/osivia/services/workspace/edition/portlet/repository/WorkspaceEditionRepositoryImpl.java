@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.edition.portlet.repository.impl;
+package org.osivia.services.workspace.edition.portlet.repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,6 @@ import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
-import org.osivia.services.workspace.edition.portlet.repository.WorkspaceEditionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

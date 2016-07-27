@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.edition.portlet.service.impl;
+package org.osivia.services.workspace.edition.portlet.service;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,7 +22,6 @@ import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 import org.osivia.services.workspace.edition.portlet.model.comparator.TasksComparator;
 import org.osivia.services.workspace.edition.portlet.repository.WorkspaceEditionRepository;
-import org.osivia.services.workspace.edition.portlet.service.WorkspaceEditionService;
 import org.osivia.services.workspace.task.creation.portlet.repository.WorkspaceTaskCreationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

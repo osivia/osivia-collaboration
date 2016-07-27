@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.task.creation.portlet.service.impl;
+package org.osivia.services.workspace.task.creation.portlet.service;
 
 import java.util.List;
 import java.util.SortedMap;
@@ -14,7 +14,6 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
 import org.osivia.services.workspace.task.creation.portlet.model.comparator.AlphaOrderComparator;
 import org.osivia.services.workspace.task.creation.portlet.repository.WorkspaceTaskCreationRepository;
-import org.osivia.services.workspace.task.creation.portlet.service.WorkspaceTaskCreationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;

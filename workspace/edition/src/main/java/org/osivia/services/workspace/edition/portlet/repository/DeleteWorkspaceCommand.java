@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.edition.portlet.repository.impl;
+package org.osivia.services.workspace.edition.portlet.repository;
 
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;

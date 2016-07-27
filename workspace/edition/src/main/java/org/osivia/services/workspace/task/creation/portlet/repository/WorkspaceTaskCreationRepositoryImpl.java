@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.task.creation.portlet.repository.impl;
+package org.osivia.services.workspace.task.creation.portlet.repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,6 @@ import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
-import org.osivia.services.workspace.task.creation.portlet.repository.WorkspaceTaskCreationRepository;
 import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;

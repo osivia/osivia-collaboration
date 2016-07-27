@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.edition.portlet.repository.impl;
+package org.osivia.services.workspace.edition.portlet.repository;
 
 import java.text.Normalizer;
 import java.util.ArrayList;
