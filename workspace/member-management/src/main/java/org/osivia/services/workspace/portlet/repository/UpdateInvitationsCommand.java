@@ -3,7 +3,6 @@ package org.osivia.services.workspace.portlet.repository;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -59,7 +58,7 @@ public class UpdateInvitationsCommand implements INuxeoCommand {
             Document document = invitation.getDocument();
 
             if (invitation.isDeleted()) {
-                cancelInvitation(nuxeoSession, document);
+                documentService.remove(document);
             } else if (this.pending) {
                 // Variables
                 PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
@@ -74,18 +73,6 @@ public class UpdateInvitationsCommand implements INuxeoCommand {
         }
 
         return null;
-    }
-    
-    /**
-     * Cancels a Invation.
-     * 
-     * @param nuxeoSession
-     * @param document
-     * @throws Exception
-     */
-    private void cancelInvitation(Session nuxeoSession, Document document) throws Exception{
-        OperationRequest request = nuxeoSession.newRequest("Services.CancelProcedure");
-        request.setInput(document).execute();
     }
 
 

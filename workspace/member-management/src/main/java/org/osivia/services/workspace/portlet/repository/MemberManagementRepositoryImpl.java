@@ -405,15 +405,22 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      */
     @Override
     public void acceptInvitation(PortalControllerContext portalControllerContext, Map<String, String> variables) {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
+
         // Variables
         String workspaceId = variables.get(WORKSPACE_IDENTIFIER_PROPERTY);
         String uid = variables.get(PERSON_UID_PROPERTY);
         WorkspaceRole role = WorkspaceRole.fromId(variables.get(ROLE_PROPERTY));
 
-        // Member
+        // Add member to workspace
         Name memberDn = this.personService.getEmptyPerson().buildDn(uid);
-
         this.workspaceService.addOrModifyMember(workspaceId, memberDn, role);
+
+        // Reload Nuxeo session
+        INuxeoCommand command = this.applicationContext.getBean(ReloadNuxeoSessionCommand.class);
+        nuxeoController.executeNuxeoCommand(command);
     }
 
 

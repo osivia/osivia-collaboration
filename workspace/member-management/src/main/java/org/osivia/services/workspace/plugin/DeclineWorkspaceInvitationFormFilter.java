@@ -74,6 +74,15 @@ public class DeclineWorkspaceInvitationFormFilter implements FormFilter {
      * {@inheritDoc}
      */
     @Override
+    public boolean hasChildren() {
+        return false;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void execute(FormFilterContext context, FormFilterExecutor executor) {
         // Variables
         Map<String, String> variables = context.getVariables();

@@ -38,6 +38,11 @@ public class SetActorFormFilter implements FormFilter {
     }
 
     @Override
+    public boolean hasChildren() {
+        return false;
+    }
+
+    @Override
     public void execute(FormFilterContext context, FormFilterExecutor executor) {
         // Actors
         FormActors actors = context.getActors();

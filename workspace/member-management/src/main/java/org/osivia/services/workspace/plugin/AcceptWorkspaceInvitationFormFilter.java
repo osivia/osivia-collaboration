@@ -2,6 +2,9 @@ package org.osivia.services.workspace.plugin;
 
 import java.util.Map;
 
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletResponse;
+
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.repository.MemberManagementRepository;
@@ -81,9 +84,26 @@ public class AcceptWorkspaceInvitationFormFilter implements FormFilter {
      * {@inheritDoc}
      */
     @Override
+    public boolean hasChildren() {
+        return false;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void execute(FormFilterContext context, FormFilterExecutor executor) {
         // Portal controller context
         PortalControllerContext portalControllerContext = context.getPortalControllerContext();
+        // Portlet response
+        PortletResponse response = portalControllerContext.getResponse();
+
+        // Reload indicator render parameter
+        if (response instanceof ActionResponse) {
+            ActionResponse actionResponse = (ActionResponse) response;
+            actionResponse.setRenderParameter("reload", String.valueOf(true));
+        }
 
         // Variables
         Map<String, String> variables = context.getVariables();
