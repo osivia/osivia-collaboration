@@ -39,7 +39,7 @@ import org.springframework.stereotype.Repository;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+//import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 
@@ -134,9 +134,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         List<WorkspaceRole> roles = new ArrayList<WorkspaceRole>();
 
         // Current workspace member
-        String currentUser = portalControllerContext.getHttpServletRequest().getUserPrincipal().getName();
-        WorkspaceMember currentMember = this.workspaceService.getMember(workspaceId, currentUser);
-        WorkspaceRole currentRole = currentMember.getRole();
+        //String currentUser = portalControllerContext.getHttpServletRequest().getUserPrincipal().getName();
+//        WorkspaceMember currentMember = this.workspaceService.getMember(workspaceId, currentUser);
+//        WorkspaceRole currentRole = currentMember.getRole();
 
         // Profiles search criteria
         CollabProfile criteria = this.workspaceService.getEmptyProfile();
@@ -147,9 +147,11 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
         for (CollabProfile profile : profiles) {
             WorkspaceRole role = profile.getRole();
-            if (currentRole.getWeight() >= role.getWeight()) {
+            // TODO LBI rapport avec le user courant ?
+            
+            //if (currentRole.getWeight() >= role.getWeight()) {
                 roles.add(role);
-            }
+            //}
         }
 
         return roles;
@@ -165,9 +167,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         List<WorkspaceMember> workspaceMembers = this.workspaceService.getAllMembers(workspaceId);
 
         // Current workspace member
-        String currentUser = portalControllerContext.getHttpServletRequest().getUserPrincipal().getName();
-        WorkspaceMember currentMember = this.workspaceService.getMember(workspaceId, currentUser);
-        WorkspaceRole currentRole = currentMember.getRole();
+//        String currentUser = portalControllerContext.getHttpServletRequest().getUserPrincipal().getName();
+//        WorkspaceMember currentMember = this.workspaceService.getMember(workspaceId, currentUser);
+//        WorkspaceRole currentRole = currentMember.getRole();
 
         // Members
         List<Member> members = new ArrayList<>(workspaceMembers.size());
@@ -175,8 +177,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             Member member = this.applicationContext.getBean(Member.class, workspaceMember);
 
             // Editable member indicator
-            boolean editable = !StringUtils.equals(currentUser, member.getId()) && (currentRole.getWeight() >= workspaceMember.getRole().getWeight());
-            member.setEditable(editable);
+            //boolean editable = !StringUtils.equals(currentUser, member.getId()) && (currentRole.getWeight() >= workspaceMember.getRole().getWeight());
+            // TODO LBI règle avec le current user ???
+            member.setEditable(true);
 
             members.add(member);
         }
@@ -379,7 +382,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
                 // Start
                 try {
-                    this.formsService.start(portalControllerContext, MODEL_ID, variables);
+                	//TODO LBI résolution webid KO
+                	
+                    this.formsService.start(portalControllerContext, "/default-domain/procedures-models/Inviter-des-membres", variables);
                 } catch (PortalException e) {
                     throw new PortletException(e);
                 }
@@ -438,9 +443,10 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         String basePath = nuxeoController.getBasePath();
 
         // Nuxeo document context
-        NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(basePath);
+        //NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(basePath);
 
-        return documentContext.getDoc();
+        //return documentContext.getDoc();
+        return nuxeoController.fetchDocument(basePath);
     }
 
 
@@ -456,24 +462,41 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // Fetch path
-        String fetchPath = NuxeoController.webIdToFetchPath(IFormsService.FORMS_WEB_ID_PREFIX + MODEL_ID);
+        
+        // TODO LBI webidresolver
+        //String fetchPath = NuxeoController.webIdToFetchPath(IFormsService.FORMS_WEB_ID_PREFIX + MODEL_ID);
+        String fetchPath = "/default-domain/procedures-models/Inviter-des-membres";
+        Document model = null;
 
-        // Nuxeo document context
-        NuxeoDocumentContext documentContext;
-        try {
-            documentContext = nuxeoController.getDocumentContext(fetchPath);
-        } catch (NuxeoException e) {
-            if (NuxeoException.ERROR_NOTFOUND == e.getErrorCode()) {
-                Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-                String message = bundle.getString("MESSAGE_WORKSPACE_CANNOT_FIND_MODEL_ERROR", MODEL_ID);
-                throw new PortletException(message);
-            } else {
-                throw e;
-            }
-        }
-
-        // Model Nuxeo document
-        Document model = documentContext.getDoc();
+      try {
+        model = nuxeoController.fetchDocument(fetchPath);
+      } catch (NuxeoException e) {
+	      if (NuxeoException.ERROR_NOTFOUND == e.getErrorCode()) {
+	          Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+	          String message = bundle.getString("MESSAGE_WORKSPACE_CANNOT_FIND_MODEL_ERROR", MODEL_ID);
+	          throw new PortletException(message);
+	      } else {
+	          throw e;
+	      }
+      }
+        
+        
+//        // Nuxeo document context
+//        NuxeoDocumentContext documentContext;
+//        try {
+//            documentContext = nuxeoController.getDocumentContext(fetchPath);
+//        } catch (NuxeoException e) {
+//            if (NuxeoException.ERROR_NOTFOUND == e.getErrorCode()) {
+//                Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+//                String message = bundle.getString("MESSAGE_WORKSPACE_CANNOT_FIND_MODEL_ERROR", MODEL_ID);
+//                throw new PortletException(message);
+//            } else {
+//                throw e;
+//            }
+//        }
+//
+//        // Model Nuxeo document
+//        Document model = documentContext.getDoc();
 
         return model.getPath();
     }

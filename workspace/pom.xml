@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.osivia.services</groupId>
         <artifactId>osivia-services-collaboration-parent</artifactId>
-        <version>4.4.0-RC2</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.osivia.services.workspace</groupId>
@@ -16,12 +16,12 @@
 
 
     <modules>
-        <module>creation</module>
-        <module>edition</module>
+<!--         <module>creation</module> -->
+<!--         <module>edition</module> -->
         <module>member-management</module>
-        <module>local-group-management</module>
-        <module>map</module>
-        <module>acl-management</module>
+<!--         <module>local-group-management</module> -->
+<!--         <module>map</module> -->
+<!--         <module>acl-management</module> -->
     </modules>
 
 

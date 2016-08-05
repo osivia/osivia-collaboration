@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.osivia.portal.api.customization.CustomizationContext;
-import org.osivia.portal.api.menubar.MenubarModule;
+//import org.osivia.portal.api.menubar.MenubarModule;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
@@ -22,7 +22,7 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
 
 
     /** Menubar module. */
-    private final MenubarModule menubarModule;
+//    private final MenubarModule menubarModule;
     /** Accept workspace invitation form filter. */
     private final FormFilter acceptFormFilter;
     /** Decline workspace invitation form filter. */
@@ -34,7 +34,7 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
      */
     public WorkspaceMemberManagementPlugin() {
         super();
-        this.menubarModule = new WorkspaceMemberManagementMenubarModule();
+//        this.menubarModule = new WorkspaceMemberManagementMenubarModule();
         this.acceptFormFilter = new AcceptWorkspaceInvitationFormFilter();
         this.declineFormFilter = new DeclineWorkspaceInvitationFormFilter();
     }
@@ -54,9 +54,9 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
      */
     @Override
     protected void customizeCMSProperties(String customizationId, CustomizationContext context) {
-        // Menubar modules
-        List<MenubarModule> menubarModules = this.getMenubarModules(context);
-        menubarModules.add(this.menubarModule);
+//        // Menubar modules
+//        List<MenubarModule> menubarModules = this.getMenubarModules(context);
+//        menubarModules.add(this.menubarModule);
 
         // Form filters
         Map<String, FormFilter> formFilters = this.getFormFilters(context);
