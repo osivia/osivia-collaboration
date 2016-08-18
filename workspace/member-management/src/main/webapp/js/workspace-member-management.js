@@ -68,9 +68,9 @@ $JQry(function() {
 					$personExtra.text(params.extra);
 				} else {
 					text = params.id;
-					if (params.mail !== undefined) {
+					if (params.extra !== undefined) {
 						text += " – ";
-						text += params.mail;
+						text += params.extra;
 					}
 					
 					$personExtra.text(text);

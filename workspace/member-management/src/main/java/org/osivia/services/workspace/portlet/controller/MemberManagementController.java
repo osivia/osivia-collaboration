@@ -49,7 +49,9 @@ public class MemberManagementController implements ApplicationContextAware, Port
     @Autowired
     private MemberManagementService service;
 
-
+    @Autowired
+    private MembersForm form;
+    
     /**
      * Constructor.
      */
@@ -163,7 +165,13 @@ public class MemberManagementController implements ApplicationContextAware, Port
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 
-        return this.service.getMembersForm(portalControllerContext);
+        MembersForm membersForm = this.service.getMembersForm(portalControllerContext);
+        
+        // Attach members list in session
+        // TODO LBI lifecycle of this list
+        form.setMembers(membersForm.getMembers());
+        
+        return membersForm;
     }
 
 

@@ -132,17 +132,8 @@
                                 <div class="row">
                                     <!-- Invitation -->
                                     <div class="col-xs-8 col-sm-4 col-lg-5">
-                                        <div class="person">
-                                            <div class="person-avatar">
-                                                <img src="${invitation.avatar}" alt="">
-                                            </div>
-                                            <div class="person-title">
-                                                <span>${invitation.displayName}</span>
-                                            </div>
-                                            <c:if test="${not empty invitation.mail}">
-                                                <div class="person-extra">${invitation.mail}</div>
-                                            </c:if>
-                                        </div>
+			                        	<c:set var="member" value="${invitation}" scope="request" />
+			    						<jsp:include page="incl/display-member.jsp" />
                                     </div>
                                     
                                     <!-- Date -->

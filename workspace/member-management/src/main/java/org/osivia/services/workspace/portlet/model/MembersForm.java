@@ -2,17 +2,18 @@ package org.osivia.services.workspace.portlet.model;
 
 import java.util.List;
 
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 /**
  * Members form java-bean.
+ * TODO LBI manager lifecycle of this object
  * 
  * @author Cédric Krommenhoek
  */
 @Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Scope(value="session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class MembersForm {
 
     /** Members. */

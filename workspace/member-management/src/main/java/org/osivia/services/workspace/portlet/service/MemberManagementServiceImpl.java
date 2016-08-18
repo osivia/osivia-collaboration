@@ -42,19 +42,23 @@ public class MemberManagementServiceImpl implements MemberManagementService {
 
     /** Application context. */
     @Autowired
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
 
     /** Member management repository. */
     @Autowired
-    private MemberManagementRepository repository;
+    protected MemberManagementRepository repository;
 
+
+    @Autowired
+    protected MembersForm membersFormInSession;
+    
     /** Bundle factory. */
     @Autowired
-    private IBundleFactory bundleFactory;
+    protected IBundleFactory bundleFactory;
 
     /** Notifications service. */
     @Autowired
-    private INotificationsService notificationsService;
+    protected INotificationsService notificationsService;
 
 
     /**
@@ -199,20 +203,35 @@ public class MemberManagementServiceImpl implements MemberManagementService {
         if (StringUtils.isNotBlank(filter)) {
             // Persons
             List<Person> persons = this.repository.searchPersons(portalControllerContext, filter);
+            
+            List<String> alreadyMembers = new ArrayList<String>();
+            for(Member m : membersFormInSession.getMembers()) {
+            	alreadyMembers.add(m.getPerson().getUid());
+            }
 
             for (Person person : persons) {
-                JSONObject object = new JSONObject();
-                object.put("id", person.getUid());
-                object.put("displayName", person.getDisplayName());
-                object.put("mail", person.getMail());
-                object.put("avatar", person.getAvatar().getUrl());
-
-                array.add(object);
+            	if (!alreadyMembers.contains(person.getUid())) {
+	                toJson(array, person);
+            	}
             }
         }
 
         return array;
     }
+
+
+    /**
+     * Format a person in json array
+     */
+	protected void toJson(JSONArray array, Person person) {
+		JSONObject object = new JSONObject();
+		object.put("id", person.getUid());
+		object.put("displayName", person.getDisplayName());
+		object.put("extra", person.getMail());
+		object.put("avatar", person.getAvatar().getUrl());
+
+		array.add(object);
+	}
 
 
     /**

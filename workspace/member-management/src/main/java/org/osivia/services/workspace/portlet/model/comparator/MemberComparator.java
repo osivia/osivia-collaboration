@@ -57,8 +57,8 @@ public class MemberComparator implements Comparator<Member> {
             result = role1.compareTo(role2);
         } else {
             // Name
-            String name1 = StringUtils.defaultIfBlank(member1.getDisplayName(), member1.getId());
-            String name2 = StringUtils.defaultIfBlank(member2.getDisplayName(), member2.getId());
+            String name1 = StringUtils.defaultIfBlank(member1.getPerson().getDisplayName(), member1.getId());
+            String name2 = StringUtils.defaultIfBlank(member2.getPerson().getDisplayName(), member2.getId());
             result = name1.compareToIgnoreCase(name2);
         }
 

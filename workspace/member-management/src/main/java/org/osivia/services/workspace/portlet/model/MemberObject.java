@@ -1,7 +1,5 @@
 package org.osivia.services.workspace.portlet.model;
 
-import javax.naming.Name;
-
 import org.osivia.portal.api.directory.v2.model.Person;
 
 /**
@@ -16,14 +14,8 @@ public abstract class MemberObject {
 
     /** Identifier. */
     private final String id;
-    /** DN. */
-    private final Name dn;
-    /** Display name. */
-    private final String displayName;
-    /** Avatar URL. */
-    private final String avatar;
-    /** Mail. */
-    private final String mail;
+    
+    private Person person;
 
 
     /**
@@ -34,10 +26,7 @@ public abstract class MemberObject {
     public MemberObject(Person person) {
         super();
         this.id = person.getUid();
-        this.dn = person.getDn();
-        this.displayName = person.getDisplayName();
-        this.avatar = person.getAvatar().getUrl();
-        this.mail = person.getMail();
+        this.person = person;
     }
 
 
@@ -68,40 +57,15 @@ public abstract class MemberObject {
         return id;
     }
 
-    /**
-     * Getter for dn.
-     * 
-     * @return the dn
-     */
-    public Name getDn() {
-        return dn;
-    }
 
-    /**
-     * Getter for displayName.
-     * 
-     * @return the displayName
-     */
-    public String getDisplayName() {
-        return displayName;
-    }
+	public Person getPerson() {
+		return person;
+	}
 
-    /**
-     * Getter for avatar.
-     * 
-     * @return the avatar
-     */
-    public String getAvatar() {
-        return avatar;
-    }
 
-    /**
-     * Getter for mail.
-     * 
-     * @return the mail
-     */
-    public String getMail() {
-        return mail;
-    }
+	public void setPerson(Person person) {
+		this.person = person;
+	}
+
 
 }

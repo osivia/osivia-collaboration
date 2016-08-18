@@ -77,8 +77,8 @@ public class InvitationComparator implements Comparator<Invitation> {
             }
         } else {
             // Name
-            String name1 = StringUtils.defaultIfBlank(invitation1.getDisplayName(), invitation1.getId());
-            String name2 = StringUtils.defaultIfBlank(invitation2.getDisplayName(), invitation2.getId());
+            String name1 = StringUtils.defaultIfBlank(invitation1.getPerson().getDisplayName(), invitation1.getId());
+            String name2 = StringUtils.defaultIfBlank(invitation2.getPerson().getDisplayName(), invitation2.getId());
             result = name1.compareToIgnoreCase(name2);
         }
 

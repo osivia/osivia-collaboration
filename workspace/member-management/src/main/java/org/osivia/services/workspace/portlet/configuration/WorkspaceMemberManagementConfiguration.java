@@ -68,7 +68,7 @@ public class WorkspaceMemberManagementConfiguration {
      *
      * @return person service
      */
-    @Bean
+    @Bean(name="personService")
     public PersonService getPersonService() {
     	return DirServiceFactory.getService(PersonService.class);
     }

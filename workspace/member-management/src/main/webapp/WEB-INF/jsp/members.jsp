@@ -68,15 +68,10 @@
                     <div class="row">
                         <!-- Member -->
                         <div class="col-xs-12 col-sm-8">
-                            <div class="person">
-                                <div class="person-avatar">
-                                    <img src="${member.avatar}" alt="">
-                                </div>
-                                <div class="person-title">${member.displayName}</div>
-                                <c:if test="${not empty member.mail}">
-                                    <div class="person-extra">${member.mail}</div>
-                                </c:if>
-                            </div>
+                        
+                        	<c:set var="member" value="${member}" scope="request" />
+    						<jsp:include page="incl/display-member.jsp" />
+    						
                         </div>
                         
                         <!-- Role -->

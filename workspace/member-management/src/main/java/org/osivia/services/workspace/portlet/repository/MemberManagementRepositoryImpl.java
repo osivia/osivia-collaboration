@@ -33,13 +33,13 @@ import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.Member;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
-//import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 
@@ -58,6 +58,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
     /** Person service. */
     @Autowired
+    @Qualifier("personService")
     private PersonService personService;
 
     /** Workspace service. */
@@ -194,9 +195,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
     @Override
     public void updateMember(PortalControllerContext portalControllerContext, String workspaceId, Member member) throws PortletException {
         if (member.isDeleted()) {
-            this.workspaceService.removeMember(workspaceId, member.getDn());
+            this.workspaceService.removeMember(workspaceId, member.getPerson().getDn());
         } else {
-            this.workspaceService.addOrModifyMember(workspaceId, member.getDn(), member.getRole());
+            this.workspaceService.addOrModifyMember(workspaceId, member.getPerson().getDn(), member.getRole());
         }
     }
 
@@ -367,7 +368,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 Member existingMember = existingMembers.get(uid);
 
                 // Notification
-                String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_MEMBER_ALREADY_EXISTS", existingMember.getDisplayName());
+                String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_MEMBER_ALREADY_EXISTS", existingMember.getPerson().getDisplayName());
                 notifications.addMessage(message);
             } else {
                 // Variables
