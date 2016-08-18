@@ -22,6 +22,7 @@
 <!--         <module>local-group-management</module> -->
 <!--         <module>map</module> -->
 <!--         <module>acl-management</module> -->
+		<module>participants</module>
     </modules>
 
 
