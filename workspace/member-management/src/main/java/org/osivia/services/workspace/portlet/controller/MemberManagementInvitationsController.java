@@ -52,8 +52,8 @@ import net.sf.json.JSONArray;
  * @see PortletContextAware
  */
 @Controller
-@RequestMapping(value = "VIEW", params = "tab=invitations")
-@SessionAttributes({"options", "invitations"})
+@RequestMapping(path = "VIEW", params = "tab=invitations")
+@SessionAttributes("invitations")
 public class MemberManagementInvitationsController extends CMSPortlet implements PortletConfigAware, PortletContextAware {
 
     /** Portlet config. */

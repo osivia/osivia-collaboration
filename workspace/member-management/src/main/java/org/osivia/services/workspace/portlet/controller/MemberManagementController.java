@@ -39,7 +39,7 @@ import org.springframework.web.portlet.context.PortletContextAware;
  */
 @Controller
 @RequestMapping("VIEW")
-@SessionAttributes({"options", "members"})
+@SessionAttributes("members")
 public class MemberManagementController implements ApplicationContextAware, PortletContextAware {
 
     /** Portlet context. */

@@ -3,9 +3,11 @@ package org.osivia.services.workspace.portlet.model;
 import java.util.List;
 
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.osivia.portal.api.portlet.Refreshable;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Member management options java-bean.
@@ -13,7 +15,8 @@ import org.springframework.stereotype.Component;
  * @author Cédric Krommenhoek
  */
 @Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Scope(scopeName = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Refreshable
 public class MemberManagementOptions {
 
     /** Workspace identifier. */
@@ -33,18 +36,19 @@ public class MemberManagementOptions {
         super();
     }
 
-    
+
     /**
      * Getter for workspaceId.
+     * 
      * @return the workspaceId
      */
     public String getWorkspaceId() {
         return workspaceId;
     }
 
-    
     /**
      * Setter for workspaceId.
+     * 
      * @param workspaceId the workspaceId to set
      */
     public void setWorkspaceId(String workspaceId) {
@@ -53,14 +57,16 @@ public class MemberManagementOptions {
 
     /**
      * Getter for invitationsCount.
+     * 
      * @return the invitationsCount
      */
     public int getInvitationsCount() {
         return invitationsCount;
     }
-    
+
     /**
      * Setter for invitationsCount.
+     * 
      * @param invitationsCount the invitationsCount to set
      */
     public void setInvitationsCount(int invitationsCount) {
@@ -69,14 +75,16 @@ public class MemberManagementOptions {
 
     /**
      * Getter for requestsCount.
+     * 
      * @return the requestsCount
      */
     public int getRequestsCount() {
         return requestsCount;
     }
-    
+
     /**
      * Setter for requestsCount.
+     * 
      * @param requestsCount the requestsCount to set
      */
     public void setRequestsCount(int requestsCount) {
