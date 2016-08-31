@@ -2,8 +2,7 @@ package org.osivia.services.workspace.portlet.model;
 
 import java.util.List;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.osivia.portal.api.portlet.Refreshable;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Component;
  * @author Cédric Krommenhoek
  */
 @Component
-@Scope(value="session", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Refreshable
 public class MembersForm {
 
     /** Members. */

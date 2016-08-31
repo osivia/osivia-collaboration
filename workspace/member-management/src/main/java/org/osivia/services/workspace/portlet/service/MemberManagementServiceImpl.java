@@ -77,21 +77,23 @@ public class MemberManagementServiceImpl implements MemberManagementService {
         // Options
         MemberManagementOptions options = this.applicationContext.getBean(MemberManagementOptions.class);
 
-        // Workspace identifier
-        String workspaceId = this.repository.getWorkspaceId(portalControllerContext);
-        options.setWorkspaceId(workspaceId);
+        if (options.getWorkspaceId() == null) {
+            // Workspace identifier
+            String workspaceId = this.repository.getWorkspaceId(portalControllerContext);
+            options.setWorkspaceId(workspaceId);
 
-        // Invitations count
-        int invitationsCount = this.repository.getInvitationsCount(portalControllerContext, workspaceId);
-        options.setInvitationsCount(invitationsCount);
+            // Invitations count
+            int invitationsCount = this.repository.getInvitationsCount(portalControllerContext, workspaceId);
+            options.setInvitationsCount(invitationsCount);
 
-        // Requests count
-        int requestsCount = this.repository.getRequestsCount(portalControllerContext, workspaceId);
-        options.setRequestsCount(requestsCount);
+            // Requests count
+            int requestsCount = this.repository.getRequestsCount(portalControllerContext, workspaceId);
+            options.setRequestsCount(requestsCount);
 
-        // Roles
-        List<WorkspaceRole> roles = this.repository.getRoles(portalControllerContext, workspaceId);
-        options.setRoles(roles);
+            // Roles
+            List<WorkspaceRole> roles = this.repository.getRoles(portalControllerContext, workspaceId);
+            options.setRoles(roles);
+        }
 
         return options;
     }

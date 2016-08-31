@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
@@ -39,7 +38,6 @@ import org.springframework.web.portlet.context.PortletContextAware;
  */
 @Controller
 @RequestMapping("VIEW")
-@SessionAttributes({"options", "members"})
 public class MemberManagementController implements ApplicationContextAware, PortletContextAware {
 
     /** Portlet context. */
@@ -49,8 +47,6 @@ public class MemberManagementController implements ApplicationContextAware, Port
     @Autowired
     private MemberManagementService service;
 
-    @Autowired
-    private MembersForm form;
     
     /**
      * Constructor.
@@ -165,13 +161,7 @@ public class MemberManagementController implements ApplicationContextAware, Port
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 
-        MembersForm membersForm = this.service.getMembersForm(portalControllerContext);
-        
-        // Attach members list in session
-        // TODO LBI lifecycle of this list
-        form.setMembers(membersForm.getMembers());
-        
-        return membersForm;
+        return this.service.getMembersForm(portalControllerContext);
     }
 
 
