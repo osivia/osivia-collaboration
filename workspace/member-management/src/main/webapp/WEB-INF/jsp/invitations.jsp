@@ -129,7 +129,7 @@
                         <!-- Deletion -->
                         <div class="col-xs-2 col-sm-1">
                             <button type="button" class="btn btn-default delete">
-                                <i class="glyphicons glyphicons-remove"></i>
+                                <i class="glyphicons glyphicons-remove-2"></i>
                                 <span class="sr-only"><op:translate key="DELETE" /></span>
                             </button>
                         </div>
