@@ -4,13 +4,13 @@ $JQry(function() {
 		var $element = $JQry(element),
 			url = $element.data("url"),
  			options = {
-					minimumInputLength : 3,
-					theme : "bootstrap"
-				};
+				minimumInputLength: 3,
+				theme: "bootstrap"
+			};
 		
 		// Ajax
 		options["ajax"] = {
-			url : url,
+			url: url,
 			dataType: "json",
 			delay: 250,
 			data: function(params) {
@@ -24,6 +24,31 @@ $JQry(function() {
 				};
 			},
 			cache: true
+		};
+		
+		
+		// Tokenizer
+		options["tokenizer"] = function(input, selection, callback) {
+			var term = input.term;
+
+			if ((term.indexOf(" ") !== -1) || (term.indexOf(",") !== -1) || (term.indexOf(";") !== -1)) {
+				if (term.length > 3) {
+					$JQry.getJSON(url, {
+						filter: term,
+						tokenizer: true
+					}, function(data, status, xhr) {
+						$JQry.each(data, function(key, value) {
+							callback(value);
+						});
+					});
+				}
+				
+				return {
+					term: ""
+				};
+			} else {
+				return input;
+			}
 		};
 		
 		
@@ -58,7 +83,7 @@ $JQry(function() {
 				// Person title
 				$personTitle = $JQry(document.createElement("div"));
 				$personTitle.addClass("person-title");
-				$personTitle.text(params.displayName)
+				$personTitle.text(params.displayName);
 				$personTitle.appendTo($result);
 				
 				// Person extra
@@ -84,11 +109,20 @@ $JQry(function() {
 		
 		// Selection template
 		options["templateSelection"] = function(params) {
+			var avatarUrl;
+			
 			// Selection
 			$selection = $JQry(document.createElement("div"));
 			$selection.addClass("person");
 			
-			if (params.avatar !== undefined) {
+			// Avatar URL
+			if (params.avatar === undefined) {
+				avatarUrl = $JQry(params.element).data("avatar");
+			} else {
+				avatarUrl = params.avatar;
+			}
+			
+			if (avatarUrl !== undefined) {
 				// Person avatar
 				$personAvatar = $JQry(document.createElement("div"));
 				$personAvatar.addClass("person-avatar");
@@ -96,7 +130,7 @@ $JQry(function() {
 				
 				// Avatar
 				$avatar = $JQry(document.createElement("img"));
-				$avatar.attr("src", params.avatar);
+				$avatar.attr("src", avatarUrl);
 				$avatar.attr("alt", "");
 				$avatar.appendTo($personAvatar);
 			}

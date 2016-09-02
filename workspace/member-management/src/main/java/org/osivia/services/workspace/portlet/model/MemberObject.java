@@ -42,6 +42,58 @@ public abstract class MemberObject {
 
 
     /**
+     * Constructor used when no person was found with this UID.
+     * 
+     * @param uid person UID
+     */
+    protected MemberObject(String uid) {
+        super();
+        this.id = uid;
+        this.dn = null;
+        this.displayName = uid;
+        this.avatar = null;
+        this.mail = null;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof MemberObject)) {
+            return false;
+        }
+        MemberObject other = (MemberObject) obj;
+        if (id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
      * Getter for deleted.
      * 
      * @return the deleted

@@ -104,14 +104,30 @@
                         <div class="col-xs-8 col-sm-6 col-lg-7">
                             <div class="person">
                                 <div class="person-avatar">
-                                    <img src="${invitation.avatar}" alt="">
+                                    <c:choose>
+                                        <c:when test="${not empty invitation.avatar}">
+                                            <img src="${invitation.avatar}" alt="">
+                                        </c:when>
+                                        
+                                        <c:when test="${invitation.unknownUser}">
+                                            <i class="glyphicons glyphicons-user-add"></i>
+                                        </c:when>
+                                    </c:choose>
                                 </div>
+                                
                                 <div class="person-title">
                                     <span>${invitation.displayName}</span>
                                 </div>
-                                <c:if test="${not empty invitation.mail}">
-                                    <div class="person-extra">${invitation.mail}</div>
-                                </c:if>
+                                
+                                <c:choose>
+                                    <c:when test="${not empty invitation.mail}">
+                                        <div class="person-extra">${invitation.mail}</div>
+                                    </c:when>
+                                    
+                                    <c:when test="${invitation.unknownUser}">
+                                        <div class="person-extra"><op:translate key="INVITATIONS_PERSON_BEING_CREATED" /></div>
+                                    </c:when>
+                                </c:choose>
                             </div>
                         </div>
                         

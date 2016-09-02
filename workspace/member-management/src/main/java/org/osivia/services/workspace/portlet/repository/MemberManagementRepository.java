@@ -115,10 +115,11 @@ public interface MemberManagementRepository {
      * 
      * @param portalControllerContext portal controller context
      * @param filter search filter
+     * @param tokenizer tokenizer indicator
      * @return persons
      * @throws PortletException
      */
-    List<Person> searchPersons(PortalControllerContext portalControllerContext, String filter) throws PortletException;
+    List<Person> searchPersons(PortalControllerContext portalControllerContext, String filter, boolean tokenizer) throws PortletException;
 
 
     /**

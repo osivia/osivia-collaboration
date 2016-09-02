@@ -3,8 +3,10 @@ package org.osivia.services.workspace.portlet.repository;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.naming.Name;
 import javax.portlet.PortletException;
@@ -227,7 +229,13 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 Person person = this.personService.getPerson(uid);
 
                 // Invitation
-                Invitation invitation = this.applicationContext.getBean(Invitation.class, person);
+                Invitation invitation;
+                if (person == null) {
+                    invitation = this.applicationContext.getBean(Invitation.class, uid);
+                } else {
+                    invitation = this.applicationContext.getBean(Invitation.class, person);
+                }
+
                 invitation.setDocument(document);
 
                 // Date
@@ -257,17 +265,23 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public List<Person> searchPersons(PortalControllerContext portalControllerContext, String filter) throws PortletException {
-        String tokenizedFilter = filter + "*";
-
+    public List<Person> searchPersons(PortalControllerContext portalControllerContext, String filter, boolean tokenizer) throws PortletException {
         // Criteria
-        Person search = this.personService.getEmptyPerson();
-        search.setUid(tokenizedFilter);
-        search.setDisplayName(tokenizedFilter);
-        search.setSn(tokenizedFilter);
-        search.setGivenName(tokenizedFilter);
+        Person criteria = this.personService.getEmptyPerson();
 
-        return this.personService.findByCriteria(search);
+        if (tokenizer) {
+            criteria.setMail(filter);
+        } else {
+            String tokenizedFilter = filter + "*";
+
+            criteria.setUid(tokenizedFilter);
+            criteria.setDisplayName(tokenizedFilter);
+            criteria.setSn(tokenizedFilter);
+            criteria.setGivenName(tokenizedFilter);
+            criteria.setMail(tokenizedFilter);
+        }
+
+        return this.personService.findByCriteria(criteria);
     }
 
 
@@ -331,16 +345,16 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         groups.addAll(this.workspaceService.findByCriteria(criteria));
 
 
-        // Existing invitations
+		// Existing invitations
         Map<String, Invitation> existingInvitations = new HashMap<>(invitations.size());
         for (Invitation invitation : invitations) {
             existingInvitations.put(invitation.getId(), invitation);
         }
 
-        // Existing members
-        Map<String, Member> existingMembers = new HashMap<>(members.size());
+        // Member identifiers
+        Set<String> memberIdentifiers = new HashSet<>(members.size());
         for (Member member : members) {
-            existingMembers.put(member.getId(), member);
+            memberIdentifiers.add(member.getId());
         }
 
 
@@ -350,21 +364,21 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         // Notifications
         Notifications notifications = new Notifications(NotificationsType.WARNING);
 
-        // Updated invitations
-        List<Invitation> updatedInvitations = new ArrayList<>(form.getIdentifiers().size());
 
-        for (String uid : form.getIdentifiers()) {
-            if (existingInvitations.containsKey(uid)) {
-                Invitation existingInvitation = existingInvitations.get(uid);
+		// Updated invitations
+        List<Invitation> updatedInvitations = new ArrayList<>(form.getInvitations().size());
+
+        for (Invitation invitation : form.getInvitations()) {
+            if (invitations.contains(invitation)) {
+                int index = invitations.indexOf(invitation);
+                Invitation existingInvitation = invitations.get(index);
                 if (form.getRole().getWeight() > existingInvitation.getRole().getWeight()) {
                     existingInvitation.setRole(form.getRole());
                     updatedInvitations.add(existingInvitation);
                 }
-            } else if (existingMembers.containsKey(uid)) {
-                Member existingMember = existingMembers.get(uid);
-
+            } else if (memberIdentifiers.contains(invitation.getId())) {
                 // Notification
-                String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_MEMBER_ALREADY_EXISTS", existingMember.getDisplayName());
+                String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_MEMBER_ALREADY_EXISTS", invitation.getDisplayName());
                 notifications.addMessage(message);
             } else {
                 // Variables
@@ -373,7 +387,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 variables.put("documentPath", workspace.getPath());
                 variables.put(WORKSPACE_IDENTIFIER_PROPERTY, workspaceId);
                 variables.put(WORKSPACE_TITLE_PROPERTY, workspace.getTitle());
-                variables.put(PERSON_UID_PROPERTY, uid);
+                variables.put(PERSON_UID_PROPERTY, invitation.getId());
                 variables.put(INVITATION_STATE_PROPERTY, InvitationState.SENT.name());
                 variables.put(ROLE_PROPERTY, form.getRole().getId());
 
@@ -385,11 +399,15 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 }
 
                 // Update ACL
-                INuxeoCommand command = this.applicationContext.getBean(SetProcedureInstanceAcl.class, modelPath, workspaceId, uid, groups);
+                INuxeoCommand command = this.applicationContext.getBean(SetProcedureInstanceAcl.class, modelPath, workspaceId, invitation.getId(), groups);
                 nuxeoController.executeNuxeoCommand(command);
 
                 result = true;
             }
+        }
+
+        if (!updatedInvitations.isEmpty()) {
+            this.updateInvitations(portalControllerContext, workspaceId, updatedInvitations, true);
         }
 
         if (!notifications.getMessages().isEmpty()) {

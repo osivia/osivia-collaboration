@@ -7,6 +7,7 @@ import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.MembersForm;
+import org.springframework.validation.Errors;
 
 import net.sf.json.JSONArray;
 
@@ -85,10 +86,11 @@ public interface MemberManagementService {
      * 
      * @param portalControllerContext portal controller context
      * @param filter search filter
+     * @param tokenizer tokenizer indicator
      * @return JSON array
      * @throws PortletException
      */
-    JSONArray searchPersons(PortalControllerContext portalControllerContext, String filter) throws PortletException;
+    JSONArray searchPersons(PortalControllerContext portalControllerContext, String filter, boolean tokenizer) throws PortletException;
 
 
     /**
@@ -128,6 +130,15 @@ public interface MemberManagementService {
      */
     void updateHistoryInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form)
             throws PortletException;
+
+
+    /**
+     * Validate invitations creation form.
+     * 
+     * @param errors errors
+     * @param form invitations creation form
+     */
+    void validateInvitationsCreationForm(Errors errors, InvitationsCreationForm form);
 
 
     /**

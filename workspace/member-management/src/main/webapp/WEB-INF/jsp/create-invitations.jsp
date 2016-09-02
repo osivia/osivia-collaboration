@@ -28,18 +28,35 @@
                 <span><op:translate key="CREATE_INVITATIONS_LEGEND" /></span>
             </legend>
             
+            <c:if test="${creation.warning}">
+                <div class="alert alert-warning">
+                    <span><op:translate key="INVITATIONS_CREATE_PERSON_WARNING" /></span>
+                    <ul>
+                        <c:forEach var="invitation" items="${creation.invitations}">
+                            <c:if test="${invitation.unknownUser}">
+                                <li>${invitation.id}</li>
+                            </c:if>
+                        </c:forEach>
+                    </ul>
+                </div>
+            </c:if>
+            
             <div class="row">
                 <div class="col-sm-8 col-lg-9">
-                    <!-- Persons -->
+                    <!-- Invitations -->
                     <c:set var="placeholder"><op:translate key="CREATE_INVITATIONS_ADD_PERSONS_PLACEHOLDER" /></c:set>
                     <c:set var="inputTooShort"><op:translate key="SELECT2_INPUT_TOO_SHORT" args="3" /></c:set>
                     <c:set var="noResults"><op:translate key="SELECT2_NO_RESULTS" /></c:set>
                     <c:set var="searching"><op:translate key="SELECT2_SEARCHING" /></c:set>
-                    <spring:bind path="identifiers">
-                        <div class="form-group ${status.error ? 'has-error' : ''}">
-                            <form:label path="identifiers" cssClass="control-label"><op:translate key="CREATE_INVITATIONS_ADD_PERSONS_LABEL" /></form:label>
-                            <form:select path="identifiers" cssClass="form-control select2" data-placeholder="${placeholder}" data-url="${searchUrl}" data-input-too-short="${inputTooShort}" data-no-results="${noResults}" data-searching="${searching}"></form:select>
-                            <form:errors path="identifiers" cssClass="help-block" />
+                    <spring:bind path="invitations">
+                        <div class="form-group ${status.error ? 'has-error' : (creation.warning ? 'has-warning' : '')}">
+                            <form:label path="invitations" cssClass="control-label"><op:translate key="CREATE_INVITATIONS_ADD_PERSONS_LABEL" /></form:label>
+                            <form:select path="invitations" cssClass="form-control select2" data-placeholder="${placeholder}" data-url="${searchUrl}" data-input-too-short="${inputTooShort}" data-no-results="${noResults}" data-searching="${searching}">
+                                <c:forEach var="invitation" items="${creation.invitations}">
+                                    <form:option value="${invitation.id}" data-avatar="${invitation.avatar}">${invitation.displayName}</form:option>
+                                </c:forEach>
+                            </form:select>
+                            <form:errors path="invitations" cssClass="help-block" />
                         </div>
                     </spring:bind>
                 </div>
@@ -57,13 +74,13 @@
                 </div>
             </div>
             
+            
             <!-- Buttons -->
             <spring:bind path="*">
-                <div id="${namespace}-creation-buttons" class="collapse ${status.error ? 'in' : ''}">
+                <div id="${namespace}-creation-buttons" class="collapse ${(status.error or creation.warning) ? 'in' : ''}">
                     <!-- Save -->
                     <button type="submit" class="btn btn-primary">
-                        <i class="glyphicons glyphicons-floppy-disk"></i>
-                        <span><op:translate key="INVITE" /></span>
+                        <span><op:translate key="${creation.warning ? 'CONFIRM' : 'INVITE'}" /></span>
                     </button>
                     
                     <!-- Cancel -->

@@ -28,6 +28,9 @@ public class Invitation extends MemberObject {
     /** State. */
     private InvitationState state;
 
+    /** Unknown user indicator. */
+    private final boolean unknownUser;
+
 
     /**
      * Constructor.
@@ -36,6 +39,18 @@ public class Invitation extends MemberObject {
      */
     public Invitation(Person person) {
         super(person);
+        this.unknownUser = false;
+    }
+
+
+    /**
+     * Constructor used when no person was found with this UID.
+     * 
+     * @param uid person UID
+     */
+    public Invitation(String uid) {
+        super(uid);
+        this.unknownUser = true;
     }
 
 
@@ -109,6 +124,15 @@ public class Invitation extends MemberObject {
      */
     public void setState(InvitationState state) {
         this.state = state;
+    }
+
+    /**
+     * Getter for unknownUser.
+     * 
+     * @return the unknownUser
+     */
+    public boolean isUnknownUser() {
+        return unknownUser;
     }
 
 }

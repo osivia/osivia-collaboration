@@ -19,9 +19,11 @@ import javax.portlet.ResourceResponse;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
+import org.osivia.services.workspace.portlet.model.converter.InvitationPropertyEditor;
 import org.osivia.services.workspace.portlet.model.validator.InvitationsCreationFormValidator;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +55,7 @@ import net.sf.json.JSONArray;
  */
 @Controller
 @RequestMapping(path = "VIEW", params = "tab=invitations")
-@SessionAttributes("invitations")
+@SessionAttributes({"invitations", "creation"})
 public class MemberManagementInvitationsController extends CMSPortlet implements PortletConfigAware, PortletContextAware {
 
     /** Portlet config. */
@@ -69,6 +71,10 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
     /** Invitations creation form validator. */
     @Autowired
     private InvitationsCreationFormValidator creationFormValidator;
+
+    /** Invitation property editor. */
+    @Autowired
+    private InvitationPropertyEditor invitationPropertyEditor;
 
 
     /**
@@ -187,7 +193,9 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        if (!result.hasErrors()) {
+        if (result.hasErrors()) {
+            creationForm.setWarning(false);
+        } else {
             this.service.createInvitations(portalControllerContext, options, invitationsForm, creationForm);
         }
 
@@ -233,17 +241,19 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
      * @param request resource request
      * @param response resource response
      * @param filter search filter request parameter
+     * @param tokenizer tokenizer indicator request parameter
      * @throws PortletException
      * @throws IOException
      */
     @ResourceMapping("search")
-    public void search(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter)
+    public void search(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "tokenizer", required = false) String tokenizer)
             throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         // Search results
-        JSONArray results = this.service.searchPersons(portalControllerContext, filter);
+        JSONArray results = this.service.searchPersons(portalControllerContext, filter, BooleanUtils.toBoolean(tokenizer));
 
         // Content type
         response.setContentType("application/json");
@@ -314,6 +324,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
     @InitBinder("creation")
     public void invitationsCreationFormInitBinder(PortletRequestDataBinder binder) {
         binder.addValidators(this.creationFormValidator);
+        binder.registerCustomEditor(Invitation.class, this.invitationPropertyEditor);
     }
 
 
