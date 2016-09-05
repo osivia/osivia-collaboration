@@ -42,6 +42,7 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 
@@ -396,6 +397,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 // Start
                 try {
                     this.formsService.start(portalControllerContext, MODEL_ID, variables);
+                } catch (FormFilterException e) {
+                    throw new PortletException(e);
                 } catch (PortalException e) {
                     throw new PortletException(e);
                 }
