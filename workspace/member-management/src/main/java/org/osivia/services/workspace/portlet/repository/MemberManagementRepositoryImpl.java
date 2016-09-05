@@ -298,14 +298,14 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public void updateInvitations(PortalControllerContext portalControllerContext, String workspaceId, List<Invitation> invitations, boolean pending)
+    public void updateInvitations(PortalControllerContext portalControllerContext, String workspaceId, List<Invitation> invitations)
             throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(UpdateInvitationsCommand.class, invitations, pending);
+        INuxeoCommand command = this.applicationContext.getBean(UpdateInvitationsCommand.class, invitations);
         nuxeoController.executeNuxeoCommand(command);
     }
 
@@ -348,7 +348,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 		// Existing invitations
         Map<String, Invitation> existingInvitations = new HashMap<>(invitations.size());
         for (Invitation invitation : invitations) {
-            existingInvitations.put(invitation.getId(), invitation);
+            if (InvitationState.SENT.equals(invitation.getState())) {
+                existingInvitations.put(invitation.getId(), invitation);
+            }
         }
 
         // Member identifiers
@@ -407,7 +409,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         }
 
         if (!updatedInvitations.isEmpty()) {
-            this.updateInvitations(portalControllerContext, workspaceId, updatedInvitations, true);
+            this.updateInvitations(portalControllerContext, workspaceId, updatedInvitations);
         }
 
         if (!notifications.getMessages().isEmpty()) {

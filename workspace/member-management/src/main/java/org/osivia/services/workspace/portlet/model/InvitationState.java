@@ -10,27 +10,35 @@ import org.apache.commons.lang.StringUtils;
 public enum InvitationState {
 
     /** Invitation sent. */
-    SENT("info"),
+    SENT(true, "info", "glyphicons glyphicons-question-sign"),
     /** Accepted invitation. */
-    ACCEPTED("success"),
+    ACCEPTED(false, "success", "glyphicons glyphicons-ok-sign"),
     /** Rejected invitation. */
-    REJECTED("danger");
+    REJECTED(false, "danger", "glyphicons glyphicons-remove-sign");
 
 
+    /** Editable indicator. */
+    private final boolean editable;
     /** Internationalization key. */
     private final String key;
     /** HTML classes. */
     private final String htmlClasses;
+    /** Icon. */
+    private final String icon;
 
 
     /**
      * Constructor.
      * 
+     * @param editable editable indicator
      * @param color color
+     * @param icon icon
      */
-    private InvitationState(String color) {
+    private InvitationState(boolean editable, String color, String icon) {
+        this.editable = editable;
         this.key = "INVITATION_STATE_" + StringUtils.upperCase(this.name());
-        this.htmlClasses = "label label-" + color;
+        this.htmlClasses = "text-" + color;
+        this.icon = icon;
     }
 
 
@@ -53,6 +61,15 @@ public enum InvitationState {
 
 
     /**
+     * Getter for editable.
+     * 
+     * @return the editable
+     */
+    public boolean isEditable() {
+        return editable;
+    }
+
+    /**
      * Getter for key.
      * 
      * @return the key
@@ -68,6 +85,15 @@ public enum InvitationState {
      */
     public String getHtmlClasses() {
         return htmlClasses;
+    }
+
+    /**
+     * Getter for icon.
+     * 
+     * @return the icon
+     */
+    public String getIcon() {
+        return icon;
     }
 
 }

@@ -139,10 +139,9 @@ public interface MemberManagementRepository {
      * @param portalControllerContext portal controller context
      * @param workspaceId workspace identifier
      * @param invitations invitations
-     * @param pending pending invitations indicator
      * @throws PortletException
      */
-    void updateInvitations(PortalControllerContext portalControllerContext, String workspaceId, List<Invitation> invitations, boolean pending)
+    void updateInvitations(PortalControllerContext portalControllerContext, String workspaceId, List<Invitation> invitations)
             throws PortletException;
 
 

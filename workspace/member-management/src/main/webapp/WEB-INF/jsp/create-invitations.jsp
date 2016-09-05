@@ -11,8 +11,6 @@
     <portlet:param name="tab" value="invitations" />
     <portlet:param name="sort" value="${sort}" />
     <portlet:param name="alt" value="${alt}" />
-    <portlet:param name="sort2" value="${sort2}" />
-    <portlet:param name="alt2" value="${alt2}" />
 </portlet:actionURL>
 
 <portlet:resourceURL id="search" var="searchUrl" />

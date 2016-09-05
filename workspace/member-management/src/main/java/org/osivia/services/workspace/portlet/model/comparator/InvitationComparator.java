@@ -86,6 +86,14 @@ public class InvitationComparator implements Comparator<Invitation> {
             result = -result;
         }
 
+        if ((result == 0) && (!"date".equals(this.sort))) {
+            // Date
+            Date date1 = invitation1.getDate();
+            Date date2 = invitation2.getDate();
+
+            result = date2.compareTo(date1);
+        }
+
         return result;
     }
 

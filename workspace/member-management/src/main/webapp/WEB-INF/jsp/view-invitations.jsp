@@ -15,7 +15,4 @@
     
     <!-- Create invitations -->
     <jsp:include page="create-invitations.jsp" />
-    
-    <!-- Invitations history -->
-    <jsp:include page="invitations-history.jsp" />
 </div>

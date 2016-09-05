@@ -8,6 +8,7 @@ import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.services.workspace.portlet.model.Invitation;
+import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -28,20 +29,16 @@ public class UpdateInvitationsCommand implements INuxeoCommand {
 
     /** Invitations. */
     private final List<Invitation> invitations;
-    /** Pending invitations indicator. */
-    private final boolean pending;
 
 
     /**
      * Constructor.
      *
      * @param invitations invitations
-     * @param pending pending invitations indicator
      */
-    public UpdateInvitationsCommand(List<Invitation> invitations, boolean pending) {
+    public UpdateInvitationsCommand(List<Invitation> invitations) {
         super();
         this.invitations = invitations;
-        this.pending = pending;
     }
 
 
@@ -59,7 +56,7 @@ public class UpdateInvitationsCommand implements INuxeoCommand {
 
             if (invitation.isDeleted()) {
                 documentService.remove(document);
-            } else if (this.pending) {
+            } else if (InvitationState.SENT.equals(invitation.getState())) {
                 // Variables
                 PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
                 variables.set(MemberManagementRepository.ROLE_PROPERTY, invitation.getRole().getId());
