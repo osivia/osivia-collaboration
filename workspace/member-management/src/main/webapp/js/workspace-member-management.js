@@ -87,20 +87,12 @@ $JQry(function() {
 				$personTitle.appendTo($result);
 				
 				// Person extra
-				$personExtra = $JQry(document.createElement("div"));
-				$personExtra.addClass("person-extra");
-				if (params.create) {
+				if (params.extra) {
+					$personExtra = $JQry(document.createElement("div"));
+					$personExtra.addClass("person-extra");
 					$personExtra.text(params.extra);
-				} else {
-					text = params.id;
-					if (params.mail !== undefined) {
-						text += " – ";
-						text += params.mail;
-					}
-					
-					$personExtra.text(text);
+					$personExtra.appendTo($result);
 				}
-				$personExtra.appendTo($result);
 			}
 
 			return $result;

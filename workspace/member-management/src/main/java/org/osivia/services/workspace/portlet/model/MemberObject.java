@@ -2,6 +2,7 @@ package org.osivia.services.workspace.portlet.model;
 
 import javax.naming.Name;
 
+import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.directory.v2.model.Person;
 
 /**
@@ -35,9 +36,16 @@ public abstract class MemberObject {
         super();
         this.id = person.getUid();
         this.dn = person.getDn();
-        this.displayName = person.getDisplayName();
+
+        if (StringUtils.isEmpty(person.getDisplayName())) {
+            this.displayName = person.getUid();
+            this.mail = null;
+        } else {
+            this.displayName = person.getDisplayName();
+            this.mail = person.getMail();
+        }
+
         this.avatar = person.getAvatar().getUrl();
-        this.mail = person.getMail();
     }
 
 

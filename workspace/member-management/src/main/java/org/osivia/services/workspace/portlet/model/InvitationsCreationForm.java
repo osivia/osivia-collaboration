@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class InvitationsCreationForm {
 
-    /** Invitations. */
-    private List<Invitation> invitations;
+    /** Pending invitations. */
+    private List<Invitation> pendingInvitations;
     /** Role. */
     private WorkspaceRole role;
     /** Warning indicator. */
@@ -33,21 +33,21 @@ public class InvitationsCreationForm {
 
 
     /**
-     * Getter for invitations.
+     * Getter for pendingInvitations.
      * 
-     * @return the invitations
+     * @return the pendingInvitations
      */
-    public List<Invitation> getInvitations() {
-        return invitations;
+    public List<Invitation> getPendingInvitations() {
+        return pendingInvitations;
     }
 
     /**
-     * Setter for invitations.
+     * Setter for pendingInvitations.
      * 
-     * @param invitations the invitations to set
+     * @param pendingInvitations the pendingInvitations to set
      */
-    public void setInvitations(List<Invitation> invitations) {
-        this.invitations = invitations;
+    public void setPendingInvitations(List<Invitation> pendingInvitations) {
+        this.pendingInvitations = pendingInvitations;
     }
 
     /**

@@ -107,7 +107,7 @@
         <!-- Body -->
         <div class="table-body-wrapper">
             <c:forEach var="invitation" items="${invitations.invitations}" varStatus="status">
-                <div class="table-row">
+                <div class="table-row ${invitation.state.editable ? '' : 'muted'}">
                     <form:hidden path="invitations[${status.index}].deleted" />
                 
                     <fieldset>
@@ -212,7 +212,7 @@
     <div id="${namespace}-invitations-buttons" class="form-group collapse">
         <!-- Save -->
         <button type="submit" class="btn btn-primary">
-            <i class="glyphicons glyphicons-floppy-disk"></i>
+			<i class="glyphicons glyphicons-floppy-disk"></i>
             <span><op:translate key="SAVE" /></span>
         </button>
         

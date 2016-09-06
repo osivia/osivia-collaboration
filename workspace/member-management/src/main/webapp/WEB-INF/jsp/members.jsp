@@ -30,7 +30,7 @@
         <div class="table-row table-header">
             <div class="row">
                 <!-- Member -->
-                <div class="col-sm-8">
+                <div class="col-xs-12 col-sm-7 col-lg-9">
                     <a href="${sortNameUrl}"><op:translate key="MEMBER"/></a>
                     
                     <c:if test="${sort eq 'name'}">
@@ -43,8 +43,11 @@
                     </c:if>
                 </div>
                 
+                <!-- Column reset -->
+                <div class="clearfix visible-xs-block"></div>
+                
                 <!-- Role -->
-                <div class="col-sm-3">
+                <div class="col-xs-8 col-sm-3 col-lg-2">
                     <a href="${sortRoleUrl}"><op:translate key="ROLE"/></a>
                     
                     <c:if test="${sort eq 'role'}">
@@ -60,58 +63,62 @@
         </div>
         
         <!-- Body -->
-        <c:forEach var="member" items="${members.members}" varStatus="status">                  
-            <div class="table-row">
-                <form:hidden path="members[${status.index}].deleted" />
-            
-                <fieldset>
-                    <div class="row">
-                        <!-- Member -->
-                        <div class="col-xs-12 col-sm-8">
-                            <div class="person">
-                                <div class="person-avatar">
-                                    <img src="${member.avatar}" alt="">
-                                </div>
-                                <div class="person-title">${member.displayName}</div>
-                                <c:if test="${not empty member.mail}">
-                                    <div class="person-extra">${member.mail}</div>
-                                </c:if>
-                            </div>
-                        </div>
-                        
-                        <!-- Role -->
-                        <div class="col-xs-10 col-sm-3">
-                            <c:choose>
-                                <c:when test="${member.editable}">
-                                    <form:label path="members[${status.index}].role" cssClass="sr-only"><op:translate key="ROLE" /></form:label>
-                                    <form:select path="members[${status.index}].role" cssClass="form-control">
-                                        <c:forEach var="role" items="${options.roles}">
-                                            <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}" /></form:option>
-                                        </c:forEach>
-                                    </form:select>
-                                </c:when>
-                                
-                                <c:otherwise>
-                                    <div class="form-control-static">
-                                        <span><op:translate key="${member.role.key}" classLoader="${member.role.classLoader}" /></span>
+        <div class="table-body-wrapper">
+            <c:forEach var="member" items="${members.members}" varStatus="status">                  
+                <div class="table-row">
+                    <form:hidden path="members[${status.index}].deleted" />
+                
+                    <fieldset>
+                        <div class="row">
+                            <!-- Member -->
+                            <div class="col-xs-12 col-sm-7 col-lg-9">
+                                <div class="person">
+                                    <div class="person-avatar">
+                                        <img src="${member.avatar}" alt="">
                                     </div>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
-                        
-                        <c:if test="${member.editable}">
-                            <!-- Deletion -->
-                            <div class="col-xs-2 col-sm-1">
-                                <button type="button" class="btn btn-default delete">
-                                    <i class="glyphicons glyphicons-remove"></i>
-                                    <span class="sr-only"><op:translate key="DELETE" /></span>
-                                </button>
+                                    <div class="person-title">${member.displayName}</div>
+                                    <c:if test="${not empty member.mail}">
+                                        <div class="person-extra">${member.mail}</div>
+                                    </c:if>
+                                </div>
                             </div>
-                        </c:if>
-                    </div>
-                </fieldset>
-            </div>
-        </c:forEach>
+                            
+                            <!-- Column reset -->
+                            <div class="clearfix visible-xs-block"></div>
+                            
+                            <!-- Role -->
+                            <div class="col-xs-8 col-sm-3 col-lg-2">
+                                <c:choose>
+                                    <c:when test="${member.editable}">
+                                        <form:label path="members[${status.index}].role" cssClass="sr-only"><op:translate key="ROLE" /></form:label>
+                                        <form:select path="members[${status.index}].role" cssClass="form-control">
+                                            <c:forEach var="role" items="${options.roles}">
+                                                <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}" /></form:option>
+                                            </c:forEach>
+                                        </form:select>
+                                    </c:when>
+                                    
+                                    <c:otherwise>
+                                        <div class="form-control-static">
+                                            <span><op:translate key="${member.role.key}" classLoader="${member.role.classLoader}" /></span>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                            
+                            <c:if test="${member.editable}">
+                                <!-- Deletion -->
+                                <div class="col-xs-4 col-sm-2 col-lg-1">
+                                    <button type="button" class="btn btn-default delete">
+                                        <span><op:translate key="REMOVE" /></span>
+                                    </button>
+                                </div>
+                            </c:if>
+                        </div>
+                    </fieldset>
+                </div>
+            </c:forEach>
+        </div>
         
         <!-- No results -->
         <c:if test="${empty members.members}">

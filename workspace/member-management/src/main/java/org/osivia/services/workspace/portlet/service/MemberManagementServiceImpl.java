@@ -19,7 +19,6 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.services.workspace.portlet.model.Invitation;
-import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.Member;
@@ -45,8 +44,8 @@ import net.sf.json.JSONObject;
 @Service
 public class MemberManagementServiceImpl implements MemberManagementService {
 
-    /** Mail pattern. */
-    private static final String MAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+    /** Mail regex. */
+    private static final String MAIL_REGEX = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
 
     /** Mail pattern. */
@@ -77,7 +76,7 @@ public class MemberManagementServiceImpl implements MemberManagementService {
         super();
 
         // Mail pattern
-        this.mailPattern = Pattern.compile(MAIL_PATTERN);
+        this.mailPattern = Pattern.compile(MAIL_REGEX);
     }
 
 
@@ -221,15 +220,34 @@ public class MemberManagementServiceImpl implements MemberManagementService {
                 for (Person person : persons) {
                     JSONObject object = new JSONObject();
                     object.put("id", person.getUid());
-                    object.put("mail", person.getMail());
-                    object.put("avatar", person.getAvatar().getUrl());
+
+                    // Display name
+                    String displayName;
+                    // Extra
+                    String extra;
+
+                    if (StringUtils.isEmpty(person.getDisplayName())) {
+                        displayName = person.getUid();
+                        extra = null;
+                    } else {
+                        displayName = person.getDisplayName();
+
+                        extra = person.getUid();
+                        if (!StringUtils.equals(person.getUid(), person.getMail())) {
+                            extra += " – " + person.getMail();
+                        }
+                    }
 
                     if (identifiers.contains(person.getUid())) {
-                        object.put("displayName", person.getDisplayName() + " " + bundle.getString("ALREADY_MEMBER_INDICATOR"));
+                        displayName += " " + bundle.getString("ALREADY_MEMBER_INDICATOR");
                         object.put("disabled", true);
-                    } else {
-                        object.put("displayName", person.getDisplayName());
                     }
+
+                    object.put("displayName", displayName);
+                    object.put("extra", extra);
+
+                    object.put("avatar", person.getAvatar().getUrl());
+
 
                     array.add(object);
                 }
@@ -310,14 +328,10 @@ public class MemberManagementServiceImpl implements MemberManagementService {
         this.repository.updateInvitations(portalControllerContext, options.getWorkspaceId(), form.getInvitations());
 
         // Update model
+        int count = this.repository.getInvitationsCount(portalControllerContext, options.getWorkspaceId());
+        options.setInvitationsCount(count);
         List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, options.getWorkspaceId());
-        List<Invitation> pending = new ArrayList<>(invitations.size());
-        for (Invitation invitation : invitations) {
-            if (InvitationState.SENT.equals(invitation.getState())) {
-                pending.add(invitation);
-            }
-        }
-        options.setInvitationsCount(pending.size());
+        form.setInvitations(invitations);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_UPDATE_SUCCESS");
@@ -330,15 +344,15 @@ public class MemberManagementServiceImpl implements MemberManagementService {
      */
     @Override
     public void validateInvitationsCreationForm(Errors errors, InvitationsCreationForm form) {
-        if (CollectionUtils.isNotEmpty(form.getInvitations())) {
-            for (Invitation invitation : form.getInvitations()) {
+        if (CollectionUtils.isNotEmpty(form.getPendingInvitations())) {
+            for (Invitation invitation : form.getPendingInvitations()) {
                 if (invitation.isUnknownUser()) {
                     // Mail pattern matcher
                     Matcher matcher = this.mailPattern.matcher(invitation.getId());
 
                     if (!matcher.matches()) {
                         Object[] errorArgs = new Object[]{invitation.getId()};
-                        errors.rejectValue("invitations", "Invalid", errorArgs, "Invalid value");
+                        errors.rejectValue("pendingInvitations", "Invalid", errorArgs, null);
                     }
                 }
             }
@@ -355,9 +369,9 @@ public class MemberManagementServiceImpl implements MemberManagementService {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
-        // Identifiers to create
-        List<String> identifiers = new ArrayList<>(creationForm.getInvitations().size());
-        for (Invitation invitation : creationForm.getInvitations()) {
+        // Pending invitation identifiers
+        List<String> identifiers = new ArrayList<>(creationForm.getPendingInvitations().size());
+        for (Invitation invitation : creationForm.getPendingInvitations()) {
             if (invitation.isUnknownUser()) {
                 identifiers.add(invitation.getId());
             }
@@ -379,7 +393,7 @@ public class MemberManagementServiceImpl implements MemberManagementService {
                 this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
             }
 
-            creationForm.getInvitations().clear();
+            creationForm.getPendingInvitations().clear();
             creationForm.setWarning(false);
         } else {
             creationForm.setWarning(true);

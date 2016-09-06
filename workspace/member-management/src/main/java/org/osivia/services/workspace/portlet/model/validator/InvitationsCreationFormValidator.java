@@ -35,7 +35,7 @@ public class InvitationsCreationFormValidator implements Validator {
      */
     @Override
     public boolean supports(Class<?> clazz) {
-        return clazz.isAssignableFrom(InvitationsCreationForm.class);
+        return InvitationsCreationForm.class.isAssignableFrom(clazz);
     }
 
 
@@ -44,7 +44,7 @@ public class InvitationsCreationFormValidator implements Validator {
      */
     @Override
     public void validate(Object target, Errors errors) {
-        ValidationUtils.rejectIfEmpty(errors, "invitations", "NotEmpty");
+        ValidationUtils.rejectIfEmpty(errors, "pendingInvitations", "NotEmpty");
         ValidationUtils.rejectIfEmpty(errors, "role", "NotEmpty");
 
         InvitationsCreationForm form = (InvitationsCreationForm) target;

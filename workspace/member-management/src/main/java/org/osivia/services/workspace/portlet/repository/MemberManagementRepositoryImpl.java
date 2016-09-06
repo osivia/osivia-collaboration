@@ -20,7 +20,6 @@ import org.osivia.directory.v2.model.ext.WorkspaceGroupType;
 import org.osivia.directory.v2.model.ext.WorkspaceMember;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.directory.v2.service.WorkspaceService;
-import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
@@ -42,7 +41,6 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
-import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 
@@ -240,7 +238,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 invitation.setDocument(document);
 
                 // Date
-                Date date = document.getDate("dc:modified");
+                Date date = document.getDate("dc:created");
                 invitation.setDate(date);
 
                 // Role
@@ -365,49 +363,55 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         boolean result = false;
 
         // Notifications
-        Notifications notifications = new Notifications(NotificationsType.WARNING);
+        Notifications errors = new Notifications(NotificationsType.ERROR);
+        Notifications warnings = new Notifications(NotificationsType.WARNING);
 
 
 		// Updated invitations
-        List<Invitation> updatedInvitations = new ArrayList<>(form.getInvitations().size());
+        List<Invitation> updatedInvitations = new ArrayList<>(form.getPendingInvitations().size());
 
-        for (Invitation invitation : form.getInvitations()) {
-            if (invitations.contains(invitation)) {
-                int index = invitations.indexOf(invitation);
-                Invitation existingInvitation = invitations.get(index);
+        for (Invitation pendingInvitation : form.getPendingInvitations()) {
+            if (existingInvitations.containsKey(pendingInvitation.getId())) {
+                Invitation existingInvitation = existingInvitations.get(pendingInvitation.getId());
                 if (form.getRole().getWeight() > existingInvitation.getRole().getWeight()) {
                     existingInvitation.setRole(form.getRole());
                     updatedInvitations.add(existingInvitation);
                 }
-            } else if (memberIdentifiers.contains(invitation.getId())) {
-                // Notification
-                String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_MEMBER_ALREADY_EXISTS", invitation.getDisplayName());
-                notifications.addMessage(message);
+            } else if (memberIdentifiers.contains(pendingInvitation.getId())) {
+                // Warning notification
+                String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_MEMBER_ALREADY_EXISTS", pendingInvitation.getDisplayName());
+                warnings.addMessage(message);
             } else {
-                // Variables
-                Map<String, String> variables = new HashMap<>();
-                variables.put("documentId", workspace.getId());
-                variables.put("documentPath", workspace.getPath());
-                variables.put(WORKSPACE_IDENTIFIER_PROPERTY, workspaceId);
-                variables.put(WORKSPACE_TITLE_PROPERTY, workspace.getTitle());
-                variables.put(PERSON_UID_PROPERTY, invitation.getId());
-                variables.put(INVITATION_STATE_PROPERTY, InvitationState.SENT.name());
-                variables.put(ROLE_PROPERTY, form.getRole().getId());
-
-                // Start
                 try {
+                    // Variables
+                    Map<String, String> variables = new HashMap<>();
+                    variables.put("documentId", workspace.getId());
+                    variables.put("documentPath", workspace.getPath());
+                    variables.put(WORKSPACE_IDENTIFIER_PROPERTY, workspaceId);
+                    variables.put(WORKSPACE_TITLE_PROPERTY, workspace.getTitle());
+                    variables.put(PERSON_UID_PROPERTY, pendingInvitation.getId());
+                    variables.put(INVITATION_STATE_PROPERTY, InvitationState.SENT.name());
+                    variables.put(ROLE_PROPERTY, form.getRole().getId());
+
+                    // Start
                     this.formsService.start(portalControllerContext, MODEL_ID, variables);
-                } catch (FormFilterException e) {
-                    throw new PortletException(e);
-                } catch (PortalException e) {
-                    throw new PortletException(e);
+
+                    // Update ACL
+                    INuxeoCommand command = this.applicationContext.getBean(SetProcedureInstanceAcl.class, modelPath, workspaceId, pendingInvitation.getId(),
+                            groups);
+                    nuxeoController.executeNuxeoCommand(command);
+
+                    // User creation
+                    if (pendingInvitation.isUnknownUser()) {
+                        this.createUser(portalControllerContext, pendingInvitation.getId());
+                    }
+
+                    result = true;
+                } catch (Exception e) {
+                    // Error notification
+                    String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_CREATION_ERROR", pendingInvitation.getDisplayName());
+                    errors.addMessage(message);
                 }
-
-                // Update ACL
-                INuxeoCommand command = this.applicationContext.getBean(SetProcedureInstanceAcl.class, modelPath, workspaceId, invitation.getId(), groups);
-                nuxeoController.executeNuxeoCommand(command);
-
-                result = true;
             }
         }
 
@@ -415,8 +419,11 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             this.updateInvitations(portalControllerContext, workspaceId, updatedInvitations);
         }
 
-        if (!notifications.getMessages().isEmpty()) {
-            this.notificationsService.addNotifications(portalControllerContext, notifications);
+        if (!errors.getMessages().isEmpty()) {
+            this.notificationsService.addNotifications(portalControllerContext, errors);
+        }
+        if (!warnings.getMessages().isEmpty()) {
+            this.notificationsService.addNotifications(portalControllerContext, warnings);
         }
 
         return result;
@@ -444,6 +451,26 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         // Reload Nuxeo session
         INuxeoCommand command = this.applicationContext.getBean(ReloadNuxeoSessionCommand.class);
         nuxeoController.executeNuxeoCommand(command);
+    }
+
+
+    /**
+     * Create user.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param email user email
+     * @throws PortletException
+     */
+    protected void createUser(PortalControllerContext portalControllerContext, String email) throws PortletException {
+        // Person
+        Person person = this.personService.getEmptyPerson();
+        person.setUid(email);
+        person.setCn(email);
+        person.setSn(email);
+        person.setMail(email);
+
+        // Creation
+        this.personService.create(person);
     }
 
 
