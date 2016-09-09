@@ -45,7 +45,7 @@
             <div class="row">
                 <!-- Invitation -->
                 <div class="col-xs-7 col-sm-4 col-lg-5">
-                    <a href="${sortNameUrl}"><op:translate key="INVITATION"/></a>
+                    <a href="${sortNameUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION"/></a>
                     
                     <c:if test="${sort eq 'name'}">
                         <small class="text-muted">
@@ -59,7 +59,7 @@
                 
                 <!-- Date -->
                 <div class="col-xs-5 col-sm-2">
-                    <a href="${sortDateUrl}"><op:translate key="INVITATION_DATE"/></a>
+                    <a href="${sortDateUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_DATE"/></a>
                     
                     <c:if test="${sort eq 'date'}">
                         <small class="text-muted">
@@ -76,7 +76,7 @@
                 
                 <!-- State -->
                 <div class="col-xs-5 col-sm-2">
-                    <a href="${sortStateUrl}"><op:translate key="INVITATION_STATE"/></a>
+                    <a href="${sortStateUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_STATE"/></a>
                     
                     <c:if test="${sort eq 'state'}">
                         <small class="text-muted">
@@ -90,7 +90,7 @@
 
                 <!-- Role -->
                 <div class="col-xs-7 col-sm-2">
-                    <a href="${sortRoleUrl}"><op:translate key="ROLE"/></a>
+                    <a href="${sortRoleUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE"/></a>
                     
                     <c:if test="${sort eq 'role'}">
                         <small class="text-muted">
@@ -137,7 +137,7 @@
                                         </c:when>
                                         
                                         <c:when test="${invitation.unknownUser}">
-                                            <div class="person-extra"><op:translate key="INVITATIONS_PERSON_BEING_CREATED" /></div>
+                                            <div class="person-extra"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_PERSON_BEING_CREATED" /></div>
                                         </c:when>
                                     </c:choose>
                                 </div>
@@ -203,22 +203,28 @@
         <!-- No results -->
         <c:if test="${empty invitations.invitations}">
             <div class="table-row">
-                <div class="text-center"><op:translate key="NO_INVITATION" /></div>
+                <div class="text-center"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_NO_INVITATION" /></div>
             </div>
         </c:if>
     </div>
     
     
     <div id="${namespace}-invitations-buttons" class="form-group collapse">
-        <!-- Save -->
-        <button type="submit" class="btn btn-primary">
-			<i class="glyphicons glyphicons-floppy-disk"></i>
-            <span><op:translate key="SAVE" /></span>
-        </button>
-        
-        <!-- Cancel -->
-        <button type="reset" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-invitations-buttons">
-            <span><op:translate key="CANCEL" /></span>
-        </button>
+        <div class="alert alert-warning">
+            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_MEMBERS_MESSAGE" /></span>
+        </div>
+    
+        <div>
+            <!-- Save -->
+            <button type="submit" class="btn btn-primary">
+    			<i class="glyphicons glyphicons-floppy-disk"></i>
+                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_INVITATIONS" /></span>
+            </button>
+            
+            <!-- Cancel -->
+            <button type="reset" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-invitations-buttons">
+                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CANCEL_INVITATIONS" /></span>
+            </button>
+        </div>
     </div>
 </form:form>

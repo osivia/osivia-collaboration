@@ -27,6 +27,8 @@ public class Invitation extends MemberObject {
     private WorkspaceRole role;
     /** State. */
     private InvitationState state;
+    /** Acknowledgment date. */
+    private Date acknowledgmentDate;
 
     /** Unknown user indicator. */
     private final boolean unknownUser;
@@ -124,6 +126,24 @@ public class Invitation extends MemberObject {
      */
     public void setState(InvitationState state) {
         this.state = state;
+    }
+
+    /**
+     * Getter for acknowledgmentDate.
+     * 
+     * @return the acknowledgmentDate
+     */
+    public Date getAcknowledgmentDate() {
+        return acknowledgmentDate;
+    }
+
+    /**
+     * Setter for acknowledgmentDate.
+     * 
+     * @param acknowledgmentDate the acknowledgmentDate to set
+     */
+    public void setAcknowledgmentDate(Date acknowledgmentDate) {
+        this.acknowledgmentDate = acknowledgmentDate;
     }
 
     /**

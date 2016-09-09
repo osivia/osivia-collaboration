@@ -113,6 +113,7 @@ public class AcceptWorkspaceInvitationFormFilter implements FormFilter {
 
         // Update invitation state
         variables.put(MemberManagementRepository.INVITATION_STATE_PROPERTY, InvitationState.ACCEPTED.toString());
+        variables.put(MemberManagementRepository.ACKNOWLEDGMENT_DATE_PROPERTY, String.valueOf(System.currentTimeMillis()));
     }
     
     

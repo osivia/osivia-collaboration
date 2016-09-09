@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.portlet.repository;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,8 +34,10 @@ import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.Member;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
@@ -49,12 +52,12 @@ import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
  *
  * @author Cédric Krommenhoek
  * @see MemberManagementRepository
+ * @see ApplicationContextAware
  */
 @Repository
-public class MemberManagementRepositoryImpl implements MemberManagementRepository {
+public class MemberManagementRepositoryImpl implements MemberManagementRepository, ApplicationContextAware {
 
     /** Application context. */
-    @Autowired
     private ApplicationContext applicationContext;
 
     /** Person service. */
@@ -80,8 +83,10 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
     /**
      * Constructor.
+     *
+     * @throws IOException
      */
-    public MemberManagementRepositoryImpl() {
+    public MemberManagementRepositoryImpl() throws IOException {
         super();
     }
 
@@ -170,10 +175,17 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         WorkspaceMember currentMember = this.workspaceService.getMember(workspaceId, currentUser);
         WorkspaceRole currentRole = currentMember.getRole();
 
+        // Member dates
+        Map<String, Date> dates = getMemberDates(portalControllerContext, workspaceId, workspaceMembers);
+
         // Members
         List<Member> members = new ArrayList<>(workspaceMembers.size());
         for (WorkspaceMember workspaceMember : workspaceMembers) {
             Member member = this.applicationContext.getBean(Member.class, workspaceMember);
+
+            // Date
+            Date date = dates.get(member.getId());
+            member.setDate(date);
 
             // Editable member indicator
             boolean editable = !StringUtils.equals(currentUser, member.getId()) && (currentRole.getWeight() >= workspaceMember.getRole().getWeight());
@@ -183,6 +195,56 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         }
 
         return members;
+    }
+
+
+    /**
+     * Get member dates.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspaceId workspace identifier
+     * @param workspaceMembers workspace members
+     * @return member dates
+     * @throws PortletException
+     */
+    private Map<String, Date> getMemberDates(PortalControllerContext portalControllerContext, String workspaceId, List<WorkspaceMember> workspaceMembers)
+            throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // Member identifiers
+        Set<String> identifiers = new HashSet<>(workspaceMembers.size());
+        for (WorkspaceMember member : workspaceMembers) {
+            identifiers.add(member.getMember().getUid());
+        }
+
+        // Model path
+        String modelPath = this.getInvitationModelPath(portalControllerContext);
+
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, modelPath, workspaceId, InvitationState.ACCEPTED, identifiers);
+        Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
+
+        // Dates
+        Map<String, Date> dates = new HashMap<>(workspaceMembers.size());
+        for (Document document : documents) {
+            // Variables
+            PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
+
+            // Member identifier
+            String uid = variables.getString(PERSON_UID_PROPERTY);
+
+            if (!dates.containsKey(uid)) {
+                // Date
+                Long date = variables.getLong(ACKNOWLEDGMENT_DATE_PROPERTY);
+
+                if (date != null) {
+                    dates.put(uid, new Date(date));
+                }
+            }
+        }
+
+        return dates;
     }
 
 
@@ -203,7 +265,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public List<Invitation> getInvitations(PortalControllerContext portalControllerContext, String workspaceId) throws PortletException {
+    public List<Invitation> getInvitations(PortalControllerContext portalControllerContext, String workspaceId, Set<String> memberIdentifiers)
+            throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -223,7 +286,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             // UID
             String uid = variables.getString(PERSON_UID_PROPERTY);
 
-            if (StringUtils.isNotEmpty(uid)) {
+            if (StringUtils.isNotEmpty(uid) && !memberIdentifiers.contains(uid)) {
                 // Person
                 Person person = this.personService.getPerson(uid);
 
@@ -251,6 +314,12 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 // Invitations state
                 InvitationState state = InvitationState.fromName(variables.getString(INVITATION_STATE_PROPERTY));
                 invitation.setState(state);
+
+                // Acknowledgment date
+                Long acknowledgmentDateProperty = variables.getLong(ACKNOWLEDGMENT_DATE_PROPERTY);
+                if (acknowledgmentDateProperty != null) {
+                    invitation.setAcknowledgmentDate(new Date(acknowledgmentDateProperty));
+                }
 
                 invitations.add(invitation);
             }
@@ -297,8 +366,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public void updateInvitations(PortalControllerContext portalControllerContext, String workspaceId, List<Invitation> invitations)
-            throws PortletException {
+    public void updateInvitations(PortalControllerContext portalControllerContext, String workspaceId, List<Invitation> invitations) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
@@ -326,7 +394,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
         // Workspace
         Document workspace = this.getWorkspaceDocument(portalControllerContext);
-        
+
         // Model path
         String modelPath = this.getInvitationModelPath(portalControllerContext);
 
@@ -344,7 +412,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         groups.addAll(this.workspaceService.findByCriteria(criteria));
 
 
-		// Existing invitations
+        // Existing invitations
         Map<String, Invitation> existingInvitations = new HashMap<>(invitations.size());
         for (Invitation invitation : invitations) {
             if (InvitationState.SENT.equals(invitation.getState())) {
@@ -367,7 +435,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         Notifications warnings = new Notifications(NotificationsType.WARNING);
 
 
-		// Updated invitations
+        // Updated invitations
         List<Invitation> updatedInvitations = new ArrayList<>(form.getPendingInvitations().size());
 
         for (Invitation pendingInvitation : form.getPendingInvitations()) {
@@ -383,6 +451,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 warnings.addMessage(message);
             } else {
                 try {
+                    // Create user indicator
+                    boolean createUser = pendingInvitation.isUnknownUser();
+
                     // Variables
                     Map<String, String> variables = new HashMap<>();
                     variables.put("documentId", workspace.getId());
@@ -392,6 +463,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     variables.put(PERSON_UID_PROPERTY, pendingInvitation.getId());
                     variables.put(INVITATION_STATE_PROPERTY, InvitationState.SENT.name());
                     variables.put(ROLE_PROPERTY, form.getRole().getId());
+                    if (createUser) {
+                        variables.put("newUser", String.valueOf(true));
+                    }
 
                     // Start
                     this.formsService.start(portalControllerContext, MODEL_ID, variables);
@@ -455,8 +529,58 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getHelp(PortalControllerContext portalControllerContext, String property) throws PortletException {
+        // Help location
+        String location = null;
+        if (StringUtils.isNotBlank(property)) {
+            location = System.getProperty(property);
+        }
+
+        // Help content
+        String help;
+
+        if (StringUtils.isBlank(location)) {
+            help = null;
+        } else {
+            // Nuxeo controller
+            NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+            // Path
+            String path;
+            if (location.startsWith("/")) {
+                path = location;
+            } else {
+                path = NuxeoController.webIdToFetchPath(location);
+            }
+
+            try {
+                // Document context
+                NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
+
+                // Document
+                Document document = documentContext.getDoc();
+
+                // Transformation
+                help = nuxeoController.transformHTMLContent(StringUtils.trimToEmpty(document.getString("note:note")));
+            } catch (NuxeoException e) {
+                if (e.getErrorCode() == NuxeoException.ERROR_NOTFOUND) {
+                    help = null;
+                } else {
+                    throw e;
+                }
+            }
+        }
+
+        return help;
+    }
+
+
+    /**
      * Create user.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param email user email
      * @throws PortletException
@@ -526,6 +650,15 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         Document model = documentContext.getDoc();
 
         return model.getPath();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
 }

@@ -18,6 +18,14 @@ import net.sf.json.JSONArray;
  */
 public interface MemberManagementService {
 
+    /** Members help location property name. */
+    String MEMBERS_HELP_LOCATION_PROPERTY = "workspace-member-management.members.help.location";
+    /** Invitations help location property name. */
+    String INVITATIONS_HELP_LOCATION_PROPERTY = "workspace-member-management.invitations.help.location";
+    /** Requests help location property name. */
+    String REQUESTS_HELP_LOCATION_PROPERTY = "workspace-member-management.requests.help.location";
+
+
     /**
      * Get options.
      * 
@@ -59,6 +67,16 @@ public interface MemberManagementService {
      * @throws PortletException
      */
     void updateMembers(PortalControllerContext portalControllerContext, MemberManagementOptions options, MembersForm form) throws PortletException;
+
+
+    /**
+     * Get members help.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return help
+     * @throws PortletException
+     */
+    String getMembersHelp(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**
@@ -137,5 +155,15 @@ public interface MemberManagementService {
      */
     void createInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm invitationsForm,
             InvitationsCreationForm creationForm) throws PortletException;
+
+
+    /**
+     * Get invitations help.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return help
+     * @throws PortletException
+     */
+    String getInvitationsHelp(PortalControllerContext portalControllerContext) throws PortletException;
 
 }

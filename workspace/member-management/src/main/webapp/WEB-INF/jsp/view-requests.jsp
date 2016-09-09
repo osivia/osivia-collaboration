@@ -11,14 +11,5 @@
     <!-- Tabs -->
     <jsp:include page="tabs.jsp" />
 
-    <!-- Title -->
-    <h3>
-        <span><op:translate key="TAB_REQUESTS_TITLE" /></span>
-    </h3>
-
-    <!-- Help -->
-    <p class="text-muted">
-        <span><op:translate key="TAB_REQUESTS_HELP" /></span>
-    </p>
 
 </div>

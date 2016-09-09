@@ -11,16 +11,6 @@
     <!-- Tabs -->
     <jsp:include page="tabs.jsp" />
     
-    <!-- Title -->
-    <h3>
-        <span><op:translate key="TAB_MEMBERS_TITLE" /></span>
-    </h3>
-    
-    <!-- Help -->
-    <p class="text-muted">
-        <span><op:translate key="TAB_MEMBERS_HELP" /></span>
-    </p>
-    
     <!-- Members -->
     <jsp:include page="members.jsp" />
 </div>

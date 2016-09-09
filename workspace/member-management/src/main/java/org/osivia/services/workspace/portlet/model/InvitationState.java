@@ -36,7 +36,7 @@ public enum InvitationState {
      */
     private InvitationState(boolean editable, String color, String icon) {
         this.editable = editable;
-        this.key = "INVITATION_STATE_" + StringUtils.upperCase(this.name());
+        this.key = "WORKSPACE_MEMBER_MANAGEMENT_INVITATION_STATE_" + StringUtils.upperCase(this.name());
         this.htmlClasses = "text-" + color;
         this.icon = icon;
     }

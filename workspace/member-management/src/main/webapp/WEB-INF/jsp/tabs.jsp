@@ -18,32 +18,59 @@
 </portlet:renderURL>
 
 
-<ul class="nav nav-pills">
-    <li role="presentation" class="${tab eq 'members' ? 'active' : ''}">
-        <a href="${membersUrl}">
-            <span><op:translate key="TAB_MEMBERS" /></span>
-        </a>
-    </li>
-    
-    <li role="presentation" class="${tab eq 'invitations' ? 'active' : ''}">
-        <a href="${invitationsUrl}">
-            <span><op:translate key="TAB_INVITATIONS" /></span>
+<c:set var="namespace"><portlet:namespace /></c:set>
+
+
+<div class="clearfix">
+    <div class="pull-left">
+        <ul class="nav nav-pills">
+            <li role="presentation" class="${tab eq 'members' ? 'active' : ''}">
+                <a href="${membersUrl}">
+                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_TAB_MEMBERS" /></span>
+                </a>
+            </li>
             
-            <!-- Badge -->
-            <c:if test="${options.invitationsCount gt 0}">
-                <span class="badge">${options.invitationsCount}</span>
-            </c:if>
-        </a>
-    </li>
-    
-    <%-- <li role="presentation" class="${tab eq 'requests' ? 'active' : ''}">
-        <a href="${requestsUrl}">
-            <span><op:translate key="TAB_REQUESTS" /></span>
+            <li role="presentation" class="${tab eq 'invitations' ? 'active' : ''}">
+                <a href="${invitationsUrl}">
+                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_TAB_INVITATIONS" /></span>
+                    
+                    <!-- Badge -->
+                    <c:if test="${options.invitationsCount gt 0}">
+                        <span class="badge">${options.invitationsCount}</span>
+                    </c:if>
+                </a>
+            </li>
             
-            <!-- Badge -->
-            <c:if test="${options.requestsCount gt 0}">
-                <span class="badge">${options.requestsCount}</span>
-            </c:if>
-        </a>
-    </li> --%>
-</ul>
+            <%-- <li role="presentation" class="${tab eq 'requests' ? 'active' : ''}">
+                <a href="${requestsUrl}">
+                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_TAB_REQUESTS" /></span>
+                    
+                    <!-- Badge -->
+                    <c:if test="${options.requestsCount gt 0}">
+                        <span class="badge">${options.requestsCount}</span>
+                    </c:if>
+                </a>
+            </li> --%>
+        </ul>
+    </div>
+    
+    <c:if test="${not empty help}">
+        <div class="text-right">
+            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-help">
+                <i class="glyphicons glyphicons-question-sign"></i>
+                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_DISPLAY_HELP" /></span>
+            </button>
+        </div>
+    </c:if>
+</div>
+
+<br>
+
+<!-- Help -->
+<c:if test="${not empty help}">
+    <div id="${namespace}-help" class="collapse">
+        <div class="panel panel-info">
+            <div class="panel-body">${help}</div>
+        </div>
+    </div>
+</c:if>

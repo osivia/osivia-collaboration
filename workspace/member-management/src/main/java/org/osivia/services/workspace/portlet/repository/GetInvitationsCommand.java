@@ -1,5 +1,8 @@
 package org.osivia.services.workspace.portlet.repository;
 
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
@@ -28,6 +31,8 @@ public class GetInvitationsCommand implements INuxeoCommand {
     private final String workspaceId;
     /** Invitation state. */
     private final InvitationState invitationState;
+    /** Member identifiers. */
+    private final Set<String> members;
 
 
     /**
@@ -37,7 +42,19 @@ public class GetInvitationsCommand implements INuxeoCommand {
      * @param workspaceId workspace identifier
      */
     public GetInvitationsCommand(String modelPath, String workspaceId) {
-        this(modelPath, workspaceId, null);
+        this(modelPath, workspaceId, null, null);
+    }
+
+
+    /**
+     * Constructor.
+     * 
+     * @param modelPath model path
+     * @param workspaceId workspace identifier
+     * @param invitationState invitation state
+     */
+    public GetInvitationsCommand(String modelPath, String workspaceId, InvitationState invitationState) {
+        this(modelPath, workspaceId, invitationState, null);
     }
 
 
@@ -47,12 +64,14 @@ public class GetInvitationsCommand implements INuxeoCommand {
      * @param modelPath model path
      * @param workspaceId workspace identifier
      * @param invitationState invitation state
+     * @param members member identifiers
      */
-    public GetInvitationsCommand(String modelPath, String workspaceId, InvitationState invitationState) {
+    public GetInvitationsCommand(String modelPath, String workspaceId, InvitationState invitationState, Set<String> members) {
         super();
         this.modelPath = modelPath;
         this.workspaceId = workspaceId;
         this.invitationState = invitationState;
+        this.members = members;
     }
 
 
@@ -71,6 +90,21 @@ public class GetInvitationsCommand implements INuxeoCommand {
             clause.append("AND pi:globalVariablesValues.").append(MemberManagementRepository.INVITATION_STATE_PROPERTY).append(" = '")
                     .append(this.invitationState.toString()).append("' ");
         }
+        if (this.members != null) {
+            clause.append("AND pi:globalVariablesValues.").append(MemberManagementRepository.PERSON_UID_PROPERTY).append(" IN (");
+            boolean first = true;
+            for (String member : this.members) {
+                if (first) {
+                    first = false;
+                } else {
+                    clause.append(", ");
+                }
+
+                clause.append("'").append(member).append("'");
+            }
+            clause.append(") ORDER BY dc:created DESC");
+        }
+
 
         // Filtered clause
         String filteredClause = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE, clause.toString());
@@ -98,6 +132,10 @@ public class GetInvitationsCommand implements INuxeoCommand {
         builder.append("/");
         if (this.invitationState != null) {
             builder.append(this.invitationState.toString());
+        }
+        builder.append("/");
+        if (this.members != null) {
+            builder.append(StringUtils.join(this.members, ","));
         }
         return builder.toString();
     }

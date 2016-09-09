@@ -2,6 +2,7 @@ package org.osivia.services.workspace.portlet.repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.PortletException;
 
@@ -19,6 +20,9 @@ import org.osivia.services.workspace.portlet.model.Member;
  */
 public interface MemberManagementRepository {
 
+    /** Settings properties file name. */
+    String SETTINGS_PROPERTIES_FILE_NAME = "settings.properties";
+
     /** Model identifier. */
     String MODEL_ID = "invitation";
 
@@ -32,6 +36,8 @@ public interface MemberManagementRepository {
     String INVITATION_STATE_PROPERTY = "invitationState";
     /** Role property. */
     String ROLE_PROPERTY = "role";
+    /** Acknowledgment date. */
+    String ACKNOWLEDGMENT_DATE_PROPERTY = "acknowledgmentDate";
 
 
     /**
@@ -104,10 +110,11 @@ public interface MemberManagementRepository {
      * 
      * @param portalControllerContext portal controller context
      * @param workspaceId workspace identifier
+     * @param memberIdentifiers member identifiers
      * @return invitations
      * @throws PortletException
      */
-    List<Invitation> getInvitations(PortalControllerContext portalControllerContext, String workspaceId) throws PortletException;
+    List<Invitation> getInvitations(PortalControllerContext portalControllerContext, String workspaceId, Set<String> memberIdentifiers) throws PortletException;
 
 
     /**
@@ -166,5 +173,16 @@ public interface MemberManagementRepository {
      * @param variables task variables
      */
     void acceptInvitation(PortalControllerContext portalControllerContext, Map<String, String> variables);
+
+
+    /**
+     * Get help content.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param property help location property
+     * @return help content
+     * @throws PortletException
+     */
+    String getHelp(PortalControllerContext portalControllerContext, String property) throws PortletException;
 
 }

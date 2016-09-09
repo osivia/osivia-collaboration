@@ -87,6 +87,7 @@ public class DeclineWorkspaceInvitationFormFilter implements FormFilter {
         // Variables
         Map<String, String> variables = context.getVariables();
         variables.put(MemberManagementRepository.INVITATION_STATE_PROPERTY, InvitationState.REJECTED.toString());
+        variables.put(MemberManagementRepository.ACKNOWLEDGMENT_DATE_PROPERTY, String.valueOf(System.currentTimeMillis()));
     }
 
 }

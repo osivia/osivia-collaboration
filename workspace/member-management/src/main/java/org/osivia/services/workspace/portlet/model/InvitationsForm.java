@@ -19,6 +19,8 @@ public class InvitationsForm {
 
     /** Invitations. */
     private List<Invitation> invitations;
+    /** Loaded invitations indicator. */
+    private boolean loaded;
 
 
     /**
@@ -45,6 +47,24 @@ public class InvitationsForm {
      */
     public void setInvitations(List<Invitation> invitations) {
         this.invitations = invitations;
+    }
+
+    /**
+     * Getter for loaded.
+     * 
+     * @return the loaded
+     */
+    public boolean isLoaded() {
+        return loaded;
+    }
+
+    /**
+     * Setter for loaded.
+     * 
+     * @param loaded the loaded to set
+     */
+    public void setLoaded(boolean loaded) {
+        this.loaded = loaded;
     }
 
 }
