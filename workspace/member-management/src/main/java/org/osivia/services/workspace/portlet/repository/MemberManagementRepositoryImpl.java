@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.naming.Name;
 import javax.portlet.PortletException;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
@@ -301,7 +302,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 invitation.setDocument(document);
 
                 // Date
-                Date date = document.getDate("dc:created");
+                Date date = document.getDate("dc:modified");
                 invitation.setDate(date);
 
                 // Role
@@ -451,9 +452,6 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 warnings.addMessage(message);
             } else {
                 try {
-                    // Create user indicator
-                    boolean createUser = pendingInvitation.isUnknownUser();
-
                     // Variables
                     Map<String, String> variables = new HashMap<>();
                     variables.put("documentId", workspace.getId());
@@ -463,8 +461,16 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     variables.put(PERSON_UID_PROPERTY, pendingInvitation.getId());
                     variables.put(INVITATION_STATE_PROPERTY, InvitationState.SENT.name());
                     variables.put(ROLE_PROPERTY, form.getRole().getId());
-                    if (createUser) {
-                        variables.put("newUser", String.valueOf(true));
+
+                    if (pendingInvitation.isUnknownUser()) {
+                        variables.put(NEW_USER_PROPERTY, String.valueOf(true));
+
+                        // Generated password
+                        String password = RandomStringUtils.randomAlphanumeric(8);
+                        variables.put(GENERATED_PASSWORD_PROPERTY, password);
+
+                        // User creation
+                        this.createUser(portalControllerContext, pendingInvitation.getId(), password);
                     }
 
                     // Start
@@ -474,11 +480,6 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     INuxeoCommand command = this.applicationContext.getBean(SetProcedureInstanceAcl.class, modelPath, workspaceId, pendingInvitation.getId(),
                             groups);
                     nuxeoController.executeNuxeoCommand(command);
-
-                    // User creation
-                    if (pendingInvitation.isUnknownUser()) {
-                        this.createUser(portalControllerContext, pendingInvitation.getId());
-                    }
 
                     result = true;
                 } catch (Exception e) {
@@ -583,9 +584,10 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      *
      * @param portalControllerContext portal controller context
      * @param email user email
+     * @param password generated password
      * @throws PortletException
      */
-    protected void createUser(PortalControllerContext portalControllerContext, String email) throws PortletException {
+    protected void createUser(PortalControllerContext portalControllerContext, String email, String password) throws PortletException {
         // Person
         Person person = this.personService.getEmptyPerson();
         person.setUid(email);
@@ -595,6 +597,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
         // Creation
         this.personService.create(person);
+
+        // Generated password
+        this.personService.updatePassword(person, password);
     }
 
 

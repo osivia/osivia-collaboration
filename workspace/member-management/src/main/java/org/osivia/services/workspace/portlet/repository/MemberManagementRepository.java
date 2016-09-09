@@ -20,9 +20,6 @@ import org.osivia.services.workspace.portlet.model.Member;
  */
 public interface MemberManagementRepository {
 
-    /** Settings properties file name. */
-    String SETTINGS_PROPERTIES_FILE_NAME = "settings.properties";
-
     /** Model identifier. */
     String MODEL_ID = "invitation";
 
@@ -36,8 +33,12 @@ public interface MemberManagementRepository {
     String INVITATION_STATE_PROPERTY = "invitationState";
     /** Role property. */
     String ROLE_PROPERTY = "role";
-    /** Acknowledgment date. */
+    /** Acknowledgment date property. */
     String ACKNOWLEDGMENT_DATE_PROPERTY = "acknowledgmentDate";
+    /** New user indicator property. */
+    String NEW_USER_PROPERTY = "newUser";
+    /** Generated password property. */
+    String GENERATED_PASSWORD_PROPERTY = "generatedPassword";
 
 
     /**
