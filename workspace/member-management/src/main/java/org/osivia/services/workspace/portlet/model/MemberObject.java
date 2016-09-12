@@ -1,7 +1,5 @@
 package org.osivia.services.workspace.portlet.model;
 
-import javax.naming.Name;
-
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.directory.v2.model.Person;
 
@@ -15,14 +13,12 @@ public abstract class MemberObject {
     /** Deleted indicator. */
     private boolean deleted;
 
+    /** Person. */
+    private final Person person;
     /** Identifier. */
     private final String id;
-    /** DN. */
-    private final Name dn;
     /** Display name. */
     private final String displayName;
-    /** Avatar URL. */
-    private final String avatar;
     /** Extra. */
     private final String extra;
 
@@ -34,8 +30,8 @@ public abstract class MemberObject {
      */
     public MemberObject(Person person) {
         super();
+        this.person = person;
         this.id = person.getUid();
-        this.dn = person.getDn();
 
         if (StringUtils.isEmpty(person.getDisplayName())) {
             this.displayName = person.getUid();
@@ -44,8 +40,6 @@ public abstract class MemberObject {
             this.displayName = person.getDisplayName();
             this.extra = person.getMail();
         }
-
-        this.avatar = person.getAvatar().getUrl();
     }
 
 
@@ -56,10 +50,9 @@ public abstract class MemberObject {
      */
     protected MemberObject(String uid) {
         super();
+        this.person = null;
         this.id = uid;
-        this.dn = null;
         this.displayName = uid;
-        this.avatar = null;
         this.extra = null;
     }
 
@@ -120,6 +113,15 @@ public abstract class MemberObject {
     }
 
     /**
+     * Getter for person.
+     * 
+     * @return the person
+     */
+    public Person getPerson() {
+        return person;
+    }
+
+    /**
      * Getter for id.
      * 
      * @return the id
@@ -129,30 +131,12 @@ public abstract class MemberObject {
     }
 
     /**
-     * Getter for dn.
-     * 
-     * @return the dn
-     */
-    public Name getDn() {
-        return dn;
-    }
-
-    /**
      * Getter for displayName.
      * 
      * @return the displayName
      */
     public String getDisplayName() {
         return displayName;
-    }
-
-    /**
-     * Getter for avatar.
-     * 
-     * @return the avatar
-     */
-    public String getAvatar() {
-        return avatar;
     }
 
     /**

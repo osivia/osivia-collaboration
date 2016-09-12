@@ -254,10 +254,13 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      */
     @Override
     public void updateMember(PortalControllerContext portalControllerContext, String workspaceId, Member member) throws PortletException {
+        // DN
+        Name dn = member.getPerson().getDn();
+
         if (member.isDeleted()) {
-            this.workspaceService.removeMember(workspaceId, member.getDn());
+            this.workspaceService.removeMember(workspaceId, dn);
         } else {
-            this.workspaceService.addOrModifyMember(workspaceId, member.getDn(), member.getRole());
+            this.workspaceService.addOrModifyMember(workspaceId, dn, member.getRole());
         }
     }
 
@@ -302,7 +305,13 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 invitation.setDocument(document);
 
                 // Date
-                Date date = document.getDate("dc:modified");
+                Date date;
+                Long dateProperty = variables.getLong(ACKNOWLEDGMENT_DATE_PROPERTY);
+                if (dateProperty == null) {
+                    date = document.getDate("dc:created");
+                } else {
+                    date = new Date(dateProperty);
+                }
                 invitation.setDate(date);
 
                 // Role

@@ -10,12 +10,12 @@
     <!-- Avatar -->
     <div class="person-avatar">
         <c:choose>
-            <c:when test="${empty person.avatar}">
+            <c:when test="${empty person.person.avatar.url}">
                 <i class="glyphicons glyphicons-user"></i>
             </c:when>
             
             <c:otherwise>
-                <img src="${person.avatar}" alt="">
+                <img src="${person.person.avatar.url}" alt="">
             </c:otherwise>
         </c:choose>
     </div>
