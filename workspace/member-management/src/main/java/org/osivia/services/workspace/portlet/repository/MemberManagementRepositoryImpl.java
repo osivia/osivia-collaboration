@@ -136,8 +136,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
         // Current workspace member
         //String currentUser = portalControllerContext.getHttpServletRequest().getUserPrincipal().getName();
-//        WorkspaceMember currentMember = this.workspaceService.getMember(workspaceId, currentUser);
-//        WorkspaceRole currentRole = currentMember.getRole();
+        //        WorkspaceMember currentMember = this.workspaceService.getMember(workspaceId, currentUser);
+        //        WorkspaceRole currentRole = currentMember.getRole();
 
         // Profiles search criteria
         CollabProfile criteria = this.workspaceService.getEmptyProfile();
@@ -149,9 +149,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         for (CollabProfile profile : profiles) {
             WorkspaceRole role = profile.getRole();
             // TODO LBI rapport avec le user courant ?
-            
+
             //if (currentRole.getWeight() >= role.getWeight()) {
-                roles.add(role);
+            roles.add(role);
             //}
         }
 
@@ -168,9 +168,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         List<WorkspaceMember> workspaceMembers = this.workspaceService.getAllMembers(workspaceId);
 
         // Current workspace member
-//        String currentUser = portalControllerContext.getHttpServletRequest().getUserPrincipal().getName();
-//        WorkspaceMember currentMember = this.workspaceService.getMember(workspaceId, currentUser);
-//        WorkspaceRole currentRole = currentMember.getRole();
+        //        String currentUser = portalControllerContext.getHttpServletRequest().getUserPrincipal().getName();
+        //        WorkspaceMember currentMember = this.workspaceService.getMember(workspaceId, currentUser);
+        //        WorkspaceRole currentRole = currentMember.getRole();
 
         // Members
         List<Member> members = new ArrayList<>(workspaceMembers.size());
@@ -317,7 +317,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
         // Workspace
         Document workspace = this.getWorkspaceDocument(portalControllerContext);
-        
+
         // Model path
         String modelPath = this.getInvitationModelPath(portalControllerContext);
 
@@ -383,9 +383,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
                 // Start
                 try {
-                	//TODO LBI résolution webid KO
-                	
-                    this.formsService.start(portalControllerContext, "/default-domain/procedures-models/Inviter-des-membres", variables);
+                    String fetchPath = NuxeoController.webIdToFetchPath(IFormsService.FORMS_WEB_ID_PREFIX + MODEL_ID);
+                    this.formsService.start(portalControllerContext, fetchPath, variables);
                 } catch (PortalException e) {
                     throw new PortletException(e);
                 }
@@ -463,41 +462,40 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // Fetch path
-        
+
         // TODO LBI webidresolver
-        //String fetchPath = NuxeoController.webIdToFetchPath(IFormsService.FORMS_WEB_ID_PREFIX + MODEL_ID);
-        String fetchPath = "/default-domain/procedures-models/Inviter-des-membres";
+        String fetchPath = NuxeoController.webIdToFetchPath(IFormsService.FORMS_WEB_ID_PREFIX + MODEL_ID);
         Document model = null;
 
-      try {
-        model = nuxeoController.fetchDocument(fetchPath);
-      } catch (NuxeoException e) {
-	      if (NuxeoException.ERROR_NOTFOUND == e.getErrorCode()) {
-	          Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-	          String message = bundle.getString("MESSAGE_WORKSPACE_CANNOT_FIND_MODEL_ERROR", MODEL_ID);
-	          throw new PortletException(message);
-	      } else {
-	          throw e;
-	      }
-      }
-        
-        
-//        // Nuxeo document context
-//        NuxeoDocumentContext documentContext;
-//        try {
-//            documentContext = nuxeoController.getDocumentContext(fetchPath);
-//        } catch (NuxeoException e) {
-//            if (NuxeoException.ERROR_NOTFOUND == e.getErrorCode()) {
-//                Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-//                String message = bundle.getString("MESSAGE_WORKSPACE_CANNOT_FIND_MODEL_ERROR", MODEL_ID);
-//                throw new PortletException(message);
-//            } else {
-//                throw e;
-//            }
-//        }
-//
-//        // Model Nuxeo document
-//        Document model = documentContext.getDoc();
+        try {
+            model = nuxeoController.fetchDocument(fetchPath);
+        } catch (NuxeoException e) {
+            if (NuxeoException.ERROR_NOTFOUND == e.getErrorCode()) {
+                Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+                String message = bundle.getString("MESSAGE_WORKSPACE_CANNOT_FIND_MODEL_ERROR", MODEL_ID);
+                throw new PortletException(message);
+            } else {
+                throw e;
+            }
+        }
+
+
+        //        // Nuxeo document context
+        //        NuxeoDocumentContext documentContext;
+        //        try {
+        //            documentContext = nuxeoController.getDocumentContext(fetchPath);
+        //        } catch (NuxeoException e) {
+        //            if (NuxeoException.ERROR_NOTFOUND == e.getErrorCode()) {
+        //                Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+        //                String message = bundle.getString("MESSAGE_WORKSPACE_CANNOT_FIND_MODEL_ERROR", MODEL_ID);
+        //                throw new PortletException(message);
+        //            } else {
+        //                throw e;
+        //            }
+        //        }
+        //
+        //        // Model Nuxeo document
+        //        Document model = documentContext.getDoc();
 
         return model.getPath();
     }
