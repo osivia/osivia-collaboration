@@ -23,8 +23,8 @@ public abstract class MemberObject {
     private final String displayName;
     /** Avatar URL. */
     private final String avatar;
-    /** Mail. */
-    private final String mail;
+    /** Extra. */
+    private final String extra;
 
 
     /**
@@ -39,10 +39,10 @@ public abstract class MemberObject {
 
         if (StringUtils.isEmpty(person.getDisplayName())) {
             this.displayName = person.getUid();
-            this.mail = null;
+            this.extra = null;
         } else {
             this.displayName = person.getDisplayName();
-            this.mail = person.getMail();
+            this.extra = person.getMail();
         }
 
         this.avatar = person.getAvatar().getUrl();
@@ -60,7 +60,7 @@ public abstract class MemberObject {
         this.dn = null;
         this.displayName = uid;
         this.avatar = null;
-        this.mail = null;
+        this.extra = null;
     }
 
 
@@ -156,12 +156,12 @@ public abstract class MemberObject {
     }
 
     /**
-     * Getter for mail.
+     * Getter for extra.
      * 
-     * @return the mail
+     * @return the extra
      */
-    public String getMail() {
-        return mail;
+    public String getExtra() {
+        return extra;
     }
 
 }

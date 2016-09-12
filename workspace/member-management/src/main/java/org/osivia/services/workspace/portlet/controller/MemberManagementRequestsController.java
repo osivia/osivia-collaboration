@@ -56,7 +56,7 @@ public class MemberManagementRequestsController implements PortletContextAware {
         // Tab
         request.setAttribute("tab", "requests");
 
-        return "view-requests";
+        return "requests/view";
     }
 
 

@@ -9,11 +9,7 @@
 
 <div class="workspace-member-management">
     <!-- Tabs -->
-    <jsp:include page="tabs.jsp" />
-    
-    <!-- Create invitations -->
-    <jsp:include page="create-invitations.jsp" />
-    
-    <!-- Invitations -->
-    <jsp:include page="invitations.jsp" />
+    <jsp:include page="../commons/tabs.jsp" />
+
+
 </div>

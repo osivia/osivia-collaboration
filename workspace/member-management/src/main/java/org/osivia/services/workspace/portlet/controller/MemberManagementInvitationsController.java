@@ -122,7 +122,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
         request.setAttribute("sort", sort);
         request.setAttribute("alt", alt);
 
-        return "view-invitations";
+        return "invitations/view";
     }
 
 

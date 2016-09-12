@@ -235,48 +235,77 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 // Persons
                 List<Person> persons = this.repository.searchPersons(portalControllerContext, part, tokenizer);
                 for (Person person : persons) {
-                    JSONObject object = new JSONObject();
-                    object.put("id", person.getUid());
+                    // Already member indicator
+                    boolean alreadyMember = identifiers.contains(person.getUid());
 
-                    // Display name
-                    String displayName;
-                    // Extra
-                    String extra;
-
-                    if (StringUtils.isEmpty(person.getDisplayName())) {
-                        displayName = person.getUid();
-                        extra = null;
-                    } else {
-                        displayName = person.getDisplayName();
-
-                        extra = person.getUid();
-                        if (!StringUtils.equals(person.getUid(), person.getMail())) {
-                            extra += " – " + person.getMail();
-                        }
-                    }
-
-                    if (identifiers.contains(person.getUid())) {
-                        displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ALREADY_MEMBER_INDICATOR");
-                        object.put("disabled", true);
-                    }
-
-                    object.put("displayName", displayName);
-                    object.put("extra", extra);
-
-                    object.put("avatar", person.getAvatar().getUrl());
-
+                    // Search result
+                    JSONObject object = getSearchResult(person, alreadyMember, bundle);
 
                     array.add(object);
                 }
 
                 // Add person creation
-                if (!tokenizer || persons.isEmpty()) {
+                if (this.enablePersonCreation() && !(tokenizer && !persons.isEmpty())) {
                     this.addPersonCreationSearchResult(persons, array, part, bundle);
                 }
             }
         }
 
         return array;
+    }
+
+
+    /**
+     * Get search result JSON Object.
+     * 
+     * @param person person
+     * @param alreadyMember already member indicator
+     * @param bundle internationalization bundle
+     * @return JSON object
+     */
+    protected JSONObject getSearchResult(Person person, boolean alreadyMember, Bundle bundle) {
+        JSONObject object = new JSONObject();
+        object.put("id", person.getUid());
+
+        // Display name
+        String displayName;
+        // Extra
+        String extra;
+
+        if (StringUtils.isEmpty(person.getDisplayName())) {
+            displayName = person.getUid();
+            extra = null;
+        } else {
+            displayName = person.getDisplayName();
+
+            extra = person.getUid();
+            if (!StringUtils.equals(person.getUid(), person.getMail())) {
+                extra += " – " + person.getMail();
+            }
+        }
+
+        if (alreadyMember) {
+            displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ALREADY_MEMBER_INDICATOR");
+            object.put("disabled", true);
+        }
+
+        object.put("displayName", displayName);
+        object.put("extra", extra);
+
+        object.put("avatar", person.getAvatar().getUrl());
+
+        return object;
+    }
+
+
+    /**
+     * Get enable person creation indicator (default = true).
+     * This method can be overrided for disable person creation.
+     * 
+     * @return true if person creation is enabled
+     */
+    protected boolean enablePersonCreation() {
+        return true;
     }
 
 
@@ -289,7 +318,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * @param bundle internationalization bundle
      * @throws PortletException
      */
-    private void addPersonCreationSearchResult(List<Person> persons, JSONArray array, String filter, Bundle bundle) throws PortletException {
+    protected void addPersonCreationSearchResult(List<Person> persons, JSONArray array, String filter, Bundle bundle) throws PortletException {
         // Mail pattern matcher
         Matcher matcher = this.mailPattern.matcher(filter);
 

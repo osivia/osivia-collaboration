@@ -82,7 +82,7 @@ public class MemberManagementController implements ApplicationContextAware, Port
         request.setAttribute("sort", sort);
         request.setAttribute("alt", alt);
 
-        return "view-members";
+        return "members/view";
     }
 
 

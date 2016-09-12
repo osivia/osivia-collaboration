@@ -9,8 +9,8 @@
 
 <div class="workspace-member-management">
     <!-- Tabs -->
-    <jsp:include page="tabs.jsp" />
+    <jsp:include page="../commons/tabs.jsp" />
     
-    <!-- Members -->
-    <jsp:include page="members.jsp" />
+    <!-- Members list -->
+    <jsp:include page="list.jsp" />
 </div>
