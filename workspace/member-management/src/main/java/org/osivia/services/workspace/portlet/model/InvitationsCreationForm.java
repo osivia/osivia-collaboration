@@ -7,14 +7,21 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/**
+ * Invitations creation form java-bean.
+ * 
+ * @author Cédric Krommenhoek
+ */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class InvitationsCreationForm {
 
-    /** Person identifiers . */
-    private List<String> identifiers;
+    /** Pending invitations. */
+    private List<Invitation> pendingInvitations;
     /** Role. */
     private WorkspaceRole role;
+    /** Warning indicator. */
+    private boolean warning;
 
 
     /**
@@ -26,21 +33,21 @@ public class InvitationsCreationForm {
 
 
     /**
-     * Getter for identifiers.
+     * Getter for pendingInvitations.
      * 
-     * @return the identifiers
+     * @return the pendingInvitations
      */
-    public List<String> getIdentifiers() {
-        return identifiers;
+    public List<Invitation> getPendingInvitations() {
+        return pendingInvitations;
     }
 
     /**
-     * Setter for identifiers.
+     * Setter for pendingInvitations.
      * 
-     * @param identifiers the identifiers to set
+     * @param pendingInvitations the pendingInvitations to set
      */
-    public void setIdentifiers(List<String> identifiers) {
-        this.identifiers = identifiers;
+    public void setPendingInvitations(List<Invitation> pendingInvitations) {
+        this.pendingInvitations = pendingInvitations;
     }
 
     /**
@@ -59,6 +66,24 @@ public class InvitationsCreationForm {
      */
     public void setRole(WorkspaceRole role) {
         this.role = role;
+    }
+
+    /**
+     * Getter for warning.
+     * 
+     * @return the warning
+     */
+    public boolean isWarning() {
+        return warning;
+    }
+
+    /**
+     * Setter for warning.
+     * 
+     * @param warning the warning to set
+     */
+    public void setWarning(boolean warning) {
+        this.warning = warning;
     }
 
 }

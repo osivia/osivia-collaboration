@@ -3,9 +3,13 @@ package org.osivia.services.workspace.portlet.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.portlet.PortletException;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -15,7 +19,6 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.services.workspace.portlet.model.Invitation;
-import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.Member;
@@ -24,9 +27,12 @@ import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.model.comparator.InvitationComparator;
 import org.osivia.services.workspace.portlet.model.comparator.MemberComparator;
 import org.osivia.services.workspace.portlet.repository.MemberManagementRepository;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -36,29 +42,33 @@ import net.sf.json.JSONObject;
  *
  * @author Cédric Krommenhoek
  * @see MemberManagementService
+ * @see ApplicationContextAware
  */
 @Service
-public class MemberManagementServiceImpl implements MemberManagementService {
+public class MemberManagementServiceImpl implements MemberManagementService, ApplicationContextAware {
+
+    /** Mail regex. */
+    private static final String MAIL_REGEX = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
 
     /** Application context. */
-    @Autowired
-    protected ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
     /** Member management repository. */
     @Autowired
-    protected MemberManagementRepository repository;
+    private MemberManagementRepository repository;
 
-
-    @Autowired
-    protected MembersForm membersFormInSession;
-    
     /** Bundle factory. */
     @Autowired
-    protected IBundleFactory bundleFactory;
+    private IBundleFactory bundleFactory;
 
     /** Notifications service. */
     @Autowired
-    protected INotificationsService notificationsService;
+    private INotificationsService notificationsService;
+
+
+    /** Mail pattern. */
+    private final Pattern mailPattern;
 
 
     /**
@@ -66,6 +76,9 @@ public class MemberManagementServiceImpl implements MemberManagementService {
      */
     public MemberManagementServiceImpl() {
         super();
+
+        // Mail pattern
+        this.mailPattern = Pattern.compile(MAIL_REGEX);
     }
 
 
@@ -107,12 +120,16 @@ public class MemberManagementServiceImpl implements MemberManagementService {
         // Form
         MembersForm form = this.applicationContext.getBean(MembersForm.class);
         
-        // Workspace identifier
-        String workspaceId = this.repository.getWorkspaceId(portalControllerContext);
+        if (!form.isLoaded()) {
+            // Workspace identifier
+            String workspaceId = this.repository.getWorkspaceId(portalControllerContext);
 
-        // Members
-        List<Member> members = this.repository.getMembers(portalControllerContext, workspaceId);
-        form.setMembers(members);
+            // Members
+            List<Member> members = this.repository.getMembers(portalControllerContext, workspaceId);
+            form.setMembers(members);
+
+            form.setLoaded(true);
+        }
         
         return form;
     }
@@ -154,28 +171,32 @@ public class MemberManagementServiceImpl implements MemberManagementService {
      * {@inheritDoc}
      */
     @Override
+    public String getMembersHelp(PortalControllerContext portalControllerContext) throws PortletException {
+        return this.repository.getHelp(portalControllerContext, MEMBERS_HELP_LOCATION_PROPERTY);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public InvitationsForm getInvitationsForm(PortalControllerContext portalControllerContext) throws PortletException {
         // Form
         InvitationsForm form = this.applicationContext.getBean(InvitationsForm.class);
 
-        // Workspace identifier
-        String workspaceId = this.repository.getWorkspaceId(portalControllerContext);
+        if (!form.isLoaded()) {
+            // Workspace identifier
+            String workspaceId = this.repository.getWorkspaceId(portalControllerContext);
 
-        // Invitations
-        List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, workspaceId);
+            // Member idenfiers
+            Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
 
-        // Pending & history
-        List<Invitation> pending = new ArrayList<>(invitations.size());
-        List<Invitation> history = new ArrayList<>(invitations.size());
-        for (Invitation invitation : invitations) {
-            if (InvitationState.SENT.equals(invitation.getState())) {
-                pending.add(invitation);
-            } else {
-                history.add(invitation);
-            }
+            // Invitations
+            List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, workspaceId, identifiers);
+            form.setInvitations(invitations);
+
+            form.setLoaded(true);
         }
-        form.setPending(pending);
-        form.setHistory(history);
 
         return form;
     }
@@ -198,23 +219,35 @@ public class MemberManagementServiceImpl implements MemberManagementService {
      * {@inheritDoc}
      */
     @Override
-    public JSONArray searchPersons(PortalControllerContext portalControllerContext, String filter) throws PortletException {
+    public JSONArray searchPersons(PortalControllerContext portalControllerContext, String filter, boolean tokenizer) throws PortletException {
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Member idenfiers
+        Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
+
         // Results JSON array
         JSONArray array = new JSONArray();
 
         if (StringUtils.isNotBlank(filter)) {
-            // Persons
-            List<Person> persons = this.repository.searchPersons(portalControllerContext, filter);
-            
-            List<String> alreadyMembers = new ArrayList<String>();
-            for(Member m : membersFormInSession.getMembers()) {
-            	alreadyMembers.add(m.getPerson().getUid());
-            }
+            String[] parts = StringUtils.split(filter, " ,;");
+            for (String part : parts) {
+                // Persons
+                List<Person> persons = this.repository.searchPersons(portalControllerContext, part, tokenizer);
+                for (Person person : persons) {
+                    // Already member indicator
+                    boolean alreadyMember = identifiers.contains(person.getUid());
 
-            for (Person person : persons) {
-            	if (!alreadyMembers.contains(person.getUid())) {
-	                toJson(array, person);
-            	}
+                    // Search result
+                    JSONObject object = getSearchResult(person, alreadyMember, bundle);
+
+                    array.add(object);
+                }
+
+                // Add person creation
+                if (this.enablePersonCreation() && !(tokenizer && !persons.isEmpty())) {
+                    this.addPersonCreationSearchResult(persons, array, part, bundle);
+                }
             }
         }
 
@@ -223,30 +256,99 @@ public class MemberManagementServiceImpl implements MemberManagementService {
 
 
     /**
-     * Format a person in json array
+     * Get search result JSON Object.
+     * 
+     * @param person person
+     * @param alreadyMember already member indicator
+     * @param bundle internationalization bundle
+     * @return JSON object
      */
-	protected void toJson(JSONArray array, Person person) {
-		JSONObject object = new JSONObject();
-		object.put("id", person.getUid());
-		object.put("displayName", person.getDisplayName());
-		object.put("extra", person.getMail());
-		object.put("avatar", person.getAvatar().getUrl());
+    protected JSONObject getSearchResult(Person person, boolean alreadyMember, Bundle bundle) {
+        JSONObject object = new JSONObject();
+        object.put("id", person.getUid());
 
-		array.add(object);
-	}
+        // Display name
+        String displayName;
+        // Extra
+        String extra;
+
+        if (StringUtils.isEmpty(person.getDisplayName())) {
+            displayName = person.getUid();
+            extra = null;
+        } else {
+            displayName = person.getDisplayName();
+
+            extra = person.getUid();
+            if (!StringUtils.equals(person.getUid(), person.getMail())) {
+                extra += " – " + person.getMail();
+            }
+        }
+
+        if (alreadyMember) {
+            displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ALREADY_MEMBER_INDICATOR");
+            object.put("disabled", true);
+        }
+
+        object.put("displayName", displayName);
+        object.put("extra", extra);
+
+        object.put("avatar", person.getAvatar().getUrl());
+
+        return object;
+    }
 
 
     /**
-     * {@inheritDoc}
+     * Get enable person creation indicator (default = true).
+     * This method can be overrided for disable person creation.
+     * 
+     * @return true if person creation is enabled
      */
-    @Override
-    public void sortInvitations(PortalControllerContext portalControllerContext, InvitationsForm form, String sort, boolean alt, String sort2, boolean alt2)
-            throws PortletException {
-        InvitationComparator comparator = this.applicationContext.getBean(InvitationComparator.class, sort, alt);
-        Collections.sort(form.getPending(), comparator);
+    protected boolean enablePersonCreation() {
+        return true;
+    }
 
-        InvitationComparator comparator2 = this.applicationContext.getBean(InvitationComparator.class, sort2, alt2);
-        Collections.sort(form.getHistory(), comparator2);
+
+    /**
+     * Add person creation search result.
+     * 
+     * @param filtered persons
+     * @param array search result JSON array
+     * @param filter search filter
+     * @param bundle internationalization bundle
+     * @throws PortletException
+     */
+    protected void addPersonCreationSearchResult(List<Person> persons, JSONArray array, String filter, Bundle bundle) throws PortletException {
+        // Mail pattern matcher
+        Matcher matcher = this.mailPattern.matcher(filter);
+
+        // Check if person mail already exists
+        boolean exists = false;
+        if (matcher.matches()) {
+            for (Person person : persons) {
+                if (filter.equalsIgnoreCase(person.getMail())) {
+                    exists = true;
+                    break;
+                }
+            }
+        }
+
+        if (!exists) {
+            JSONObject object = new JSONObject();
+            object.put("id", filter);
+            object.put("create", true);
+
+            if (matcher.matches()) {
+                object.put("displayName", bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATE_PERSON"));
+                object.put("extra", bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATE_PERSON_EXTRA", filter));
+            } else {
+                object.put("displayName", bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATE_PERSON_INVALID"));
+                object.put("extra", bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATE_PERSON_INVALID_EXTRA", filter));
+                object.put("disabled", true);
+            }
+
+            array.add(object);
+        }
     }
 
 
@@ -254,23 +356,32 @@ public class MemberManagementServiceImpl implements MemberManagementService {
      * {@inheritDoc}
      */
     @Override
-    public void updatePendingInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form)
+    public void sortInvitations(PortalControllerContext portalControllerContext, InvitationsForm form, String sort, boolean alt) throws PortletException {
+        InvitationComparator comparator = this.applicationContext.getBean(InvitationComparator.class, sort, alt);
+        Collections.sort(form.getInvitations(), comparator);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form)
             throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
-        this.repository.updateInvitations(portalControllerContext, options.getWorkspaceId(), form.getPending(), true);
+        // Update
+        this.repository.updateInvitations(portalControllerContext, options.getWorkspaceId(), form.getInvitations());
+
+        // Member idenfiers
+        Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
 
         // Update model
-        List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, options.getWorkspaceId());
-        List<Invitation> pending = new ArrayList<>(invitations.size());
-        for (Invitation invitation : invitations) {
-            if (InvitationState.SENT.equals(invitation.getState())) {
-                pending.add(invitation);
-            }
-        }
-        options.setInvitationsCount(pending.size());
-        form.setPending(pending);
+        int count = this.repository.getInvitationsCount(portalControllerContext, options.getWorkspaceId());
+        options.setInvitationsCount(count);
+        List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, options.getWorkspaceId(), identifiers);
+        form.setInvitations(invitations);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_UPDATE_SUCCESS");
@@ -282,19 +393,20 @@ public class MemberManagementServiceImpl implements MemberManagementService {
      * {@inheritDoc}
      */
     @Override
-    public void updateHistoryInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form)
-            throws PortletException {
-        this.repository.updateInvitations(portalControllerContext, options.getWorkspaceId(), form.getHistory(), false);
+    public void validateInvitationsCreationForm(Errors errors, InvitationsCreationForm form) {
+        if (CollectionUtils.isNotEmpty(form.getPendingInvitations())) {
+            for (Invitation invitation : form.getPendingInvitations()) {
+                if (invitation.isUnknownUser()) {
+                    // Mail pattern matcher
+                    Matcher matcher = this.mailPattern.matcher(invitation.getId());
 
-        // Update model
-        List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, options.getWorkspaceId());
-        List<Invitation> history = new ArrayList<>(invitations.size());
-        for (Invitation invitation : invitations) {
-            if (!InvitationState.SENT.equals(invitation.getState())) {
-                history.add(invitation);
+                    if (!matcher.matches()) {
+                        Object[] errorArgs = new Object[]{invitation.getId()};
+                        errors.rejectValue("pendingInvitations", "Invalid", errorArgs, null);
+                    }
+                }
             }
         }
-        form.setHistory(history);
     }
 
 
@@ -307,29 +419,56 @@ public class MemberManagementServiceImpl implements MemberManagementService {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
-        // Create invitations
-        boolean created = this.repository.createInvitations(portalControllerContext, options.getWorkspaceId(), invitationsForm.getPending(), creationForm);
-
-        if (created) {
-            // Update model
-            List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, options.getWorkspaceId());
-            List<Invitation> pending = new ArrayList<>(invitations.size());
-            List<Invitation> history = new ArrayList<>(invitations.size());
-            for (Invitation invitation : invitations) {
-                if (InvitationState.SENT.equals(invitation.getState())) {
-                    pending.add(invitation);
-                } else {
-                    history.add(invitation);
-                }
+        // Pending invitation identifiers
+        List<String> invitationIdentifiers = new ArrayList<>(creationForm.getPendingInvitations().size());
+        for (Invitation invitation : creationForm.getPendingInvitations()) {
+            if (invitation.isUnknownUser()) {
+                invitationIdentifiers.add(invitation.getId());
             }
-            options.setInvitationsCount(pending.size());
-            invitationsForm.setPending(pending);
-            invitationsForm.setHistory(history);
-
-            // Notification
-            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_CREATION_SUCCESS");
-            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
         }
+
+        if (invitationIdentifiers.isEmpty() || creationForm.isWarning()) {
+            // Create invitations
+            boolean created = this.repository.createInvitations(portalControllerContext, options.getWorkspaceId(), invitationsForm.getInvitations(),
+                    creationForm);
+
+            if (created) {
+                // Member idenfiers
+                Set<String> memberIdentifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
+
+                // Update model
+                List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, options.getWorkspaceId(), memberIdentifiers);
+                invitationsForm.setInvitations(invitations);
+                options.setInvitationsCount(this.repository.getInvitationsCount(portalControllerContext, options.getWorkspaceId()));
+
+                // Notification
+                String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_CREATION_SUCCESS");
+                this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+            }
+
+            creationForm.getPendingInvitations().clear();
+            creationForm.setWarning(false);
+        } else {
+            creationForm.setWarning(true);
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getInvitationsHelp(PortalControllerContext portalControllerContext) throws PortletException {
+        return this.repository.getHelp(portalControllerContext, INVITATIONS_HELP_LOCATION_PROPERTY);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
 }

@@ -17,10 +17,10 @@ import org.springframework.stereotype.Component;
 @Refreshable
 public class InvitationsForm {
 
-    /** Pending invitations. */
-    private List<Invitation> pending;
-    /** History invitations. */
-    private List<Invitation> history;
+    /** Invitations. */
+    private List<Invitation> invitations;
+    /** Loaded invitations indicator. */
+    private boolean loaded;
 
 
     /**
@@ -32,39 +32,39 @@ public class InvitationsForm {
 
 
     /**
-     * Getter for pending.
+     * Getter for invitations.
      * 
-     * @return the pending
+     * @return the invitations
      */
-    public List<Invitation> getPending() {
-        return pending;
+    public List<Invitation> getInvitations() {
+        return invitations;
     }
 
     /**
-     * Setter for pending.
+     * Setter for invitations.
      * 
-     * @param pending the pending to set
+     * @param invitations the invitations to set
      */
-    public void setPending(List<Invitation> pending) {
-        this.pending = pending;
+    public void setInvitations(List<Invitation> invitations) {
+        this.invitations = invitations;
     }
 
     /**
-     * Getter for history.
+     * Getter for loaded.
      * 
-     * @return the history
+     * @return the loaded
      */
-    public List<Invitation> getHistory() {
-        return history;
+    public boolean isLoaded() {
+        return loaded;
     }
 
     /**
-     * Setter for history.
+     * Setter for loaded.
      * 
-     * @param history the history to set
+     * @param loaded the loaded to set
      */
-    public void setHistory(List<Invitation> history) {
-        this.history = history;
+    public void setLoaded(boolean loaded) {
+        this.loaded = loaded;
     }
 
 }

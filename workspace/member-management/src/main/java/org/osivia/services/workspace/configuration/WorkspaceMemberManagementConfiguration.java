@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.portlet.configuration;
+package org.osivia.services.workspace.configuration;
 
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;

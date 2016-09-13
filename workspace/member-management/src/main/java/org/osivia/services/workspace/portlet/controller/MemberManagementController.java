@@ -69,7 +69,7 @@ public class MemberManagementController implements ApplicationContextAware, Port
      */
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response, @ModelAttribute("members") MembersForm form,
-            @RequestParam(value = "sort", defaultValue = "name") String sort, @RequestParam(value = "alt", required = false) String alt)
+            @RequestParam(value = "sort", defaultValue = "date") String sort, @RequestParam(value = "alt", defaultValue = "true") String alt)
             throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
@@ -82,7 +82,7 @@ public class MemberManagementController implements ApplicationContextAware, Port
         request.setAttribute("sort", sort);
         request.setAttribute("alt", alt);
 
-        return "view-members";
+        return "members/view";
     }
 
 
@@ -162,6 +162,23 @@ public class MemberManagementController implements ApplicationContextAware, Port
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 
         return this.service.getMembersForm(portalControllerContext);
+    }
+
+
+    /**
+     * Get help model attribute.
+     * 
+     * @param request portlet request
+     * @param response portlet response
+     * @return help
+     * @throws PortletException
+     */
+    @ModelAttribute("help")
+    public String getHelp(PortletRequest request, PortletResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
+
+        return this.service.getMembersHelp(portalControllerContext);
     }
 
 

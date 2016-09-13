@@ -19,9 +19,11 @@ import javax.portlet.ResourceResponse;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
+import org.osivia.services.workspace.portlet.model.converter.InvitationPropertyEditor;
 import org.osivia.services.workspace.portlet.model.validator.InvitationsCreationFormValidator;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +55,7 @@ import net.sf.json.JSONArray;
  */
 @Controller
 @RequestMapping(path = "VIEW", params = "tab=invitations")
-@SessionAttributes("invitations")
+@SessionAttributes({"invitations", "creation"})
 public class MemberManagementInvitationsController extends CMSPortlet implements PortletConfigAware, PortletContextAware {
 
     /** Portlet config. */
@@ -69,6 +71,10 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
     /** Invitations creation form validator. */
     @Autowired
     private InvitationsCreationFormValidator creationFormValidator;
+
+    /** Invitation property editor. */
+    @Autowired
+    private InvitationPropertyEditor invitationPropertyEditor;
 
 
     /**
@@ -98,15 +104,12 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
      * @param form invitations form model attribute
      * @param sort sort property request parameter
      * @param alt alternative sort indicator request parameter
-     * @param sort2 history sort property request parameter
-     * @param alt2 history alternative sort indicator request parameter
      * @return view path
      * @throws PortletException
      */
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response, @ModelAttribute("invitations") InvitationsForm form,
-            @RequestParam(value = "sort", defaultValue = "name") String sort, @RequestParam(value = "alt", required = false) String alt,
-            @RequestParam(value = "sort2", defaultValue = "name") String sort2, @RequestParam(value = "alt2", required = false) String alt2)
+            @RequestParam(value = "sort", defaultValue = "date") String sort, @RequestParam(value = "alt", defaultValue = "true") String alt)
             throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
@@ -115,13 +118,11 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
         request.setAttribute("tab", "invitations");
 
         // Sort members
-        this.service.sortInvitations(portalControllerContext, form, sort, BooleanUtils.toBoolean(alt), sort2, BooleanUtils.toBoolean(alt2));
+        this.service.sortInvitations(portalControllerContext, form, sort, BooleanUtils.toBoolean(alt));
         request.setAttribute("sort", sort);
         request.setAttribute("alt", alt);
-        request.setAttribute("sort2", sort2);
-        request.setAttribute("alt2", alt2);
 
-        return "view-invitations";
+        return "invitations/view";
     }
 
 
@@ -140,29 +141,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.updatePendingInvitations(portalControllerContext, options, form);
-
-        // Copy render parameter
-        copyRenderParameters(request, response);
-    }
-
-
-    /**
-     * Update invitations history.
-     * 
-     * @param request action request
-     * @param response action response
-     * @param options options model attribute
-     * @param form invitations form model attribute
-     * @throws PortletException
-     */
-    @ActionMapping("updateHistory")
-    public void updateHistory(ActionRequest request, ActionResponse response, @ModelAttribute("options") MemberManagementOptions options,
-            @ModelAttribute("invitations") InvitationsForm form) throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        this.service.updateHistoryInvitations(portalControllerContext, options, form);
+        this.service.updateInvitations(portalControllerContext, options, form);
 
         // Copy render parameter
         copyRenderParameters(request, response);
@@ -187,7 +166,9 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        if (!result.hasErrors()) {
+        if (result.hasErrors()) {
+            creationForm.setWarning(false);
+        } else {
             this.service.createInvitations(portalControllerContext, options, invitationsForm, creationForm);
         }
 
@@ -214,16 +195,6 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
         if (StringUtils.isNotEmpty(altParameter)) {
             response.setRenderParameter("alt", altParameter);
         }
-
-        String sort2Parameter = request.getParameter("sort2");
-        if (StringUtils.isNotEmpty(sort2Parameter)) {
-            response.setRenderParameter("sort2", sort2Parameter);
-        }
-
-        String alt2Parameter = request.getParameter("alt2");
-        if (StringUtils.isNotEmpty(alt2Parameter)) {
-            response.setRenderParameter("alt2", alt2Parameter);
-        }
     }
 
 
@@ -233,17 +204,19 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
      * @param request resource request
      * @param response resource response
      * @param filter search filter request parameter
+     * @param tokenizer tokenizer indicator request parameter
      * @throws PortletException
      * @throws IOException
      */
     @ResourceMapping("search")
-    public void search(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter)
+    public void search(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "tokenizer", required = false) String tokenizer)
             throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         // Search results
-        JSONArray results = this.service.searchPersons(portalControllerContext, filter);
+        JSONArray results = this.service.searchPersons(portalControllerContext, filter, BooleanUtils.toBoolean(tokenizer));
 
         // Content type
         response.setContentType("application/json");
@@ -314,6 +287,24 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
     @InitBinder("creation")
     public void invitationsCreationFormInitBinder(PortletRequestDataBinder binder) {
         binder.addValidators(this.creationFormValidator);
+        binder.registerCustomEditor(Invitation.class, this.invitationPropertyEditor);
+    }
+
+
+    /**
+     * Get help model attribute.
+     * 
+     * @param request portlet request
+     * @param response portlet response
+     * @return help
+     * @throws PortletException
+     */
+    @ModelAttribute("help")
+    public String getHelp(PortletRequest request, PortletResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
+
+        return this.service.getInvitationsHelp(portalControllerContext);
     }
 
 

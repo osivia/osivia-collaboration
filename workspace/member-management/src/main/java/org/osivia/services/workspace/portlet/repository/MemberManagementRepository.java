@@ -2,6 +2,7 @@ package org.osivia.services.workspace.portlet.repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.PortletException;
 
@@ -32,6 +33,12 @@ public interface MemberManagementRepository {
     String INVITATION_STATE_PROPERTY = "invitationState";
     /** Role property. */
     String ROLE_PROPERTY = "role";
+    /** Acknowledgment date property. */
+    String ACKNOWLEDGMENT_DATE_PROPERTY = "acknowledgmentDate";
+    /** New user indicator property. */
+    String NEW_USER_PROPERTY = "newUser";
+    /** Generated password property. */
+    String GENERATED_PASSWORD_PROPERTY = "generatedPassword";
 
 
     /**
@@ -104,10 +111,11 @@ public interface MemberManagementRepository {
      * 
      * @param portalControllerContext portal controller context
      * @param workspaceId workspace identifier
+     * @param memberIdentifiers member identifiers
      * @return invitations
      * @throws PortletException
      */
-    List<Invitation> getInvitations(PortalControllerContext portalControllerContext, String workspaceId) throws PortletException;
+    List<Invitation> getInvitations(PortalControllerContext portalControllerContext, String workspaceId, Set<String> memberIdentifiers) throws PortletException;
 
 
     /**
@@ -115,10 +123,11 @@ public interface MemberManagementRepository {
      * 
      * @param portalControllerContext portal controller context
      * @param filter search filter
+     * @param tokenizer tokenizer indicator
      * @return persons
      * @throws PortletException
      */
-    List<Person> searchPersons(PortalControllerContext portalControllerContext, String filter) throws PortletException;
+    List<Person> searchPersons(PortalControllerContext portalControllerContext, String filter, boolean tokenizer) throws PortletException;
 
 
     /**
@@ -138,10 +147,9 @@ public interface MemberManagementRepository {
      * @param portalControllerContext portal controller context
      * @param workspaceId workspace identifier
      * @param invitations invitations
-     * @param pending pending invitations indicator
      * @throws PortletException
      */
-    void updateInvitations(PortalControllerContext portalControllerContext, String workspaceId, List<Invitation> invitations, boolean pending)
+    void updateInvitations(PortalControllerContext portalControllerContext, String workspaceId, List<Invitation> invitations)
             throws PortletException;
 
 
@@ -166,5 +174,16 @@ public interface MemberManagementRepository {
      * @param variables task variables
      */
     void acceptInvitation(PortalControllerContext portalControllerContext, Map<String, String> variables);
+
+
+    /**
+     * Get help content.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param property help location property
+     * @return help content
+     * @throws PortletException
+     */
+    String getHelp(PortalControllerContext portalControllerContext, String property) throws PortletException;
 
 }

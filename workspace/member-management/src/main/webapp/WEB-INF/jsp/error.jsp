@@ -10,7 +10,7 @@
 
 <div class="alert alert-danger" role="alert">
     <div class="media">
-        <div class="media-left media-middle">
+        <div class="media-left">
             <i class="glyphicons glyphicons-remove-sign"></i>
         </div>
         

@@ -1,5 +1,7 @@
 package org.osivia.services.workspace.portlet.model;
 
+import java.util.Date;
+
 import org.osivia.directory.v2.model.ext.WorkspaceMember;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -18,6 +20,8 @@ public class Member extends MemberObject {
 
     /** Role. */
     private WorkspaceRole role;
+    /** Date. */
+    private Date date;
     /** Editable. */
     private boolean editable;
 
@@ -50,6 +54,25 @@ public class Member extends MemberObject {
     public void setRole(WorkspaceRole role) {
         this.role = role;
     }
+
+    /**
+     * Getter for date.
+     * 
+     * @return the date
+     */
+    public Date getDate() {
+        return date;
+    }
+
+    /**
+     * Setter for date.
+     * 
+     * @param date the date to set
+     */
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
 
     /**
      * Getter for editable.

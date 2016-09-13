@@ -15,7 +15,7 @@
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>
-            <value>org.osivia.services.workspace.portlet.configuration.WorkspaceMemberManagementConfiguration</value>
+            <value>org.osivia.services.workspace.configuration.WorkspaceMemberManagementConfiguration</value>
         </init-param>
         
         <expiration-cache>180</expiration-cache>

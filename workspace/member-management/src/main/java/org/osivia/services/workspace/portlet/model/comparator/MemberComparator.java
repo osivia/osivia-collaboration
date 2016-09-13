@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.portlet.model.comparator;
 
 import java.util.Comparator;
+import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.osivia.services.workspace.portlet.model.Member;
@@ -49,6 +50,9 @@ public class MemberComparator implements Comparator<Member> {
             result = -1;
         } else if (member2 == null) {
             result = 1;
+        } else if ("date".equals(this.sort)) {
+            // Date
+            result = compareDates(member1, member2);
         } else if ("role".equals(this.sort)) {
             // Role
             Integer role1 = member1.getRole().getWeight();
@@ -66,6 +70,34 @@ public class MemberComparator implements Comparator<Member> {
             result = -result;
         }
 
+        if ((result == 0) && (!"date".equals(this.sort))) {
+            // Date
+            result = compareDates(member1, member2);
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Compare member dates.
+     * 
+     * @param member1 member #1
+     * @param member2 member #2
+     * @return date comparison result
+     */
+    private int compareDates(Member member1, Member member2) {
+        int result;
+        Date date1 = member1.getDate();
+        Date date2 = member2.getDate();
+
+        if (date1 == null) {
+            result = -1;
+        } else if (date2 == null) {
+            result = 1;
+        } else {
+            result = date1.compareTo(date2);
+        }
         return result;
     }
 

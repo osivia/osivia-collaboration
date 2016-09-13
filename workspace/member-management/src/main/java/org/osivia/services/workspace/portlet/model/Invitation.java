@@ -27,6 +27,11 @@ public class Invitation extends MemberObject {
     private WorkspaceRole role;
     /** State. */
     private InvitationState state;
+    /** Acknowledgment date. */
+    private Date acknowledgmentDate;
+
+    /** Unknown user indicator. */
+    private final boolean unknownUser;
 
 
     /**
@@ -36,6 +41,18 @@ public class Invitation extends MemberObject {
      */
     public Invitation(Person person) {
         super(person);
+        this.unknownUser = false;
+    }
+
+
+    /**
+     * Constructor used when no person was found with this UID.
+     * 
+     * @param uid person UID
+     */
+    public Invitation(String uid) {
+        super(uid);
+        this.unknownUser = true;
     }
 
 
@@ -109,6 +126,33 @@ public class Invitation extends MemberObject {
      */
     public void setState(InvitationState state) {
         this.state = state;
+    }
+
+    /**
+     * Getter for acknowledgmentDate.
+     * 
+     * @return the acknowledgmentDate
+     */
+    public Date getAcknowledgmentDate() {
+        return acknowledgmentDate;
+    }
+
+    /**
+     * Setter for acknowledgmentDate.
+     * 
+     * @param acknowledgmentDate the acknowledgmentDate to set
+     */
+    public void setAcknowledgmentDate(Date acknowledgmentDate) {
+        this.acknowledgmentDate = acknowledgmentDate;
+    }
+
+    /**
+     * Getter for unknownUser.
+     * 
+     * @return the unknownUser
+     */
+    public boolean isUnknownUser() {
+        return unknownUser;
     }
 
 }
