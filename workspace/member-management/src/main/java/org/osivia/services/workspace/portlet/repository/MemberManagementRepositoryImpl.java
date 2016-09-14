@@ -112,11 +112,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        // Model path
-        String modelPath = this.getInvitationModelPath(portalControllerContext);
-
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, modelPath, workspaceId, InvitationState.SENT);
+        INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, workspaceId, InvitationState.SENT);
         Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
 
         return documents.size();
@@ -182,15 +179,14 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         // Members
         List<Member> members = new ArrayList<>(workspaceMembers.size());
         for (WorkspaceMember workspaceMember : workspaceMembers) {
-            Member member = this.applicationContext.getBean(Member.class, workspaceMember);
-
             // Date
-            Date date = dates.get(member.getId());
-            member.setDate(date);
-
+            Date date = dates.get(workspaceMember.getMember().getUid());
             // Editable member indicator
-            boolean editable = !StringUtils.equals(currentUser, member.getId()) && (currentRole.getWeight() >= workspaceMember.getRole().getWeight());
-            member.setEditable(editable);
+            boolean editable = !StringUtils.equals(currentUser, workspaceMember.getMember().getUid())
+                    && (currentRole.getWeight() >= workspaceMember.getRole().getWeight());
+
+            // Member
+            Member member = getMember(workspaceMember, date, editable);
 
             members.add(member);
         }
@@ -219,11 +215,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             identifiers.add(member.getMember().getUid());
         }
 
-        // Model path
-        String modelPath = this.getInvitationModelPath(portalControllerContext);
-
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, modelPath, workspaceId, InvitationState.ACCEPTED, identifiers);
+        INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, workspaceId, InvitationState.ACCEPTED, identifiers);
         Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
 
         // Dates
@@ -246,6 +239,38 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         }
 
         return dates;
+    }
+
+
+    /**
+     * Get member.
+     * 
+     * @param workspaceMember workspace member
+     * @param date member date
+     * @param editable editable indicator
+     * @return member
+     */
+    protected Member getMember(WorkspaceMember workspaceMember, Date date, boolean editable) {
+        Member member = this.applicationContext.getBean(Member.class, workspaceMember);
+
+        // Display name
+        String displayName = StringUtils.defaultIfBlank(workspaceMember.getMember().getDisplayName(), workspaceMember.getMember().getUid());
+        member.setDisplayName(displayName);
+
+        // Extra
+        String extra = workspaceMember.getMember().getMail();
+        if (StringUtils.equals(extra, displayName)) {
+            extra = null;
+        }
+        member.setExtra(extra);
+
+        // Date
+        member.setDate(date);
+
+        // Editable indicator
+        member.setEditable(editable);
+
+        return member;
     }
 
 
@@ -274,11 +299,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        // Model path
-        String modelPath = this.getInvitationModelPath(portalControllerContext);
-
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, modelPath, workspaceId);
+        INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, workspaceId);
         Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
 
         // Invitations
@@ -287,55 +309,75 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             // Variables
             PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
 
-            // UID
+            // User identifier
             String uid = variables.getString(PERSON_UID_PROPERTY);
 
             if (StringUtils.isNotEmpty(uid) && !memberIdentifiers.contains(uid)) {
-                // Person
-                Person person = this.personService.getPerson(uid);
-
                 // Invitation
-                Invitation invitation;
-                if (person == null) {
-                    invitation = this.applicationContext.getBean(Invitation.class, uid);
-                } else {
-                    invitation = this.applicationContext.getBean(Invitation.class, person);
-                }
-
+                Invitation invitation = getInvitation(uid, document, variables);
                 invitation.setDocument(document);
-
-                // Date
-                Date date;
-                Long dateProperty = variables.getLong(ACKNOWLEDGMENT_DATE_PROPERTY);
-                if (dateProperty == null) {
-                    date = document.getDate("dc:created");
-                } else {
-                    date = new Date(dateProperty);
-                }
-                invitation.setDate(date);
-
-                // Role
-                WorkspaceRole role = WorkspaceRole.fromId(variables.getString(ROLE_PROPERTY));
-                if (role == null) {
-                    role = WorkspaceRole.READER;
-                }
-                invitation.setRole(role);
-
-                // Invitations state
-                InvitationState state = InvitationState.fromName(variables.getString(INVITATION_STATE_PROPERTY));
-                invitation.setState(state);
-
-                // Acknowledgment date
-                Long acknowledgmentDateProperty = variables.getLong(ACKNOWLEDGMENT_DATE_PROPERTY);
-                if (acknowledgmentDateProperty != null) {
-                    invitation.setAcknowledgmentDate(new Date(acknowledgmentDateProperty));
-                }
 
                 invitations.add(invitation);
             }
         }
 
         return invitations;
+    }
+
+
+    /**
+     * Get invitation.
+     * 
+     * @param uid user identifier
+     * @param document invitation Nuxeo document
+     * @param variables invitation variables
+     * @return invitation
+     */
+    protected Invitation getInvitation(String uid, Document document, PropertyMap variables) {
+        // Person
+        Person person = this.personService.getPerson(uid);
+
+        // Invitation
+        Invitation invitation;
+        if (person == null) {
+            invitation = this.applicationContext.getBean(Invitation.class, uid);
+            invitation.setDisplayName(uid);
+        } else {
+            invitation = this.applicationContext.getBean(Invitation.class, person);
+            invitation.setDisplayName(StringUtils.defaultIfBlank(person.getDisplayName(), uid));
+            if (StringUtils.equals(person.getMail(), invitation.getDisplayName())) {
+                invitation.setExtra(person.getMail());
+            }
+        }
+
+        // Date
+        Date date;
+        Long dateProperty = variables.getLong(ACKNOWLEDGMENT_DATE_PROPERTY);
+        if (dateProperty == null) {
+            date = document.getDate("dc:created");
+        } else {
+            date = new Date(dateProperty);
+        }
+        invitation.setDate(date);
+
+        // Role
+        WorkspaceRole role = WorkspaceRole.fromId(variables.getString(ROLE_PROPERTY));
+        if (role == null) {
+            role = WorkspaceRole.READER;
+        }
+        invitation.setRole(role);
+
+        // Invitations state
+        InvitationState state = InvitationState.fromName(variables.getString(INVITATION_STATE_PROPERTY));
+        invitation.setState(state);
+
+        // Acknowledgment date
+        Long acknowledgmentDateProperty = variables.getLong(ACKNOWLEDGMENT_DATE_PROPERTY);
+        if (acknowledgmentDateProperty != null) {
+            invitation.setAcknowledgmentDate(new Date(acknowledgmentDateProperty));
+        }
+
+        return invitation;
     }
 
 
@@ -404,9 +446,6 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
         // Workspace
         Document workspace = this.getWorkspaceDocument(portalControllerContext);
-
-        // Model path
-        String modelPath = this.getInvitationModelPath(portalControllerContext);
 
 
         // Workspace members
@@ -486,7 +525,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     this.formsService.start(portalControllerContext, MODEL_ID, variables);
 
                     // Update ACL
-                    INuxeoCommand command = this.applicationContext.getBean(SetProcedureInstanceAcl.class, modelPath, workspaceId, pendingInvitation.getId(),
+                    INuxeoCommand command = this.applicationContext.getBean(SetProcedureInstanceAcl.class, workspaceId, pendingInvitation.getId(),
                             groups);
                     nuxeoController.executeNuxeoCommand(command);
 
@@ -629,41 +668,6 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(basePath);
 
         return documentContext.getDoc();
-    }
-
-
-    /**
-     * Get invitation model path.
-     *
-     * @param portalControllerContext portal controller context
-     * @return path
-     * @throws PortletException
-     */
-    private String getInvitationModelPath(PortalControllerContext portalControllerContext) throws PortletException {
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-
-        // Fetch path
-        String fetchPath = NuxeoController.webIdToFetchPath(IFormsService.FORMS_WEB_ID_PREFIX + MODEL_ID);
-
-        // Nuxeo document context
-        NuxeoDocumentContext documentContext;
-        try {
-            documentContext = nuxeoController.getDocumentContext(fetchPath);
-        } catch (NuxeoException e) {
-            if (NuxeoException.ERROR_NOTFOUND == e.getErrorCode()) {
-                Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-                String message = bundle.getString("MESSAGE_WORKSPACE_CANNOT_FIND_MODEL_ERROR", MODEL_ID);
-                throw new PortletException(message);
-            } else {
-                throw e;
-            }
-        }
-
-        // Model Nuxeo document
-        Document model = documentContext.getDoc();
-
-        return model.getPath();
     }
 
 

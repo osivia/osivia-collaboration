@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 
 /**
  * Set procedure instance ACL.
@@ -29,8 +30,6 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SetProcedureInstanceAcl implements INuxeoCommand {
 
-    /** Model path. */
-    private final String modelPath;
     /** Workspace identifier. */
     private final String workspaceId;
     /** Person UID. */
@@ -47,9 +46,8 @@ public class SetProcedureInstanceAcl implements INuxeoCommand {
      * @param uid person UID
      * @param workspace groups
      */
-    public SetProcedureInstanceAcl(String modelPath, String workspaceId, String uid, List<CollabProfile> groups) {
+    public SetProcedureInstanceAcl(String workspaceId, String uid, List<CollabProfile> groups) {
         super();
-        this.modelPath = modelPath;
         this.workspaceId = workspaceId;
         this.uid = uid;
         this.groups = groups;
@@ -86,7 +84,7 @@ public class SetProcedureInstanceAcl implements INuxeoCommand {
         // Clause
         StringBuilder clause = new StringBuilder();
         clause.append("ecm:primaryType = 'ProcedureInstance' ");
-        clause.append("AND pi:procedureModelPath = '").append(this.modelPath).append("' ");
+        clause.append("AND pi:procedureModelWebId = '").append(IFormsService.FORMS_WEB_ID_PREFIX).append(MemberManagementRepository.MODEL_ID).append("' ");
         clause.append("AND pi:globalVariablesValues.").append(MemberManagementRepository.WORKSPACE_IDENTIFIER_PROPERTY).append(" = '").append(this.workspaceId)
                 .append("' ");
         clause.append("AND pi:globalVariablesValues.").append(MemberManagementRepository.INVITATION_STATE_PROPERTY).append(" = '")

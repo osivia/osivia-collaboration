@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 
 /**
  * Get invitations command.
@@ -25,8 +26,6 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class GetInvitationsCommand implements INuxeoCommand {
 
-    /** Model path. */
-    private final String modelPath;
     /** Workspace identifier. */
     private final String workspaceId;
     /** Invitation state. */
@@ -38,37 +37,33 @@ public class GetInvitationsCommand implements INuxeoCommand {
     /**
      * Constructor.
      *
-     * @param modelPath model path
      * @param workspaceId workspace identifier
      */
-    public GetInvitationsCommand(String modelPath, String workspaceId) {
-        this(modelPath, workspaceId, null, null);
+    public GetInvitationsCommand(String workspaceId) {
+        this(workspaceId, null, null);
     }
 
 
     /**
      * Constructor.
      * 
-     * @param modelPath model path
      * @param workspaceId workspace identifier
      * @param invitationState invitation state
      */
-    public GetInvitationsCommand(String modelPath, String workspaceId, InvitationState invitationState) {
-        this(modelPath, workspaceId, invitationState, null);
+    public GetInvitationsCommand(String workspaceId, InvitationState invitationState) {
+        this(workspaceId, invitationState, null);
     }
 
 
     /**
      * Constructor.
      *
-     * @param modelPath model path
      * @param workspaceId workspace identifier
      * @param invitationState invitation state
      * @param members member identifiers
      */
-    public GetInvitationsCommand(String modelPath, String workspaceId, InvitationState invitationState, Set<String> members) {
+    public GetInvitationsCommand(String workspaceId, InvitationState invitationState, Set<String> members) {
         super();
-        this.modelPath = modelPath;
         this.workspaceId = workspaceId;
         this.invitationState = invitationState;
         this.members = members;
@@ -83,7 +78,7 @@ public class GetInvitationsCommand implements INuxeoCommand {
         // Clause
         StringBuilder clause = new StringBuilder();
         clause.append("ecm:primaryType = 'ProcedureInstance' ");
-        clause.append("AND pi:procedureModelPath = '").append(this.modelPath).append("' ");
+        clause.append("AND pi:procedureModelWebId = '").append(IFormsService.FORMS_WEB_ID_PREFIX).append(MemberManagementRepository.MODEL_ID).append("' ");
         clause.append("AND pi:globalVariablesValues.").append(MemberManagementRepository.WORKSPACE_IDENTIFIER_PROPERTY).append(" = '").append(this.workspaceId)
                 .append("' ");
         if (this.invitationState != null) {
@@ -125,8 +120,6 @@ public class GetInvitationsCommand implements INuxeoCommand {
     public String getId() {
         StringBuilder builder = new StringBuilder();
         builder.append(this.getClass().getName());
-        builder.append("/");
-        builder.append(this.modelPath);
         builder.append("/");
         builder.append(this.workspaceId);
         builder.append("/");
