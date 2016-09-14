@@ -1,6 +1,5 @@
 package org.osivia.services.workspace.portlet.model;
 
-import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.directory.v2.model.Person;
 
 /**
@@ -10,6 +9,10 @@ import org.osivia.portal.api.directory.v2.model.Person;
  */
 public abstract class MemberObject {
 
+    /** Display name. */
+    private String displayName;
+    /** Extra. */
+    private String extra;
     /** Deleted indicator. */
     private boolean deleted;
 
@@ -17,10 +20,6 @@ public abstract class MemberObject {
     private final Person person;
     /** Identifier. */
     private final String id;
-    /** Display name. */
-    private final String displayName;
-    /** Extra. */
-    private final String extra;
 
 
     /**
@@ -32,14 +31,6 @@ public abstract class MemberObject {
         super();
         this.person = person;
         this.id = person.getUid();
-
-        if (StringUtils.isEmpty(person.getDisplayName())) {
-            this.displayName = person.getUid();
-            this.extra = null;
-        } else {
-            this.displayName = person.getDisplayName();
-            this.extra = person.getMail();
-        }
     }
 
 
@@ -52,8 +43,6 @@ public abstract class MemberObject {
         super();
         this.person = null;
         this.id = uid;
-        this.displayName = uid;
-        this.extra = null;
     }
 
 
@@ -113,6 +102,42 @@ public abstract class MemberObject {
     }
 
     /**
+     * Getter for displayName.
+     * 
+     * @return the displayName
+     */
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    /**
+     * Setter for displayName.
+     * 
+     * @param displayName the displayName to set
+     */
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    /**
+     * Getter for extra.
+     * 
+     * @return the extra
+     */
+    public String getExtra() {
+        return extra;
+    }
+
+    /**
+     * Setter for extra.
+     * 
+     * @param extra the extra to set
+     */
+    public void setExtra(String extra) {
+        this.extra = extra;
+    }
+
+    /**
      * Getter for person.
      * 
      * @return the person
@@ -128,24 +153,6 @@ public abstract class MemberObject {
      */
     public String getId() {
         return id;
-    }
-
-    /**
-     * Getter for displayName.
-     * 
-     * @return the displayName
-     */
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    /**
-     * Getter for extra.
-     * 
-     * @return the extra
-     */
-    public String getExtra() {
-        return extra;
     }
 
 }

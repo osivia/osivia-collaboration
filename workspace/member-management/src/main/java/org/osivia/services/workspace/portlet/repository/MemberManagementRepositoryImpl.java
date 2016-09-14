@@ -179,15 +179,14 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         // Members
         List<Member> members = new ArrayList<>(workspaceMembers.size());
         for (WorkspaceMember workspaceMember : workspaceMembers) {
-            Member member = this.applicationContext.getBean(Member.class, workspaceMember);
-
             // Date
-            Date date = dates.get(member.getId());
-            member.setDate(date);
-
+            Date date = dates.get(workspaceMember.getMember().getUid());
             // Editable member indicator
-            boolean editable = !StringUtils.equals(currentUser, member.getId()) && (currentRole.getWeight() >= workspaceMember.getRole().getWeight());
-            member.setEditable(editable);
+            boolean editable = !StringUtils.equals(currentUser, workspaceMember.getMember().getUid())
+                    && (currentRole.getWeight() >= workspaceMember.getRole().getWeight());
+
+            // Member
+            Member member = getMember(workspaceMember, date, editable);
 
             members.add(member);
         }
@@ -245,6 +244,38 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
 
     /**
+     * Get member.
+     * 
+     * @param workspaceMember workspace member
+     * @param date member date
+     * @param editable editable indicator
+     * @return member
+     */
+    protected Member getMember(WorkspaceMember workspaceMember, Date date, boolean editable) {
+        Member member = this.applicationContext.getBean(Member.class, workspaceMember);
+
+        // Display name
+        String displayName = StringUtils.defaultIfBlank(workspaceMember.getMember().getDisplayName(), workspaceMember.getMember().getUid());
+        member.setDisplayName(displayName);
+
+        // Extra
+        String extra = workspaceMember.getMember().getMail();
+        if (StringUtils.equals(extra, displayName)) {
+            extra = null;
+        }
+        member.setExtra(extra);
+
+        // Date
+        member.setDate(date);
+
+        // Editable indicator
+        member.setEditable(editable);
+
+        return member;
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -279,55 +310,75 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             // Variables
             PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
 
-            // UID
+            // User identifier
             String uid = variables.getString(PERSON_UID_PROPERTY);
 
             if (StringUtils.isNotEmpty(uid) && !memberIdentifiers.contains(uid)) {
-                // Person
-                Person person = this.personService.getPerson(uid);
-
                 // Invitation
-                Invitation invitation;
-                if (person == null) {
-                    invitation = this.applicationContext.getBean(Invitation.class, uid);
-                } else {
-                    invitation = this.applicationContext.getBean(Invitation.class, person);
-                }
-
+                Invitation invitation = getInvitation(uid, document, variables);
                 invitation.setDocument(document);
-
-                // Date
-                Date date;
-                Long dateProperty = variables.getLong(ACKNOWLEDGMENT_DATE_PROPERTY);
-                if (dateProperty == null) {
-                    date = document.getDate("dc:created");
-                } else {
-                    date = new Date(dateProperty);
-                }
-                invitation.setDate(date);
-
-                // Role
-                WorkspaceRole role = WorkspaceRole.fromId(variables.getString(ROLE_PROPERTY));
-                if (role == null) {
-                    role = WorkspaceRole.READER;
-                }
-                invitation.setRole(role);
-
-                // Invitations state
-                InvitationState state = InvitationState.fromName(variables.getString(INVITATION_STATE_PROPERTY));
-                invitation.setState(state);
-
-                // Acknowledgment date
-                Long acknowledgmentDateProperty = variables.getLong(ACKNOWLEDGMENT_DATE_PROPERTY);
-                if (acknowledgmentDateProperty != null) {
-                    invitation.setAcknowledgmentDate(new Date(acknowledgmentDateProperty));
-                }
 
                 invitations.add(invitation);
             }
         }
 
         return invitations;
+    }
+
+
+    /**
+     * Get invitation.
+     * 
+     * @param uid user identifier
+     * @param document invitation Nuxeo document
+     * @param variables invitation variables
+     * @return invitation
+     */
+    protected Invitation getInvitation(String uid, Document document, PropertyMap variables) {
+        // Person
+        Person person = this.personService.getPerson(uid);
+
+        // Invitation
+        Invitation invitation;
+        if (person == null) {
+            invitation = this.applicationContext.getBean(Invitation.class, uid);
+            invitation.setDisplayName(uid);
+        } else {
+            invitation = this.applicationContext.getBean(Invitation.class, person);
+            invitation.setDisplayName(StringUtils.defaultIfBlank(person.getDisplayName(), uid));
+            if (StringUtils.equals(person.getMail(), invitation.getDisplayName())) {
+                invitation.setExtra(person.getMail());
+            }
+        }
+
+        // Date
+        Date date;
+        Long dateProperty = variables.getLong(ACKNOWLEDGMENT_DATE_PROPERTY);
+        if (dateProperty == null) {
+            date = document.getDate("dc:created");
+        } else {
+            date = new Date(dateProperty);
+        }
+        invitation.setDate(date);
+
+        // Role
+        WorkspaceRole role = WorkspaceRole.fromId(variables.getString(ROLE_PROPERTY));
+        if (role == null) {
+            role = WorkspaceRole.READER;
+        }
+        invitation.setRole(role);
+
+        // Invitations state
+        InvitationState state = InvitationState.fromName(variables.getString(INVITATION_STATE_PROPERTY));
+        invitation.setState(state);
+
+        // Acknowledgment date
+        Long acknowledgmentDateProperty = variables.getLong(ACKNOWLEDGMENT_DATE_PROPERTY);
+        if (acknowledgmentDateProperty != null) {
+            invitation.setAcknowledgmentDate(new Date(acknowledgmentDateProperty));
+        }
+
+        return invitation;
     }
 
 
