@@ -3,7 +3,6 @@ package org.osivia.services.workspace.portlet.model;
 import java.util.Date;
 
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -21,10 +20,6 @@ public class Invitation extends MemberObject {
 
     /** Document. */
     private Document document;
-    /** Date. */
-    private Date date;
-    /** Role. */
-    private WorkspaceRole role;
     /** State. */
     private InvitationState state;
     /** Acknowledgment date. */
@@ -43,7 +38,6 @@ public class Invitation extends MemberObject {
         super(person);
         this.unknownUser = false;
     }
-
 
     /**
      * Constructor used when no person was found with this UID.
@@ -72,42 +66,6 @@ public class Invitation extends MemberObject {
      */
     public void setDocument(Document document) {
         this.document = document;
-    }
-
-    /**
-     * Getter for date.
-     * 
-     * @return the date
-     */
-    public Date getDate() {
-        return date;
-    }
-
-    /**
-     * Setter for date.
-     * 
-     * @param date the date to set
-     */
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    /**
-     * Getter for role.
-     * 
-     * @return the role
-     */
-    public WorkspaceRole getRole() {
-        return role;
-    }
-
-    /**
-     * Setter for role.
-     * 
-     * @param role the role to set
-     */
-    public void setRole(WorkspaceRole role) {
-        this.role = role;
     }
 
     /**

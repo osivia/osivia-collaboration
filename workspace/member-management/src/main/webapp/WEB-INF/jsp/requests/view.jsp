@@ -11,5 +11,6 @@
     <!-- Tabs -->
     <jsp:include page="../commons/tabs.jsp" />
 
-
+    <!-- List -->
+    <jsp:include page="list.jsp" />
 </div>

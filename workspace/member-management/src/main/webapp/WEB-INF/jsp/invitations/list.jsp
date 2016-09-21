@@ -44,7 +44,7 @@
         <div class="table-row table-header">
             <div class="row">
                 <!-- Invitation -->
-                <div class="col-xs-7 col-sm-4 col-lg-5">
+                <div class="col-xs-7 col-sm-3 col-md-4">
                     <a href="${sortNameUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION"/></a>
                     
                     <c:if test="${sort eq 'name'}">
@@ -58,7 +58,7 @@
                 </div>
                 
                 <!-- Date -->
-                <div class="col-xs-5 col-sm-2">
+                <div class="col-xs-5 col-sm-3 col-md-2">
                     <a href="${sortDateUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_DATE"/></a>
                     
                     <c:if test="${sort eq 'date'}">
@@ -108,18 +108,19 @@
         <div class="table-body-wrapper">
             <c:forEach var="invitation" items="${invitations.invitations}" varStatus="status">
                 <div class="table-row ${invitation.state.editable ? '' : 'muted'}">
+                    <form:hidden path="invitations[${status.index}].edited" />
                     <form:hidden path="invitations[${status.index}].deleted" />
                 
                     <fieldset>
                         <div class="row">
                             <!-- Invitation -->
-                            <div class="col-xs-7 col-sm-4 col-lg-5">
+                            <div class="col-xs-7 col-sm-3 col-md-4">
                                 <c:set var="person" scope="request" value="${invitation}" />
                                 <jsp:include page="../commons/person.jsp" />
                             </div>
                             
                             <!-- Invitation date -->
-                            <div class="col-xs-5 col-sm-2">
+                            <div class="col-xs-5 col-sm-3 col-md-2">
                                 <div class="form-control-static">
                                     <span><fmt:formatDate value="${invitation.date}" type="date" dateStyle="medium" /></span>
                                 </div>
@@ -142,7 +143,7 @@
                             <div class="col-xs-7 col-sm-2">
                                 <c:choose>
                                     <c:when test="${invitation.state.editable}">
-                                        <form:label path="invitations[${status.index}].role" cssClass="sr-only"><op:translate key="ROLE" /></form:label>
+                                        <form:label path="invitations[${status.index}].role" cssClass="sr-only"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></form:label>
                                         <form:select path="invitations[${status.index}].role" cssClass="form-control">
                                             <c:forEach var="role" items="${options.roles}">
                                                 <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}" /></form:option>
@@ -163,7 +164,7 @@
                                 <!-- Column reset -->
                                 <div class="clearfix visible-xs-block"></div>
                             
-                                <div class="col-xs-12 col-sm-2 col-lg-1">
+                                <div class="col-xs-12 col-sm-2">
                                     <button type="button" class="btn btn-default delete">
                                         <span><op:translate key="CANCEL" /></span>
                                     </button>

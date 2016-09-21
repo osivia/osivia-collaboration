@@ -19,13 +19,15 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.services.workspace.portlet.model.Invitation;
+import org.osivia.services.workspace.portlet.model.InvitationRequest;
+import org.osivia.services.workspace.portlet.model.InvitationRequestsForm;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.Member;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.model.comparator.InvitationComparator;
-import org.osivia.services.workspace.portlet.model.comparator.MemberComparator;
+import org.osivia.services.workspace.portlet.model.comparator.MemberObjectComparator;
 import org.osivia.services.workspace.portlet.repository.MemberManagementRepository;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +94,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         if (options.getWorkspaceId() == null) {
             // Workspace identifier
-            String workspaceId = this.repository.getWorkspaceId(portalControllerContext);
+            String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
             options.setWorkspaceId(workspaceId);
 
             // Invitations count
@@ -122,7 +124,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         
         if (!form.isLoaded()) {
             // Workspace identifier
-            String workspaceId = this.repository.getWorkspaceId(portalControllerContext);
+            String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
 
             // Members
             List<Member> members = this.repository.getMembers(portalControllerContext, workspaceId);
@@ -140,7 +142,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      */
     @Override
     public void sortMembers(PortalControllerContext portalControllerContext, MembersForm form, String sort, boolean alt) throws PortletException {
-        MemberComparator comparator = this.applicationContext.getBean(MemberComparator.class, sort, alt);
+        MemberObjectComparator comparator = this.applicationContext.getBean(MemberObjectComparator.class, sort, alt);
         Collections.sort(form.getMembers(), comparator);
     }
 
@@ -186,7 +188,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         if (!form.isLoaded()) {
             // Workspace identifier
-            String workspaceId = this.repository.getWorkspaceId(portalControllerContext);
+            String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
 
             // Member idenfiers
             Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
@@ -460,6 +462,73 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     @Override
     public String getInvitationsHelp(PortalControllerContext portalControllerContext) throws PortletException {
         return this.repository.getHelp(portalControllerContext, INVITATIONS_HELP_LOCATION_PROPERTY);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InvitationRequestsForm getInvitationRequestsForm(PortalControllerContext portalControllerContext) throws PortletException {
+        // Form
+        InvitationRequestsForm form = this.applicationContext.getBean(InvitationRequestsForm.class);
+
+        if (!form.isLoaded()) {
+            // Workspace identifier
+            String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
+
+            // Invitation requests
+            List<InvitationRequest> requests = this.repository.getInvitationRequests(portalControllerContext, workspaceId);
+            form.setRequests(requests);
+
+            form.setLoaded(true);
+        }
+
+        return form;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void sortInvitationRequests(PortalControllerContext portalControllerContext, InvitationRequestsForm form, String sort, boolean alt)
+            throws PortletException {
+        MemberObjectComparator comparator = this.applicationContext.getBean(MemberObjectComparator.class, sort, alt);
+        Collections.sort(form.getRequests(), comparator);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateInvitationRequests(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationRequestsForm form)
+            throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Update
+        this.repository.updateInvitationRequests(portalControllerContext, options.getWorkspaceId(), form.getRequests());
+
+        // Update model
+        int count = this.repository.getRequestsCount(portalControllerContext, options.getWorkspaceId());
+        options.setRequestsCount(count);
+        List<InvitationRequest> requests = this.repository.getInvitationRequests(portalControllerContext, options.getWorkspaceId());
+        form.setRequests(requests);
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_REQUESTS_UPDATE_SUCCESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getInvitationRequestsHelp(PortalControllerContext portalControllerContext) throws PortletException {
+        return this.repository.getHelp(portalControllerContext, INVITATION_REQUESTS_HELP_LOCATION_PROPERTY);
     }
 
 

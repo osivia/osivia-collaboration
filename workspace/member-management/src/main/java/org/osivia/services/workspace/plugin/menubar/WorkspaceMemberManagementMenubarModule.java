@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.plugin;
+package org.osivia.services.workspace.plugin.menubar;
 
 import java.util.HashMap;
 import java.util.List;

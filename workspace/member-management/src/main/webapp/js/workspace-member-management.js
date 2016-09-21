@@ -195,8 +195,12 @@ $JQry(function() {
 	
 	$JQry(".workspace-member-management select").change(function(event) {
 		var $target = $JQry(event.target),
-			$form = $target.closest("form"),
+			$row = $target.closest(".table-row"),
+			$edited = $row.find("input[type=hidden][id$='.edited']"),
+			$form = $row.closest("form"),
 			$collapse = $form.find(".collapse");
+		
+		$edited.val(true);
 		
 		if (!$collapse.hasClass("in")) {
 			$collapse.collapse("show");
@@ -208,12 +212,35 @@ $JQry(function() {
 		var $target = $JQry(event.target),
 			$fieldset = $target.closest("fieldset"),
 			$row = $fieldset.closest(".table-row"),
-			$hidden = $row.find("input[type=hidden]"),
+			$deleted = $row.find("input[type=hidden][id$='.deleted']"),
+			$buttons = $row.find("button"),
 			$form = $fieldset.closest("form"),
 			$collapse = $form.find(".collapse");
 		
-		$hidden.val(true);
+		$deleted.val(true);
+		$buttons.hide();
 		$fieldset.prop("disabled", true);
+		
+		if (!$collapse.hasClass("in")) {
+			$collapse.collapse("show");
+		}
+	});
+	
+	
+	$JQry(".workspace-member-management button.accept").click(function(event) {
+		var $target = $JQry(event.target),
+			$row = $target.closest(".table-row"),
+			$accepted = $row.find("input[type=hidden][id$='.accepted']"),
+			$buttons = $row.find("button"),
+			$acceptedMessage = $row.find(".accepted-message"),
+			$form = $row.closest("form"),
+			$collapse = $form.find(".collapse");
+		
+		$accepted.val(true);
+		
+		$buttons.hide();
+		$acceptedMessage.removeClass("hidden");
+		$acceptedMessage.show();
 		
 		if (!$collapse.hasClass("in")) {
 			$collapse.collapse("show");
@@ -228,6 +255,8 @@ $JQry(function() {
 		$form.find("fieldset[disabled]").prop("disabled", false);
 		$form.find("input[type=hidden][value=true]").val(false);
 		$form.find("select.select2").val(null).trigger("change");
+		$form.find("button").show();
+		$form.find(".accepted-message").hide();
 	});
 	
 });

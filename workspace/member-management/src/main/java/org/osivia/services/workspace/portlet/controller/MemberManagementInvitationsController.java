@@ -47,7 +47,7 @@ import net.sf.json.JSONArray;
 
 /**
  * Member management portlet view invitations controller.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see CMSPortlet
  * @see PortletConfigAware
@@ -98,7 +98,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
 
     /**
      * View render mapping.
-     * 
+     *
      * @param request render request
      * @param response render response
      * @param form invitations form model attribute
@@ -117,7 +117,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
         // Tab
         request.setAttribute("tab", "invitations");
 
-        // Sort members
+        // Sort invitations
         this.service.sortInvitations(portalControllerContext, form, sort, BooleanUtils.toBoolean(alt));
         request.setAttribute("sort", sort);
         request.setAttribute("alt", alt);
@@ -128,7 +128,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
 
     /**
      * Update invitations.
-     * 
+     *
      * @param request action request
      * @param response action response
      * @param options options model attribute
@@ -144,13 +144,13 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
         this.service.updateInvitations(portalControllerContext, options, form);
 
         // Copy render parameter
-        copyRenderParameters(request, response);
+        this.copyRenderParameters(request, response);
     }
 
 
     /**
      * Create invitations action mapping.
-     * 
+     *
      * @param request action request
      * @param response action response
      * @param options options model attribute
@@ -173,13 +173,13 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
         }
 
         // Copy render parameter
-        copyRenderParameters(request, response);
+        this.copyRenderParameters(request, response);
     }
 
 
     /**
      * Copy render parameters.
-     * 
+     *
      * @param request action request
      * @param response action response
      */
@@ -200,7 +200,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
 
     /**
      * Search persons resource mapping.
-     * 
+     *
      * @param request resource request
      * @param response resource response
      * @param filter search filter request parameter
@@ -210,8 +210,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
      */
     @ResourceMapping("search")
     public void search(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter,
-            @RequestParam(value = "tokenizer", required = false) String tokenizer)
-            throws PortletException, IOException {
+            @RequestParam(value = "tokenizer", required = false) String tokenizer) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
@@ -230,7 +229,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
 
     /**
      * Get options model attribute.
-     * 
+     *
      * @param request portlet request
      * @param response portlet response
      * @return options
@@ -239,7 +238,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
     @ModelAttribute("options")
     public MemberManagementOptions getOptions(PortletRequest request, PortletResponse response) throws PortletException {
         // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         return this.service.getOptions(portalControllerContext);
     }
@@ -247,7 +246,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
 
     /**
      * Get invitations form model attribute.
-     * 
+     *
      * @param request portlet request
      * @param response portlet response
      * @return form
@@ -256,7 +255,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
     @ModelAttribute("invitations")
     public InvitationsForm getInvitationsForm(PortletRequest request, PortletResponse response) throws PortletException {
         // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         return this.service.getInvitationsForm(portalControllerContext);
     }
@@ -264,7 +263,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
 
     /**
      * Get invitations creation form model attribute.
-     * 
+     *
      * @param request portlet request
      * @param response portlet response
      * @return form
@@ -273,7 +272,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
     @ModelAttribute("creation")
     public InvitationsCreationForm getInvitationsCreationForm(PortletRequest request, PortletResponse response) throws PortletException {
         // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         return this.service.getInvitationsCreationForm(portalControllerContext);
     }
@@ -281,7 +280,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
 
     /**
      * Invitations creation form init binder.
-     * 
+     *
      * @param binder portlet request data binder
      */
     @InitBinder("creation")
@@ -293,7 +292,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
 
     /**
      * Get help model attribute.
-     * 
+     *
      * @param request portlet request
      * @param response portlet response
      * @return help
@@ -302,7 +301,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
     @ModelAttribute("help")
     public String getHelp(PortletRequest request, PortletResponse response) throws PortletException {
         // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         return this.service.getInvitationsHelp(portalControllerContext);
     }

@@ -16,12 +16,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 
 /**
- * Set procedure instance ACL.
+ * Set procedure instance ACL Nuxeo command.
  * 
  * @author Cédric Krommenhoek
  * @see INuxeoCommand
@@ -32,7 +33,9 @@ public class SetProcedureInstanceAcl implements INuxeoCommand {
 
     /** Workspace identifier. */
     private final String workspaceId;
-    /** Person UID. */
+    /** Model identifier. */
+    private final String modelId;
+    /** Person identifier. */
     private final String uid;
     /** Workspace groups. */
     private final List<CollabProfile> groups;
@@ -41,14 +44,31 @@ public class SetProcedureInstanceAcl implements INuxeoCommand {
     /**
      * Constructor.
      * 
-     * @param modelPath model path
      * @param workspaceId workspace identifier
-     * @param uid person UID
-     * @param workspace groups
+     * @param uid person identifier
+     * @param groups workspace groups
      */
     public SetProcedureInstanceAcl(String workspaceId, String uid, List<CollabProfile> groups) {
+        this(workspaceId, false, uid, groups);
+    }
+
+
+    /**
+     * Constructor.
+     * 
+     * @param workspaceId workspace identifier
+     * @param request request indicator
+     * @param uid person identifier
+     * @param groups workspace groups
+     */
+    public SetProcedureInstanceAcl(String workspaceId, boolean request, String uid, List<CollabProfile> groups) {
         super();
         this.workspaceId = workspaceId;
+        if (request) {
+            this.modelId = MemberManagementRepository.REQUEST_MODEL_ID;
+        } else {
+            this.modelId = MemberManagementRepository.INVITATION_MODEL_ID;
+        }
         this.uid = uid;
         this.groups = groups;
     }
@@ -84,7 +104,7 @@ public class SetProcedureInstanceAcl implements INuxeoCommand {
         // Clause
         StringBuilder clause = new StringBuilder();
         clause.append("ecm:primaryType = 'ProcedureInstance' ");
-        clause.append("AND pi:procedureModelWebId = '").append(IFormsService.FORMS_WEB_ID_PREFIX).append(MemberManagementRepository.MODEL_ID).append("' ");
+        clause.append("AND pi:procedureModelWebId = '").append(IFormsService.FORMS_WEB_ID_PREFIX).append(this.modelId).append("' ");
         clause.append("AND pi:globalVariablesValues.").append(MemberManagementRepository.WORKSPACE_IDENTIFIER_PROPERTY).append(" = '").append(this.workspaceId)
                 .append("' ");
         clause.append("AND pi:globalVariablesValues.").append(MemberManagementRepository.INVITATION_STATE_PROPERTY).append(" = '")
@@ -101,8 +121,19 @@ public class SetProcedureInstanceAcl implements INuxeoCommand {
         request.set(Constants.HEADER_NX_SCHEMAS, "dublincore");
         request.set("query", "SELECT * FROM Document WHERE " + filteredClause);
 
+        // Nuxeo documents
         Documents documents = (Documents) request.execute();
-        return documents.get(0);
+
+        // Nuxeo document
+        Document document;
+
+        if (documents.size() == 1) {
+            document = documents.get(0);
+        } else {
+            throw new NuxeoException(NuxeoException.ERROR_NOTFOUND);
+        }
+
+        return document;
     }
 
 

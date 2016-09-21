@@ -14,6 +14,7 @@ import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.services.workspace.edition.portlet.model.Task;
@@ -117,9 +118,8 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
     private void updateTasks(Session nuxeoSession, DocumentService documentService, Document workspace) throws Exception {
         List<Task> tasks = this.form.getTasks();
 
-        // Workspace identifier
-        String worskpaceId = workspace.getString("webc:url");
-
+        // WebId prefix
+        String webIdPrefix = ITaskbarService.WEBID_PREFIX + workspace.getString("webc:url") + "_";
 
         // Active tasks
         List<Task> activeTasks = new ArrayList<>(tasks.size());
@@ -154,7 +154,7 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
                 if (task.getId() == null) {
                     webId = null;
                 } else {
-                    webId = worskpaceId + "_" + StringUtils.lowerCase(task.getId());
+                    webId = webIdPrefix + StringUtils.lowerCase(task.getId());
                 }
                 // Properties
                 PropertyMap properties = new PropertyMap();

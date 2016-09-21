@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.service.impl;
+package org.osivia.services.workspace.service;
 
 import javax.portlet.PortletException;
 
@@ -10,7 +10,6 @@ import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.services.workspace.model.WorkspaceCreationForm;
 import org.osivia.services.workspace.repository.WorkspaceCreationRepository;
-import org.osivia.services.workspace.service.WorkspaceCreationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

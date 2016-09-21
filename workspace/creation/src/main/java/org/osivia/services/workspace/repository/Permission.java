@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.repository.impl;
+package org.osivia.services.workspace.repository;
 
 import java.util.Arrays;
 import java.util.List;

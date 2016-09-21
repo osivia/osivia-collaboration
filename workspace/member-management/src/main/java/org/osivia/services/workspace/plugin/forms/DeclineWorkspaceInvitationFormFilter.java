@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.plugin;
+package org.osivia.services.workspace.plugin.forms;
 
 import java.util.Map;
 

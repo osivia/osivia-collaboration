@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.repository.impl;
+package org.osivia.services.workspace.repository;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,7 +26,6 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.services.workspace.model.WorkspaceCreationForm;
-import org.osivia.services.workspace.repository.WorkspaceCreationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

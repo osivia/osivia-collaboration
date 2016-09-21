@@ -56,7 +56,7 @@ public class UpdateInvitationsCommand implements INuxeoCommand {
 
             if (invitation.isDeleted()) {
                 documentService.remove(document);
-            } else if (InvitationState.SENT.equals(invitation.getState())) {
+            } else if (invitation.isEdited() && InvitationState.SENT.equals(invitation.getState())) {
                 // Variables
                 PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
                 variables.set(MemberManagementRepository.ROLE_PROPERTY, invitation.getRole().getId());

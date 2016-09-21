@@ -4,9 +4,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.osivia.portal.api.customization.CustomizationContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.MenubarModule;
+import org.osivia.services.workspace.plugin.forms.AcceptWorkspaceInvitationFormFilter;
+import org.osivia.services.workspace.plugin.forms.DeclineWorkspaceInvitationFormFilter;
+import org.osivia.services.workspace.plugin.menubar.WorkspaceMemberManagementMenubarModule;
+import org.osivia.services.workspace.plugin.portlet.RequestsListTemplateModule;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
+import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 
 /**
@@ -28,6 +37,9 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
     /** Decline workspace invitation form filter. */
     private final FormFilter declineFormFilter;
 
+    /** Internationalization bundle factory. */
+    private final IBundleFactory bundleFactory;
+
 
     /**
      * Constructor.
@@ -37,6 +49,11 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
         this.menubarModule = new WorkspaceMemberManagementMenubarModule();
         this.acceptFormFilter = new AcceptWorkspaceInvitationFormFilter();
         this.declineFormFilter = new DeclineWorkspaceInvitationFormFilter();
+
+        // Internationalization bundle factory
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
 
@@ -63,8 +80,28 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
         formFilters.put(this.acceptFormFilter.getId(), this.acceptFormFilter);
         formFilters.put(this.declineFormFilter.getId(), this.declineFormFilter);
 
-        // FIXME temporaire
-        formFilters.put("SET_ACTOR", new SetActorFormFilter());
+        // List templates
+        this.customizeListTemplates(context);
+    }
+
+
+    /**
+     * Customize list templates.
+     *
+     * @param context customization context
+     */
+    private void customizeListTemplates(CustomizationContext context) {
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(context.getLocale());
+
+        // List templates
+        Map<String, ListTemplate> templates = this.getListTemplates(context);
+
+        // Workspace member requests
+        ListTemplate requests = new ListTemplate("workspace-member-requests", bundle.getString("LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS"),
+                "dublincore, toutatice, webcontainer");
+        requests.setModule(new RequestsListTemplateModule(this.getPortletContext()));
+        templates.put(requests.getKey(), requests);
     }
 
 }

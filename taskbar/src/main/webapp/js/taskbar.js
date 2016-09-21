@@ -1,62 +1,57 @@
 // Taskbar functions
 
+
+// Taskbar affix top and bottom values
+var taskbarAffixTop,
+	taskbarAffixBottom;
+
+
+
 $JQry(function() {
 	
 	// Update layout
 	$JQry(".taskbar-container").each(function(index, element) {
-		var $container = $JQry(element),
-			$row = $container.find(".portlet-container").closest(".row");
+		var $element = $JQry(element),
+			loaded = $element.data("loaded");
 
 		
 		// Update styles
-		updateTaskbarStyles($container, $row);
-		$container.addClass("taskbar-absolute");
+		updateTaskbarStyles($element);
+		$element.addClass("taskbar-absolute");
 		
 		
 		// Affix
-		if ($container.hasClass("taskbar-affix")) {
-			var $window = $JQry(window),
-				$body = $JQry("body"),
-				$pageContent = $JQry("#page-content"),
+		if (!loaded && $element.hasClass("taskbar-affix")) {
+			var $pageContent = $JQry("#page-content"),
 				$navbarAffix = $pageContent.find(".content-navbar-affix"),
 				navbarHeight = Math.round(($navbarAffix.length > 0) ? $navbarAffix.outerHeight(true) : 0);
 			
-			$container.affix({
+			updateTaskbarAffixValues($element);
+			
+			$element.affix({
 				offset : {
 					top : function() {
-						if (document.body.clientWidth >= 768) {
-							return Math.round($container.parent().offset().top - navbarHeight);
-						} else {
-							return 0;
-						}
+						return taskbarAffixTop;
 					},
 					bottom : function() {
-						var bottom = null;
-						
-						if (document.body.clientWidth >= 768) {
-							var breakpoint = Math.round($pageContent.offset().top + $pageContent.height() - $row.height() - navbarHeight);
-							
-							if ($window.scrollTop() > breakpoint) {
-								bottom = Math.round($body.height() - $pageContent.offset().top - $pageContent.height());
-							}
-						}
-
-						return bottom;
+						return taskbarAffixBottom;
 					}
 				}
 			});
 			
-			$container.on("affix.bs.affix", function(event) {
-				$container.css({
+			$element.on("affix.bs.affix", function(event) {
+				$element.css({
 					top : navbarHeight
 				});
 			});
 			
-			$container.on("affix-top.bs.affix", function(event) {
-				$container.css({
+			$element.on("affix-top.bs.affix", function(event) {
+				$element.css({
 					top : "auto"
 				});
 			});
+			
+			$element.data("loaded", true);
 		}
 	});
 	
@@ -96,11 +91,14 @@ $JQry(function() {
 
 $JQry(window).resize(function() {
 	$JQry(".taskbar-container").each(function(index, element) {
-		var $container = $JQry(element),
-			$row = $container.find(".portlet-container").closest(".row");
+		var $element = $JQry(element);
+		
+		updateTaskbarAffixValues($element);
+		
+		$element.affix("checkPosition");
 		
 		// Update styles
-		updateTaskbarStyles($container, $row);
+		updateTaskbarStyles($element);
 	});
 });
 
@@ -109,9 +107,10 @@ $JQry(window).resize(function() {
  * Update taskbar CSS styles.
  * 
  * @param $container taskbar container
- * @param $row taskbar content row
  */
-function updateTaskbarStyles($container, $row) {
+function updateTaskbarStyles($container) {
+	var $row = $container.find(".portlet-container").closest(".row");
+	
 	if (document.body.clientWidth < 768) {
 		$container.css({
 			top: 0
@@ -124,4 +123,31 @@ function updateTaskbarStyles($container, $row) {
 	$container.next().css({
 		"padding-left": ((document.body.clientWidth >= 768) ? $row.width() : 0)
 	});
+}
+
+
+/**
+ * Update taskbar affix values.
+ * 
+ * @param $container affix container
+ */
+function updateTaskbarAffixValues($container) {
+	var $row = $container.find(".portlet-container").closest(".row"),
+		$window = $JQry(window),
+		$pageContent = $JQry("#page-content"),
+		$navbarAffix = $pageContent.find(".content-navbar-affix"),
+		navbarHeight = Math.round(($navbarAffix.length > 0) ? $navbarAffix.outerHeight(true) : 0);
+	
+	if ($JQry(window).width() >= 768) {
+		taskbarAffixTop = Math.round($container.parent().offset().top - navbarHeight);
+
+		if ($window.scrollTop() > Math.round($pageContent.offset().top + $pageContent.height() - $row.height() - navbarHeight)) {
+			taskbarAffixBottom = Math.round($body.height() - $pageContent.offset().top - $pageContent.height());
+		} else {
+			taskbarAffixBottom = null;
+		}
+	} else {
+		taskbarAffixTop = 1;
+		taskbarAffixBottom = null;
+	}
 }

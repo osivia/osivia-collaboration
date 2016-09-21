@@ -17,7 +17,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 
 /**
- * Get invitations command.
+ * Get invitations Nuxeo command.
  *
  * @author Cédric Krommenhoek
  * @see INuxeoCommand
@@ -28,10 +28,12 @@ public class GetInvitationsCommand implements INuxeoCommand {
 
     /** Workspace identifier. */
     private final String workspaceId;
+    /** Model identifier. */
+    private final String modelId;
     /** Invitation state. */
     private final InvitationState invitationState;
-    /** Member identifiers. */
-    private final Set<String> members;
+    /** User identifiers. */
+    private final Set<String> identifiers;
 
 
     /**
@@ -40,9 +42,18 @@ public class GetInvitationsCommand implements INuxeoCommand {
      * @param workspaceId workspace identifier
      */
     public GetInvitationsCommand(String workspaceId) {
-        this(workspaceId, null, null);
+        this(workspaceId, false, null, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param workspaceId workspace identifier
+     * @param request invitation request indicator
+     */
+    public GetInvitationsCommand(String workspaceId, boolean request) {
+        this(workspaceId, request, null, null);
+    }
 
     /**
      * Constructor.
@@ -51,22 +62,60 @@ public class GetInvitationsCommand implements INuxeoCommand {
      * @param invitationState invitation state
      */
     public GetInvitationsCommand(String workspaceId, InvitationState invitationState) {
-        this(workspaceId, invitationState, null);
+        this(workspaceId, false, invitationState, null);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param workspaceId workspace identifier
+     * @param request invitation request indicator
+     * @param invitationState invitation state
+     */
+    public GetInvitationsCommand(String workspaceId, boolean request, InvitationState invitationState) {
+        this(workspaceId, request, invitationState, null);
+    }
 
     /**
      * Constructor.
      *
      * @param workspaceId workspace identifier
      * @param invitationState invitation state
-     * @param members member identifiers
+     * @param identifiers user identifiers
      */
-    public GetInvitationsCommand(String workspaceId, InvitationState invitationState, Set<String> members) {
+    public GetInvitationsCommand(String workspaceId, InvitationState invitationState, Set<String> identifiers) {
+        this(workspaceId, false, invitationState, identifiers);
+    }
+
+    /**
+     * Contructor.
+     * 
+     * @param workspaceId workspace identifier
+     * @param request invitation request indicator
+     * @param identifiers user identifiers
+     */
+    public GetInvitationsCommand(String workspaceId, boolean request, Set<String> identifiers) {
+        this(workspaceId, request, null, identifiers);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param workspaceId workspace identifier
+     * @param request invitation request indicator
+     * @param invitationState invitation state
+     * @param identifiers user identifiers
+     */
+    public GetInvitationsCommand(String workspaceId, boolean request, InvitationState invitationState, Set<String> identifiers) {
         super();
         this.workspaceId = workspaceId;
+        if (request) {
+            this.modelId = MemberManagementRepository.REQUEST_MODEL_ID;
+        } else {
+            this.modelId = MemberManagementRepository.INVITATION_MODEL_ID;
+        }
         this.invitationState = invitationState;
-        this.members = members;
+        this.identifiers = identifiers;
     }
 
 
@@ -78,17 +127,17 @@ public class GetInvitationsCommand implements INuxeoCommand {
         // Clause
         StringBuilder clause = new StringBuilder();
         clause.append("ecm:primaryType = 'ProcedureInstance' ");
-        clause.append("AND pi:procedureModelWebId = '").append(IFormsService.FORMS_WEB_ID_PREFIX).append(MemberManagementRepository.MODEL_ID).append("' ");
+        clause.append("AND pi:procedureModelWebId = '").append(IFormsService.FORMS_WEB_ID_PREFIX).append(this.modelId).append("' ");
         clause.append("AND pi:globalVariablesValues.").append(MemberManagementRepository.WORKSPACE_IDENTIFIER_PROPERTY).append(" = '").append(this.workspaceId)
                 .append("' ");
         if (this.invitationState != null) {
             clause.append("AND pi:globalVariablesValues.").append(MemberManagementRepository.INVITATION_STATE_PROPERTY).append(" = '")
                     .append(this.invitationState.toString()).append("' ");
         }
-        if (this.members != null) {
+        if (this.identifiers != null) {
             clause.append("AND pi:globalVariablesValues.").append(MemberManagementRepository.PERSON_UID_PROPERTY).append(" IN (");
             boolean first = true;
-            for (String member : this.members) {
+            for (String member : this.identifiers) {
                 if (first) {
                     first = false;
                 } else {
@@ -123,12 +172,14 @@ public class GetInvitationsCommand implements INuxeoCommand {
         builder.append("/");
         builder.append(this.workspaceId);
         builder.append("/");
+        builder.append(this.modelId);
+        builder.append("/");
         if (this.invitationState != null) {
             builder.append(this.invitationState.toString());
         }
         builder.append("/");
-        if (this.members != null) {
-            builder.append(StringUtils.join(this.members, ","));
+        if (this.identifiers != null) {
+            builder.append(StringUtils.join(this.identifiers, ","));
         }
         return builder.toString();
     }

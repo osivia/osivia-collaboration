@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.repository.impl;
+package org.osivia.services.workspace.repository;
 
 import java.text.Normalizer;
 import java.util.SortedSet;
@@ -12,6 +12,7 @@ import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.services.workspace.model.WorkspaceCreationForm;
 
@@ -109,14 +110,14 @@ public class WorkspaceCreationCommand implements INuxeoCommand {
      * @throws Exception
      */
     private void createTaskbarItems(DocumentService documentService, Document workspace) throws Exception {
-        // Workspace identifier
-        String identifier = workspace.getString("webc:url");
+        // WebId prefix
+        String webIdPrefix = ITaskbarService.WEBID_PREFIX + workspace.getString("webc:url") + "_";
 
         for (TaskbarItem item : this.items) {
             String type = item.getDocumentType();
             String title = this.bundle.getString(item.getKey(), item.getCustomizedClassLoader());
             String name = this.generateNameFromTitle(title);
-            String webId = identifier + "_" + StringUtils.lowerCase(item.getId());
+            String webId = webIdPrefix + StringUtils.lowerCase(item.getId());
 
             // Properties
             PropertyMap properties = new PropertyMap();
