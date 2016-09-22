@@ -1,10 +1,8 @@
 // Taskbar functions
 
 
-// Taskbar affix top and bottom values
-var taskbarAffixTop,
-	taskbarAffixBottom;
-
+// Taskbar affix top value
+var taskbarAffixTop;
 
 
 $JQry(function() {
@@ -32,9 +30,6 @@ $JQry(function() {
 				offset : {
 					top : function() {
 						return taskbarAffixTop;
-					},
-					bottom : function() {
-						return taskbarAffixBottom;
 					}
 				}
 			});
@@ -93,8 +88,8 @@ $JQry(window).resize(function() {
 	$JQry(".taskbar-container").each(function(index, element) {
 		var $element = $JQry(element);
 		
+		// Update affix
 		updateTaskbarAffixValues($element);
-		
 		$element.affix("checkPosition");
 		
 		// Update styles
@@ -109,19 +104,20 @@ $JQry(window).resize(function() {
  * @param $container taskbar container
  */
 function updateTaskbarStyles($container) {
-	var $row = $container.find(".portlet-container").closest(".row");
+	var $row = $container.find(".portlet-container").closest(".row"),
+		windowWidth = $JQry(window).width();
 	
-	if (document.body.clientWidth < 768) {
+	if (windowWidth < 768) {
 		$container.css({
 			top: 0
 		});
 	}
 	
 	$container.parent().css({
-		"min-height": ((document.body.clientWidth >= 768) ? $row.height() : "auto")
+		"min-height": ((windowWidth >= 768) ? $row.height() : "auto")
 	});
 	$container.next().css({
-		"padding-left": ((document.body.clientWidth >= 768) ? $row.width() : 0)
+		"padding-left": ((windowWidth >= 768) ? $row.width() : 0)
 	});
 }
 
@@ -140,14 +136,7 @@ function updateTaskbarAffixValues($container) {
 	
 	if ($JQry(window).width() >= 768) {
 		taskbarAffixTop = Math.round($container.parent().offset().top - navbarHeight);
-
-		if ($window.scrollTop() > Math.round($pageContent.offset().top + $pageContent.height() - $row.height() - navbarHeight)) {
-			taskbarAffixBottom = Math.round($body.height() - $pageContent.offset().top - $pageContent.height());
-		} else {
-			taskbarAffixBottom = null;
-		}
 	} else {
 		taskbarAffixTop = 1;
-		taskbarAffixBottom = null;
 	}
 }
