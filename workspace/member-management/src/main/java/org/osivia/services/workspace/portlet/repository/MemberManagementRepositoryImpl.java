@@ -177,7 +177,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         Map<String, Date> dates = getMemberDates(portalControllerContext, workspaceId, workspaceMembers);
 
         // Members
-        List<Member> members = new ArrayList<>(workspaceMembers.size());
+        List<Member> members = new ArrayList<Member>(workspaceMembers.size());
         for (WorkspaceMember workspaceMember : workspaceMembers) {
             // Date
             Date date = dates.get(workspaceMember.getMember().getUid());
@@ -210,7 +210,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // Member identifiers
-        Set<String> identifiers = new HashSet<>(workspaceMembers.size());
+        Set<String> identifiers = new HashSet<String>(workspaceMembers.size());
         for (WorkspaceMember member : workspaceMembers) {
             identifiers.add(member.getMember().getUid());
         }
@@ -221,7 +221,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
 
         // Dates
-        Map<String, Date> dates = new HashMap<>(workspaceMembers.size());
+        Map<String, Date> dates = new HashMap<String, Date>(workspaceMembers.size());
         for (Document document : documents) {
             // Variables
             PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
@@ -305,7 +305,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
 
         // Invitations
-        List<Invitation> invitations = new ArrayList<>(documents.size());
+        List<Invitation> invitations = new ArrayList<Invitation>(documents.size());
         for (Document document : documents.list()) {
             // Variables
             PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
@@ -453,7 +453,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         List<Member> members = this.getMembers(portalControllerContext, workspaceId);
 
         // Workspace admin & owner groups
-        List<CollabProfile> groups = new ArrayList<>();
+        List<CollabProfile> groups = new ArrayList<CollabProfile>();
         CollabProfile criteria = this.workspaceService.getEmptyProfile();
         criteria.setWorkspaceId(workspaceId);
         criteria.setRole(WorkspaceRole.ADMIN);
@@ -463,7 +463,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
 
         // Existing invitations
-        Map<String, Invitation> existingInvitations = new HashMap<>(invitations.size());
+        Map<String, Invitation> existingInvitations = new HashMap<String, Invitation>(invitations.size());
         for (Invitation invitation : invitations) {
             if (InvitationState.SENT.equals(invitation.getState())) {
                 existingInvitations.put(invitation.getId(), invitation);
@@ -471,7 +471,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         }
 
         // Member identifiers
-        Set<String> memberIdentifiers = new HashSet<>(members.size());
+        Set<String> memberIdentifiers = new HashSet<String>(members.size());
         for (Member member : members) {
             memberIdentifiers.add(member.getId());
         }
@@ -486,7 +486,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
 
         // Updated invitations
-        List<Invitation> updatedInvitations = new ArrayList<>(form.getPendingInvitations().size());
+        List<Invitation> updatedInvitations = new ArrayList<Invitation>(form.getPendingInvitations().size());
 
         for (Invitation pendingInvitation : form.getPendingInvitations()) {
             if (existingInvitations.containsKey(pendingInvitation.getId())) {
@@ -502,7 +502,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             } else {
                 try {
                     // Variables
-                    Map<String, String> variables = new HashMap<>();
+                    Map<String, String> variables = new HashMap<String, String>();
                     variables.put("documentId", workspace.getId());
                     variables.put("documentPath", workspace.getPath());
                     variables.put(WORKSPACE_IDENTIFIER_PROPERTY, workspaceId);

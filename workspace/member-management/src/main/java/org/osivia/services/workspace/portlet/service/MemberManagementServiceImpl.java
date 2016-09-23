@@ -420,7 +420,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
         // Pending invitation identifiers
-        List<String> invitationIdentifiers = new ArrayList<>(creationForm.getPendingInvitations().size());
+        List<String> invitationIdentifiers = new ArrayList<String>(creationForm.getPendingInvitations().size());
         for (Invitation invitation : creationForm.getPendingInvitations()) {
             if (invitation.isUnknownUser()) {
                 invitationIdentifiers.add(invitation.getId());

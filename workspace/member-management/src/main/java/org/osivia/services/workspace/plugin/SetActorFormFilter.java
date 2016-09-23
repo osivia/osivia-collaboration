@@ -67,7 +67,7 @@ public class SetActorFormFilter implements FormFilter {
      */
     @Override
     public Map<String, FormFilterParameterType> getParameters() {
-        Map<String, FormFilterParameterType> parameters = new HashMap<>();
+        Map<String, FormFilterParameterType> parameters = new HashMap<String, FormFilterParameterType>();
         parameters.put("actor", FormFilterParameterType.TEXT);
         return parameters;
     }

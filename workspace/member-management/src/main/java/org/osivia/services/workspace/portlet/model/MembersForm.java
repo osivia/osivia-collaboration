@@ -42,7 +42,7 @@ public class MembersForm {
      */
     public Set<String> getIdentifiers() {
         if (this.identifiers == null) {
-            this.identifiers = new HashSet<>();
+            this.identifiers = new HashSet<String>();
             for (Member member : this.members) {
                 this.identifiers.add(member.getId());
             }
