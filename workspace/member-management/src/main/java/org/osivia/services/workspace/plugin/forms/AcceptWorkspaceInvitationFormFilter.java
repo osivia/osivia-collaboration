@@ -2,10 +2,11 @@ package org.osivia.services.workspace.plugin.forms;
 
 import java.util.Map;
 
-import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
-import javax.portlet.PortletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.repository.MemberManagementRepository;
@@ -105,19 +106,15 @@ public class AcceptWorkspaceInvitationFormFilter implements FormFilter {
     public void execute(FormFilterContext context, FormFilterExecutor executor) {
         // Portal controller context
         PortalControllerContext portalControllerContext = context.getPortalControllerContext();
+        // HTTP servlet request
+        HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
+        // HTTP session
+        HttpSession session = servletRequest.getSession();
 
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(this.portletContext);
-        nuxeoController.setServletRequest(portalControllerContext.getHttpServletRequest());
+        nuxeoController.setServletRequest(servletRequest);
 
-        // Portlet response
-        PortletResponse response = portalControllerContext.getResponse();
-
-        // Reload indicator render parameter
-        if (response instanceof ActionResponse) {
-            ActionResponse actionResponse = (ActionResponse) response;
-            actionResponse.setRenderParameter("reload", String.valueOf(true));
-        }
 
         // Variables
         Map<String, String> variables = context.getVariables();
@@ -128,6 +125,10 @@ public class AcceptWorkspaceInvitationFormFilter implements FormFilter {
         // Update invitation state
         variables.put(MemberManagementRepository.INVITATION_STATE_PROPERTY, InvitationState.ACCEPTED.toString());
         variables.put(MemberManagementRepository.ACKNOWLEDGMENT_DATE_PROPERTY, String.valueOf(System.currentTimeMillis()));
+
+
+        // Reload nuxeo session indicator
+        session.setAttribute(Constants.SESSION_RELOAD_ATTRIBUTE, true);
     }
 
 
