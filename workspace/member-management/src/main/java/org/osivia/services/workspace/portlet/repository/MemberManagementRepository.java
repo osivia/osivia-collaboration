@@ -14,6 +14,8 @@ import org.osivia.services.workspace.portlet.model.InvitationRequest;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.Member;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+
 /**
  * Member management repository interface.
  * 
@@ -207,10 +209,10 @@ public interface MemberManagementRepository {
     /**
      * Accept invitation.
      * 
-     * @param portalControllerContext portal controller context
+     * @param nuxeoController Nuxeo controller
      * @param variables task variables
      */
-    void acceptInvitation(PortalControllerContext portalControllerContext, Map<String, String> variables);
+    void acceptInvitation(NuxeoController nuxeoController, Map<String, String> variables);
 
 
     /**

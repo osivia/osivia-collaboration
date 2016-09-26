@@ -3,6 +3,8 @@ package org.osivia.services.workspace.plugin;
 import java.util.List;
 import java.util.Map;
 
+import javax.portlet.PortletContext;
+
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -32,10 +34,6 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
 
     /** Menubar module. */
     private final MenubarModule menubarModule;
-    /** Accept workspace invitation form filter. */
-    private final FormFilter acceptFormFilter;
-    /** Decline workspace invitation form filter. */
-    private final FormFilter declineFormFilter;
 
     /** Internationalization bundle factory. */
     private final IBundleFactory bundleFactory;
@@ -47,8 +45,6 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
     public WorkspaceMemberManagementPlugin() {
         super();
         this.menubarModule = new WorkspaceMemberManagementMenubarModule();
-        this.acceptFormFilter = new AcceptWorkspaceInvitationFormFilter();
-        this.declineFormFilter = new DeclineWorkspaceInvitationFormFilter();
 
         // Internationalization bundle factory
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
@@ -71,14 +67,17 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
      */
     @Override
     protected void customizeCMSProperties(String customizationId, CustomizationContext context) {
+        // Portlet context
+        PortletContext portletContext = getPortletContext();
+
         // Menubar modules
         List<MenubarModule> menubarModules = this.getMenubarModules(context);
         menubarModules.add(this.menubarModule);
 
         // Form filters
         Map<String, FormFilter> formFilters = this.getFormFilters(context);
-        formFilters.put(this.acceptFormFilter.getId(), this.acceptFormFilter);
-        formFilters.put(this.declineFormFilter.getId(), this.declineFormFilter);
+        formFilters.put(AcceptWorkspaceInvitationFormFilter.IDENTIFIER, new AcceptWorkspaceInvitationFormFilter(portletContext));
+        formFilters.put(DeclineWorkspaceInvitationFormFilter.IDENTIFIER, new DeclineWorkspaceInvitationFormFilter());
 
         // List templates
         this.customizeListTemplates(context);

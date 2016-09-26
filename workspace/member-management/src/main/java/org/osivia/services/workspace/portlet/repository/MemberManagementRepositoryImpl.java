@@ -500,7 +500,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 }
             } else if (memberIdentifiers.contains(uid)) {
                 // Warning notification
-                String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_MEMBER_ALREADY_EXISTS", pendingInvitation.getDisplayName());
+                String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_MEMBER_ALREADY_EXISTS", pendingInvitation.getPerson().getDisplayName());
                 warnings.addMessage(message);
             } else {
                 try {
@@ -534,7 +534,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     result = true;
                 } catch (Exception e) {
                     // Error notification
-                    String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_CREATION_ERROR", pendingInvitation.getDisplayName());
+                    String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_CREATION_ERROR", pendingInvitation.getPerson().getDisplayName());
                     errors.addMessage(message);
                 }
             }
@@ -723,11 +723,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public void acceptInvitation(PortalControllerContext portalControllerContext, Map<String, String> variables) {
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
-
+    public void acceptInvitation(NuxeoController nuxeoController, Map<String, String> variables) {
         // Variables
         String workspaceId = variables.get(WORKSPACE_IDENTIFIER_PROPERTY);
         String uid = variables.get(PERSON_UID_PROPERTY);

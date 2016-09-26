@@ -3,6 +3,7 @@ package org.osivia.services.workspace.plugin.forms;
 import java.util.Map;
 
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletContext;
 import javax.portlet.PortletResponse;
 
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -11,6 +12,7 @@ import org.osivia.services.workspace.portlet.repository.MemberManagementReposito
 import org.osivia.services.workspace.util.ApplicationContextProvider;
 import org.springframework.context.ApplicationContext;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterContext;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterExecutor;
@@ -18,14 +20,15 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
 /**
  * Accept workspace invitation form filter.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see IFormFilterModule
  */
 public class AcceptWorkspaceInvitationFormFilter implements FormFilter {
 
     /** Form filter identifier. */
-    private static final String IDENTIFIER = "ACCEPT_WORKSPACE_INVITATION";
+    public static final String IDENTIFIER = "ACCEPT_WORKSPACE_INVITATION";
+
     /** Form filter label internationalization key. */
     private static final String LABEL_INTERNATIONALIZATION_KEY = "ACCEPT_WORKSPACE_INVITATION_FORM_FILTER_LABEL";
     /** Form filter description internationalization key. */
@@ -34,13 +37,19 @@ public class AcceptWorkspaceInvitationFormFilter implements FormFilter {
 
     /** Member management repository. */
     private MemberManagementRepository repository;
-    
-    
+
+    /** Portlet context. */
+    private final PortletContext portletContext;
+
+
     /**
      * Constructor.
+     *
+     * @param portletContext portlet context
      */
-    public AcceptWorkspaceInvitationFormFilter() {
+    public AcceptWorkspaceInvitationFormFilter(PortletContext portletContext) {
         super();
+        this.portletContext = portletContext;
     }
 
 
@@ -96,6 +105,11 @@ public class AcceptWorkspaceInvitationFormFilter implements FormFilter {
     public void execute(FormFilterContext context, FormFilterExecutor executor) {
         // Portal controller context
         PortalControllerContext portalControllerContext = context.getPortalControllerContext();
+
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(this.portletContext);
+        nuxeoController.setServletRequest(portalControllerContext.getHttpServletRequest());
+
         // Portlet response
         PortletResponse response = portalControllerContext.getResponse();
 
@@ -109,17 +123,17 @@ public class AcceptWorkspaceInvitationFormFilter implements FormFilter {
         Map<String, String> variables = context.getVariables();
 
         // Accept invitation
-        this.getRepository().acceptInvitation(portalControllerContext, variables);
+        this.getRepository().acceptInvitation(nuxeoController, variables);
 
         // Update invitation state
         variables.put(MemberManagementRepository.INVITATION_STATE_PROPERTY, InvitationState.ACCEPTED.toString());
         variables.put(MemberManagementRepository.ACKNOWLEDGMENT_DATE_PROPERTY, String.valueOf(System.currentTimeMillis()));
     }
-    
-    
+
+
     /**
      * Get repository.
-     * 
+     *
      * @return repository
      */
     private MemberManagementRepository getRepository() {

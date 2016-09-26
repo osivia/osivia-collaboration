@@ -162,6 +162,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Update model
         List<Member> members = this.repository.getMembers(portalControllerContext, options.getWorkspaceId());
         form.setMembers(members);
+        InvitationsForm invitationForm = this.getInvitationsForm(portalControllerContext);
+        invitationForm.setLoaded(false);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_MEMBERS_UPDATE_SUCCESS");
