@@ -1,6 +1,9 @@
 package org.osivia.services.workspace.edition.portlet.model;
 
 import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Task java-bean.
@@ -8,6 +11,8 @@ import org.osivia.portal.api.taskbar.TaskbarItem;
  * @author Cédric Krommenhoek
  * @see TaskbarItemDecorator
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Task extends TaskbarItemDecorator {
 
     /** Path. */

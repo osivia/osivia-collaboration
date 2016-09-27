@@ -15,6 +15,7 @@ import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.Member;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
  * Member management repository interface.
@@ -54,6 +55,16 @@ public interface MemberManagementRepository {
      * @throws PortletException
      */
     String getCurrentWorkspaceId(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Get current workspace type.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return workspace type
+     * @throws PortletException
+     */
+    WorkspaceType getCurrentWorkspaceType(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**

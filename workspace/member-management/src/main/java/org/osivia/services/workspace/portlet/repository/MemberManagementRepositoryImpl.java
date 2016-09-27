@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.naming.Name;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
@@ -48,6 +49,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
  * Member management repository implementations.
@@ -58,6 +60,10 @@ import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
  */
 @Repository
 public class MemberManagementRepositoryImpl implements MemberManagementRepository, ApplicationContextAware {
+
+    /** Current workspace attribute name. */
+    private static final String CURRENT_WORKSPACE_ATTRIBUTE = "osivia.workspace.memberManagement.currentWorkspace";
+
 
     /** Application context. */
     private ApplicationContext applicationContext;
@@ -102,6 +108,31 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         Document workspace = this.getCurrentWorkspace(portalControllerContext);
 
         return workspace.getString("webc:url");
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WorkspaceType getCurrentWorkspaceType(PortalControllerContext portalControllerContext) throws PortletException {
+        // Workspace document
+        Document workspace = this.getCurrentWorkspace(portalControllerContext);
+
+        // Visibility
+        String visibility = workspace.getString("ttcs:visibility");
+
+
+        // Workspace type
+        WorkspaceType type;
+
+        if (StringUtils.isEmpty(visibility)) {
+            type = null;
+        } else {
+            type = WorkspaceType.valueOf(visibility);
+        }
+
+        return type;
     }
 
 
@@ -821,16 +852,29 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * @return Nuxeo document
      */
     private Document getCurrentWorkspace(PortalControllerContext portalControllerContext) {
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
 
-        // Base path
-        String basePath = nuxeoController.getBasePath();
+        // Workspace Nuxeo document
+        Document workspace = (Document) request.getAttribute(CURRENT_WORKSPACE_ATTRIBUTE);
 
-        // Nuxeo document context
-        NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(basePath);
+        if (workspace == null) {
+            // Nuxeo controller
+            NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        return documentContext.getDoc();
+            // Base path
+            String basePath = nuxeoController.getBasePath();
+
+            // Nuxeo document context
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(basePath);
+
+            // Nuxeo document
+            workspace = documentContext.getDoc();
+
+            request.setAttribute(CURRENT_WORKSPACE_ATTRIBUTE, workspace);
+        }
+
+        return workspace;
     }
 
 

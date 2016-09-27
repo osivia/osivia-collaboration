@@ -5,6 +5,8 @@ import java.util.List;
 import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
 import org.springframework.stereotype.Component;
 
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
+
 /**
  * Workspace edition form java-bean.
  *
@@ -17,6 +19,8 @@ public class WorkspaceEditionForm {
     private String title;
     /** Workspace description. */
     private String description;
+    /** Workspace type. */
+    private WorkspaceType type;
     /** Workspace tasks. */
     private List<Task> tasks;
     /** Workspace task creation form. */
@@ -65,6 +69,24 @@ public class WorkspaceEditionForm {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * Getter for type.
+     * 
+     * @return the type
+     */
+    public WorkspaceType getType() {
+        return type;
+    }
+
+    /**
+     * Setter for type.
+     * 
+     * @param type the type to set
+     */
+    public void setType(WorkspaceType type) {
+        this.type = type;
     }
 
     /**

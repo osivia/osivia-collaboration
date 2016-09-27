@@ -38,11 +38,29 @@
         <!-- Description -->
         <c:set var="placeholder"><op:translate key="WORKSPACE_DESCRIPTION_PLACEHOLDER" /></c:set>
         <div class="form-group">
-            <form:label path="description" cssClass="col-sm-3 control-label" ><op:translate key="WORKSPACE_DESCRIPTION" /></form:label>
+            <form:label path="description" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_DESCRIPTION" /></form:label>
             <div class="col-sm-9">
                 <form:textarea path="description" cssClass="form-control" placeholder="${placeholder}" />
             </div>
         </div>
+        
+        <!-- Type -->
+        <spring:bind path="type">
+            <div class="form-group required ${status.error ? 'has-error' : ''}">
+                <form:label path="type" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_TYPE" /></form:label>
+                <div class="col-sm-9">
+                    <c:forEach var="type" items="${form.types}">
+                        <div class="radio">
+                            <label>
+                                <form:radiobutton path="type" value="${type.id}" />
+                                <span><op:translate key="${type.key}" /></span>
+                            </label>
+                        </div>
+                    </c:forEach>
+                    <form:errors path="type" cssClass="help-block" />
+                </div>
+            </div>
+        </spring:bind>
         
         <!-- Buttons -->
         <div class="form-group">

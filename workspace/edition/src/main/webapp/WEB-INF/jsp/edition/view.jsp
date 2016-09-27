@@ -57,6 +57,22 @@
             </div>
         </div>
         
+        <!-- Type -->
+        <div class="form-group">
+            <label class="col-sm-3 col-lg-2 control-label"><op:translate key="WORKSPACE_TYPE" /></label>
+            <div class="col-sm-9 col-lg-10">
+                <p class="form-control-static">
+                    <span class="label label-${editionForm.type.color}">
+                        <i class="${editionForm.type.icon}"></i>
+                        <span><op:translate key="${editionForm.type.key}" /></span>
+                    </span>
+                </p>
+                <p class="help-block">
+                    <span><op:translate key="${editionForm.type.key}_HELP" /></span>               
+                </p>
+            </div>
+        </div>
+        
         <!-- Tasks -->
         <div class="form-group">
             <input type="submit" name="sort" class="hidden">
@@ -161,13 +177,19 @@
                 </div>
                 
                 <div class="modal-body">
-                    <p><op:translate key="WORKSPACE_DELETE_MODAL_MESSAGE" args="${fragment}" /></p>
+                    <p class="text-danger">
+                        <span><op:translate key="WORKSPACE_DELETE_MODAL_MESSAGE" args="${fragment}" /></span>
+                    </p>
+                    
+                    <div class="alert alert-danger">
+                        <i class="glyphicons glyphicons-exclamation-sign"></i>
+                        <strong><op:translate key="WORKSPACE_DELETE_MODAL_ALERT_MESSAGE" /></strong>
+                    </div>
                 </div>
                 
                 <div class="modal-footer">
                     <a href="${deleteUrl}" class="btn btn-danger" data-dismiss="modal">
-                        <i class="glyphicons glyphicons-bin"></i>
-                        <span><op:translate key="DELETE" /></span>
+                        <span><op:translate key="CONFIRM" /></span>
                     </a>
                     
                     <button type="button" class="btn btn-default" data-dismiss="modal">

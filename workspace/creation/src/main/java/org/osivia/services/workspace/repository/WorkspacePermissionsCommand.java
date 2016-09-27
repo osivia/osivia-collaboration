@@ -5,6 +5,9 @@ import java.util.List;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
@@ -14,6 +17,8 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
  * @author Cédric Krommenhoek
  * @see INuxeoCommand
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class WorkspacePermissionsCommand implements INuxeoCommand {
 
     /** Document. */

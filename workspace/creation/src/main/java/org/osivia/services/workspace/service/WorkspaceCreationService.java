@@ -13,6 +13,16 @@ import org.osivia.services.workspace.model.WorkspaceCreationForm;
 public interface WorkspaceCreationService {
 
     /**
+     * Get form.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return form
+     * @throws PortletException
+     */
+    WorkspaceCreationForm getForm(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
      * Create workspace.
      *
      * @param portalControllerContext portal controller context

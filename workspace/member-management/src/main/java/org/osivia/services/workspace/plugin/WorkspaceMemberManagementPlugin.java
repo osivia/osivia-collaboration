@@ -98,7 +98,7 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
 
         // Workspace member requests
         ListTemplate requests = new ListTemplate("workspace-member-requests", bundle.getString("LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS"),
-                "dublincore, toutatice, webcontainer");
+                "dublincore, toutatice, toutatice_space, webcontainer");
         requests.setModule(new RequestsListTemplateModule(this.getPortletContext()));
         templates.put(requests.getKey(), requests);
     }

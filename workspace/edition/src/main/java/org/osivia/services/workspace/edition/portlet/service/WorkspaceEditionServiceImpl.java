@@ -23,22 +23,23 @@ import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptio
 import org.osivia.services.workspace.edition.portlet.model.comparator.TasksComparator;
 import org.osivia.services.workspace.edition.portlet.repository.WorkspaceEditionRepository;
 import org.osivia.services.workspace.task.creation.portlet.repository.WorkspaceTaskCreationRepository;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
+
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
  * Workspace edition service implementation.
  *
  * @author Cédric Krommenhoek
  * @see WorkspaceEditionService
+ * @see ApplicationContextAware
  */
 @Service
-public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
-
-    /** Application context. */
-    @Autowired
-    private ApplicationContext applicationContext;
+public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, ApplicationContextAware {
 
     /** Workspace edition repository. */
     @Autowired
@@ -59,6 +60,10 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
     /** Notifications service. */
     @Autowired
     private INotificationsService notificationsService;
+
+
+    /** Application context. */
+    private ApplicationContext applicationContext;
 
 
     /**
@@ -101,6 +106,7 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
 
         form.setTitle(workspace.getTitle());
         form.setDescription(workspace.getString("dc:description"));
+        form.setType(WorkspaceType.valueOf(workspace.getString("ttcs:visibility")));
 
         // Tasks
         List<Task> tasks = this.repository.getTasks(portalControllerContext, workspace.getPath());
@@ -158,11 +164,10 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
      * {@inheritDoc}
      */
     @Override
-    public void createTask(PortalControllerContext portalControllerContext, WorkspaceEditionForm form)
-            throws PortletException {
+    public void createTask(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
         // Task creation form
         TaskCreationForm taskCreationForm = form.getTaskCreationForm();
-        
+
         if ((taskCreationForm != null) && taskCreationForm.isValid()) {
             // Tasks
             List<Task> tasks = form.getTasks();
@@ -217,7 +222,7 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
         // Window properties
         Map<String, String> properties = new HashMap<>();
         properties.put(WorkspaceTaskCreationRepository.WORKSPACE_TYPE_WINDOW_PROPERTY, options.getType());
-        
+
         String url;
         try {
             url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-workspace-task-creation-instance", properties,
@@ -226,6 +231,15 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService {
             throw new PortletException(e);
         }
         return url;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
 }

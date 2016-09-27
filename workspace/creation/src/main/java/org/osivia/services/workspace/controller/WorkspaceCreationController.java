@@ -23,8 +23,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletConfigAware;
@@ -42,7 +40,6 @@ import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
  */
 @Controller
 @RequestMapping("VIEW")
-@SessionAttributes("form")
 public class WorkspaceCreationController extends CMSPortlet implements PortletConfigAware, PortletContextAware {
 
     /** Portlet config. */
@@ -102,15 +99,13 @@ public class WorkspaceCreationController extends CMSPortlet implements PortletCo
      * @throws PortletException
      */
     @ActionMapping("save")
-    public void save(ActionRequest request, ActionResponse response, @ModelAttribute("form") @Validated WorkspaceCreationForm form, BindingResult result,
-            SessionStatus sessionStatus) throws PortletException {
+    public void save(ActionRequest request, ActionResponse response, @ModelAttribute("form") @Validated WorkspaceCreationForm form, BindingResult result)
+            throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         if (!result.hasErrors()) {
             this.service.create(portalControllerContext, form);
-
-            sessionStatus.setComplete();
         }
     }
 
@@ -121,10 +116,14 @@ public class WorkspaceCreationController extends CMSPortlet implements PortletCo
      * @param request portlet request
      * @param response portlet response
      * @return form
+     * @throws PortletException
      */
     @ModelAttribute("form")
-    public WorkspaceCreationForm getForm(PortletRequest request, PortletResponse response) {
-        return new WorkspaceCreationForm();
+    public WorkspaceCreationForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        return this.service.getForm(portalControllerContext);
     }
 
 

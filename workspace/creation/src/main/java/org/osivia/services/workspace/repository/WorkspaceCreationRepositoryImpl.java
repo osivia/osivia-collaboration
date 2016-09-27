@@ -26,20 +26,25 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.services.workspace.model.WorkspaceCreationForm;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
  * Workspace creation repository implementation.
  *
  * @author Cédric Krommenhoek
  * @see WorkspaceCreationRepository
+ * @see ApplicationContextAware
  */
 @Repository
-public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationRepository {
+public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationRepository, ApplicationContextAware {
 
     /** Properties file name. */
     private static final String PROPERTIES_FILE_NAME = "workspace-creation.properties";
@@ -59,6 +64,10 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
     /** Bundle factory. */
     @Autowired
     private IBundleFactory bundleFactory;
+
+
+    /** Application context. */
+    private ApplicationContext applicationContext;
 
 
     /** Properties. */
@@ -108,7 +117,7 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
         }
 
         // Nuxeo command
-        INuxeoCommand command = new WorkspaceCreationCommand(form, parentPath, items, bundle);
+        INuxeoCommand command = this.applicationContext.getBean(WorkspaceCreationCommand.class, form, parentPath, items, bundle);
         return (Document) nuxeoController.executeNuxeoCommand(command);
     }
 
@@ -135,7 +144,7 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
      * {@inheritDoc}
      */
     @Override
-    public void updatePermissions(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
+    public void updatePermissions(PortalControllerContext portalControllerContext, WorkspaceCreationForm form, Document workspace) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
@@ -147,8 +156,13 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
         List<CollabProfile> groups = this.workspaceService.findByWorkspaceId(identifier);
 
         // Permissions
-        List<Permission> permissions = new ArrayList<>(groups.size() + 1);
+        List<Permission> permissions = new ArrayList<>(groups.size());
         permissions.add(Permission.getInheritanceBlocking());
+
+        if (WorkspaceType.PUBLIC.equals(form.getType())) {
+            // Public permission
+            permissions.add(Permission.getPublicPermission());
+        }
 
         for (CollabProfile group : groups) {
             // Role
@@ -163,8 +177,17 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
         }
 
         // Nuxeo command
-        INuxeoCommand command = new WorkspacePermissionsCommand(workspace, permissions);
+        INuxeoCommand command = this.applicationContext.getBean(WorkspacePermissionsCommand.class, workspace, permissions);
         nuxeoController.executeNuxeoCommand(command);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
 }

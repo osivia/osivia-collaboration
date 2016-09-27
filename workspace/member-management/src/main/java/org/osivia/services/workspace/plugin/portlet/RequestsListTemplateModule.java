@@ -3,6 +3,7 @@ package org.osivia.services.workspace.plugin.portlet;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -23,6 +24,7 @@ import org.springframework.context.ApplicationContext;
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.portlet.PrivilegedPortletModule;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
  * Workspace member requests list template module.
@@ -64,7 +66,7 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
      */
     @Override
     public String getFilter() {
-        return "ecm:primaryType = 'Workspace'";
+        return "ecm:primaryType = 'Workspace' AND ttcs:visibility IN ('PUBLIC', 'PRIVATE')";
     }
 
 
@@ -91,15 +93,25 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
             for (Object object : workspaces) {
                 // Workspace
                 DocumentDTO workspace = (DocumentDTO) object;
+                // Workspace properties
+                Map<String, Object> properties = workspace.getProperties();
                 // Workspace identifier
-                String workspaceId = (String) workspace.getProperties().get("webc:url");
+                String workspaceId = (String) properties.get("webc:url");
+
+
+                // Workspace type
+                String visibility = (String) properties.get("ttcs:visibility");
+                if (StringUtils.isNotEmpty(visibility)) {
+                    WorkspaceType type = WorkspaceType.valueOf(visibility);
+                    properties.put("workspaceType", type);
+                }
+
 
                 // Search user in workspace members
                 WorkspaceMember member = this.workspaceService.getMember(workspaceId, user);
 
                 // Workspace member status
                 MemberStatus status;
-                
                 if (member != null) {
                     // Member
                     status = MemberStatus.MEMBER;
@@ -114,7 +126,7 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
                     status = null;
                 }
 
-                workspace.getProperties().put("memberStatus", status);
+                properties.put("memberStatus", status);
             }
         }
     }

@@ -36,6 +36,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -97,13 +98,19 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
             options.setWorkspaceId(workspaceId);
 
+            // Workspace type
+            WorkspaceType type = this.repository.getCurrentWorkspaceType(portalControllerContext);
+            options.setWorkspaceType(type);
+
             // Invitations count
             int invitationsCount = this.repository.getInvitationsCount(portalControllerContext, workspaceId);
             options.setInvitationsCount(invitationsCount);
 
-            // Requests count
-            int requestsCount = this.repository.getRequestsCount(portalControllerContext, workspaceId);
-            options.setRequestsCount(requestsCount);
+            if (!WorkspaceType.INVITATION.equals(type)) {
+                // Requests count
+                int requestsCount = this.repository.getRequestsCount(portalControllerContext, workspaceId);
+                options.setRequestsCount(requestsCount);
+            }
 
             // Roles
             List<WorkspaceRole> roles = this.repository.getRoles(portalControllerContext, workspaceId);

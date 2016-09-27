@@ -38,9 +38,10 @@ public interface WorkspaceCreationRepository {
      * Update permissions.
      *
      * @param portalControllerContext portal controller context
+     * @param form form
      * @param workspace workspace Nuxeo document
      * @throws PortletException
      */
-    void updatePermissions(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
+    void updatePermissions(PortalControllerContext portalControllerContext, WorkspaceCreationForm form, Document workspace) throws PortletException;
 
 }

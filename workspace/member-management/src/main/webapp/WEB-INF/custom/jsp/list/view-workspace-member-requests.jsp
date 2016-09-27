@@ -10,6 +10,7 @@
     <c:forEach var="document" items="${documents}" varStatus="status">
         <c:set var="vignetteUrl"><ttc:pictureLink document="${document}" property="ttc:vignette" /></c:set>
         <c:set var="description" value="${document.properties['dc:description']}" />
+        <c:set var="workspaceType" value="${document.properties['workspaceType']}" />
         <c:set var="memberStatus" value="${document.properties['memberStatus']}" />
     
         <portlet:actionURL name="createRequest" var="createRequestUrl">
@@ -28,7 +29,17 @@
                 
                 <div class="media-body media-middle">
                     <!-- Title -->
-                    <h3 class="h4 media-heading"><ttc:title document="${document}" linkable="${memberStatus.id eq 'member'}" /></h3>
+                    <h3 class="h4 media-heading">
+                        <ttc:title document="${document}" linkable="${(workspaceType.id eq 'PUBLIC') or(memberStatus.id eq 'member')}" />
+                        <c:if test="${not empty workspaceType}">
+                            <small>
+                                <span class="label label-${workspaceType.color}">
+                                    <i class="${workspaceType.icon}"></i>
+                                    <span><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_${workspaceType.key}" /></span>
+                                </span>
+                            </small>
+                        </c:if>
+                    </h3>
                     
                     <!-- Description -->
                     <div>${description}</div>

@@ -15,6 +15,9 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.services.workspace.model.WorkspaceCreationForm;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
@@ -24,6 +27,8 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
  * @author Cédric Krommenhoek
  * @see INuxeoCommand
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class WorkspaceCreationCommand implements INuxeoCommand {
 
     /** Workspace creation form. */
@@ -87,6 +92,7 @@ public class WorkspaceCreationCommand implements INuxeoCommand {
         PropertyMap properties = new PropertyMap();
         properties.set("dc:title", this.form.getTitle());
         properties.set("dc:description", this.form.getDescription());
+        properties.set("ttcs:visibility", this.form.getType().getId());
 
         // Name
         String name = this.generateNameFromTitle(this.form.getTitle());

@@ -14,22 +14,21 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
 import org.osivia.services.workspace.task.creation.portlet.model.comparator.AlphaOrderComparator;
 import org.osivia.services.workspace.task.creation.portlet.repository.WorkspaceTaskCreationRepository;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 /**
  * Workspace task creation service implementation.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see WorkspaceTaskCreationService
+ * @see ApplicationContextAware
  */
 @Service
-public class WorkspaceTaskCreationServiceImpl implements WorkspaceTaskCreationService {
-
-    /** Application context. */
-    @Autowired
-    private ApplicationContext applicationContext;
+public class WorkspaceTaskCreationServiceImpl implements WorkspaceTaskCreationService, ApplicationContextAware {
 
     /** Workspace task creation repository. */
     @Autowired
@@ -42,6 +41,10 @@ public class WorkspaceTaskCreationServiceImpl implements WorkspaceTaskCreationSe
     /** Bundle factory. */
     @Autowired
     private IBundleFactory bundleFactory;
+
+
+    /** Application context. */
+    private ApplicationContext applicationContext;
 
 
     /**
@@ -79,7 +82,7 @@ public class WorkspaceTaskCreationServiceImpl implements WorkspaceTaskCreationSe
 
             types.put(displayName, type);
         }
-        
+
         return types;
     }
 
@@ -91,6 +94,15 @@ public class WorkspaceTaskCreationServiceImpl implements WorkspaceTaskCreationSe
     public void save(PortalControllerContext portalControllerContext, TaskCreationForm form) throws PortletException {
         // Update model
         form.setValid(true);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
 }

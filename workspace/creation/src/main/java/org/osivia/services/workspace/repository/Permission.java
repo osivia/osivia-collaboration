@@ -40,12 +40,26 @@ public class Permission {
 
     /**
      * Get inheritance blocking permission.
+     * 
      * @return permission
      */
     public static Permission getInheritanceBlocking() {
         Permission permission = new Permission(false);
         permission.setName("Everyone");
         permission.setValues(Arrays.asList(new String[]{"Everything"}));
+        return permission;
+    }
+
+
+    /**
+     * Get public permission.
+     * 
+     * @return permission
+     */
+    public static Permission getPublicPermission() {
+        Permission permission = new Permission();
+        permission.setName("Everyone");
+        permission.setValues(Arrays.asList(new String[]{"Read"}));
         return permission;
     }
 

@@ -8,6 +8,7 @@ import java.util.SortedSet;
 import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.cms.DocumentType;
@@ -24,7 +25,10 @@ import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
@@ -36,17 +40,26 @@ import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
  *
  * @author Cédric Krommenhoek
  * @see WorkspaceEditionRepository
+ * @see ApplicationContextAware
  */
 @Repository
-public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepository {
+public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepository, ApplicationContextAware {
 
     /** Taskbar service. */
     @Autowired
     private ITaskbarService taskbarService;
 
+    /** Workspace service. */
+    @Autowired
+    private WorkspaceService workspaceService;
+
     /** Bundle factory. */
     @Autowired
     private IBundleFactory bundleFactory;
+
+
+    /** Application context. */
+    private ApplicationContext applicationContext;
 
 
     /**
@@ -119,7 +132,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         List<Task> tasks = new ArrayList<Task>(taskbarTasks.size() + availableItems.size());
         int order = 1;
         for (TaskbarTask taskbarTask : taskbarTasks) {
-            Task task = new Task(taskbarTask);
+            Task task = this.applicationContext.getBean(Task.class, taskbarTask);
             task.setPath(taskbarTask.getPath());
 
             // Display name
@@ -140,7 +153,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
             tasks.add(task);
         }
         for (TaskbarItem item : availableItems) {
-            Task task = new Task(item);
+            Task task = this.applicationContext.getBean(Task.class, item);
 
             // Display name
             String displayName = bundle.getString(item.getKey(), item.getCustomizedClassLoader());
@@ -174,7 +187,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         }
 
         // Nuxeo command
-        INuxeoCommand command = new WorkspaceEditionCommand(options, form, items, bundle);
+        INuxeoCommand command = this.applicationContext.getBean(WorkspaceEditionCommand.class, options, form, items, bundle);
         nuxeoController.executeNuxeoCommand(command);
     }
 
@@ -189,18 +202,18 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
 
         // Document types
         Map<String, DocumentType> documentTypes = nuxeoController.getCMSItemTypes();
-        
+
         // Type
         String createdType = form.getType();
         DocumentType documentType = documentTypes.get(createdType);
-        
+
         // Taskbar factory
-        TaskbarFactory factory = taskbarService.getFactory();
+        TaskbarFactory factory = this.taskbarService.getFactory();
         // Taskbar item
         TaskbarItem item = factory.createCmsTaskbarItem(null, null, documentType.getGlyph(), createdType);
 
         // New task
-        Task task = new Task(item);
+        Task task = this.applicationContext.getBean(Task.class, item);
         task.setDisplayName(form.getTitle());
         task.setDescription(form.getDescription());
 
@@ -213,13 +226,28 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      */
     @Override
     public void delete(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException {
-     // Nuxeo controller
+        // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
+        // Workspace identifier
+        Document workspace = options.getWorkspace();
+        String workspaceId = workspace.getString("webc:url");
+
+        this.workspaceService.delete(workspaceId);
+
         // Nuxeo command
-        INuxeoCommand command = new DeleteWorkspaceCommand(options.getPath());
+        INuxeoCommand command = this.applicationContext.getBean(DeleteWorkspaceCommand.class, options.getPath());
         nuxeoController.executeNuxeoCommand(command);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
 }

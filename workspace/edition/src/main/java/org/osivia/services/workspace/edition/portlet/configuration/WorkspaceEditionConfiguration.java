@@ -1,5 +1,7 @@
 package org.osivia.services.workspace.edition.portlet.configuration;
 
+import org.osivia.directory.v2.service.WorkspaceService;
+import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -78,6 +80,17 @@ public class WorkspaceEditionConfiguration {
     @Bean
     public IPortalUrlFactory getPortalUrlFactory() {
         return Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
+    }
+
+
+    /**
+     * Get workspace service.
+     * 
+     * @return workspace service
+     */
+    @Bean
+    public WorkspaceService getWorkspaceService() {
+        return DirServiceFactory.getService(WorkspaceService.class);
     }
 
 
