@@ -47,7 +47,7 @@
                             <form:label path="pendingInvitations" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CREATE_INVITATIONS_ADD_PERSONS_LABEL" /></form:label>
                             <form:select path="pendingInvitations" cssClass="form-control select2" data-placeholder="${placeholder}" data-url="${searchUrl}" data-input-too-short="${inputTooShort}" data-no-results="${noResults}" data-searching="${searching}">
                                 <c:forEach var="invitation" items="${creation.pendingInvitations}">
-                                    <form:option value="${invitation.id}" data-avatar="${invitation.avatar}">${invitation.displayName}</form:option>
+                                    <form:option value="${invitation.id}" data-avatar="${invitation.person.avatar.url}">${invitation.displayName}</form:option>
                                 </c:forEach>
                             </form:select>
                             <form:errors path="pendingInvitations" cssClass="help-block" />
