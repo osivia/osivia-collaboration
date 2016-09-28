@@ -15,6 +15,8 @@ import javax.portlet.PortletRequest;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
@@ -23,6 +25,7 @@ import org.osivia.directory.v2.model.ext.WorkspaceGroupType;
 import org.osivia.directory.v2.model.ext.WorkspaceMember;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.directory.v2.service.WorkspaceService;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
@@ -47,6 +50,7 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
@@ -89,6 +93,10 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
     private INotificationsService notificationsService;
 
 
+    /** Log. */
+    private final Log log;
+
+
     /**
      * Constructor.
      *
@@ -96,6 +104,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      */
     public MemberManagementRepositoryImpl() throws IOException {
         super();
+        this.log = LogFactory.getLog(this.getClass());
     }
 
 
@@ -522,6 +531,13 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         for (Invitation pendingInvitation : form.getPendingInvitations()) {
             // User identifier
             String uid = pendingInvitation.getId();
+            // User display name
+            String displayName;
+            if (pendingInvitation.getPerson() == null) {
+                displayName = uid;
+            } else {
+                displayName = pendingInvitation.getPerson().getDisplayName();
+            }
 
             if (existingInvitations.containsKey(uid)) {
                 Invitation existingInvitation = existingInvitations.get(uid);
@@ -531,7 +547,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 }
             } else if (memberIdentifiers.contains(uid)) {
                 // Warning notification
-                String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_MEMBER_ALREADY_EXISTS", pendingInvitation.getPerson().getDisplayName());
+                String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_MEMBER_ALREADY_EXISTS", displayName);
                 warnings.addMessage(message);
             } else {
                 try {
@@ -563,10 +579,12 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     this.updateInvitationAcl(portalControllerContext, workspaceId, false, uid);
 
                     result = true;
-                } catch (Exception e) {
+                } catch (PortalException | FormFilterException e) {
                     // Error notification
-                    String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_CREATION_ERROR", pendingInvitation.getPerson().getDisplayName());
+                    String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_CREATION_ERROR", displayName);
                     errors.addMessage(message);
+
+                    this.log.error(message, e);
                 }
             }
         }
@@ -837,10 +855,12 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
             // Update ACL
             this.updateInvitationAcl(portalControllerContext, workspaceId, true, uid);
-        } catch (Exception e) {
+        } catch (PortalException | FormFilterException e) {
             // Error notification
             String message = bundle.getString("MESSAGE_WORKSPACE_REQUEST_CREATION_ERROR");
             this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
+
+            this.log.error(message, e);
         }
     }
 
