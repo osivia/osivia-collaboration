@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
+import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceGroupType;
@@ -221,7 +222,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         WorkspaceRole currentRole = currentMember.getRole();
 
         // Member dates
-        Map<String, Date> dates = getMemberDates(portalControllerContext, workspaceId, workspaceMembers);
+        Map<String, Date> dates = getMemberDates(portalControllerContext);
 
         // Members
         List<Member> members = new ArrayList<>(workspaceMembers.size());
@@ -246,45 +247,28 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * Get member dates.
      * 
      * @param portalControllerContext portal controller context
-     * @param workspaceId workspace identifier
-     * @param workspaceMembers workspace members
      * @return member dates
      * @throws PortletException
      */
-    private Map<String, Date> getMemberDates(PortalControllerContext portalControllerContext, String workspaceId, List<WorkspaceMember> workspaceMembers)
+    private Map<String, Date> getMemberDates(PortalControllerContext portalControllerContext)
             throws PortletException {
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-
-        // Member identifiers
-        Set<String> identifiers = new HashSet<>(workspaceMembers.size());
-        for (WorkspaceMember member : workspaceMembers) {
-            identifiers.add(member.getMember().getUid());
-        }
-
-        // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, workspaceId, InvitationState.ACCEPTED, identifiers);
-        Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
+        // Workspace Nuxeo document
+        Document workspace = this.getCurrentWorkspace(portalControllerContext);
+        
+        // Members
+        PropertyList members = workspace.getProperties().getList("ttcs:spaceMembers");
 
         // Dates
-        Map<String, Date> dates = new HashMap<>(workspaceMembers.size());
-        for (Document document : documents) {
-            // Variables
-            PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
+        Map<String, Date> dates = new HashMap<>(members.size());
 
-            // Member identifier
-            String uid = variables.getString(PERSON_UID_PROPERTY);
+        for (int i = 0; i < members.size(); i++) {
+            PropertyMap member = members.getMap(i);
+            String user = member.getString("login");
+            Date date = member.getDate("joinedDate");
 
-            if (!dates.containsKey(uid)) {
-                // Date
-                Long date = variables.getLong(ACKNOWLEDGMENT_DATE_PROPERTY);
-
-                if (date != null) {
-                    dates.put(uid, new Date(date));
-                }
-            }
+            dates.put(user, date);
         }
-
+        
         return dates;
     }
 
