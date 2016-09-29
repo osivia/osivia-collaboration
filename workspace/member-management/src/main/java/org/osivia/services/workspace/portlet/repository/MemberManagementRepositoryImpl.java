@@ -70,9 +70,6 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
     private static final String CURRENT_WORKSPACE_ATTRIBUTE = "osivia.workspace.memberManagement.currentWorkspace";
 
 
-    /** Application context. */
-    private ApplicationContext applicationContext;
-
     /** Person service. */
     @Autowired
     private PersonService personService;
@@ -92,6 +89,10 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
     /** Notifications service. */
     @Autowired
     private INotificationsService notificationsService;
+
+
+    /** Application context. */
+    private ApplicationContext applicationContext;
 
 
     /** Log. */
@@ -545,6 +546,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 warnings.addMessage(message);
             } else {
                 try {
+                    boolean unknownUser = pendingInvitation.isUnknownUser();
+
                     // Variables
                     Map<String, String> variables = new HashMap<>();
                     variables.put("documentId", workspace.getId());
@@ -554,10 +557,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     variables.put(PERSON_UID_PROPERTY, uid);
                     variables.put(INVITATION_STATE_PROPERTY, InvitationState.SENT.name());
                     variables.put(ROLE_PROPERTY, form.getRole().getId());
+                    variables.put(NEW_USER_PROPERTY, String.valueOf(unknownUser));
 
-                    if (pendingInvitation.isUnknownUser()) {
-                        variables.put(NEW_USER_PROPERTY, String.valueOf(true));
-
+                    if (unknownUser) {
                         // Generated password
                         String password = RandomStringUtils.randomAlphanumeric(8);
                         variables.put(GENERATED_PASSWORD_PROPERTY, password);
