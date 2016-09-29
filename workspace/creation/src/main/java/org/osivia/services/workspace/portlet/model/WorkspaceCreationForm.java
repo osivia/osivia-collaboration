@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.model;
+package org.osivia.services.workspace.portlet.model;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +26,8 @@ public class WorkspaceCreationForm {
     private String description;
     /** Workspace type. */
     private WorkspaceType type;
+    /** Workspace owner identifier. */
+    private String owner;
 
     /** Workspace types. */
     private final List<WorkspaceType> types;
@@ -92,6 +94,24 @@ public class WorkspaceCreationForm {
      */
     public void setType(WorkspaceType type) {
         this.type = type;
+    }
+
+    /**
+     * Getter for owner.
+     * 
+     * @return the owner
+     */
+    public String getOwner() {
+        return owner;
+    }
+
+    /**
+     * Setter for owner.
+     * 
+     * @param owner the owner to set
+     */
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     /**

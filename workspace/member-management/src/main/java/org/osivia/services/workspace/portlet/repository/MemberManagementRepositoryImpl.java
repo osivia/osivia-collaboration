@@ -188,7 +188,12 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         // Current workspace member
         String currentUser = portalControllerContext.getHttpServletRequest().getUserPrincipal().getName();
         WorkspaceMember currentMember = this.workspaceService.getMember(workspaceId, currentUser);
-        WorkspaceRole currentRole = currentMember.getRole();
+        WorkspaceRole currentRole;
+        if (currentMember == null) {
+            currentRole = null;
+        } else {
+            currentRole = currentMember.getRole();
+        }
 
         // Profiles search criteria
         CollabProfile criteria = this.workspaceService.getEmptyProfile();
@@ -199,7 +204,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
         for (CollabProfile profile : profiles) {
             WorkspaceRole role = profile.getRole();
-            if (currentRole.getWeight() >= role.getWeight()) {
+            if ((currentRole == null) || (currentRole.getWeight() >= role.getWeight())) {
                 roles.add(role);
             }
         }
@@ -219,7 +224,12 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         // Current workspace member
         String currentUser = portalControllerContext.getHttpServletRequest().getUserPrincipal().getName();
         WorkspaceMember currentMember = this.workspaceService.getMember(workspaceId, currentUser);
-        WorkspaceRole currentRole = currentMember.getRole();
+        WorkspaceRole currentRole;
+        if (currentMember == null) {
+            currentRole = null;
+        } else {
+            currentRole = currentMember.getRole();
+        }
 
         // Member dates
         Map<String, Date> dates = getMemberDates(portalControllerContext);
@@ -231,7 +241,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             Date date = dates.get(workspaceMember.getMember().getUid());
             // Editable member indicator
             boolean editable = !StringUtils.equals(currentUser, workspaceMember.getMember().getUid())
-                    && (currentRole.getWeight() >= workspaceMember.getRole().getWeight());
+                    && ((currentRole == null) || (currentRole.getWeight() >= workspaceMember.getRole().getWeight()));
 
             // Member
             Member member = getMember(workspaceMember, date, editable);

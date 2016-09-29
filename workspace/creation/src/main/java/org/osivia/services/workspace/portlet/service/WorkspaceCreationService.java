@@ -1,9 +1,9 @@
-package org.osivia.services.workspace.service;
+package org.osivia.services.workspace.portlet.service;
 
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.workspace.model.WorkspaceCreationForm;
+import org.osivia.services.workspace.portlet.model.WorkspaceCreationForm;
 
 /**
  * Workspace creation service.

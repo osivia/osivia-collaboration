@@ -16,7 +16,7 @@
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>
-            <value>org.osivia.services.workspace.configuration.WorkspaceCreationConfiguration</value>
+            <value>org.osivia.services.workspace.portlet.configuration.WorkspaceCreationConfiguration</value>
         </init-param>
 
         <expiration-cache>180</expiration-cache>
@@ -28,6 +28,22 @@
 
         <portlet-info>
             <title>Workspace creation</title>
+        </portlet-info>
+    </portlet>
+    
+    
+    <portlet>
+        <portlet-name>osivia-services-workspace-creation-plugin</portlet-name>
+        <portlet-class>org.osivia.services.workspace.plugin.WorkspaceCreationPlugin</portlet-class>
+        
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+
+        <portlet-info>
+            <title>Workspace creation plugin</title>
         </portlet-info>
     </portlet>
 

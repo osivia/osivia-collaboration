@@ -1,6 +1,6 @@
-package org.osivia.services.workspace.validator;
+package org.osivia.services.workspace.portlet.model.validator;
 
-import org.osivia.services.workspace.model.WorkspaceCreationForm;
+import org.osivia.services.workspace.portlet.model.WorkspaceCreationForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;

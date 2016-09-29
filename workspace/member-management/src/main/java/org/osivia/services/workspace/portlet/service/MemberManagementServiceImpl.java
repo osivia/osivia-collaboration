@@ -29,6 +29,7 @@ import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.model.comparator.InvitationComparator;
 import org.osivia.services.workspace.portlet.model.comparator.MemberObjectComparator;
 import org.osivia.services.workspace.portlet.repository.MemberManagementRepository;
+import org.osivia.services.workspace.util.ApplicationContextProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -547,6 +548,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+        ApplicationContextProvider.setApplicationContext(applicationContext);
     }
 
 }

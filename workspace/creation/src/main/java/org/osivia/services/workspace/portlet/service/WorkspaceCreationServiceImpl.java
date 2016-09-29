@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.service;
+package org.osivia.services.workspace.portlet.service;
 
 import javax.portlet.PortletException;
 
@@ -8,13 +8,16 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
-import org.osivia.services.workspace.model.WorkspaceCreationForm;
-import org.osivia.services.workspace.repository.WorkspaceCreationRepository;
+import org.osivia.services.workspace.portlet.model.WorkspaceCreationForm;
+import org.osivia.services.workspace.portlet.repository.WorkspaceCreationRepository;
+import org.osivia.services.workspace.util.ApplicationContextProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
+
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
  * Workspace creation service implementation.
@@ -67,10 +70,15 @@ public class WorkspaceCreationServiceImpl implements WorkspaceCreationService, A
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
+        // Set invitation only workspace type if empty
+        if (form.getType() == null) {
+            form.setType(WorkspaceType.INVITATION);
+        }
+
         // Create workspace Nuxeo document
         Document workspace = this.repository.createDocument(portalControllerContext, form);
         // Create LDAP groups
-        this.repository.createGroups(portalControllerContext, workspace);
+        this.repository.createGroups(portalControllerContext, form, workspace);
         // Update permissions
         this.repository.updatePermissions(portalControllerContext, form, workspace);
 
@@ -91,6 +99,7 @@ public class WorkspaceCreationServiceImpl implements WorkspaceCreationService, A
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+        ApplicationContextProvider.setApplicationContext(applicationContext);
     }
 
 }

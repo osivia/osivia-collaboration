@@ -1,10 +1,10 @@
-package org.osivia.services.workspace.repository;
+package org.osivia.services.workspace.portlet.repository;
 
 import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.workspace.model.WorkspaceCreationForm;
+import org.osivia.services.workspace.portlet.model.WorkspaceCreationForm;
 
 /**
  * Workspace creation repository.
@@ -28,10 +28,11 @@ public interface WorkspaceCreationRepository {
      * Create LDAP groups.
      *
      * @param portalControllerContext portal controller context
+     * @param form form
      * @param workspace workspace Nuxeo document
      * @throws PortletException
      */
-    void createGroups(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
+    void createGroups(PortalControllerContext portalControllerContext, WorkspaceCreationForm form, Document workspace) throws PortletException;
 
 
     /**

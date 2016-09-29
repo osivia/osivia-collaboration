@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.controller;
+package org.osivia.services.workspace.portlet.controller;
 
 import javax.annotation.PostConstruct;
 import javax.portlet.ActionRequest;
@@ -12,9 +12,9 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.workspace.model.WorkspaceCreationForm;
-import org.osivia.services.workspace.service.WorkspaceCreationService;
-import org.osivia.services.workspace.validator.WorkspaceCreationFormValidator;
+import org.osivia.services.workspace.portlet.model.WorkspaceCreationForm;
+import org.osivia.services.workspace.portlet.model.validator.WorkspaceCreationFormValidator;
+import org.osivia.services.workspace.portlet.service.WorkspaceCreationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;

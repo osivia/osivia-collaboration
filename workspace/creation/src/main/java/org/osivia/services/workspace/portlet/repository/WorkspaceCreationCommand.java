@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.repository;
+package org.osivia.services.workspace.portlet.repository;
 
 import java.text.Normalizer;
 import java.util.SortedSet;
@@ -14,7 +14,7 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarItem;
-import org.osivia.services.workspace.model.WorkspaceCreationForm;
+import org.osivia.services.workspace.portlet.model.WorkspaceCreationForm;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

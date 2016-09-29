@@ -15,11 +15,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
-import org.osivia.services.workspace.util.ApplicationContextProvider;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,12 +29,11 @@ import org.springframework.web.portlet.context.PortletContextAware;
  * Workspace member management portlet view controller.
  *
  * @author Cédric Krommenhoek
- * @see ApplicationContextAware
  * @see PortletContextAware
  */
 @Controller
 @RequestMapping("VIEW")
-public class MemberManagementController implements ApplicationContextAware, PortletContextAware {
+public class MemberManagementController implements PortletContextAware {
 
     /** Portlet context. */
     private PortletContext portletContext;
@@ -179,15 +174,6 @@ public class MemberManagementController implements ApplicationContextAware, Port
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 
         return this.service.getMembersHelp(portalControllerContext);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        ApplicationContextProvider.setApplicationContext(applicationContext);
     }
 
 

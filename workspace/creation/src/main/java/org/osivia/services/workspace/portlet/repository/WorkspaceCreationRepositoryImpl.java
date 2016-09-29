@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.repository;
+package org.osivia.services.workspace.portlet.repository;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,6 +12,7 @@ import java.util.SortedSet;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
@@ -21,11 +22,12 @@ import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
+import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarItem;
-import org.osivia.services.workspace.model.WorkspaceCreationForm;
+import org.osivia.services.workspace.portlet.model.WorkspaceCreationForm;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -52,6 +54,10 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
     /** Workspace parent path property. */
     private static final String PARENT_PATH_PROPERTY = "workspace.parentPath";
 
+
+    /** Person service. */
+    @Autowired
+    private PersonService personService;
 
     /** Workspace service. */
     @Autowired
@@ -126,17 +132,23 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
      * {@inheritDoc}
      */
     @Override
-    public void createGroups(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
+    public void createGroups(PortalControllerContext portalControllerContext, WorkspaceCreationForm form, Document workspace) throws PortletException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
-        // Person
-        Person person = (Person) request.getAttribute(Constants.ATTR_LOGGED_PERSON_2);
+
+        // Owner
+        Person owner;
+        if (StringUtils.isEmpty(form.getOwner())) {
+            owner = (Person) request.getAttribute(Constants.ATTR_LOGGED_PERSON_2);
+        } else {
+            owner = this.personService.getPerson(form.getOwner());
+        }
 
         // Workspace identifier
         String identifier = workspace.getString("webc:url");
 
         // LDAP groups creation
-        this.workspaceService.create(identifier, person);
+        this.workspaceService.create(identifier, owner);
     }
 
 
