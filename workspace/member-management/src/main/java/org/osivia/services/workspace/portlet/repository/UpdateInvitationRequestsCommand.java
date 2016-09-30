@@ -67,7 +67,7 @@ public class UpdateInvitationRequestsCommand implements INuxeoCommand {
             // Document
             Document document = invitationRequest.getDocument();
 
-            if (invitationRequest.isEdited()) {
+            if (invitationRequest.isEdited() || invitationRequest.isAccepted()) {
                 // Variables
                 PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
                 variables.set(MemberManagementRepository.ROLE_PROPERTY, invitationRequest.getRole().getId());
@@ -77,7 +77,9 @@ public class UpdateInvitationRequestsCommand implements INuxeoCommand {
                 properties.set("pi:globalVariablesValues", this.generateVariablesJSON(variables));
 
                 documentService.update(document, properties);
-            } else if (invitationRequest.isDeleted()) {
+            }
+
+            if (invitationRequest.isDeleted()) {
                 this.proceed(nuxeoSession, invitationRequest, "actionIdNo");
             } else if (invitationRequest.isAccepted()) {
                 this.proceed(nuxeoSession, invitationRequest, "actionIdYes");
