@@ -3,9 +3,9 @@ package org.osivia.services.workspace.portlet.model;
 import java.util.List;
 
 import org.osivia.portal.api.portlet.Refreshable;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Invitations form java-bean
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * @author Cédric Krommenhoek
  */
 @Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Scope(WebApplicationContext.SCOPE_SESSION)
 @Refreshable
 public class InvitationsForm {
 

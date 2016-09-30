@@ -242,7 +242,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             Date date = dates.get(workspaceMember.getMember().getUid());
             // Editable member indicator
             boolean editable = !StringUtils.equals(currentUser, workspaceMember.getMember().getUid())
-                    && ((currentRole == null) || (currentRole.getWeight() >= workspaceMember.getRole().getWeight()));
+                    && ((currentRole == null) || (workspaceMember.getRole() == null) || (currentRole.getWeight() >= workspaceMember.getRole().getWeight()));
 
             // Member
             Member member = getMember(workspaceMember, date, editable);
@@ -628,7 +628,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public List<InvitationRequest> getInvitationRequests(PortalControllerContext portalControllerContext, String workspaceId) throws PortletException {
+    public List<InvitationRequest> getInvitationRequests(PortalControllerContext portalControllerContext, String workspaceId, Set<String> memberIdentifiers)
+            throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -646,7 +647,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             // User identifier
             String uid = variables.getString(PERSON_UID_PROPERTY);
 
-            if (StringUtils.isNotEmpty(uid)) {
+            if (StringUtils.isNotEmpty(uid) && !memberIdentifiers.contains(uid)) {
                 // Invitation request
                 InvitationRequest request = getInvitationRequest(uid, document, variables);
                 request.setDocument(document);
@@ -693,6 +694,10 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             role = WorkspaceRole.READER;
         }
         request.setRole(role);
+
+        // Invitation state
+        InvitationState state = InvitationState.fromName(variables.getString(INVITATION_STATE_PROPERTY));
+        request.setState(state);
 
         return request;
     }

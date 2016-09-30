@@ -2,6 +2,7 @@ package org.osivia.services.workspace.portlet.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -138,6 +139,13 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             List<Member> members = this.repository.getMembers(portalControllerContext, workspaceId);
             form.setMembers(members);
 
+            // Member identifiers
+            Set<String> identifiers = new HashSet<>();
+            for (Member member : members) {
+                identifiers.add(member.getId());
+            }
+            form.setIdentifiers(identifiers);
+
             form.setLoaded(true);
         }
         
@@ -170,8 +178,11 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Update model
         List<Member> members = this.repository.getMembers(portalControllerContext, options.getWorkspaceId());
         form.setMembers(members);
-        InvitationsForm invitationForm = this.getInvitationsForm(portalControllerContext);
+        form.setLoaded(false);
+        InvitationsForm invitationForm = this.applicationContext.getBean(InvitationsForm.class);
         invitationForm.setLoaded(false);
+        InvitationRequestsForm requestsForm = this.applicationContext.getBean(InvitationRequestsForm.class);
+        requestsForm.setLoaded(false);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_MEMBERS_UPDATE_SUCCESS");
@@ -383,17 +394,26 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
+        // Workspace identifier
+        String workspaceId = options.getWorkspaceId();
+
         // Update
-        this.repository.updateInvitations(portalControllerContext, options.getWorkspaceId(), form.getInvitations());
+        this.repository.updateInvitations(portalControllerContext, workspaceId, form.getInvitations());
 
         // Member idenfiers
+        MembersForm membersForm = this.applicationContext.getBean(MembersForm.class);
+        membersForm.setLoaded(false);
         Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
 
+        // Invitations count
+        int count = this.repository.getInvitationsCount(portalControllerContext, workspaceId);
+
         // Update model
-        int count = this.repository.getInvitationsCount(portalControllerContext, options.getWorkspaceId());
         options.setInvitationsCount(count);
-        List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, options.getWorkspaceId(), identifiers);
+        List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, workspaceId, identifiers);
         form.setInvitations(invitations);
+        InvitationRequestsForm requestsForm = this.applicationContext.getBean(InvitationRequestsForm.class);
+        requestsForm.setLoaded(false);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_UPDATE_SUCCESS");
@@ -487,8 +507,11 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             // Workspace identifier
             String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
 
+            // Member idenfiers
+            Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
+
             // Invitation requests
-            List<InvitationRequest> requests = this.repository.getInvitationRequests(portalControllerContext, workspaceId);
+            List<InvitationRequest> requests = this.repository.getInvitationRequests(portalControllerContext, workspaceId, identifiers);
             form.setRequests(requests);
 
             form.setLoaded(true);
@@ -518,14 +541,26 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
+        // Workspace identifier
+        String workspaceId = options.getWorkspaceId();
+
         // Update
-        this.repository.updateInvitationRequests(portalControllerContext, options.getWorkspaceId(), form.getRequests());
+        this.repository.updateInvitationRequests(portalControllerContext, workspaceId, form.getRequests());
+
+        // Member idenfiers
+        MembersForm membersForm = this.applicationContext.getBean(MembersForm.class);
+        membersForm.setLoaded(false);
+        Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
+
+        // Invitations count
+        int count = this.repository.getInvitationsCount(portalControllerContext, workspaceId);
 
         // Update model
-        int count = this.repository.getRequestsCount(portalControllerContext, options.getWorkspaceId());
         options.setRequestsCount(count);
-        List<InvitationRequest> requests = this.repository.getInvitationRequests(portalControllerContext, options.getWorkspaceId());
+        List<InvitationRequest> requests = this.repository.getInvitationRequests(portalControllerContext, workspaceId, identifiers);
         form.setRequests(requests);
+        InvitationsForm invitationsForm = this.applicationContext.getBean(InvitationsForm.class);
+        invitationsForm.setLoaded(false);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_REQUESTS_UPDATE_SUCCESS");

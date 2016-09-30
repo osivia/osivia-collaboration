@@ -18,6 +18,8 @@ public class InvitationRequest extends MemberObject {
 
     /** Document. */
     private Document document;
+    /** State. */
+    private InvitationState state;
     /** Accepted invitation request indicator. */
     private boolean accepted;
 
@@ -57,6 +59,24 @@ public class InvitationRequest extends MemberObject {
      */
     public void setDocument(Document document) {
         this.document = document;
+    }
+
+    /**
+     * Getter for state.
+     * 
+     * @return the state
+     */
+    public InvitationState getState() {
+        return state;
+    }
+
+    /**
+     * Setter for state.
+     * 
+     * @param state the state to set
+     */
+    public void setState(InvitationState state) {
+        this.state = state;
     }
 
     /**

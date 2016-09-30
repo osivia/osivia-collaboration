@@ -188,10 +188,12 @@ public interface MemberManagementRepository {
      * 
      * @param portalControllerContext portal controller context
      * @param workspaceId workspace identifier
+     * @param memberIdentifiers member identifiers
      * @return invitation requests
      * @throws PortletException
      */
-    List<InvitationRequest> getInvitationRequests(PortalControllerContext portalControllerContext, String workspaceId) throws PortletException;
+    List<InvitationRequest> getInvitationRequests(PortalControllerContext portalControllerContext, String workspaceId, Set<String> memberIdentifiers)
+            throws PortletException;
 
 
     /**

@@ -113,12 +113,23 @@
                             
                             <!-- Role -->
                             <div class="col-xs-6 col-sm-3 col-md-2">
-                                <form:label path="requests[${status.index}].role" cssClass="sr-only"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></form:label>
-                                <form:select path="requests[${status.index}].role" cssClass="form-control">
-                                    <c:forEach var="role" items="${options.roles}">
-                                        <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}" /></form:option>
-                                    </c:forEach>
-                                </form:select>
+                                <c:choose>
+                                    <c:when test="${invitationRequest.state.editable}">
+                                        <form:label path="requests[${status.index}].role" cssClass="sr-only"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></form:label>
+                                        <form:select path="requests[${status.index}].role" cssClass="form-control">
+                                            <c:forEach var="role" items="${options.roles}">
+                                                <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}" /></form:option>
+                                            </c:forEach>
+                                        </form:select>
+                                    </c:when>
+                                    
+                                    <c:otherwise>
+                                        <div class="form-control-static">
+                                            <span><op:translate key="${invitationRequest.role.key}" classLoader="${invitationRequest.role.classLoader}" /></span>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+                                
                             </div>
                             
                             <!-- Column reset -->
@@ -126,22 +137,35 @@
                             
                             <!-- Action -->
                             <div class="col-sm-offset-7 col-sm-5 col-md-offset-0 col-md-4 col-lg-3">
-                                <button type="button" class="btn btn-success accept">
-                                    <i class="glyphicons glyphicons-ok"></i>
-                                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ACCEPT_INVITATION_REQUEST" /></span>
-                                </button>
-                                
-                                <button type="button" class="btn btn-danger delete">
-                                    <i class="glyphicons glyphicons-remove"></i>
-                                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_DECLINE_INVITATION_REQUEST" /></span>
-                                </button>
-                                
-                                <div class="accepted-message hidden">
-                                    <div class="form-control-static text-success">
-                                        <i class="glyphicons glyphicons-ok"></i>
-                                        <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ACCEPTED_INVITATION_REQUEST_MESSAGE" /></span>
-                                    </div>
-                                </div>
+                                <c:choose>
+                                    <c:when test="${invitationRequest.state.editable}">
+                                        <button type="button" class="btn btn-success accept">
+                                            <i class="glyphicons glyphicons-ok"></i>
+                                            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ACCEPT_INVITATION_REQUEST" /></span>
+                                        </button>
+                                        
+                                        <button type="button" class="btn btn-danger delete">
+                                            <i class="glyphicons glyphicons-remove"></i>
+                                            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_DECLINE_INVITATION_REQUEST" /></span>
+                                        </button>
+                                        
+                                        <div class="accepted-message hidden">
+                                            <div class="form-control-static text-success">
+                                                <i class="glyphicons glyphicons-ok"></i>
+                                                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ACCEPTED_INVITATION_REQUEST_MESSAGE" /></span>
+                                            </div>
+                                        </div>
+                                    </c:when>
+                                    
+                                    <c:otherwise>
+                                        <div class="form-control-static">
+                                            <span class="${invitationRequest.state.htmlClasses}">
+                                                <i class="${invitationRequest.state.icon}"></i>
+                                                <span><op:translate key="${invitationRequest.state.key}" /></span>
+                                            </span>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
                         </div>
                     </fieldset>

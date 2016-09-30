@@ -1,6 +1,5 @@
 package org.osivia.services.workspace.portlet.model;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,22 +35,6 @@ public class MembersForm {
 
 
     /**
-     * Get member identifiers.
-     *
-     * @return member identifiers
-     */
-    public Set<String> getIdentifiers() {
-        if (this.identifiers == null) {
-            this.identifiers = new HashSet<>();
-            for (Member member : this.members) {
-                this.identifiers.add(member.getId());
-            }
-        }
-        return this.identifiers;
-    }
-
-
-    /**
      * Getter for members.
      *
      * @return the members
@@ -68,6 +51,26 @@ public class MembersForm {
     public void setMembers(List<Member> members) {
         this.members = members;
     }
+
+    /**
+     * Getter for identifiers.
+     * 
+     * @return the identifiers
+     */
+    public Set<String> getIdentifiers() {
+        return identifiers;
+    }
+
+
+    /**
+     * Setter for identifiers.
+     * 
+     * @param identifiers the identifiers to set
+     */
+    public void setIdentifiers(Set<String> identifiers) {
+        this.identifiers = identifiers;
+    }
+
 
     /**
      * Getter for loaded.
