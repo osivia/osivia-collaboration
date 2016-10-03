@@ -394,12 +394,14 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             criteria.setMail(filter);
         } else {
             String tokenizedFilter = filter + "*";
+            String tokenizedFilterSubStr = "*" +filter + "*";
 
             criteria.setUid(tokenizedFilter);
-            criteria.setDisplayName(tokenizedFilter);
             criteria.setSn(tokenizedFilter);
             criteria.setGivenName(tokenizedFilter);
             criteria.setMail(tokenizedFilter);
+            
+            criteria.setDisplayName(tokenizedFilterSubStr);
         }
 
         return this.personService.findByCriteria(criteria);
