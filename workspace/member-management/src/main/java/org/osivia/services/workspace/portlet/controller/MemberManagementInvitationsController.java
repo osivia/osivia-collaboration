@@ -203,19 +203,21 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
      *
      * @param request resource request
      * @param response resource response
+     * @param options options model attribute
      * @param filter search filter request parameter
      * @param tokenizer tokenizer indicator request parameter
      * @throws PortletException
      * @throws IOException
      */
     @ResourceMapping("search")
-    public void search(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter,
-            @RequestParam(value = "tokenizer", required = false) String tokenizer) throws PortletException, IOException {
+    public void search(ResourceRequest request, ResourceResponse response, @ModelAttribute("options") MemberManagementOptions options,
+            @RequestParam(value = "filter", required = false) String filter, @RequestParam(value = "tokenizer", required = false) String tokenizer)
+            throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         // Search results
-        JSONArray results = this.service.searchPersons(portalControllerContext, filter, BooleanUtils.toBoolean(tokenizer));
+        JSONArray results = this.service.searchPersons(portalControllerContext, options, filter, BooleanUtils.toBoolean(tokenizer));
 
         // Content type
         response.setContentType("application/json");

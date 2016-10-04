@@ -104,12 +104,14 @@ public interface MemberManagementService {
      * Search persons.
      * 
      * @param portalControllerContext portal controller context
+     * @param options options
      * @param filter search filter
      * @param tokenizer tokenizer indicator
      * @return JSON array
      * @throws PortletException
      */
-    JSONArray searchPersons(PortalControllerContext portalControllerContext, String filter, boolean tokenizer) throws PortletException;
+    JSONArray searchPersons(PortalControllerContext portalControllerContext, MemberManagementOptions options, String filter, boolean tokenizer)
+            throws PortletException;
 
 
     /**

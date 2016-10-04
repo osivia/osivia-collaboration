@@ -22,6 +22,7 @@ import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationRequest;
 import org.osivia.services.workspace.portlet.model.InvitationRequestsForm;
+import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.Member;
@@ -242,12 +243,23 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
-    public JSONArray searchPersons(PortalControllerContext portalControllerContext, String filter, boolean tokenizer) throws PortletException {
+    public JSONArray searchPersons(PortalControllerContext portalControllerContext, MemberManagementOptions options, String filter, boolean tokenizer)
+            throws PortletException {
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
+        // Invitation only indicator
+        boolean invitationOnly = WorkspaceType.INVITATION.equals(options.getWorkspaceType());
+
         // Member idenfiers
-        Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
+        Set<String> memberIdentifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
+        // Requests identifiers
+        Set<String> requestIdentifiers;
+        if (invitationOnly) {
+            requestIdentifiers = null;
+        } else {
+            requestIdentifiers = this.getInvitationRequestsForm(portalControllerContext).getIdentifiers();
+        }
 
         // Results JSON array
         JSONArray array = new JSONArray();
@@ -259,10 +271,12 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 List<Person> persons = this.repository.searchPersons(portalControllerContext, part, tokenizer);
                 for (Person person : persons) {
                     // Already member indicator
-                    boolean alreadyMember = identifiers.contains(person.getUid());
+                    boolean alreadyMember = memberIdentifiers.contains(person.getUid());
+                    // Existing request indicator
+                    boolean existingRequest = !invitationOnly && requestIdentifiers.contains(person.getUid());
 
                     // Search result
-                    JSONObject object = getSearchResult(person, alreadyMember, bundle);
+                    JSONObject object = getSearchResult(person, alreadyMember, existingRequest, bundle);
 
                     array.add(object);
                 }
@@ -283,10 +297,11 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * 
      * @param person person
      * @param alreadyMember already member indicator
+     * @param existingRequest existing request indicator
      * @param bundle internationalization bundle
      * @return JSON object
      */
-    protected JSONObject getSearchResult(Person person, boolean alreadyMember, Bundle bundle) {
+    protected JSONObject getSearchResult(Person person, boolean alreadyMember, boolean existingRequest, Bundle bundle) {
         JSONObject object = new JSONObject();
         object.put("id", person.getUid());
 
@@ -302,13 +317,16 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             displayName = person.getDisplayName();
 
             extra = person.getUid();
-            if (!StringUtils.equals(person.getUid(), person.getMail())) {
+            if (StringUtils.isNotBlank(person.getMail()) && !StringUtils.equals(person.getUid(), person.getMail())) {
                 extra += " – " + person.getMail();
             }
         }
 
         if (alreadyMember) {
             displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ALREADY_MEMBER_INDICATOR");
+            object.put("disabled", true);
+        } else if (existingRequest) {
+            displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_EXISTING_INVITATION_REQUEST_INDICATOR");
             object.put("disabled", true);
         }
 
@@ -508,11 +526,20 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
 
             // Member idenfiers
-            Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
+            Set<String> memberIdentifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
 
             // Invitation requests
-            List<InvitationRequest> requests = this.repository.getInvitationRequests(portalControllerContext, workspaceId, identifiers);
+            List<InvitationRequest> requests = this.repository.getInvitationRequests(portalControllerContext, workspaceId, memberIdentifiers);
             form.setRequests(requests);
+
+            // Invitation requests identifiers
+            Set<String> requestIdentifiers = new HashSet<>();
+            for (InvitationRequest request : requests) {
+                if (InvitationState.SENT.equals(request.getState())) {
+                    requestIdentifiers.add(request.getId());
+                }
+            }
+            form.setIdentifiers(requestIdentifiers);
 
             form.setLoaded(true);
         }
@@ -559,6 +586,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         options.setRequestsCount(count);
         List<InvitationRequest> requests = this.repository.getInvitationRequests(portalControllerContext, workspaceId, identifiers);
         form.setRequests(requests);
+        form.setLoaded(false);
         InvitationsForm invitationsForm = this.applicationContext.getBean(InvitationsForm.class);
         invitationsForm.setLoaded(false);
 

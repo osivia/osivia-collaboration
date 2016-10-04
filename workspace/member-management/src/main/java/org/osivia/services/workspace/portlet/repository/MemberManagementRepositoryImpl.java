@@ -356,8 +356,10 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
             // User identifier
             String uid = variables.getString(PERSON_UID_PROPERTY);
+            // Invitation state
+            InvitationState state = InvitationState.fromName(variables.getString(INVITATION_STATE_PROPERTY));
 
-            if (StringUtils.isNotEmpty(uid) && !memberIdentifiers.contains(uid)) {
+            if ((InvitationState.SENT.equals(state)) || (StringUtils.isNotEmpty(uid) && !memberIdentifiers.contains(uid))) {
                 // Invitation
                 Invitation invitation = getInvitation(uid, document, variables);
                 invitation.setDocument(document);
@@ -646,8 +648,10 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
             // User identifier
             String uid = variables.getString(PERSON_UID_PROPERTY);
+            // Invitation state
+            InvitationState state = InvitationState.fromName(variables.getString(INVITATION_STATE_PROPERTY));
 
-            if (StringUtils.isNotEmpty(uid) && !memberIdentifiers.contains(uid)) {
+            if ((InvitationState.SENT.equals(state)) || (StringUtils.isNotEmpty(uid) && !memberIdentifiers.contains(uid))) {
                 // Invitation request
                 InvitationRequest request = getInvitationRequest(uid, document, variables);
                 request.setDocument(document);
@@ -778,6 +782,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         String workspaceId = variables.get(WORKSPACE_IDENTIFIER_PROPERTY);
         String uid = variables.get(PERSON_UID_PROPERTY);
         WorkspaceRole role = WorkspaceRole.fromId(variables.get(ROLE_PROPERTY));
+        if (role == null) {
+            role = WorkspaceRole.READER;
+        }
 
         // Add member to workspace
         Name memberDn = this.personService.getEmptyPerson().buildDn(uid);
