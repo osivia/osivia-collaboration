@@ -118,7 +118,7 @@ public class MemberManagementController implements PortletContextAware {
         if (StringUtils.isNotEmpty(sortParameter)) {
             response.setRenderParameter("sort", sortParameter);
         }
-        String altParameter = request.getParameter("sort");
+        String altParameter = request.getParameter("alt");
         if (StringUtils.isNotEmpty(altParameter)) {
             response.setRenderParameter("alt", altParameter);
         }
