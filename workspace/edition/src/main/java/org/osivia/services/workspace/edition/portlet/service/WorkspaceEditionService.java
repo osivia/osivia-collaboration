@@ -1,5 +1,7 @@
 package org.osivia.services.workspace.edition.portlet.service;
 
+import java.io.IOException;
+
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -42,6 +44,27 @@ public interface WorkspaceEditionService {
      * @throws PortletException
      */
     void sort(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
+
+
+    /**
+     * Upload vignette.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form workspace edition form
+     * @throws PortletException
+     * @throws IOException
+     */
+    void uploadVignette(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException, IOException;
+
+
+    /**
+     * Delete vignette.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form workspace edition form
+     * @throws PortletException
+     */
+    void deleteVignette(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
 
 
     /**

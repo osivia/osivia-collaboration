@@ -1,6 +1,10 @@
 package org.osivia.services.workspace.edition.portlet.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.annotation.PostConstruct;
 import javax.portlet.ActionRequest;
@@ -12,7 +16,11 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
@@ -31,6 +39,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.PortletRequestDataBinder;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import org.springframework.web.portlet.context.PortletConfigAware;
 import org.springframework.web.portlet.context.PortletContextAware;
 
@@ -139,6 +148,43 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
 
 
     /**
+     * Upload vignette action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param form
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ActionMapping(name = "save", params = "upload-vignette")
+    public void uploadVignette(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form)
+            throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.uploadVignette(portalControllerContext, form);
+    }
+
+
+    /**
+     * Delete vignette action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param form
+     * @throws PortletException
+     */
+    @ActionMapping(name = "save", params = "delete-vignette")
+    public void deleteVignette(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form)
+            throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.deleteVignette(portalControllerContext, form);
+    }
+
+
+    /**
      * Save action mapping.
      *
      * @param request action request
@@ -212,7 +258,7 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
      * @throws PortletException
      * @throws IOException
      */
-    @ActionMapping(name = "delete")
+    @ActionMapping("delete")
     public void delete(ActionRequest request, ActionResponse response, @ModelAttribute("options") WorkspaceEditionOptions options)
             throws PortletException, IOException {
         // Portal controller context
@@ -222,6 +268,44 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
 
         // Redirection
         response.sendRedirect(url);
+    }
+
+
+    /**
+     * Vignette preview resource mapping.
+     * 
+     * @param request resource request
+     * @param response resource response
+     * @param form workspace edition form
+     * @throws IOException
+     */
+    @ResourceMapping("preview")
+    public void preview(ResourceRequest request, ResourceResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form) throws IOException {
+        // Temporary file
+        File temporaryFile = form.getVignette().getTemporaryFile();
+
+        // Upload size
+        Long size = new Long(temporaryFile.length());
+        response.setContentLength(size.intValue());
+
+        // Content type
+        String contentType = response.getContentType();
+        response.setContentType(contentType);
+
+        // Character encoding
+        response.setCharacterEncoding(CharEncoding.UTF_8);
+
+        // No cache
+        response.getCacheControl().setExpirationTime(0);
+
+
+        // Input steam
+        InputStream inputSteam = new FileInputStream(temporaryFile);
+        // Output stream
+        OutputStream outputStream = response.getPortletOutputStream();
+        // Copy
+        IOUtils.copy(inputSteam, outputStream);
+        outputStream.close();
     }
 
 

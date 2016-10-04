@@ -1,5 +1,7 @@
 package org.osivia.services.workspace.edition.portlet.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.Map;
 
 import javax.portlet.PortletException;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -18,6 +21,7 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
 import org.osivia.services.workspace.edition.portlet.model.Task;
+import org.osivia.services.workspace.edition.portlet.model.Vignette;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 import org.osivia.services.workspace.edition.portlet.model.comparator.TasksComparator;
@@ -28,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
@@ -103,15 +108,27 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
 
         // Workspace document
         Document workspace = options.getWorkspace();
+        // Visibility
+        String visibility = workspace.getString("ttcs:visibility");
 
         form.setTitle(workspace.getTitle());
         form.setDescription(workspace.getString("dc:description"));
-        form.setType(WorkspaceType.valueOf(workspace.getString("ttcs:visibility")));
+        if (StringUtils.isNotEmpty(visibility)) {
+            form.setType(WorkspaceType.valueOf(visibility));
+        }
+
+        // Vignette
+        Vignette vignette = this.repository.getVignette(portalControllerContext, workspace);
+        form.setVignette(vignette);
 
         // Tasks
         List<Task> tasks = this.repository.getTasks(portalControllerContext, workspace.getPath());
         Collections.sort(tasks, this.tasksComparator);
         form.setTasks(tasks);
+
+
+        form.setAction("test"); // FIXME
+
 
         return form;
     }
@@ -127,6 +144,37 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
 
         // Sort tasks
         Collections.sort(tasks, this.tasksComparator);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void uploadVignette(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException, IOException {
+        // Vignette
+        Vignette vignette = form.getVignette();
+        vignette.setUpdated(true);
+        vignette.setDeleted(false);
+
+        // Temporary file
+        MultipartFile upload = form.getVignette().getUpload();
+        File temporaryFile = File.createTempFile("vignette-", ".tmp");
+        temporaryFile.deleteOnExit();
+        upload.transferTo(temporaryFile);
+        vignette.setTemporaryFile(temporaryFile);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteVignette(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+        // Vignette
+        Vignette vignette = form.getVignette();
+        vignette.setUpdated(false);
+        vignette.setDeleted(true);
     }
 
 

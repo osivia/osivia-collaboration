@@ -10,7 +10,6 @@
 <portlet:defineObjects />
 
 <portlet:actionURL name="save" var="saveUrl" />
-
 <portlet:actionURL name="delete" var="deleteUrl" />
 
 
@@ -24,52 +23,114 @@
 
 
 <div class="workspace-edition">
-    <form:form action="${saveUrl}" method="post" modelAttribute="editionForm" cssClass="form-horizontal" role="form">
+    <form:form id="${namespace}-workspace-edition-form" action="${saveUrl}" method="post" enctype="multipart/form-data" modelAttribute="editionForm" cssClass="form-horizontal" role="form">
         <!-- Task creation form -->
         <form:hidden path="taskCreationForm.title" />
         <form:hidden path="taskCreationForm.description" />
         <form:hidden path="taskCreationForm.type" />
         <form:hidden path="taskCreationForm.valid" />
 
-        <!-- Title -->
-        <c:set var="placeholder"><op:translate key="WORKSPACE_TITLE_PLACEHOLDER" args="${fragment}" /></c:set>
-        <spring:bind path="title">
-            <div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
-                <form:label path="title" cssClass="col-sm-3 col-lg-2 control-label"><op:translate key="WORKSPACE_TITLE" /></form:label>
-                <div class="col-sm-9 col-lg-10">
-                    <form:input path="title" cssClass="form-control" placeholder="${placeholder}" />
-                    <c:if test="${status.error}">
-                        <span class="form-control-feedback">
-                            <i class="glyphicons glyphicons-remove"></i>
-                        </span>
-                    </c:if>
-                    <form:errors path="title" cssClass="help-block" />
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Title -->
+                <c:set var="placeholder"><op:translate key="WORKSPACE_TITLE_PLACEHOLDER" args="${fragment}" /></c:set>
+                <spring:bind path="title">
+                    <div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
+                        <form:label path="title" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_TITLE" /></form:label>
+                        <div class="col-sm-9">
+                            <form:input path="title" cssClass="form-control" placeholder="${placeholder}" />
+                            <c:if test="${status.error}">
+                                <span class="form-control-feedback">
+                                    <i class="glyphicons glyphicons-remove"></i>
+                                </span>
+                            </c:if>
+                            <form:errors path="title" cssClass="help-block" />
+                        </div>
+                    </div>
+                </spring:bind>
+                
+                <!-- Description -->
+                <c:set var="placeholder"><op:translate key="WORKSPACE_DESCRIPTION_PLACEHOLDER" args="${fragment}" /></c:set>
+                <div class="form-group">
+                    <form:label path="description" cssClass="col-sm-3 control-label" ><op:translate key="WORKSPACE_DESCRIPTION" /></form:label>
+                    <div class="col-sm-9">
+                        <form:textarea path="description" cssClass="form-control" placeholder="${placeholder}" />
+                    </div>
                 </div>
+                
+                <!-- Type -->
+                <c:if test="${not empty editionForm.type}">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label"><op:translate key="WORKSPACE_TYPE" /></label>
+                        <div class="col-sm-9">
+                            <p class="form-control-static">
+                                <span class="label label-${editionForm.type.color}">
+                                    <i class="${editionForm.type.icon}"></i>
+                                    <span><op:translate key="${editionForm.type.key}" /></span>
+                                </span>
+                            </p>
+                            <p class="help-block">
+                                <span><op:translate key="${editionForm.type.key}_HELP" /></span>               
+                            </p>
+                        </div>
+                    </div>
+                </c:if>
             </div>
-        </spring:bind>
-        
-        <!-- Description -->
-        <c:set var="placeholder"><op:translate key="WORKSPACE_DESCRIPTION_PLACEHOLDER" args="${fragment}" /></c:set>
-        <div class="form-group">
-            <form:label path="description" cssClass="col-sm-3 col-lg-2 control-label" ><op:translate key="WORKSPACE_DESCRIPTION" /></form:label>
-            <div class="col-sm-9 col-lg-10">
-                <form:textarea path="description" cssClass="form-control" placeholder="${placeholder}" />
-            </div>
-        </div>
-        
-        <!-- Type -->
-        <div class="form-group">
-            <label class="col-sm-3 col-lg-2 control-label"><op:translate key="WORKSPACE_TYPE" /></label>
-            <div class="col-sm-9 col-lg-10">
-                <p class="form-control-static">
-                    <span class="label label-${editionForm.type.color}">
-                        <i class="${editionForm.type.icon}"></i>
-                        <span><op:translate key="${editionForm.type.key}" /></span>
-                    </span>
-                </p>
-                <p class="help-block">
-                    <span><op:translate key="${editionForm.type.key}_HELP" /></span>               
-                </p>
+            
+            <div class="col-lg-4">
+                <!-- Vignette -->
+                <div class="form-group">
+                    <form:label path="vignette.upload" cssClass="col-sm-3 col-lg-6 control-label"><op:translate key="WORKSPACE_VIGNETTE" /></form:label>
+                    <div class="col-sm-9 col-lg-6">
+                        <!-- Preview -->
+                        <c:choose>
+                            <c:when test="${editionForm.vignette.updated}">
+                                <!-- Preview -->
+                                <portlet:resourceURL id="preview" var="previewUrl" />
+                                <p>
+                                    <img src="${previewUrl}" alt="" class="img-responsive">
+                                </p>
+                            </c:when>
+                            
+                            <c:when test="${editionForm.vignette.deleted}">
+                                <!-- Deleted vignette -->
+                                <p class="form-control-static text-muted">
+                                    <span><op:translate key="WORKSPACE_DELETED_VIGNETTE" /></span>
+                                </p>
+                            </c:when>
+                        
+                            <c:when test="${empty editionForm.vignette.url}">
+                                <!-- No vignette -->
+                                <p class="form-control-static text-muted">
+                                    <span><op:translate key="WORKSPACE_NO_VIGNETTE" /></span>
+                                </p>
+                            </c:when>
+                            
+                            <c:otherwise>
+                                <!-- Vignette -->
+                                <p>
+                                    <img src="${editionForm.vignette.url}" alt="" class="img-responsive">
+                                </p>
+                            </c:otherwise>
+                        </c:choose>
+                    
+                        <div>
+                            <!-- Upload -->
+                            <label class="btn btn-sm btn-default btn-file">
+                                <i class="halflings halflings-folder-open"></i>
+                                <span><op:translate key="WORKSPACE_VIGNETTE_UPLOAD" /></span>
+                                <form:input type="file" path="vignette.upload" />
+                            </label>
+                            <input type="submit" name="upload-vignette" class="hidden">
+                            
+                            <!-- Delete -->
+                            <button type="submit" name="delete-vignette" class="btn btn-sm btn-default">
+                                <i class="halflings halflings-trash"></i>
+                                <span class="sr-only"><op:translate key="WORKSPACE_VIGNETTE_DELETE" /></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -101,7 +162,7 @@
                             <div class="panel-footer">
                                 <!-- Create -->
                                 <c:set var="title"><op:translate key="WORKSPACE_CREATE_TASK_MODAL_TITLE" /></c:set>
-                                <button type="button" name="open-task-creation" class="btn btn-default" data-load-url="${taskCreationUrl}" data-title="${title}">
+                                <button type="button" class="btn btn-default" data-target="#osivia-modal" data-load-url="${taskCreationUrl}" data-callback-function="createWorkspaceTask" data-callback-function-args="${namespace}-workspace-edition-form|${namespace}-create-task" data-title="${title}">
                                     <i class="glyphicons glyphicons-plus"></i>
                                     <span><op:translate key="WORKSPACE_CREATE_TASK" /></span>
                                 </button>

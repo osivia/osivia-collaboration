@@ -37,32 +37,17 @@ $JQry(function() {
 	$JQry(".workspace-edition-sortable").disableSelection();
 	
 	
-	$JQry(".workspace-edition button[name='open-task-creation']").each(function(index, element) {
-		var $element = $JQry(element),
-			$submit = $element.siblings("input[type=submit][name=create]"),
-			loaded = $element.data("loaded");
+	// Auto upload vignette for preview generation
+	$JQry(".workspace-edition input[type=file][name='vignette.upload']").change(function(event) {
+		var $target = $JQry(event.target),
+			$formGroup = $target.closest(".form-group"),
+			$submit = $formGroup.find("input[type=submit][name='upload-vignette']");
 		
-		if (!loaded) {
-			$element.click(function(event) {
-				var $target = $JQry(event.target),
-					loadUrl = $target.data("load-url"),
-					title = $target.data("title"),
-					$form = $target.closest("form");
-					$modal = $JQry("#osivia-modal");
-	
-				$modal.data("load-url", loadUrl);
-				$modal.data("callback-function", "createWorkspaceTask");
-				$modal.data("callback-function-args", $form.attr("id") + "|" + $submit.attr("id"));
-				$modal.data("title", title);
-				
-				$modal.modal("show");
-			});
-			
-			$element.data("loaded", true);
-		}
+		$submit.click();
 	});
 	
 	
+	// Auto hide modal when task creation is successfully completed
 	$JQry("#osivia-modal .workspace-task-creation").each(function(index, element) {
 		var $element = $JQry(element),
 			$modal = $JQry("#osivia-modal");
@@ -75,6 +60,11 @@ $JQry(function() {
 });
 
 
+/**
+ * Create workspace task.
+ * 
+ * @param args arguments: target.id|submit.id
+ */
 function createWorkspaceTask(args) {
 	var array = args.split("|"),
 		$modal = $JQry("#osivia-modal"),

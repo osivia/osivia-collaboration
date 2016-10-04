@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.edition.portlet.repository;
 
+import java.io.File;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,14 +11,17 @@ import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
+import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.services.workspace.edition.portlet.model.Task;
+import org.osivia.services.workspace.edition.portlet.model.Vignette;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -109,6 +113,22 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
     private void updateWorkspace(DocumentService documentService, Document workspace) throws Exception {
         documentService.setProperty(workspace, "dc:title", this.form.getTitle());
         documentService.setProperty(workspace, "dc:description", this.form.getDescription());
+
+        // Vignette
+        Vignette vignette = this.form.getVignette();
+        if (vignette.isUpdated()) {
+            // Temporary file
+            File temporaryFile = vignette.getTemporaryFile();
+            // File blob
+            Blob blob = new FileBlob(temporaryFile);
+
+            documentService.setBlob(workspace, blob, "ttc:vignette");
+
+            // Delete temporary file
+            temporaryFile.delete();
+        } else if (vignette.isDeleted()) {
+            documentService.removeBlob(workspace, "ttc:vignette");
+        }
     }
 
 

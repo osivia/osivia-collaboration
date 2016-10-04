@@ -1,5 +1,7 @@
 package org.osivia.services.workspace.edition.portlet.configuration;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -12,6 +14,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.portlet.multipart.CommonsPortletMultipartResolver;
+import org.springframework.web.portlet.multipart.PortletMultipartResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
@@ -58,6 +62,20 @@ public class WorkspaceEditionConfiguration {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("Resource");
         return messageSource;
+    }
+
+
+    /**
+     * Get multipart resolver.
+     * 
+     * @return multipart resolver
+     */
+    @Bean(name = "portletMultipartResolver")
+    public PortletMultipartResolver getMultipartResolver() {
+        CommonsPortletMultipartResolver multipartResolver = new CommonsPortletMultipartResolver();
+        multipartResolver.setDefaultEncoding(CharEncoding.UTF_8);
+        multipartResolver.setMaxUploadSizePerFile(2 * FileUtils.ONE_MB);
+        return multipartResolver;
     }
 
 

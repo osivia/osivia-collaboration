@@ -7,7 +7,9 @@ import java.util.SortedSet;
 
 import javax.portlet.PortletException;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
@@ -23,6 +25,7 @@ import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
 import org.osivia.services.workspace.edition.portlet.model.Task;
+import org.osivia.services.workspace.edition.portlet.model.Vignette;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 import org.springframework.beans.BeansException;
@@ -98,7 +101,34 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
-    public List<Task> getTasks(PortalControllerContext portalControllerContext, String basePath) throws PortletException {
+    public Vignette getVignette(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        
+        // Vignette properties
+        PropertyMap properties = workspace.getProperties().getMap("ttc:vignette");
+        
+        // Vignette URL
+        String url;
+        if ((properties == null) || StringUtils.isEmpty(properties.getString("data"))) {
+            url = null;
+        } else {
+            url = nuxeoController.createFileLink(workspace, "ttc:vignette");
+        }
+
+        // Vignette
+        Vignette vignette = this.applicationContext.getBean(Vignette.class);
+        vignette.setUrl(url);
+
+        return vignette;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Task> getTasks(PortalControllerContext portalControllerContext, String path) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
@@ -106,7 +136,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         List<TaskbarTask> taskbarTasks;
         TaskbarItems taskbarItems;
         try {
-            taskbarTasks = this.taskbarService.getTasks(portalControllerContext, basePath, false);
+            taskbarTasks = this.taskbarService.getTasks(portalControllerContext, path, false);
             taskbarItems = this.taskbarService.getItems(portalControllerContext);
         } catch (PortalException e) {
             throw new PortletException(e);
@@ -189,6 +219,10 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(WorkspaceEditionCommand.class, options, form, items, bundle);
         nuxeoController.executeNuxeoCommand(command);
+
+
+        // Reload vignette
+        nuxeoController.fetchFileContent(options.getPath(), "ttc:vignette", true);
     }
 
 

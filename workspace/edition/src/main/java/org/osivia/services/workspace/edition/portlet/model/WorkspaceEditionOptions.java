@@ -1,6 +1,8 @@
 package org.osivia.services.workspace.edition.portlet.model;
 
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Component;
  * @author Cédric Krommenhoek
  */
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class WorkspaceEditionOptions {
 
     /** Workspace document. */
