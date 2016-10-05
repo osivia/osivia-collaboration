@@ -102,12 +102,12 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
      * {@inheritDoc}
      */
     @Override
-    public WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException {
+    public WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
         // Form
         WorkspaceEditionForm form = this.applicationContext.getBean(WorkspaceEditionForm.class);
 
         // Workspace document
-        Document workspace = options.getWorkspace();
+        Document workspace = this.repository.getWorkspace(portalControllerContext);
         // Visibility
         String visibility = workspace.getString("ttcs:visibility");
 

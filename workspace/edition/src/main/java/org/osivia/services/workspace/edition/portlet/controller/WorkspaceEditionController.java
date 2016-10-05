@@ -331,17 +331,16 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
      *
      * @param request portlet request
      * @param response portlet response
-     * @param options options model attribute
      * @return form
      * @throws PortletException
      */
     @ModelAttribute("editionForm")
-    public WorkspaceEditionForm getForm(PortletRequest request, PortletResponse response, @ModelAttribute("options") WorkspaceEditionOptions options)
+    public WorkspaceEditionForm getEditionForm(PortletRequest request, PortletResponse response)
             throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        return this.service.getForm(portalControllerContext, options);
+        return this.service.getForm(portalControllerContext);
     }
 
 
@@ -352,7 +351,6 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
      */
     @InitBinder("editionForm")
     public void editionFormInitBinder(PortletRequestDataBinder binder) {
-        binder.setDisallowedFields("type");
         binder.addValidators(this.editionFormValidator);
     }
 

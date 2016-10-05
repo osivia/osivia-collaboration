@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.SortedSet;
 
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 
 /**
@@ -47,6 +49,10 @@ import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
  */
 @Repository
 public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepository, ApplicationContextAware {
+
+    /** Current workspace attribute name. */
+    private static final String CURRENT_WORKSPACE_ATTRIBUTE = "osivia.workspace.edition.currentWorkspace";
+
 
     /** Taskbar service. */
     @Autowired
@@ -78,22 +84,35 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      */
     @Override
     public Document getWorkspace(PortalControllerContext portalControllerContext) throws PortletException {
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+        
+        // Workspace Nuxeo document
+        Document workspace = (Document) request.getAttribute(CURRENT_WORKSPACE_ATTRIBUTE);
+        
+        if (workspace == null) {
+            // Nuxeo controller
+            NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        // Bundle
-        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+            // Bundle
+            Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
-        // CMS base path
-        String basePath = nuxeoController.getBasePath();
-        if (basePath == null) {
-            throw new PortletException(bundle.getString("MESSAGE_WORKSPACE_PATH_UNDEFINED"));
+            // CMS base path
+            String basePath = nuxeoController.getBasePath();
+            if (basePath == null) {
+                throw new PortletException(bundle.getString("MESSAGE_WORKSPACE_PATH_UNDEFINED"));
+            }
+
+            // Nuxeo document context
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(basePath, true);
+
+            // Nuxeo document
+            workspace = documentContext.getDoc();
+
+            request.setAttribute(CURRENT_WORKSPACE_ATTRIBUTE, workspace);
         }
 
-        // Nuxeo document context
-        NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(basePath, true);
-
-        return documentContext.getDoc();
+        return workspace;
     }
 
 
@@ -222,7 +241,11 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
 
 
         // Reload vignette
-        nuxeoController.fetchFileContent(options.getPath(), "ttc:vignette", true);
+        try {
+            nuxeoController.fetchFileContent(options.getPath(), "ttc:vignette", true);
+        } catch (NuxeoException e) {
+            // Do nothing: maybe the vignette does not exist
+        }
     }
 
 

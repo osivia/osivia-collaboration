@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
  * Workspace edition Nuxeo command.
@@ -111,9 +112,26 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
      * @throws Exception
      */
     private void updateWorkspace(DocumentService documentService, Document workspace) throws Exception {
+        // Workspace type
+        WorkspaceType type = this.form.getType();
+
         documentService.setProperty(workspace, "dc:title", this.form.getTitle());
         documentService.setProperty(workspace, "dc:description", this.form.getDescription());
+        documentService.setProperty(workspace, "ttcs:visibility", type.getId());
 
+        if (WorkspaceType.PUBLIC.equals(type)) {
+            // Grant read permission to everyone
+            documentService.addPermission(workspace, "Everyone", "Read");
+        } else {
+            // TODO pouvoir supprimer une permission unitairement
+
+            // Remove all permissions to everyone, including inheritance blocking
+            documentService.removePermissions(workspace, "Everyone", null);
+
+            // Maintain inheritance blocking
+            documentService.setPermission(workspace, "Everyone", "Everything", false);
+        }
+        
         // Vignette
         Vignette vignette = this.form.getVignette();
         if (vignette.isUpdated()) {

@@ -18,7 +18,7 @@ public class WorkspaceEditionOptions {
     private Document workspace;
     /** Workspace path. */
     private String path;
-    /** Workspace type. */
+    /** Workspace document type ("Workspace" or "Room"). */
     private String type;
 
 

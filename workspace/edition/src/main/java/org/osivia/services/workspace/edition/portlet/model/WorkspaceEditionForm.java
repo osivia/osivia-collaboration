@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.edition.portlet.model;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.osivia.portal.api.portlet.Refreshable;
@@ -35,12 +36,16 @@ public class WorkspaceEditionForm {
     /** Workspace task creation form. */
     private TaskCreationForm taskCreationForm;
 
+    /** Workspace types. */
+    private final List<WorkspaceType> types;
+
 
     /**
      * Constructor.
      */
     public WorkspaceEditionForm() {
         super();
+        this.types = Arrays.asList(WorkspaceType.values());
     }
 
 
@@ -168,6 +173,15 @@ public class WorkspaceEditionForm {
      */
     public void setTaskCreationForm(TaskCreationForm taskCreationForm) {
         this.taskCreationForm = taskCreationForm;
+    }
+
+    /**
+     * Getter for types.
+     * 
+     * @return the types
+     */
+    public List<WorkspaceType> getTypes() {
+        return types;
     }
 
 }

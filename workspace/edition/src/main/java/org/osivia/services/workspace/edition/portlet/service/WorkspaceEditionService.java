@@ -29,11 +29,10 @@ public interface WorkspaceEditionService {
      * Get workspace edition form.
      *
      * @param portalControllerContext portal controller context
-     * @param options options
      * @return form
      * @throws PortletException
      */
-    WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException;
+    WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**
