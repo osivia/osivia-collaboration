@@ -31,7 +31,7 @@ $JQry(function() {
 		options["tokenizer"] = function(input, selection, callback) {
 			var term = input.term;
 
-			if ((term.indexOf(" ") !== -1) || (term.indexOf(",") !== -1) || (term.indexOf(";") !== -1)) {
+			if ((term.indexOf(",") !== -1) || (term.indexOf(";") !== -1)) {
 				if (term.length > 3) {
 					$JQry.getJSON(url, {
 						filter: term,

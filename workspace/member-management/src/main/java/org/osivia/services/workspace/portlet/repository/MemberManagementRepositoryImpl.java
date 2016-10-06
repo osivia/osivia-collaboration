@@ -527,7 +527,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
         for (Invitation pendingInvitation : form.getPendingInvitations()) {
             // User identifier
-            String uid = pendingInvitation.getId();
+            String uid = StringUtils.trim(pendingInvitation.getId());
             // User display name
             String displayName;
             if (pendingInvitation.getPerson() == null) {

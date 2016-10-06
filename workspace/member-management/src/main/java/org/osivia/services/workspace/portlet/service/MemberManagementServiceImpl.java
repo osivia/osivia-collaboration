@@ -265,7 +265,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         JSONArray array = new JSONArray();
 
         if (StringUtils.isNotBlank(filter)) {
-            String[] parts = StringUtils.split(filter, " ,;");
+            String[] parts = StringUtils.split(filter, ",;");
             for (String part : parts) {
                 // Persons
                 List<Person> persons = this.repository.searchPersons(portalControllerContext, part, tokenizer);
@@ -448,7 +448,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             for (Invitation invitation : form.getPendingInvitations()) {
                 if (invitation.isUnknownUser()) {
                     // Mail pattern matcher
-                    Matcher matcher = this.mailPattern.matcher(invitation.getId());
+                    Matcher matcher = this.mailPattern.matcher(StringUtils.trim(invitation.getId()));
 
                     if (!matcher.matches()) {
                         Object[] errorArgs = new Object[]{invitation.getId()};
