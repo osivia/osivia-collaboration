@@ -177,9 +177,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         }
 
         // Update model
-        List<Member> members = this.repository.getMembers(portalControllerContext, options.getWorkspaceId());
-        form.setMembers(members);
         form.setLoaded(false);
+        this.getMembersForm(portalControllerContext);
         InvitationsForm invitationForm = this.applicationContext.getBean(InvitationsForm.class);
         invitationForm.setLoaded(false);
         InvitationRequestsForm requestsForm = this.applicationContext.getBean(InvitationRequestsForm.class);
@@ -418,18 +417,15 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Update
         this.repository.updateInvitations(portalControllerContext, workspaceId, form.getInvitations());
 
-        // Member idenfiers
-        MembersForm membersForm = this.applicationContext.getBean(MembersForm.class);
-        membersForm.setLoaded(false);
-        Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
-
         // Invitations count
         int count = this.repository.getInvitationsCount(portalControllerContext, workspaceId);
 
         // Update model
         options.setInvitationsCount(count);
-        List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, workspaceId, identifiers);
-        form.setInvitations(invitations);
+        MembersForm membersForm = this.applicationContext.getBean(MembersForm.class);
+        membersForm.setLoaded(false);
+        form.setLoaded(false);
+        this.getInvitationsForm(portalControllerContext);
         InvitationRequestsForm requestsForm = this.applicationContext.getBean(InvitationRequestsForm.class);
         requestsForm.setLoaded(false);
 
@@ -574,19 +570,15 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Update
         this.repository.updateInvitationRequests(portalControllerContext, workspaceId, form.getRequests());
 
-        // Member idenfiers
-        MembersForm membersForm = this.applicationContext.getBean(MembersForm.class);
-        membersForm.setLoaded(false);
-        Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
-
         // Invitations count
         int count = this.repository.getInvitationsCount(portalControllerContext, workspaceId);
 
         // Update model
         options.setRequestsCount(count);
-        List<InvitationRequest> requests = this.repository.getInvitationRequests(portalControllerContext, workspaceId, identifiers);
-        form.setRequests(requests);
+        MembersForm membersForm = this.applicationContext.getBean(MembersForm.class);
+        membersForm.setLoaded(false);
         form.setLoaded(false);
+        this.getInvitationRequestsForm(portalControllerContext);
         InvitationsForm invitationsForm = this.applicationContext.getBean(InvitationsForm.class);
         invitationsForm.setLoaded(false);
 
