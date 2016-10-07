@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.configuration;
+package org.osivia.services.workspace.portlet.configuration;
 
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
@@ -68,7 +68,7 @@ public class WorkspaceMemberManagementConfiguration {
      *
      * @return person service
      */
-    @Bean(name="personService")
+    @Bean
     public PersonService getPersonService() {
     	return DirServiceFactory.getService(PersonService.class);
     }

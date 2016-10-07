@@ -9,10 +9,12 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
+
 /**
  * Member management options java-bean.
  * 
- * @author Cédric Krommenhoek
+ * @author Cédric Krommenhoek 
  */
 @Component
 @Scope(scopeName = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -21,6 +23,8 @@ public class MemberManagementOptions {
 
     /** Workspace identifier. */
     private String workspaceId;
+    /** Workspace type. */
+    private WorkspaceType workspaceType;
     /** Invitations count. */
     private int invitationsCount;
     /** Requests count. */
@@ -53,6 +57,24 @@ public class MemberManagementOptions {
      */
     public void setWorkspaceId(String workspaceId) {
         this.workspaceId = workspaceId;
+    }
+
+    /**
+     * Getter for workspaceType.
+     * 
+     * @return the workspaceType
+     */
+    public WorkspaceType getWorkspaceType() {
+        return workspaceType;
+    }
+
+    /**
+     * Setter for workspaceType.
+     * 
+     * @param workspaceType the workspaceType to set
+     */
+    public void setWorkspaceType(WorkspaceType workspaceType) {
+        this.workspaceType = workspaceType;
     }
 
     /**

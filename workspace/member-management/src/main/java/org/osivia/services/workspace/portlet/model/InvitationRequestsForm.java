@@ -9,47 +9,47 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Members form java-bean.
- *
+ * Invitation requests form java-bean.
+ * 
  * @author Cédric Krommenhoek
  */
 @Component
 @Scope(WebApplicationContext.SCOPE_SESSION)
 @Refreshable
-public class MembersForm {
+public class InvitationRequestsForm {
 
-    /** Members. */
-    private List<Member> members;
-    /** Member identifiers. */
+    /** Invitation requests. */
+    private List<InvitationRequest> requests;
+    /** Invitation requests identifiers. */
     private Set<String> identifiers;
-    /** Loaded members indicator. */
+    /** Loaded indicator. */
     private boolean loaded;
 
 
     /**
      * Constructor.
      */
-    public MembersForm() {
+    public InvitationRequestsForm() {
         super();
     }
 
 
     /**
-     * Getter for members.
-     *
-     * @return the members
+     * Getter for requests.
+     * 
+     * @return the requests
      */
-    public List<Member> getMembers() {
-        return this.members;
+    public List<InvitationRequest> getRequests() {
+        return requests;
     }
 
     /**
-     * Setter for members.
-     *
-     * @param members the members to set
+     * Setter for requests.
+     * 
+     * @param requests the requests to set
      */
-    public void setMembers(List<Member> members) {
-        this.members = members;
+    public void setRequests(List<InvitationRequest> requests) {
+        this.requests = requests;
     }
 
     /**
@@ -61,7 +61,6 @@ public class MembersForm {
         return identifiers;
     }
 
-
     /**
      * Setter for identifiers.
      * 
@@ -71,19 +70,18 @@ public class MembersForm {
         this.identifiers = identifiers;
     }
 
-
     /**
      * Getter for loaded.
-     *
+     * 
      * @return the loaded
      */
     public boolean isLoaded() {
-        return this.loaded;
+        return loaded;
     }
 
     /**
      * Setter for loaded.
-     *
+     * 
      * @param loaded the loaded to set
      */
     public void setLoaded(boolean loaded) {

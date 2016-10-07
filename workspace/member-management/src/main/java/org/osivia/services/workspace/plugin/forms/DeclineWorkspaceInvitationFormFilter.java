@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.plugin;
+package org.osivia.services.workspace.plugin.forms;
 
 import java.util.Map;
 
@@ -19,7 +19,8 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 public class DeclineWorkspaceInvitationFormFilter implements FormFilter {
 
     /** Form filter identifier. */
-    private static final String IDENTIFIER = "DECLINE_WORKSPACE_INVITATION";
+    public static final String IDENTIFIER = "DECLINE_WORKSPACE_INVITATION";
+
     /** Form filter label internationalization key. */
     private static final String LABEL_INTERNATIONALIZATION_KEY = "DECLINE_WORKSPACE_INVITATION_FORM_FILTER_LABEL";
     /** Form filter description internationalization key. */

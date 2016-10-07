@@ -3,6 +3,7 @@ package org.osivia.services.workspace.portlet.service;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.workspace.portlet.model.InvitationRequestsForm;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
@@ -22,8 +23,8 @@ public interface MemberManagementService {
     String MEMBERS_HELP_LOCATION_PROPERTY = "workspace-member-management.members.help.location";
     /** Invitations help location property name. */
     String INVITATIONS_HELP_LOCATION_PROPERTY = "workspace-member-management.invitations.help.location";
-    /** Requests help location property name. */
-    String REQUESTS_HELP_LOCATION_PROPERTY = "workspace-member-management.requests.help.location";
+    /** Invitation requests help location property name. */
+    String INVITATION_REQUESTS_HELP_LOCATION_PROPERTY = "workspace-member-management.requests.help.location";
 
 
     /**
@@ -103,12 +104,14 @@ public interface MemberManagementService {
      * Search persons.
      * 
      * @param portalControllerContext portal controller context
+     * @param options options
      * @param filter search filter
      * @param tokenizer tokenizer indicator
      * @return JSON array
      * @throws PortletException
      */
-    JSONArray searchPersons(PortalControllerContext portalControllerContext, String filter, boolean tokenizer) throws PortletException;
+    JSONArray searchPersons(PortalControllerContext portalControllerContext, MemberManagementOptions options, String filter, boolean tokenizer)
+            throws PortletException;
 
 
     /**
@@ -165,5 +168,49 @@ public interface MemberManagementService {
      * @throws PortletException
      */
     String getInvitationsHelp(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Get invitation requests form.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return form
+     * @throws PortletException
+     */
+    InvitationRequestsForm getInvitationRequestsForm(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Sort invitation requests.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form invitation requests form
+     * @param sort sort property
+     * @param alt alternative sort indicator
+     * @throws PortletException
+     */
+    void sortInvitationRequests(PortalControllerContext portalControllerContext, InvitationRequestsForm form, String sort, boolean alt) throws PortletException;
+
+
+    /**
+     * Update invitation requests.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param options options
+     * @param form invitation requests form
+     * @throws PortletException
+     */
+    void updateInvitationRequests(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationRequestsForm form)
+            throws PortletException;
+
+
+    /**
+     * Get invitation requests help.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return help
+     * @throws PortletException
+     */
+    String getInvitationRequestsHelp(PortalControllerContext portalControllerContext) throws PortletException;
 
 }

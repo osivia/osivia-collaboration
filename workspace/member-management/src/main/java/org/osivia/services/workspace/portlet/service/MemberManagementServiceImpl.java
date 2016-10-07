@@ -2,6 +2,7 @@ package org.osivia.services.workspace.portlet.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -19,14 +20,18 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.services.workspace.portlet.model.Invitation;
+import org.osivia.services.workspace.portlet.model.InvitationRequest;
+import org.osivia.services.workspace.portlet.model.InvitationRequestsForm;
+import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.Member;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.model.comparator.InvitationComparator;
-import org.osivia.services.workspace.portlet.model.comparator.MemberComparator;
+import org.osivia.services.workspace.portlet.model.comparator.MemberObjectComparator;
 import org.osivia.services.workspace.portlet.repository.MemberManagementRepository;
+import org.osivia.services.workspace.util.ApplicationContextProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -34,6 +39,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -92,16 +98,22 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         if (options.getWorkspaceId() == null) {
             // Workspace identifier
-            String workspaceId = this.repository.getWorkspaceId(portalControllerContext);
+            String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
             options.setWorkspaceId(workspaceId);
+
+            // Workspace type
+            WorkspaceType type = this.repository.getCurrentWorkspaceType(portalControllerContext);
+            options.setWorkspaceType(type);
 
             // Invitations count
             int invitationsCount = this.repository.getInvitationsCount(portalControllerContext, workspaceId);
             options.setInvitationsCount(invitationsCount);
 
-            // Requests count
-            int requestsCount = this.repository.getRequestsCount(portalControllerContext, workspaceId);
-            options.setRequestsCount(requestsCount);
+            if (!WorkspaceType.INVITATION.equals(type)) {
+                // Requests count
+                int requestsCount = this.repository.getRequestsCount(portalControllerContext, workspaceId);
+                options.setRequestsCount(requestsCount);
+            }
 
             // Roles
             List<WorkspaceRole> roles = this.repository.getRoles(portalControllerContext, workspaceId);
@@ -122,11 +134,18 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         
         if (!form.isLoaded()) {
             // Workspace identifier
-            String workspaceId = this.repository.getWorkspaceId(portalControllerContext);
+            String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
 
             // Members
             List<Member> members = this.repository.getMembers(portalControllerContext, workspaceId);
             form.setMembers(members);
+
+            // Member identifiers
+            Set<String> identifiers = new HashSet<String>();
+            for (Member member : members) {
+                identifiers.add(member.getId());
+            }
+            form.setIdentifiers(identifiers);
 
             form.setLoaded(true);
         }
@@ -140,7 +159,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      */
     @Override
     public void sortMembers(PortalControllerContext portalControllerContext, MembersForm form, String sort, boolean alt) throws PortletException {
-        MemberComparator comparator = this.applicationContext.getBean(MemberComparator.class, sort, alt);
+        MemberObjectComparator comparator = this.applicationContext.getBean(MemberObjectComparator.class, sort, alt);
         Collections.sort(form.getMembers(), comparator);
     }
 
@@ -160,6 +179,11 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Update model
         List<Member> members = this.repository.getMembers(portalControllerContext, options.getWorkspaceId());
         form.setMembers(members);
+        form.setLoaded(false);
+        InvitationsForm invitationForm = this.applicationContext.getBean(InvitationsForm.class);
+        invitationForm.setLoaded(false);
+        InvitationRequestsForm requestsForm = this.applicationContext.getBean(InvitationRequestsForm.class);
+        requestsForm.setLoaded(false);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_MEMBERS_UPDATE_SUCCESS");
@@ -186,7 +210,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         if (!form.isLoaded()) {
             // Workspace identifier
-            String workspaceId = this.repository.getWorkspaceId(portalControllerContext);
+            String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
 
             // Member idenfiers
             Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
@@ -219,27 +243,40 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
-    public JSONArray searchPersons(PortalControllerContext portalControllerContext, String filter, boolean tokenizer) throws PortletException {
+    public JSONArray searchPersons(PortalControllerContext portalControllerContext, MemberManagementOptions options, String filter, boolean tokenizer)
+            throws PortletException {
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
+        // Invitation only indicator
+        boolean invitationOnly = WorkspaceType.INVITATION.equals(options.getWorkspaceType());
+
         // Member idenfiers
-        Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
+        Set<String> memberIdentifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
+        // Requests identifiers
+        Set<String> requestIdentifiers;
+        if (invitationOnly) {
+            requestIdentifiers = null;
+        } else {
+            requestIdentifiers = this.getInvitationRequestsForm(portalControllerContext).getIdentifiers();
+        }
 
         // Results JSON array
         JSONArray array = new JSONArray();
 
         if (StringUtils.isNotBlank(filter)) {
-            String[] parts = StringUtils.split(filter, " ,;");
+            String[] parts = StringUtils.split(filter, ",;");
             for (String part : parts) {
                 // Persons
                 List<Person> persons = this.repository.searchPersons(portalControllerContext, part, tokenizer);
                 for (Person person : persons) {
                     // Already member indicator
-                    boolean alreadyMember = identifiers.contains(person.getUid());
+                    boolean alreadyMember = memberIdentifiers.contains(person.getUid());
+                    // Existing request indicator
+                    boolean existingRequest = !invitationOnly && requestIdentifiers.contains(person.getUid());
 
                     // Search result
-                    JSONObject object = getSearchResult(person, alreadyMember, bundle);
+                    JSONObject object = getSearchResult(person, alreadyMember, existingRequest, bundle);
 
                     array.add(object);
                 }
@@ -260,10 +297,11 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * 
      * @param person person
      * @param alreadyMember already member indicator
+     * @param existingRequest existing request indicator
      * @param bundle internationalization bundle
      * @return JSON object
      */
-    protected JSONObject getSearchResult(Person person, boolean alreadyMember, Bundle bundle) {
+    protected JSONObject getSearchResult(Person person, boolean alreadyMember, boolean existingRequest, Bundle bundle) {
         JSONObject object = new JSONObject();
         object.put("id", person.getUid());
 
@@ -279,13 +317,16 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             displayName = person.getDisplayName();
 
             extra = person.getUid();
-            if (!StringUtils.equals(person.getUid(), person.getMail())) {
+            if (StringUtils.isNotBlank(person.getMail()) && !StringUtils.equals(person.getUid(), person.getMail())) {
                 extra += " – " + person.getMail();
             }
         }
 
         if (alreadyMember) {
             displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ALREADY_MEMBER_INDICATOR");
+            object.put("disabled", true);
+        } else if (existingRequest) {
+            displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_EXISTING_INVITATION_REQUEST_INDICATOR");
             object.put("disabled", true);
         }
 
@@ -371,17 +412,26 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
+        // Workspace identifier
+        String workspaceId = options.getWorkspaceId();
+
         // Update
-        this.repository.updateInvitations(portalControllerContext, options.getWorkspaceId(), form.getInvitations());
+        this.repository.updateInvitations(portalControllerContext, workspaceId, form.getInvitations());
 
         // Member idenfiers
+        MembersForm membersForm = this.applicationContext.getBean(MembersForm.class);
+        membersForm.setLoaded(false);
         Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
 
+        // Invitations count
+        int count = this.repository.getInvitationsCount(portalControllerContext, workspaceId);
+
         // Update model
-        int count = this.repository.getInvitationsCount(portalControllerContext, options.getWorkspaceId());
         options.setInvitationsCount(count);
-        List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, options.getWorkspaceId(), identifiers);
+        List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, workspaceId, identifiers);
         form.setInvitations(invitations);
+        InvitationRequestsForm requestsForm = this.applicationContext.getBean(InvitationRequestsForm.class);
+        requestsForm.setLoaded(false);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_UPDATE_SUCCESS");
@@ -398,7 +448,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             for (Invitation invitation : form.getPendingInvitations()) {
                 if (invitation.isUnknownUser()) {
                     // Mail pattern matcher
-                    Matcher matcher = this.mailPattern.matcher(invitation.getId());
+                    Matcher matcher = this.mailPattern.matcher(StringUtils.trim(invitation.getId()));
 
                     if (!matcher.matches()) {
                         Object[] errorArgs = new Object[]{invitation.getId()};
@@ -467,8 +517,101 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
+    public InvitationRequestsForm getInvitationRequestsForm(PortalControllerContext portalControllerContext) throws PortletException {
+        // Form
+        InvitationRequestsForm form = this.applicationContext.getBean(InvitationRequestsForm.class);
+
+        if (!form.isLoaded()) {
+            // Workspace identifier
+            String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
+
+            // Member idenfiers
+            Set<String> memberIdentifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
+
+            // Invitation requests
+            List<InvitationRequest> requests = this.repository.getInvitationRequests(portalControllerContext, workspaceId, memberIdentifiers);
+            form.setRequests(requests);
+
+            // Invitation requests identifiers
+            Set<String> requestIdentifiers = new HashSet<String>();
+            for (InvitationRequest request : requests) {
+                if (InvitationState.SENT.equals(request.getState())) {
+                    requestIdentifiers.add(request.getId());
+                }
+            }
+            form.setIdentifiers(requestIdentifiers);
+
+            form.setLoaded(true);
+        }
+
+        return form;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void sortInvitationRequests(PortalControllerContext portalControllerContext, InvitationRequestsForm form, String sort, boolean alt)
+            throws PortletException {
+        MemberObjectComparator comparator = this.applicationContext.getBean(MemberObjectComparator.class, sort, alt);
+        Collections.sort(form.getRequests(), comparator);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateInvitationRequests(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationRequestsForm form)
+            throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Workspace identifier
+        String workspaceId = options.getWorkspaceId();
+
+        // Update
+        this.repository.updateInvitationRequests(portalControllerContext, workspaceId, form.getRequests());
+
+        // Member idenfiers
+        MembersForm membersForm = this.applicationContext.getBean(MembersForm.class);
+        membersForm.setLoaded(false);
+        Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
+
+        // Invitations count
+        int count = this.repository.getInvitationsCount(portalControllerContext, workspaceId);
+
+        // Update model
+        options.setRequestsCount(count);
+        List<InvitationRequest> requests = this.repository.getInvitationRequests(portalControllerContext, workspaceId, identifiers);
+        form.setRequests(requests);
+        form.setLoaded(false);
+        InvitationsForm invitationsForm = this.applicationContext.getBean(InvitationsForm.class);
+        invitationsForm.setLoaded(false);
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_REQUESTS_UPDATE_SUCCESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getInvitationRequestsHelp(PortalControllerContext portalControllerContext) throws PortletException {
+        return this.repository.getHelp(portalControllerContext, INVITATION_REQUESTS_HELP_LOCATION_PROPERTY);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+        ApplicationContextProvider.setApplicationContext(applicationContext);
     }
 
 }

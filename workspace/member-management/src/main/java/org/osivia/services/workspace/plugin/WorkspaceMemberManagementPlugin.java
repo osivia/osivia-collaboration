@@ -1,10 +1,15 @@
 package org.osivia.services.workspace.plugin;
 
-import java.util.List;
 import java.util.Map;
 
+import javax.portlet.PortletContext;
+
 import org.osivia.portal.api.customization.CustomizationContext;
-//import org.osivia.portal.api.menubar.MenubarModule;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.services.workspace.plugin.forms.AcceptWorkspaceInvitationFormFilter;
+import org.osivia.services.workspace.plugin.forms.DeclineWorkspaceInvitationFormFilter;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
@@ -21,12 +26,11 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
     private static final String PLUGIN_NAME = "workspace-member-management.plugin";
 
 
-    /** Menubar module. */
+//    /** Menubar module. */
 //    private final MenubarModule menubarModule;
-    /** Accept workspace invitation form filter. */
-    private final FormFilter acceptFormFilter;
-    /** Decline workspace invitation form filter. */
-    private final FormFilter declineFormFilter;
+
+    /** Internationalization bundle factory. */
+    private final IBundleFactory bundleFactory;
 
 
     /**
@@ -35,8 +39,11 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
     public WorkspaceMemberManagementPlugin() {
         super();
 //        this.menubarModule = new WorkspaceMemberManagementMenubarModule();
-        this.acceptFormFilter = new AcceptWorkspaceInvitationFormFilter();
-        this.declineFormFilter = new DeclineWorkspaceInvitationFormFilter();
+
+        // Internationalization bundle factory
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
 
@@ -54,17 +61,40 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
      */
     @Override
     protected void customizeCMSProperties(String customizationId, CustomizationContext context) {
+        // Portlet context
+        PortletContext portletContext = getPortletContext();
+
 //        // Menubar modules
 //        List<MenubarModule> menubarModules = this.getMenubarModules(context);
 //        menubarModules.add(this.menubarModule);
 
         // Form filters
         Map<String, FormFilter> formFilters = this.getFormFilters(context);
-        formFilters.put(this.acceptFormFilter.getId(), this.acceptFormFilter);
-        formFilters.put(this.declineFormFilter.getId(), this.declineFormFilter);
+        formFilters.put(AcceptWorkspaceInvitationFormFilter.IDENTIFIER, new AcceptWorkspaceInvitationFormFilter(portletContext));
+        formFilters.put(DeclineWorkspaceInvitationFormFilter.IDENTIFIER, new DeclineWorkspaceInvitationFormFilter());
 
-        // FIXME temporaire
-        formFilters.put("SET_ACTOR", new SetActorFormFilter());
+        // List templates
+        this.customizeListTemplates(context);
+    }
+
+
+    /**
+     * Customize list templates.
+     *
+     * @param context customization context
+     */
+    private void customizeListTemplates(CustomizationContext context) {
+//        // Internationalization bundle
+//        Bundle bundle = this.bundleFactory.getBundle(context.getLocale());
+//
+//        // List templates
+//        Map<String, ListTemplate> templates = this.getListTemplates(context);
+//
+//        // Workspace member requests
+//        ListTemplate requests = new ListTemplate("workspace-member-requests", bundle.getString("LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS"),
+//                "dublincore, toutatice, toutatice_space, webcontainer");
+//        requests.setModule(new RequestsListTemplateModule(this.getPortletContext()));
+//        templates.put(requests.getKey(), requests);
     }
 
 }

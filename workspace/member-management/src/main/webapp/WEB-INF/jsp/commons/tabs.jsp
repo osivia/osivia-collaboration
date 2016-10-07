@@ -41,16 +41,18 @@
                 </a>
             </li>
             
-            <%-- <li role="presentation" class="${tab eq 'requests' ? 'active' : ''}">
-                <a href="${requestsUrl}">
-                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_TAB_REQUESTS" /></span>
-                    
-                    <!-- Badge -->
-                    <c:if test="${options.requestsCount gt 0}">
-                        <span class="badge">${options.requestsCount}</span>
-                    </c:if>
-                </a>
-            </li> --%>
+            <c:if test="${options.workspaceType ne 'INVITATION'}">
+                <li role="presentation" class="${tab eq 'requests' ? 'active' : ''}">
+                    <a href="${requestsUrl}">
+                        <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_TAB_REQUESTS" /></span>
+                        
+                        <!-- Badge -->
+                        <c:if test="${options.requestsCount gt 0}">
+                            <span class="badge">${options.requestsCount}</span>
+                        </c:if>
+                    </a>
+                </li>
+            </c:if>
         </ul>
     </div>
     

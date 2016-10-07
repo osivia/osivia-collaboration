@@ -1,7 +1,5 @@
 package org.osivia.services.workspace.portlet.model;
 
-import java.util.Date;
-
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -9,24 +7,21 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * Invitation java-bean.
+ * Invitation request java-bean.
  * 
  * @author Cédric Krommenhoek
- * @see MemberObject
+ * @see InvitationRequest
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class Invitation extends MemberObject {
+public class InvitationRequest extends MemberObject {
 
     /** Document. */
     private Document document;
     /** State. */
     private InvitationState state;
-    /** Acknowledgment date. */
-    private Date acknowledgmentDate;
-
-    /** Unknown user indicator. */
-    private final boolean unknownUser;
+    /** Accepted invitation request indicator. */
+    private boolean accepted;
 
 
     /**
@@ -34,19 +29,17 @@ public class Invitation extends MemberObject {
      * 
      * @param person person
      */
-    public Invitation(Person person) {
+    public InvitationRequest(Person person) {
         super(person);
-        this.unknownUser = false;
     }
 
     /**
-     * Constructor used when no person was found with this UID.
+     * Constructor.
      * 
-     * @param uid person UID
+     * @param uid user identifier
      */
-    public Invitation(String uid) {
+    public InvitationRequest(String uid) {
         super(uid);
-        this.unknownUser = true;
     }
 
 
@@ -87,30 +80,21 @@ public class Invitation extends MemberObject {
     }
 
     /**
-     * Getter for acknowledgmentDate.
+     * Getter for accepted.
      * 
-     * @return the acknowledgmentDate
+     * @return the accepted
      */
-    public Date getAcknowledgmentDate() {
-        return acknowledgmentDate;
+    public boolean isAccepted() {
+        return accepted;
     }
 
     /**
-     * Setter for acknowledgmentDate.
+     * Setter for accepted.
      * 
-     * @param acknowledgmentDate the acknowledgmentDate to set
+     * @param accepted the accepted to set
      */
-    public void setAcknowledgmentDate(Date acknowledgmentDate) {
-        this.acknowledgmentDate = acknowledgmentDate;
-    }
-
-    /**
-     * Getter for unknownUser.
-     * 
-     * @return the unknownUser
-     */
-    public boolean isUnknownUser() {
-        return unknownUser;
+    public void setAccepted(boolean accepted) {
+        this.accepted = accepted;
     }
 
 }

@@ -19,6 +19,6 @@
         <service-name>CustomizationModulesRepository</service-name>
         <service-class>org.osivia.portal.api.customization.ICustomizationModulesRepository</service-class>
         <service-ref>osivia:service=CustomizationService</service-ref>
-    </service>    
+    </service>
 
 </portlet-app>

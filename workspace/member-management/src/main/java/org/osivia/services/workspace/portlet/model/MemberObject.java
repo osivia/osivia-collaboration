@@ -1,5 +1,8 @@
 package org.osivia.services.workspace.portlet.model;
 
+import java.util.Date;
+
+import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.directory.v2.model.Person;
 
 /**
@@ -13,6 +16,12 @@ public abstract class MemberObject {
     private String displayName;
     /** Extra. */
     private String extra;
+    /** Date. */
+    private Date date;
+    /** Role. */
+    private WorkspaceRole role;
+    /** Edited indicator. */
+    private boolean edited;
     /** Deleted indicator. */
     private boolean deleted;
 
@@ -84,24 +93,6 @@ public abstract class MemberObject {
 
 
     /**
-     * Getter for deleted.
-     * 
-     * @return the deleted
-     */
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    /**
-     * Setter for deleted.
-     * 
-     * @param deleted the deleted to set
-     */
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    /**
      * Getter for displayName.
      * 
      * @return the displayName
@@ -135,6 +126,78 @@ public abstract class MemberObject {
      */
     public void setExtra(String extra) {
         this.extra = extra;
+    }
+
+    /**
+     * Getter for date.
+     * 
+     * @return the date
+     */
+    public Date getDate() {
+        return date;
+    }
+
+    /**
+     * Setter for date.
+     * 
+     * @param date the date to set
+     */
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    /**
+     * Getter for role.
+     * 
+     * @return the role
+     */
+    public WorkspaceRole getRole() {
+        return role;
+    }
+
+    /**
+     * Setter for role.
+     * 
+     * @param role the role to set
+     */
+    public void setRole(WorkspaceRole role) {
+        this.role = role;
+    }
+
+    /**
+     * Getter for edited.
+     * 
+     * @return the edited
+     */
+    public boolean isEdited() {
+        return edited;
+    }
+
+    /**
+     * Setter for edited.
+     * 
+     * @param edited the edited to set
+     */
+    public void setEdited(boolean edited) {
+        this.edited = edited;
+    }
+
+    /**
+     * Getter for deleted.
+     * 
+     * @return the deleted
+     */
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    /**
+     * Setter for deleted.
+     * 
+     * @param deleted the deleted to set
+     */
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     /**

@@ -10,8 +10,12 @@ import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.services.workspace.portlet.model.Invitation;
+import org.osivia.services.workspace.portlet.model.InvitationRequest;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.Member;
+
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
  * Member management repository interface.
@@ -20,8 +24,10 @@ import org.osivia.services.workspace.portlet.model.Member;
  */
 public interface MemberManagementRepository {
 
-    /** Model identifier. */
-    String MODEL_ID = "invitation";
+    /** Invitation model identifier. */
+    String INVITATION_MODEL_ID = "invitation";
+    /** Request model identifier. */
+    String REQUEST_MODEL_ID = "invitation-request";
 
     /** Workspace identifier property. */
     String WORKSPACE_IDENTIFIER_PROPERTY = "workspaceId";
@@ -42,13 +48,23 @@ public interface MemberManagementRepository {
 
 
     /**
-     * Get workspace identifier.
+     * Get current workspace identifier.
      * 
      * @param portalControllerContext portal controller context
      * @return workspace identifier
      * @throws PortletException
      */
-    String getWorkspaceId(PortalControllerContext portalControllerContext) throws PortletException;
+    String getCurrentWorkspaceId(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Get current workspace type.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return workspace type
+     * @throws PortletException
+     */
+    WorkspaceType getCurrentWorkspaceType(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**
@@ -168,12 +184,28 @@ public interface MemberManagementRepository {
 
 
     /**
-     * Accept invitation.
+     * Get invitation requests.
      * 
      * @param portalControllerContext portal controller context
-     * @param variables task variables
+     * @param workspaceId workspace identifier
+     * @param memberIdentifiers member identifiers
+     * @return invitation requests
+     * @throws PortletException
      */
-    void acceptInvitation(PortalControllerContext portalControllerContext, Map<String, String> variables);
+    List<InvitationRequest> getInvitationRequests(PortalControllerContext portalControllerContext, String workspaceId, Set<String> memberIdentifiers)
+            throws PortletException;
+
+
+    /**
+     * Update invitation requests.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspaceId workspace identifier
+     * @param invitationRequests invitation requests
+     * @throws PortletException
+     */
+    void updateInvitationRequests(PortalControllerContext portalControllerContext, String workspaceId, List<InvitationRequest> invitationRequests)
+            throws PortletException;
 
 
     /**
@@ -185,5 +217,38 @@ public interface MemberManagementRepository {
      * @throws PortletException
      */
     String getHelp(PortalControllerContext portalControllerContext, String property) throws PortletException;
+
+
+    /**
+     * Accept invitation.
+     * 
+     * @param nuxeoController Nuxeo controller
+     * @param variables task variables
+     */
+    void acceptInvitation(NuxeoController nuxeoController, Map<String, String> variables);
+
+
+    /**
+     * Check if a pending invitation exists.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspaceId workspace identifier
+     * @param uid user identifier
+     * @param invitationRequest invitation request indicator
+     * @return true if a pending invitation exists
+     * @throws PortletException
+     */
+    boolean isPendingInvitation(PortalControllerContext portalControllerContext, String workspaceId, String uid, boolean invitationRequest) throws PortletException;
+
+
+    /**
+     * Create invitation request.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspaceId workspace identifier
+     * @param uid user identifier
+     * @throws PortletException
+     */
+    void createInvitationRequest(PortalControllerContext portalControllerContext, String workspaceId, String uid) throws PortletException;
 
 }
