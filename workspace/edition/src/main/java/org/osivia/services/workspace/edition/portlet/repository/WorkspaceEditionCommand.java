@@ -271,14 +271,16 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
      * @throws Exception
      */
     private void createTaskbarItems(DocumentService documentService, Document room) throws Exception {
-        // Workspace identifier
-        String identifier = room.getString("webc:url");
+        // Workspace shortname
+        String shortname = room.getString("webc:url");
+        // WebId prefix
+        String webIdPrefix = ITaskbarService.WEBID_PREFIX + shortname + "_";
 
         for (TaskbarItem item : this.items) {
             String type = item.getDocumentType();
             String title = this.bundle.getString(item.getKey(), item.getCustomizedClassLoader());
             String name = this.generateNameFromTitle(title);
-            String webId = identifier + "_" + StringUtils.lowerCase(item.getId());
+            String webId = webIdPrefix + StringUtils.lowerCase(item.getId());
 
             // Properties
             PropertyMap properties = new PropertyMap();
