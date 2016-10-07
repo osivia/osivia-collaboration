@@ -25,14 +25,14 @@ public class WorkspaceEditionForm {
     private String title;
     /** Workspace description. */
     private String description;
-    /** Workspace type. */
+    /** Workspace root type indicator. */
+    private boolean root;
+    /** Workspace type (only for root). */
     private WorkspaceType type;
     /** Workspace vignette. */
     private Vignette vignette;
     /** Workspace tasks. */
     private List<Task> tasks;
-    /** Workspace action. */
-    private String action;
     /** Workspace task creation form. */
     private TaskCreationForm taskCreationForm;
 
@@ -83,6 +83,24 @@ public class WorkspaceEditionForm {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * Getter for root.
+     * 
+     * @return the root
+     */
+    public boolean isRoot() {
+        return root;
+    }
+
+    /**
+     * Setter for root.
+     * 
+     * @param root the root to set
+     */
+    public void setRoot(boolean root) {
+        this.root = root;
     }
 
     /**
@@ -137,24 +155,6 @@ public class WorkspaceEditionForm {
      */
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
-    }
-
-    /**
-     * Getter for action.
-     * 
-     * @return the action
-     */
-    public String getAction() {
-        return action;
-    }
-
-    /**
-     * Setter for action.
-     * 
-     * @param action the action to set
-     */
-    public void setAction(String action) {
-        this.action = action;
     }
 
     /**

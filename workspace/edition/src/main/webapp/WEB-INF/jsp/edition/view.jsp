@@ -59,28 +59,30 @@
                 </div>
                 
                 <!-- Type -->
-                <spring:bind path="type">
-                    <div class="form-group required ${status.error ? 'has-error' : ''}">
-                        <form:label path="type" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_TYPE" /></form:label>
-                        <div class="col-sm-9">
-                            <c:forEach var="type" items="${editionForm.types}">
-                                <div class="radio">
-                                    <label>
-                                        <form:radiobutton path="type" value="${type.id}" />
-                                        <span class="label label-${type.color}">
-                                            <i class="${type.icon}"></i>
-                                            <span><op:translate key="${type.key}" /></span>
-                                        </span>
-                                    </label>
-                                    <p class="text-muted">
-                                        <span><op:translate key="${type.key}_HELP" /></span>
-                                    </p>
-                                </div>
-                            </c:forEach>
-                            <form:errors path="type" cssClass="help-block" />
+                <c:if test="${editionForm.root}">
+                    <spring:bind path="type">
+                        <div class="form-group required ${status.error ? 'has-error' : ''}">
+                            <form:label path="type" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_TYPE" /></form:label>
+                            <div class="col-sm-9">
+                                <c:forEach var="type" items="${editionForm.types}">
+                                    <div class="radio">
+                                        <label>
+                                            <form:radiobutton path="type" value="${type.id}" />
+                                            <span class="label label-${type.color}">
+                                                <i class="${type.icon}"></i>
+                                                <span><op:translate key="${type.key}" /></span>
+                                            </span>
+                                        </label>
+                                        <p class="text-muted">
+                                            <span><op:translate key="${type.key}_HELP" /></span>
+                                        </p>
+                                    </div>
+                                </c:forEach>
+                                <form:errors path="type" cssClass="help-block" />
+                            </div>
                         </div>
-                    </div>
-                </spring:bind>
+                    </spring:bind>
+                </c:if>
             </div>
             
             <div class="col-lg-4">

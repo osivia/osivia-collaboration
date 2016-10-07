@@ -108,13 +108,20 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
 
         // Workspace document
         Document workspace = this.repository.getWorkspace(portalControllerContext);
-        // Visibility
-        String visibility = workspace.getString("ttcs:visibility");
 
         form.setTitle(workspace.getTitle());
         form.setDescription(workspace.getString("dc:description"));
-        if (StringUtils.isNotEmpty(visibility)) {
-            form.setType(WorkspaceType.valueOf(visibility));
+
+        // Workspace root type indicator
+        boolean root = "Workspace".equals(workspace.getType());
+        form.setRoot(root);
+
+        // Type
+        if (root) {
+            String visibility = workspace.getString("ttcs:visibility");
+            if (StringUtils.isNotEmpty(visibility)) {
+                form.setType(WorkspaceType.valueOf(visibility));
+            }
         }
 
         // Vignette
@@ -125,10 +132,6 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         List<Task> tasks = this.repository.getTasks(portalControllerContext, workspace.getPath());
         Collections.sort(tasks, this.tasksComparator);
         form.setTasks(tasks);
-
-
-        form.setAction("test"); // FIXME
-
 
         return form;
     }

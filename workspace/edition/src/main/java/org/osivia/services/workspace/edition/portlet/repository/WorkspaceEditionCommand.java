@@ -117,7 +117,9 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
 
         documentService.setProperty(workspace, "dc:title", this.form.getTitle());
         documentService.setProperty(workspace, "dc:description", this.form.getDescription());
-        documentService.setProperty(workspace, "ttcs:visibility", type.getId());
+        if (this.form.isRoot()) {
+            documentService.setProperty(workspace, "ttcs:visibility", type.getId());
+        }
 
         if (WorkspaceType.PUBLIC.equals(type)) {
             // Grant read permission to everyone

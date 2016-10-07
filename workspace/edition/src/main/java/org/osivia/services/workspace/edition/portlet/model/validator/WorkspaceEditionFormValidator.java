@@ -37,8 +37,14 @@ public class WorkspaceEditionFormValidator implements Validator {
      */
     @Override
     public void validate(Object target, Errors errors) {
+        // Target form
+        WorkspaceEditionForm form = (WorkspaceEditionForm) target;
+
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "title", "NotEmpty");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", "NotEmpty");
+
+        if (form.isRoot()) {
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", "NotEmpty");
+        }
     }
 
 }
