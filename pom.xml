@@ -11,8 +11,8 @@
 
 
     <properties>
-        <toutatice.version>4.4.0-RC6</toutatice.version>
-        <directory.version>4.4.0-RC10</directory.version>
+        <toutatice.version>4.4.0-SNAPSHOT</toutatice.version>
+        <directory.version>4.4.0-SNAPSHOT</directory.version>
     </properties>
 
 
