@@ -438,15 +438,21 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         if (tokenizer) {
             criteria.setMail(filter);
         } else {
+        	// no joker allowed inside the filter
+        	filter = filter.replace("*", "");
+        	
+        	// append joker at the end
             String tokenizedFilter = filter + "*";
-            String tokenizedFilterSubStr = "*" +filter + "*";
+            
+            //String tokenizedFilterSubStr = "*" +filter + "*";
 
             criteria.setUid(tokenizedFilter);
             criteria.setSn(tokenizedFilter);
             criteria.setGivenName(tokenizedFilter);
             criteria.setMail(tokenizedFilter);
+            criteria.setCn(tokenizedFilter);
             
-            criteria.setDisplayName(tokenizedFilterSubStr);
+            criteria.setDisplayName(tokenizedFilter);
         }
 
         return this.personService.findByCriteria(criteria);
