@@ -138,7 +138,7 @@ public class CreateWorkspaceFormFilter implements FormFilter {
         Name dn = this.personService.getEmptyPerson().buildDn(user);
         
         // Granted user indicator
-        boolean granted = this.roleService.hasRole(dn, "role_workspace_management");
+        boolean granted = this.roleService.hasRole(dn, "role_workspace-management");
         
         if (granted) {
             // Variables
