@@ -12,7 +12,7 @@ $JQry(function() {
 		options["ajax"] = {
 			url: url,
 			dataType: "json",
-			delay: 250,
+			delay: 1000,
 			data: function(params) {
 				return {
 					filter: params.term,

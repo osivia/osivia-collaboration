@@ -10,6 +10,9 @@ import java.util.regex.Pattern;
 
 import javax.portlet.PortletException;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
@@ -40,8 +43,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Workspace member management service implementation.
@@ -253,6 +254,12 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         // Member idenfiers
         Set<String> memberIdentifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
+        Set<String> invitationsIdentifiers = new HashSet<String>();
+        // Invitation identifiers
+        for(Invitation invit : getInvitationsForm(portalControllerContext).getInvitations()) {
+        	invitationsIdentifiers.add(invit.getId());
+        }
+        
         // Requests identifiers
         Set<String> requestIdentifiers;
         if (invitationOnly) {
@@ -272,11 +279,15 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 for (Person person : persons) {
                     // Already member indicator
                     boolean alreadyMember = memberIdentifiers.contains(person.getUid());
+                    
+                    // Already invited
+                    boolean alreadyInvited = invitationsIdentifiers.contains(person.getUid());
+                    
                     // Existing request indicator
                     boolean existingRequest = !invitationOnly && requestIdentifiers.contains(person.getUid());
 
                     // Search result
-                    JSONObject object = getSearchResult(person, alreadyMember, existingRequest, bundle);
+                    JSONObject object = getSearchResult(person, alreadyMember, alreadyInvited, existingRequest, bundle);
 
                     array.add(object);
                 }
@@ -301,7 +312,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * @param bundle internationalization bundle
      * @return JSON object
      */
-    protected JSONObject getSearchResult(Person person, boolean alreadyMember, boolean existingRequest, Bundle bundle) {
+    protected JSONObject getSearchResult(Person person, boolean alreadyMember, boolean alreadyInvited, boolean existingRequest, Bundle bundle) {
         JSONObject object = new JSONObject();
         object.put("id", person.getUid());
 
@@ -325,7 +336,12 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         if (alreadyMember) {
             displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ALREADY_MEMBER_INDICATOR");
             object.put("disabled", true);
-        } else if (existingRequest) {
+        } 
+        else if (alreadyInvited) {
+            displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ALREADY_INVITED");
+            object.put("disabled", true);
+        }
+        else if (existingRequest) {
             displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_EXISTING_INVITATION_REQUEST_INDICATOR");
             object.put("disabled", true);
         }
@@ -333,7 +349,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         object.put("displayName", displayName);
         object.put("extra", extra);
 
-        object.put("avatar", person.getAvatar().getUrl());
+        //object.put("avatar", person.getAvatar().getUrl());
 
         return object;
     }
