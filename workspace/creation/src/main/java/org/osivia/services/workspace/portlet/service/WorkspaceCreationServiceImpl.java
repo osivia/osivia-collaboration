@@ -1,5 +1,7 @@
 package org.osivia.services.workspace.portlet.service;
 
+import java.util.Locale;
+
 import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -67,8 +69,10 @@ public class WorkspaceCreationServiceImpl implements WorkspaceCreationService, A
      */
     @Override
     public void create(PortalControllerContext portalControllerContext, WorkspaceCreationForm form) throws PortletException {
+        // Locale
+        Locale locale = portalControllerContext.getHttpServletRequest().getLocale();
         // Bundle
-        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+        Bundle bundle = this.bundleFactory.getBundle(locale);
 
         // Set invitation only workspace type if empty
         if (form.getType() == null) {

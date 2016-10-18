@@ -6,18 +6,19 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.SortedSet;
 
+import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.directory.v2.service.WorkspaceService;
-import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -33,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.portlet.context.PortletContextAware;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
@@ -44,9 +46,10 @@ import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
  * @author Cédric Krommenhoek
  * @see WorkspaceCreationRepository
  * @see ApplicationContextAware
+ * @see PortletContextAware
  */
 @Repository
-public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationRepository, ApplicationContextAware {
+public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationRepository, ApplicationContextAware, PortletContextAware {
 
     /** Properties file name. */
     private static final String PROPERTIES_FILE_NAME = "workspace-creation.properties";
@@ -74,6 +77,8 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
 
     /** Application context. */
     private ApplicationContext applicationContext;
+    /** Portlet context. */
+    private PortletContext portletContext;
 
 
     /** Properties. */
@@ -104,15 +109,21 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
      */
     @Override
     public Document createDocument(PortalControllerContext portalControllerContext, WorkspaceCreationForm form) throws PortletException {
+        // HTTP servlet request
+        HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
         // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        NuxeoController nuxeoController = new NuxeoController(this.portletContext);
+        nuxeoController.setServletRequest(servletRequest);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
+
+        // Locale
+        Locale locale = servletRequest.getLocale();
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(locale);
 
         // Workspace parent path
         String parentPath = this.properties.getProperty(PARENT_PATH_PROPERTY);
 
-        // Bundle
-        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
         // Default taskbar items
         SortedSet<TaskbarItem> items;
@@ -133,13 +144,11 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
      */
     @Override
     public void createGroups(PortalControllerContext portalControllerContext, WorkspaceCreationForm form, Document workspace) throws PortletException {
-        // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();
-
         // Owner
         Person owner;
         if (StringUtils.isEmpty(form.getOwner())) {
-            owner = (Person) request.getAttribute(Constants.ATTR_LOGGED_PERSON_2);
+            String user = portalControllerContext.getHttpServletRequest().getRemoteUser();
+            owner = this.personService.getPerson(user);
         } else {
             owner = this.personService.getPerson(form.getOwner());
         }
@@ -158,7 +167,8 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
     @Override
     public void updatePermissions(PortalControllerContext portalControllerContext, WorkspaceCreationForm form, Document workspace) throws PortletException {
         // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        NuxeoController nuxeoController = new NuxeoController(this.portletContext);
+        nuxeoController.setServletRequest(portalControllerContext.getHttpServletRequest());
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
         // Workspace identifier
@@ -200,6 +210,15 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setPortletContext(PortletContext portletContext) {
+        this.portletContext = portletContext;
     }
 
 }
