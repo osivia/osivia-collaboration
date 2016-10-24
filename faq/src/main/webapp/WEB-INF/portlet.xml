@@ -30,13 +30,11 @@
 			<keywords>Portlet,Nuxeo, FAQ, CMS</keywords>
         </portlet-info>
         
-
-        
 	</portlet>
 	
 
 	<portlet>
-		<portlet-name>osivia-services-faqPlugin</portlet-name>
+		<portlet-name>toutatice-faq-plugin</portlet-name>
 		<portlet-class>fr.toutatice.faq.plugin.FaqPlugin</portlet-class>
 		<expiration-cache>180</expiration-cache>
 

@@ -22,11 +22,6 @@
         </portlet-info>
     </portlet>
     
-
-    <portlet>
-        <portlet-name>osivia-services-faqPlugin</portlet-name>
-    </portlet>
-
     <service>
         <service-name>CustomizationModulesRepository</service-name>
         <service-class>org.osivia.portal.api.customization.ICustomizationModulesRepository</service-class>

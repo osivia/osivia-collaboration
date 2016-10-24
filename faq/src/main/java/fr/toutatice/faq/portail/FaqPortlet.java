@@ -17,7 +17,6 @@
 package fr.toutatice.faq.portail;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,17 +33,17 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
 import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.portal.core.cms.CMSException;
+import org.osivia.portal.core.cms.CMSPublicationInfos;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
@@ -52,7 +51,6 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 import fr.toutatice.portail.cms.nuxeo.api.PortletErrorHandler;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentAttachmentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
@@ -144,7 +142,7 @@ public class FaqPortlet extends CMSPortlet {
 
     /**
      * {@inheritDoc}
-     * @throws IOException 
+     * @throws IOException
      */
     @Override
     protected void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException {
@@ -152,106 +150,84 @@ public class FaqPortlet extends CMSPortlet {
 
         try {
             // Nuxeo controller
-            //NuxeoController nuxeoController = new NuxeoController(request, response, this.getPortletContext());
-                        
+            NuxeoController nuxeoController = new NuxeoController(request, response, getPortletContext());
+
             // Current window
-        	PortalWindow window = WindowFactory.getWindow(request);
+            PortalWindow window = WindowFactory.getWindow(request);
 
             // Path
             String path = request.getParameter("curItemPath");
-            
+
             if (path == null) {
 
                 path = window.getProperty(Constants.WINDOW_PROP_URI);
             }
-            
-            NuxeoDocumentContext documentContext = null;
-            
+
+            Document document = null;
+
             if(path != null) {
-            	documentContext = NuxeoController.getDocumentContext(request, response, getPortletContext(), path);
+                document = nuxeoController.fetchDocument(path);
             }
             else {
-            	documentContext = NuxeoController.getDocumentContext(request, response, getPortletContext());
+                document = nuxeoController.getCurrentDoc();
             }
-            
-            
-
 
             // Contextualization indicator
             if ("1".equals(window.getProperty("osivia.cms.contextualization"))) {
                 request.setAttribute("contextualization", "1");
             }
-            
-            
 
-            if (documentContext != null) {
-                // Fetch
-                Document document = documentContext.getDoc();
-                
-                NuxeoDocumentContext faqContext = null;
-                Document faq;
-                Document question;
-
+            if (document != null) {
                 // Type
                 String type = document.getType();
 
                 if ("Question".equals(type)) {
                     // FAQ question
-                    question = document;
+                    Document question = document;
+
+                    nuxeoController.setCurrentDoc(question);
+                    response.setTitle(question.getTitle());
+                    nuxeoController.insertContentMenuBarItems();
 
                     // FAQ folder path
-                    String faqPath = NuxeoController.getParentPath(document.getPath());
-
+                    String faqPath = nuxeoController.getParentPath(question.getPath());
                     // Fetch FAQ folder
-                    
-                    faqContext = NuxeoController.getDocumentContext(request, response, getPortletContext(), faqPath);
-                    
-                    faq = faqContext.getDoc();
-                    
-                    
+                    Document faqDoc = nuxeoController.fetchDocument(faqPath);
+
+                    List<PortletPathItem> portletPath = new ArrayList<PortletPathItem>();
+                    addPathItem(portletPath, question);
+                    addPathItem(portletPath, faqDoc);
+                    request.setAttribute("osivia.portletPath", portletPath);
+
+                    // DTO
+                    DocumentDTO questionDto = this.documentDAO.toDTO(question);
+                    generateAttachments(nuxeoController, question, questionDto);
+
+                    request.setAttribute("question", questionDto);
                 } else if ("FaqFolder".equals(type)) {
                     // FAQ folder
-                	faqContext = documentContext;
-                    faq = document;
-                    question = null;
-                } else {
-                    // Error : not a FAQ type
-                    errorMessageKey = "ERROR_NOT_FAQ_TYPE";
-                    faq = null;
-                    question = null;
-                }
+                    Document faq = document;
 
-                if (faq != null) {
+                    CMSPublicationInfos faqPublicationInfos = NuxeoController.getCMSService().getPublicationInfos(nuxeoController.getCMSCtx(), faq.getPath());
+
                     // Get all questions
                     String faqPath = faq.getPath();
-                    String faqLiveId = faqContext.getPublicationInfos(BasicPublicationInfos.class).getLiveId();
-                    
-                    NuxeoController nuxeoController = new NuxeoController(request, response, getPortletContext());
+                    String faqLiveId = faqPublicationInfos.getLiveId();
+
                     NuxeoQueryFilterContext queryContext = nuxeoController.getQueryFilterContextForPath(faqPath);
                     INuxeoCommand command = new FaqFetchChildrenCommand(queryContext, faqLiveId);
                     Documents questions = (Documents) nuxeoController.executeNuxeoCommand(command);
 
                     // For CMS generic functions (such as rich text conversions)
-                    if (question != null) {
-                        nuxeoController.setCurrentDoc(question);
-                    } else {
-                        nuxeoController.setCurrentDoc(faq);
-                    }
+                    nuxeoController.setCurrentDoc(faq);
 
                     // Breadcrumb
                     List<PortletPathItem> portletPath = new ArrayList<PortletPathItem>();
-                    if (question != null) {
-                        this.addPathItem(portletPath, question);
-                    }
-                    this.addPathItem(portletPath, faq);
+                    addPathItem(portletPath, faq);
                     request.setAttribute("osivia.portletPath", portletPath);
 
                     // Title
-                    if (question != null) {
-                        response.setTitle(question.getTitle());
-                    } else {
-                        response.setTitle(faq.getTitle());
-                    }
+                    response.setTitle(faq.getTitle());
 
                     // Menubar
                     nuxeoController.insertContentMenuBarItems();
@@ -260,25 +236,17 @@ public class FaqPortlet extends CMSPortlet {
                     DocumentDTO faqDTO = this.documentDAO.toDTO(faq);
                     request.setAttribute("faq", faqDTO);
 
-                    if (question != null) {
-                        // DTO
-                        DocumentDTO dto = this.documentDAO.toDTO(question);
-                        this.generateAttachments(nuxeoController, question, dto);
-
-                        // VO
-                        Question vo = new Question();
-                        BeanUtils.copyProperties(vo, dto);
-                        vo.setMessage(nuxeoController.transformHTMLContent(question.getString("note:note")));
-
-                        request.setAttribute("question", vo);
-                    }
-
                     List<DocumentDTO> questionsDTO = new ArrayList<DocumentDTO>(questions.size());
                     for (Document doc : questions.list()) {
                         DocumentDTO dto = this.documentDAO.toDTO(doc);
+                        dto.getProperties().put("url", nuxeoController.getLink(doc).getUrl());
+                        generateAttachments(nuxeoController, doc, dto);
                         questionsDTO.add(dto);
                     }
                     request.setAttribute("questions", questionsDTO);
+                } else {
+                    // Error : not a FAQ type
+                    errorMessageKey = "ERROR_NOT_FAQ_TYPE";
                 }
             } else {
                 // Error : path undefined
@@ -286,11 +254,9 @@ public class FaqPortlet extends CMSPortlet {
             }
         } catch (NuxeoException e) {
             PortletErrorHandler.handleGenericErrors(response, e);
-        } catch (IllegalAccessException e) {
-        	throw new PortletException(e);
-		} catch (InvocationTargetException e) {
-			throw new PortletException(e);
-		}
+        } catch (CMSException e) {
+            throw new PortletException(e);
+        }
 
         response.setContentType("text/html");
 
