@@ -38,6 +38,7 @@ import org.springframework.web.portlet.context.PortletContextAware;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
@@ -114,6 +115,7 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(this.portletContext);
         nuxeoController.setServletRequest(servletRequest);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
         // Locale
@@ -169,6 +171,7 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(this.portletContext);
         nuxeoController.setServletRequest(portalControllerContext.getHttpServletRequest());
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
         // Workspace identifier
