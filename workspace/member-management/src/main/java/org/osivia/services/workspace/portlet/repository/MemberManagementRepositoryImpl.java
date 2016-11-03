@@ -899,7 +899,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * @param portalControllerContext portal controller context
      * @return Nuxeo document
      */
-    private Document getCurrentWorkspace(PortalControllerContext portalControllerContext) {
+    protected Document getCurrentWorkspace(PortalControllerContext portalControllerContext) {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
 
@@ -933,7 +933,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * @param workspaceId workspace identifier
      * @return Nuxeo document
      */
-    private Document getWorkspace(PortalControllerContext portalControllerContext, String workspaceId) {
+    protected Document getWorkspace(PortalControllerContext portalControllerContext, String workspaceId) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
@@ -964,7 +964,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * @param request request indicator
      * @param uid user identifier
      */
-    private void updateInvitationAcl(PortalControllerContext portalControllerContext, String workspaceId, boolean request, String uid) {
+    protected void updateInvitationAcl(PortalControllerContext portalControllerContext, String workspaceId, boolean request, String uid) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
