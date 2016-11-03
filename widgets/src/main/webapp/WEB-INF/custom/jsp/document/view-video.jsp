@@ -9,7 +9,6 @@
 <c:set var="url"><ttc:documentLink document="${document}" displayContext="download" /></c:set>
 <c:set var="name" value="${document.properties['file:content']['name']}" />
 <c:set var="size" value="${document.properties['file:content']['length']}" />
-<c:set var="description" value="${document.properties['dc:description']}" />
 <c:set var="mimeType" value="${document.properties['file:content']['mime-type']}" />
 
 
@@ -18,20 +17,6 @@
 
 
 <div class="video">
-    <!-- Description -->
-    <c:if test="${not empty description}">
-        <p>${description}</p>
-    </c:if>
-    
-    <p>
-        <!-- Title -->
-        <i class="${document.type.glyph}"></i>
-        <a href="${url}" class="no-ajax-link">${name}</a>
-        
-        <!-- Size -->
-        <span>(<ttc:fileSize size="${size}" />)</span>
-    </p>
-
     <!-- Video player -->
     <c:choose>
         <c:when test="${(mimeType eq 'video/mp4') or (mimeType eq 'video/webm') or (mimeType eq 'video/ogg')}">
