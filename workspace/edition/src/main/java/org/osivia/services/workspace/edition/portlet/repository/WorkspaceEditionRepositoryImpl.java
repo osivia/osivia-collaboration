@@ -2,8 +2,6 @@ package org.osivia.services.workspace.edition.portlet.repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -14,17 +12,14 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
-import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.taskbar.ITaskbarService;
-import org.osivia.portal.api.taskbar.TaskbarFactory;
 import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
-import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.Vignette;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
@@ -200,6 +195,9 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
                 task.setOrder(order++);
             }
 
+            // Custom task indicator
+            task.setCustom(taskbarTask.getKey() == null);
+
             tasks.add(task);
         }
         for (TaskbarItem item : availableItems) {
@@ -225,19 +223,8 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
-        // Bundle
-        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-
-        // Default taskbar items
-        SortedSet<TaskbarItem> items;
-        try {
-            items = this.taskbarService.getDefaultItems(portalControllerContext);
-        } catch (PortalException e) {
-            throw new PortletException(e);
-        }
-
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(WorkspaceEditionCommand.class, options, form, items, bundle);
+        INuxeoCommand command = this.applicationContext.getBean(WorkspaceEditionCommand.class, options, form);
         nuxeoController.executeNuxeoCommand(command);
 
 
@@ -247,35 +234,6 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         } catch (NuxeoException e) {
             // Do nothing: maybe the vignette does not exist
         }
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Task createTask(PortalControllerContext portalControllerContext, TaskCreationForm form) throws PortletException {
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-
-        // Document types
-        Map<String, DocumentType> documentTypes = nuxeoController.getCMSItemTypes();
-
-        // Type
-        String createdType = form.getType();
-        DocumentType documentType = documentTypes.get(createdType);
-
-        // Taskbar factory
-        TaskbarFactory factory = this.taskbarService.getFactory();
-        // Taskbar item
-        TaskbarItem item = factory.createCmsTaskbarItem(null, null, documentType.getGlyph(), createdType);
-
-        // New task
-        Task task = this.applicationContext.getBean(Task.class, item);
-        task.setDisplayName(form.getTitle());
-        task.setDescription(form.getDescription());
-
-        return task;
     }
 
 

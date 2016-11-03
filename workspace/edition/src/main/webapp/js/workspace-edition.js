@@ -1,10 +1,12 @@
 $JQry(function() {
 
 	// Sortable
-	$JQry(".workspace-edition-sortable").sortable({
-		connectWith : ".workspace-edition-sortable",
+	$JQry("ul.workspace-edition-sortable").sortable({
+		cancel: "a",
+		connectWith : "ul.workspace-edition-sortable",
 		cursor : "move",
 		forcePlaceholderSize : true,
+		items: "li",
 		placeholder : "list-sortable-placeholder bg-info",
 		tolerance : "pointer",
 		
@@ -46,42 +48,4 @@ $JQry(function() {
 		$submit.click();
 	});
 	
-	
-	// Auto hide modal when task creation is successfully completed
-	$JQry("#osivia-modal .workspace-task-creation").each(function(index, element) {
-		var $element = $JQry(element),
-			$modal = $JQry("#osivia-modal");
-		
-		if ($element.data("close-modal")) {
-			$modal.modal("hide");
-		}
-	});
-	
 });
-
-
-/**
- * Create workspace task.
- * 
- * @param args arguments: target.id|submit.id
- */
-function createWorkspaceTask(args) {
-	var array = args.split("|"),
-		$modal = $JQry("#osivia-modal"),
-		$source = $modal.find("form#taskCreationForm"),
-		$target = $JQry("#" + array[0]),
-		$submit = $JQry("#" + array[1]);
-	
-	if ($source.find("input[name=valid]").val()) {
-		// Title
-		$target.find("input[name='taskCreationForm.title']").val($source.find("input[name=title]").val());
-		// Description
-		$target.find("input[name='taskCreationForm.description']").val($source.find("textarea[name=description]").val());
-		// Type
-		$target.find("input[name='taskCreationForm.type']").val($source.find("input[name=type]:checked").val());
-		// Valid indicator
-		$target.find("input[name='taskCreationForm.valid']").val($source.find("input[name=valid]").val());
-		
-		$submit.click();
-	}
-}

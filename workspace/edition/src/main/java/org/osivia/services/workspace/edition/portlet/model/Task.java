@@ -25,6 +25,8 @@ public class Task extends TaskbarItemDecorator {
     private boolean active;
     /** Order. */
     private int order;
+    /** Custom task indicator. */
+    private boolean custom;
 
 
     /**
@@ -143,6 +145,24 @@ public class Task extends TaskbarItemDecorator {
      */
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    /**
+     * Getter for custom.
+     * 
+     * @return the custom
+     */
+    public boolean isCustom() {
+        return custom;
+    }
+
+    /**
+     * Setter for custom.
+     * 
+     * @param custom the custom to set
+     */
+    public void setCustom(boolean custom) {
+        this.custom = custom;
     }
 
 }

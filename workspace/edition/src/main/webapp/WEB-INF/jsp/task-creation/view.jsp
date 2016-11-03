@@ -12,10 +12,8 @@
 <portlet:actionURL name="save" var="saveUrl" />
 
 
-<div class="workspace-task-creation" data-close-modal="${closeModal}">
+<div class="workspace-task-creation">
     <form:form action="${saveUrl}" method="post" modelAttribute="taskCreationForm" cssClass="form-horizontal" role="form">
-        <form:hidden path="valid" />
-    
         <!-- Title -->
         <c:set var="placeholder"><op:translate key="WORKSPACE_CREATE_TASK_TITLE_PLACEHOLDER" /></c:set>
         <spring:bind path="title">

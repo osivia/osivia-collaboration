@@ -1,6 +1,6 @@
-package org.osivia.services.workspace.common.portlet.model.validator;
+package org.osivia.services.workspace.task.creation.portlet.model.validator;
 
-import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
+import org.osivia.services.workspace.task.creation.portlet.model.TaskCreationForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;

@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.task.creation.portlet.controller;
 
+import java.io.IOException;
 import java.util.SortedMap;
 
 import javax.portlet.ActionRequest;
@@ -14,8 +15,8 @@ import javax.portlet.RenderResponse;
 import org.apache.commons.lang.BooleanUtils;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
-import org.osivia.services.workspace.common.portlet.model.validator.TaskCreationFormValidator;
+import org.osivia.services.workspace.task.creation.portlet.model.TaskCreationForm;
+import org.osivia.services.workspace.task.creation.portlet.model.validator.TaskCreationFormValidator;
 import org.osivia.services.workspace.task.creation.portlet.service.WorkspaceTaskCreationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -85,17 +86,20 @@ public class WorkspaceTaskCreationController implements PortletContextAware {
      * @param form workspace task creation form model attribute
      * @param result binding result
      * @throws PortletException
+     * @throws IOException
      */
     @ActionMapping("save")
     public void save(ActionRequest request, ActionResponse response, @ModelAttribute("taskCreationForm") @Validated TaskCreationForm form,
-            BindingResult result) throws PortletException {
+            BindingResult result) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 
         if (!result.hasErrors()) {
             this.service.save(portalControllerContext, form);
 
-            response.setRenderParameter("closeModal", String.valueOf(true));
+            // Redirection
+            String url = this.service.getWorkspaceUrl(portalControllerContext);
+            response.sendRedirect(url);
         }
     }
 

@@ -11,7 +11,10 @@ import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
-import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.services.workspace.task.creation.portlet.model.TaskCreationForm;
 import org.osivia.services.workspace.task.creation.portlet.model.comparator.AlphaOrderComparator;
 import org.osivia.services.workspace.task.creation.portlet.repository.WorkspaceTaskCreationRepository;
 import org.springframework.beans.BeansException;
@@ -38,9 +41,17 @@ public class WorkspaceTaskCreationServiceImpl implements WorkspaceTaskCreationSe
     @Autowired
     private AlphaOrderComparator alphaOrderComparator;
 
+    /** Portal URL factory. */
+    @Autowired
+    private IPortalUrlFactory portalUrlFactory;
+
     /** Bundle factory. */
     @Autowired
     private IBundleFactory bundleFactory;
+
+    /** Notifications service. */
+    @Autowired
+    private INotificationsService notificationsService;
 
 
     /** Application context. */
@@ -92,8 +103,27 @@ public class WorkspaceTaskCreationServiceImpl implements WorkspaceTaskCreationSe
      */
     @Override
     public void save(PortalControllerContext portalControllerContext, TaskCreationForm form) throws PortletException {
-        // Update model
-        form.setValid(true);
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Task creation
+        this.repository.create(portalControllerContext, form);
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_TASK_CREATION_SUCCESS", form.getTitle());
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getWorkspaceUrl(PortalControllerContext portalControllerContext) throws PortletException {
+        // Workspace path
+        String path = this.repository.getWorkspacePath(portalControllerContext);
+
+        return this.portalUrlFactory.getCMSUrl(portalControllerContext, null, path, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null, null);
     }
 
 

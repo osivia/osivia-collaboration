@@ -193,8 +193,6 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         DocumentType annonce = new DocumentType("Annonce", false, false, false, false, false, true, new ArrayList<String>(0), null,
                 "glyphicons glyphicons-newspaper");
         types.put(annonce.getName(), annonce);
-        this.addSubType(context, "Workspace", annonce.getName());
-        this.addSubType(context, "Room", annonce.getName());
         this.addSubType(context, "PortalSite", annonce.getName());
         this.addSubType(context, "PortalPage", annonce.getName());
 
@@ -202,15 +200,11 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         DocumentType annonceFolder = new DocumentType("AnnonceFolder", true, true, false, false, false, true, Arrays.asList(annonce.getName()), null,
                 "glyphicons glyphicons-newspaper");
         types.put(annonceFolder.getName(), annonceFolder);
-        this.addSubType(context, "Workspace", annonceFolder.getName());
-        this.addSubType(context, "Room", annonceFolder.getName());
 
         // Document URL container
         DocumentType urlContainer = new DocumentType("DocumentUrlContainer", true, true, true, true, false, true, Arrays.asList("DocumentUrlContainer",
                 "ContextualLink"), null, "glyphicons glyphicons-bookmark");
         types.put("DocumentUrlContainer", urlContainer);
-        this.addSubType(context, "Workspace", urlContainer.getName());
-        this.addSubType(context, "Room", urlContainer.getName());
     }
 
 

@@ -22,6 +22,7 @@ import javax.portlet.ResourceResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.PortletRequestDataBinder;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
@@ -96,20 +98,11 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
      *
      * @param request render request
      * @param response render response
-     * @param options options model attribute
      * @return view path
      * @throws PortletException
      */
     @RenderMapping
-    public String view(RenderRequest request, RenderResponse response, @ModelAttribute("options") WorkspaceEditionOptions options)
-            throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        // Task creation URL
-        String taskCreationUrl = this.service.getTaskCreationUrl(portalControllerContext, options);
-        request.setAttribute("taskCreationUrl", taskCreationUrl);
-
+    public String view(RenderRequest request, RenderResponse response) throws PortletException {
         return "view";
     }
 
@@ -212,23 +205,6 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
 
 
     /**
-     * Create task action mapping.
-     *
-     * @param request action request
-     * @param response action response
-     * @param form workspace edition form model attribute
-     * @throws PortletException
-     */
-    @ActionMapping(name = "save", params = "create")
-    public void createTask(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form) throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        this.service.createTask(portalControllerContext, form);
-    }
-
-
-    /**
      * Cancel action mapping.
      *
      * @param request action request
@@ -246,6 +222,44 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
         // Redirection
         String url = this.service.getWorkspaceUrl(portalControllerContext, options);
         response.sendRedirect(url);
+    }
+
+
+    /**
+     * Hide task action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param index task index request parameter
+     * @param form workspace edition form model attribute
+     * @throws PortletException
+     */
+    @ActionMapping(name = "hide")
+    public void hide(ActionRequest request, ActionResponse response, @RequestParam("index") String index,
+            @ModelAttribute("editionForm") WorkspaceEditionForm form) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.hide(portalControllerContext, form, NumberUtils.toInt(index));
+    }
+
+
+    /**
+     * Show task action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param index task index request parameter
+     * @param form workspace edition form model attribute
+     * @throws PortletException
+     */
+    @ActionMapping(name = "show")
+    public void show(ActionRequest request, ActionResponse response, @RequestParam("index") String index,
+            @ModelAttribute("editionForm") WorkspaceEditionForm form) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.show(portalControllerContext, form, NumberUtils.toInt(index));
     }
 
 

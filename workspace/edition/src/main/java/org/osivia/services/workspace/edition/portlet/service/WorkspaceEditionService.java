@@ -78,16 +78,6 @@ public interface WorkspaceEditionService {
 
 
     /**
-     * Create task.
-     * 
-     * @param portalControllerContext
-     * @param form workspace edition form
-     * @throws PortletException
-     */
-    void createTask(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
-
-
-    /**
      * Delete workspace and return redirection URL.
      * 
      * @param portalControllerContext portal controller context
@@ -99,6 +89,28 @@ public interface WorkspaceEditionService {
 
 
     /**
+     * Hide task.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form workspace edition form
+     * @param index task index
+     * @throws PortletException
+     */
+    void hide(PortalControllerContext portalControllerContext, WorkspaceEditionForm form, int index) throws PortletException;
+
+
+    /**
+     * Show task.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form workspace edition form
+     * @param index task index
+     * @throws PortletException
+     */
+    void show(PortalControllerContext portalControllerContext, WorkspaceEditionForm form, int index) throws PortletException;
+
+
+    /**
      * Get workspace URL.
      *
      * @param portalControllerContext portal controller context
@@ -107,16 +119,5 @@ public interface WorkspaceEditionService {
      * @throws PortletException
      */
     String getWorkspaceUrl(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException;
-
-
-    /**
-     * Get workspace task creation URL.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param options options
-     * @return URL
-     * @throws PortletException
-     */
-    String getTaskCreationUrl(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException;
 
 }

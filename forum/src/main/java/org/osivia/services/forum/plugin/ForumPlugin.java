@@ -108,8 +108,6 @@ public class ForumPlugin extends AbstractPluginPortlet {
         DocumentType forum = new DocumentType("Forum", true, true, false, false, true, true, Arrays.asList(thread.getName()), null,
                 "glyphicons glyphicons-conversation");
         types.put(forum.getName(), forum);
-        this.addSubType(context, "Workspace", forum.getName());
-        this.addSubType(context, "Room", forum.getName());
     }
 
 

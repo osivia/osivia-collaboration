@@ -3,9 +3,7 @@ package org.osivia.services.workspace.edition.portlet.service;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.portlet.PortletException;
 
@@ -18,15 +16,12 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.portal.api.urls.PortalUrlType;
-import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.Vignette;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 import org.osivia.services.workspace.edition.portlet.model.comparator.TasksComparator;
 import org.osivia.services.workspace.edition.portlet.repository.WorkspaceEditionRepository;
-import org.osivia.services.workspace.task.creation.portlet.repository.WorkspaceTaskCreationRepository;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -215,30 +210,6 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
      * {@inheritDoc}
      */
     @Override
-    public void createTask(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
-        // Task creation form
-        TaskCreationForm taskCreationForm = form.getTaskCreationForm();
-
-        if ((taskCreationForm != null) && taskCreationForm.isValid()) {
-            // Tasks
-            List<Task> tasks = form.getTasks();
-
-            // New task
-            Task task = this.repository.createTask(portalControllerContext, taskCreationForm);
-            task.setActive(true);
-            task.setOrder(tasks.size() + 1);
-
-            // Update model
-            tasks.add(task);
-            form.setTaskCreationForm(null);
-        }
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String delete(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException {
         // Delete
         this.repository.delete(portalControllerContext, options);
@@ -259,9 +230,8 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
      * {@inheritDoc}
      */
     @Override
-    public String getWorkspaceUrl(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException {
-        return this.portalUrlFactory.getCMSUrl(portalControllerContext, null, options.getPath(), null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null,
-                null, null);
+    public void hide(PortalControllerContext portalControllerContext, WorkspaceEditionForm form, int index) throws PortletException {
+        this.changeActivation(portalControllerContext, form, index, false);
     }
 
 
@@ -269,19 +239,47 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
      * {@inheritDoc}
      */
     @Override
-    public String getTaskCreationUrl(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException {
-        // Window properties
-        Map<String, String> properties = new HashMap<>();
-        properties.put(WorkspaceTaskCreationRepository.WORKSPACE_TYPE_WINDOW_PROPERTY, options.getType());
+    public void show(PortalControllerContext portalControllerContext, WorkspaceEditionForm form, int index) throws PortletException {
+        this.changeActivation(portalControllerContext, form, index, true);
+    }
 
-        String url;
-        try {
-            url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-workspace-task-creation-instance", properties,
-                    PortalUrlType.MODAL);
-        } catch (PortalException e) {
-            throw new PortletException(e);
+
+    /**
+     * Change task activation state.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form workspace edition form
+     * @param index task index
+     * @param active activation indicator
+     * @throws PortletException
+     */
+    private void changeActivation(PortalControllerContext portalControllerContext, WorkspaceEditionForm form, int index, boolean active)
+            throws PortletException {
+        // Selected task
+        Task task = form.getTasks().get(index);
+
+        // Active indicator
+        task.setActive(active);
+
+        // Order
+        if (active) {
+            task.setOrder(form.getTasks().size());
+        } else {
+            task.setOrder(0);
         }
-        return url;
+
+        // Sort task
+        this.sort(portalControllerContext, form);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getWorkspaceUrl(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException {
+        return this.portalUrlFactory.getCMSUrl(portalControllerContext, null, options.getPath(), null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null,
+                null, null);
     }
 
 

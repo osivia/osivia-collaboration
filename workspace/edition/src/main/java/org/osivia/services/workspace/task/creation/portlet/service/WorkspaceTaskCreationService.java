@@ -6,7 +6,7 @@ import javax.portlet.PortletException;
 
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
+import org.osivia.services.workspace.task.creation.portlet.model.TaskCreationForm;
 
 /**
  * Workspace task creation service interface.
@@ -43,5 +43,15 @@ public interface WorkspaceTaskCreationService {
      * @throws PortletException
      */
     void save(PortalControllerContext portalControllerContext, TaskCreationForm form) throws PortletException;
+
+
+    /**
+     * Get workspace URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @return URL
+     * @throws PortletException
+     */
+    String getWorkspaceUrl(PortalControllerContext portalControllerContext) throws PortletException;
 
 }

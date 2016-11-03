@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.common.portlet.model;
+package org.osivia.services.workspace.task.creation.portlet.model;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -19,8 +19,6 @@ public class TaskCreationForm {
     private String description;
     /** Type. */
     private String type;
-    /** Valid indicator. */
-    private boolean valid;
 
 
     /**
@@ -83,24 +81,6 @@ public class TaskCreationForm {
      */
     public void setType(String type) {
         this.type = type;
-    }
-
-    /**
-     * Getter for valid.
-     * 
-     * @return the valid
-     */
-    public boolean isValid() {
-        return valid;
-    }
-
-    /**
-     * Setter for valid.
-     * 
-     * @param valid the valid to set
-     */
-    public void setValid(boolean valid) {
-        this.valid = valid;
     }
 
 }

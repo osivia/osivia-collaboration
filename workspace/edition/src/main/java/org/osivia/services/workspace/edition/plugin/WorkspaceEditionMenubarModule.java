@@ -20,9 +20,12 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.menubar.MenubarContainer;
 import org.osivia.portal.api.menubar.MenubarDropdown;
+import org.osivia.portal.api.menubar.MenubarGroup;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.urls.PortalUrlType;
+import org.osivia.services.workspace.task.creation.portlet.repository.WorkspaceTaskCreationRepository;
 
 /**
  * Workspace edition menubar module.
@@ -122,7 +125,45 @@ public class WorkspaceEditionMenubarModule implements MenubarModule {
     @Override
     public void customizeDocument(PortalControllerContext portalControllerContext, List<MenubarItem> menubar,
             DocumentContext<? extends EcmDocument> documentContext) throws PortalException {
-        // Do nothing
+        if (documentContext != null) {
+            // Document
+            Document document = (Document) documentContext.getDoc();
+            if (document != null) {
+                // Check type
+                String type = document.getType();
+                if ("Workspace".equals(type) || "Room".equals(type)) {
+                    // Check permissions
+                    BasicPermissions permissions = documentContext.getPermissions(BasicPermissions.class);
+                    if (permissions.isManageableByUser()) {
+                        // HTTP servlet request
+                        HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
+                        // Bundle
+                        Bundle bundle = this.bundleFactory.getBundle(servletRequest.getLocale());
+
+
+                        // Window properties
+                        Map<String, String> properties = new HashMap<>();
+                        properties.put(WorkspaceTaskCreationRepository.WORKSPACE_PATH_WINDOW_PROPERTY, document.getPath());
+                        properties.put(WorkspaceTaskCreationRepository.WORKSPACE_TYPE_WINDOW_PROPERTY, type);
+
+                        // URL
+                        String url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-workspace-task-creation-instance",
+                                properties, PortalUrlType.MODAL);
+
+
+                        // Menubar item
+                        MenubarItem item = new MenubarItem("ADD", bundle.getString("ADD"), "halflings halflings-plus", MenubarGroup.CMS, 2, "#", null, null,
+                                null);
+                        item.setAjaxDisabled(true);
+                        item.getData().put("target", "#osivia-modal");
+                        item.getData().put("load-url", url);
+                        item.getData().put("title", bundle.getString("WORKSPACE_CREATE_TASK_MODAL_TITLE"));
+
+                        menubar.add(item);
+                    }
+                }
+            }
+        }
     }
 
 }

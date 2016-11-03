@@ -25,7 +25,7 @@ import org.springframework.web.servlet.view.JstlView;
  * @author Cédric Krommenhoek
  */
 @Configuration
-@ComponentScan(basePackages = {"org.osivia.services.workspace.edition.portlet", "org.osivia.services.workspace.common.portlet"})
+@ComponentScan(basePackages = "org.osivia.services.workspace.edition.portlet")
 public class WorkspaceEditionConfiguration {
 
     /**

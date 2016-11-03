@@ -4,7 +4,6 @@ import java.io.File;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Constants;
@@ -16,9 +15,7 @@ import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.taskbar.ITaskbarService;
-import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.Vignette;
@@ -45,10 +42,6 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
     private final WorkspaceEditionOptions options;
     /** Form. */
     private final WorkspaceEditionForm form;
-    /** Default taskbar items. */
-    private final SortedSet<TaskbarItem> items;
-    /** Internationalization bundle. */
-    private final Bundle bundle;
 
 
     /**
@@ -56,15 +49,11 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
      *
      * @param options options
      * @param form form
-     * @param items default taskbar items
-     * @param bundle internationalization bundle
      */
-    public WorkspaceEditionCommand(WorkspaceEditionOptions options, WorkspaceEditionForm form, SortedSet<TaskbarItem> items, Bundle bundle) {
+    public WorkspaceEditionCommand(WorkspaceEditionOptions options, WorkspaceEditionForm form) {
         super();
         this.options = options;
         this.form = form;
-        this.items = items;
-        this.bundle = bundle;
     }
 
 
@@ -204,6 +193,9 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
                 // Properties
                 PropertyMap properties = new PropertyMap();
                 properties.set("dc:title", title);
+                if (StringUtils.isNotBlank(task.getDescription())) {
+                    properties.set("dc:description", task.getDescription());
+                }
                 properties.set("ttc:showInMenu", true);
                 if (webId != null) {
                     properties.set("ttc:webid", webId);
@@ -211,22 +203,6 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
 
                 // Creation
                 Document document = documentService.createDocument(workspace, type, name, properties);
-
-                if (StringUtils.isNotBlank(task.getDescription())) {
-                    documentService.setProperty(document, "dc:description", task.getDescription());
-                }
-
-                if ("Room".equals(type)) {
-                    // Update document
-                    OperationRequest request = nuxeoSession.newRequest("Document.FetchLiveDocument");
-                    request.setHeader(Constants.HEADER_NX_SCHEMAS, "*");
-                    request.set("value", document.getPath());
-                    document = (Document) request.execute();
-
-                    // Taskbar items
-                    this.createTaskbarItems(documentService, document);
-                }
-
 
                 // Update task
                 task.setPath(document.getPath());
@@ -263,34 +239,6 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
     }
 
 
-    /**
-     * Create taskbar items.
-     *
-     * @param documentService document service
-     * @param room room document
-     * @throws Exception
-     */
-    private void createTaskbarItems(DocumentService documentService, Document room) throws Exception {
-        // Workspace shortname
-        String shortname = room.getString("webc:url");
-        // WebId prefix
-        String webIdPrefix = ITaskbarService.WEBID_PREFIX + shortname + "_";
-
-        for (TaskbarItem item : this.items) {
-            String type = item.getDocumentType();
-            String title = this.bundle.getString(item.getKey(), item.getCustomizedClassLoader());
-            String name = this.generateNameFromTitle(title);
-            String webId = webIdPrefix + StringUtils.lowerCase(item.getId());
-
-            // Properties
-            PropertyMap properties = new PropertyMap();
-            properties.set("dc:title", title);
-            properties.set("ttc:showInMenu", true);
-            properties.set("ttc:webid", webId);
-
-            documentService.createDocument(room, type, name, properties);
-        }
-    }
 
 
     /**

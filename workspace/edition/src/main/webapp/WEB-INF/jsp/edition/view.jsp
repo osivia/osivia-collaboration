@@ -24,12 +24,6 @@
 
 <div class="workspace-edition">
     <form:form id="${namespace}-workspace-edition-form" action="${saveUrl}" method="post" enctype="multipart/form-data" modelAttribute="editionForm" cssClass="form-horizontal" role="form">
-        <!-- Task creation form -->
-        <form:hidden path="taskCreationForm.title" />
-        <form:hidden path="taskCreationForm.description" />
-        <form:hidden path="taskCreationForm.type" />
-        <form:hidden path="taskCreationForm.valid" />
-
         <div class="row">
             <div class="col-lg-8">
                 <!-- Title -->
@@ -94,7 +88,10 @@
                         <c:choose>
                             <c:when test="${editionForm.vignette.updated}">
                                 <!-- Preview -->
-                                <portlet:resourceURL id="preview" var="previewUrl" />
+                                <jsp:useBean id="currentDate" class="java.util.Date" />
+                                <portlet:resourceURL id="preview" var="previewUrl">
+                                    <portlet:param name="ts" value="${currentDate.time}" />
+                                </portlet:resourceURL>
                                 <p>
                                     <img src="${previewUrl}" alt="" class="img-responsive">
                                 </p>
@@ -160,21 +157,29 @@
                                                 <form:hidden path="tasks[${varStatus.index}].active" />
                                                 <form:hidden path="tasks[${varStatus.index}].order" />
                                             
-                                                <i class="${task.icon}"></i>
-                                                <span>${task.displayName}</span>
+                                                <div class="clearfix">
+                                                    <div class="pull-left ${task.custom ? 'text-info' : ''}">
+                                                        <i class="${task.icon}"></i>
+                                                        <span>${task.displayName}</span>
+                                                        
+                                                        <c:if test="${task.custom}">
+                                                            <small><op:translate key="WORKSPACE_CUSTOM_TASK_INDICATOR" /></small>
+                                                        </c:if>
+                                                    </div>
+                                                    
+                                                    <div class="pull-right">
+                                                        <portlet:actionURL name="hide" var="url">
+                                                            <portlet:param name="index" value="${varStatus.index}" />
+                                                        </portlet:actionURL>
+                                                        <a href="${url}" class="small">
+                                                            <span><op:translate key="WORKSPACE_HIDE_TASK" /></span>
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             </li>
                                         </c:if>
                                     </c:forEach>
                                 </ul>
-                            </div>
-                            <div class="panel-footer">
-                                <!-- Create -->
-                                <c:set var="title"><op:translate key="WORKSPACE_CREATE_TASK_MODAL_TITLE" /></c:set>
-                                <button type="button" class="btn btn-default" data-target="#osivia-modal" data-load-url="${taskCreationUrl}" data-callback-function="createWorkspaceTask" data-callback-function-args="${namespace}-workspace-edition-form|${namespace}-create-task" data-title="${title}">
-                                    <i class="glyphicons glyphicons-plus"></i>
-                                    <span><op:translate key="WORKSPACE_CREATE_TASK" /></span>
-                                </button>
-                                <input id="${namespace}-create-task" type="submit" name="create" class="hidden">
                             </div>
                         </div>
                     </div>
@@ -191,8 +196,25 @@
                                                 <form:hidden path="tasks[${varStatus.index}].active" />
                                                 <form:hidden path="tasks[${varStatus.index}].order" />
                                             
-                                                <i class="${task.icon}"></i>
-                                                <span>${task.displayName}</span>
+                                                <div class="clearfix">
+                                                    <div class="pull-left ${task.custom ? 'text-info' : ''}">
+                                                        <i class="${task.icon}"></i>
+                                                        <span>${task.displayName}</span>
+                                                        
+                                                        <c:if test="${task.custom}">
+                                                            <small><op:translate key="WORKSPACE_CUSTOM_TASK_INDICATOR" /></small>
+                                                        </c:if>
+                                                    </div>
+                                                    
+                                                    <div class="pull-right">
+                                                        <portlet:actionURL name="show" var="url">
+                                                            <portlet:param name="index" value="${varStatus.index}" />
+                                                        </portlet:actionURL>
+                                                        <a href="${url}" class="small">
+                                                            <span><op:translate key="WORKSPACE_SHOW_TASK" /></span>
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             </li>
                                         </c:if>
                                     </c:forEach>

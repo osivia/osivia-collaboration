@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.osivia.portal.api.portlet.Refreshable;
-import org.osivia.services.workspace.common.portlet.model.TaskCreationForm;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -33,8 +32,6 @@ public class WorkspaceEditionForm {
     private Vignette vignette;
     /** Workspace tasks. */
     private List<Task> tasks;
-    /** Workspace task creation form. */
-    private TaskCreationForm taskCreationForm;
 
     /** Workspace types. */
     private final List<WorkspaceType> types;
@@ -155,24 +152,6 @@ public class WorkspaceEditionForm {
      */
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
-    }
-
-    /**
-     * Getter for taskCreationForm.
-     *
-     * @return the taskCreationForm
-     */
-    public TaskCreationForm getTaskCreationForm() {
-        return taskCreationForm;
-    }
-
-    /**
-     * Setter for taskCreationForm.
-     *
-     * @param taskCreationForm the taskCreationForm to set
-     */
-    public void setTaskCreationForm(TaskCreationForm taskCreationForm) {
-        this.taskCreationForm = taskCreationForm;
     }
 
     /**
