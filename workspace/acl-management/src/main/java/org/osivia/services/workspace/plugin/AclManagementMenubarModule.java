@@ -1,6 +1,5 @@
 package org.osivia.services.workspace.plugin;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +13,7 @@ import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.cms.EcmDocument;
-import org.osivia.portal.api.cms.PublicationInfos;
 import org.osivia.portal.api.cms.impl.BasicPermissions;
-import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -88,8 +85,7 @@ public class AclManagementMenubarModule implements MenubarModule {
                 if (document != null) {
                     // Check permissions
                     BasicPermissions permissions = documentContext.getPermissions(BasicPermissions.class);
-                    BasicPublicationInfos publicationInfos = documentContext.getPublicationInfos(BasicPublicationInfos.class);
-                    if (!publicationInfos.isDraft() && permissions.isManageableByUser()) {
+                    if (permissions.isManageableByUser()) {
                         // HTTP servlet request
                         HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
                         // Bundle
@@ -102,7 +98,7 @@ public class AclManagementMenubarModule implements MenubarModule {
                         properties.put("osivia.ajaxLink", "1");
                         properties.put("osivia.back.reset", String.valueOf(true));
                         properties.put(Constants.WINDOW_PROP_URI, document.getPath());
-                        
+
                         // Menubar item
                         String id = "WORKSPACE_ACL_MANAGEMENT";
                         String title = bundle.getString("ACL_MANAGEMENT_MENUBAR_ITEM");

@@ -1,0 +1,103 @@
+//
+// Workspace participants
+// --------------------------------------------------
+
+
+@screen-sm-min: 768px;
+@screen-md-min: 992px;
+@screen-lg-min: 1200px;
+
+
+
+.workspace-participants {
+    .thumbnail {
+        img {
+            max-height: 100%;
+        }
+    }
+    
+    &.workspace-participants-full {
+        @gutter: 20px;
+        @height: @avatar-size + 2 * @avatar-padding + 100px;
+        @width: floor(@height * 16 / 9);
+        
+        @avatar-size: 90px;
+        @avatar-padding: 10px;
+        
+        .panel {
+            .panel-heading {
+                margin-bottom: floor(@avatar-size / 2) + @avatar-padding;
+                padding-top: @avatar-padding;
+                padding-bottom: @avatar-padding;
+                
+                .thumbnail {
+                    height: @avatar-size;
+                    width: @avatar-size;
+                    
+                    margin: 0 auto -(floor(@avatar-size / 2) + @avatar-padding);
+                }
+            }
+            
+            .panel-body {
+                padding-top: 0;
+                
+                h4 {
+                    margin-top: 0;
+                }
+            }
+        }
+        
+        
+        @media screen and (min-width: @screen-sm-min) {
+            ul {
+                margin: 0 floor(@gutter / -2);
+        
+                li {
+                    float: left;
+                    
+                    padding: 0 floor(@gutter / 2);
+                }
+            }
+            
+            .panel {
+                height: @height;
+                width: @width;
+            }
+        }
+        
+        
+        @media screen and (min-width: @screen-lg-min) {
+            h3 {
+                text-align: right;
+            }
+        }
+    }
+ 
+    &.workspace-participants-compact {
+        @avatar-size: 40px;
+        
+        ul {
+            float: left;
+            
+            margin-bottom: 0;
+            margin-right: 20px;
+            
+            &:last-child {
+                margin-right: 0;
+            }
+            
+            li {
+                margin-bottom: 5px;
+                
+                vertical-align: middle;
+                
+                .thumbnail {
+                    height: @avatar-size;
+                    width: @avatar-size;
+                    
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }   
+}
