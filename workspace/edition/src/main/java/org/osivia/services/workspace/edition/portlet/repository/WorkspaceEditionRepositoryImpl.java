@@ -20,8 +20,8 @@ import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
+import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
-import org.osivia.services.workspace.edition.portlet.model.Vignette;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 import org.springframework.beans.BeansException;
@@ -116,7 +116,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
-    public Vignette getVignette(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
+    public Image getVignette(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         
@@ -132,10 +132,37 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         }
 
         // Vignette
-        Vignette vignette = this.applicationContext.getBean(Vignette.class);
+        Image vignette = this.applicationContext.getBean(Image.class);
         vignette.setUrl(url);
 
         return vignette;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Image getBanner(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // Banner properties
+        PropertyMap properties = workspace.getProperties().getMap("ttcs:headImage");
+
+        // Banner URL
+        String url;
+        if ((properties == null) || StringUtils.isEmpty(properties.getString("data"))) {
+            url = null;
+        } else {
+            url = nuxeoController.createFileLink(workspace, "ttcs:headImage");
+        }
+
+        // Banner
+        Image banner = this.applicationContext.getBean(Image.class);
+        banner.setUrl(url);
+
+        return banner;
     }
 
 
@@ -233,6 +260,13 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
             nuxeoController.fetchFileContent(options.getPath(), "ttc:vignette", true);
         } catch (NuxeoException e) {
             // Do nothing: maybe the vignette does not exist
+        }
+
+        // Reload banner
+        try {
+            nuxeoController.fetchFileContent(options.getPath(), "ttcs:headImage", true);
+        } catch (NuxeoException e) {
+            // Do nothing: maybe the banner does not exist
         }
     }
 

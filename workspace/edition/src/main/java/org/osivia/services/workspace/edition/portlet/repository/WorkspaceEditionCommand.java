@@ -17,8 +17,8 @@ import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
+import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
-import org.osivia.services.workspace.edition.portlet.model.Vignette;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -124,7 +124,7 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
         }
         
         // Vignette
-        Vignette vignette = this.form.getVignette();
+        Image vignette = this.form.getVignette();
         if (vignette.isUpdated()) {
             // Temporary file
             File temporaryFile = vignette.getTemporaryFile();
@@ -137,6 +137,22 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
             temporaryFile.delete();
         } else if (vignette.isDeleted()) {
             documentService.removeBlob(workspace, "ttc:vignette");
+        }
+
+        // Banner
+        Image banner = this.form.getBanner();
+        if (banner.isUpdated()) {
+            // Temporary file
+            File temporaryFile = banner.getTemporaryFile();
+            // File blob
+            Blob blob = new FileBlob(temporaryFile);
+
+            documentService.setBlob(workspace, blob, "ttcs:headImage");
+
+            // Delete temporary file
+            temporaryFile.delete();
+        } else if (banner.isDeleted()) {
+            documentService.removeBlob(workspace, "ttcs:headImage");
         }
     }
 

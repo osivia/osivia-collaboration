@@ -29,7 +29,9 @@ public class WorkspaceEditionForm {
     /** Workspace type (only for root). */
     private WorkspaceType type;
     /** Workspace vignette. */
-    private Vignette vignette;
+    private Image vignette;
+    /** Workspace banner. */
+    private Image banner;
     /** Workspace tasks. */
     private List<Task> tasks;
 
@@ -123,7 +125,7 @@ public class WorkspaceEditionForm {
      * 
      * @return the vignette
      */
-    public Vignette getVignette() {
+    public Image getVignette() {
         return vignette;
     }
 
@@ -132,9 +134,28 @@ public class WorkspaceEditionForm {
      * 
      * @param vignette the vignette to set
      */
-    public void setVignette(Vignette vignette) {
+    public void setVignette(Image vignette) {
         this.vignette = vignette;
     }
+
+    /**
+     * Getter for banner.
+     * 
+     * @return the banner
+     */
+    public Image getBanner() {
+        return banner;
+    }
+
+    /**
+     * Setter for banner.
+     * 
+     * @param banner the banner to set
+     */
+    public void setBanner(Image banner) {
+        this.banner = banner;
+    }
+
 
     /**
      * Getter for tasks.

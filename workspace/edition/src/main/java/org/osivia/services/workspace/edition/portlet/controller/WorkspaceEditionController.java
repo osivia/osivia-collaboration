@@ -178,6 +178,42 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
 
 
     /**
+     * Upload banner action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param form
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ActionMapping(name = "save", params = "upload-banner")
+    public void uploadBanner(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form)
+            throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.uploadBanner(portalControllerContext, form);
+    }
+
+
+    /**
+     * Delete banner action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param form
+     * @throws PortletException
+     */
+    @ActionMapping(name = "save", params = "delete-banner")
+    public void deleteBanner(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.deleteBanner(portalControllerContext, form);
+    }
+
+
+    /**
      * Save action mapping.
      *
      * @param request action request
@@ -293,10 +329,49 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
      * @param form workspace edition form
      * @throws IOException
      */
-    @ResourceMapping("preview")
-    public void preview(ResourceRequest request, ResourceResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form) throws IOException {
+    @ResourceMapping("vignettePreview")
+    public void vignettePreview(ResourceRequest request, ResourceResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form)
+            throws IOException {
         // Temporary file
         File temporaryFile = form.getVignette().getTemporaryFile();
+
+        // Upload size
+        Long size = new Long(temporaryFile.length());
+        response.setContentLength(size.intValue());
+
+        // Content type
+        String contentType = response.getContentType();
+        response.setContentType(contentType);
+
+        // Character encoding
+        response.setCharacterEncoding(CharEncoding.UTF_8);
+
+        // No cache
+        response.getCacheControl().setExpirationTime(0);
+
+
+        // Input steam
+        InputStream inputSteam = new FileInputStream(temporaryFile);
+        // Output stream
+        OutputStream outputStream = response.getPortletOutputStream();
+        // Copy
+        IOUtils.copy(inputSteam, outputStream);
+        outputStream.close();
+    }
+
+
+    /**
+     * Banner preview resource mapping.
+     * 
+     * @param request resource request
+     * @param response resource response
+     * @param form workspace edition form
+     * @throws IOException
+     */
+    @ResourceMapping("bannerPreview")
+    public void bannerPreview(ResourceRequest request, ResourceResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form) throws IOException {
+        // Temporary file
+        File temporaryFile = form.getBanner().getTemporaryFile();
 
         // Upload size
         Long size = new Long(temporaryFile.length());

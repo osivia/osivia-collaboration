@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * Vignette java-bean.
+ * Image java-bean.
  * 
  * @author Cédric Krommenhoek
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class Vignette {
+public class Image {
 
     /** Vignette original URL. */
     private String url;
@@ -31,7 +31,7 @@ public class Vignette {
     /**
      * Constructor.
      */
-    public Vignette() {
+    public Image() {
         super();
     }
 

@@ -6,8 +6,8 @@ import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
-import org.osivia.services.workspace.edition.portlet.model.Vignette;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 
@@ -36,7 +36,18 @@ public interface WorkspaceEditionRepository {
      * @return vignette
      * @throws PortletException
      */
-    Vignette getVignette(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
+    Image getVignette(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
+
+
+    /**
+     * Get workspace banner.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspace workspace Nuxeo document
+     * @return banner
+     * @throws PortletException
+     */
+    Image getBanner(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
 
 
     /**

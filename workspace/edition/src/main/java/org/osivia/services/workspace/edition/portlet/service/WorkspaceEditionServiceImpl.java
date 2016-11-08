@@ -16,8 +16,8 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
-import org.osivia.services.workspace.edition.portlet.model.Vignette;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 import org.osivia.services.workspace.edition.portlet.model.comparator.TasksComparator;
@@ -120,8 +120,14 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         }
 
         // Vignette
-        Vignette vignette = this.repository.getVignette(portalControllerContext, workspace);
+        Image vignette = this.repository.getVignette(portalControllerContext, workspace);
         form.setVignette(vignette);
+        
+        // Banner
+        if (root) {
+            Image banner = this.repository.getBanner(portalControllerContext, workspace);
+            form.setBanner(banner);
+        }
 
         // Tasks
         List<Task> tasks = this.repository.getTasks(portalControllerContext, workspace.getPath());
@@ -151,7 +157,7 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
     @Override
     public void uploadVignette(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException, IOException {
         // Vignette
-        Vignette vignette = form.getVignette();
+        Image vignette = form.getVignette();
         vignette.setUpdated(true);
         vignette.setDeleted(false);
 
@@ -170,9 +176,40 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
     @Override
     public void deleteVignette(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
         // Vignette
-        Vignette vignette = form.getVignette();
+        Image vignette = form.getVignette();
         vignette.setUpdated(false);
         vignette.setDeleted(true);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void uploadBanner(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException, IOException {
+        // Banner
+        Image banner = form.getBanner();
+        banner.setUpdated(true);
+        banner.setDeleted(false);
+
+        // Temporary file
+        MultipartFile upload = form.getBanner().getUpload();
+        File temporaryFile = File.createTempFile("banner-", ".tmp");
+        temporaryFile.deleteOnExit();
+        upload.transferTo(temporaryFile);
+        banner.setTemporaryFile(temporaryFile);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteBanner(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+        // Banner
+        Image banner = form.getBanner();
+        banner.setUpdated(false);
+        banner.setDeleted(true);
     }
 
 
