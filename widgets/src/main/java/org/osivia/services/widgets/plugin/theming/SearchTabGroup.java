@@ -19,7 +19,7 @@ public class SearchTabGroup implements TabGroup {
     /** Group icon. */
     private static final String ICON = "halflings halflings-search";
     /** Group label internationalization key. */
-    private static final String LABEL_KEY = "SEARCH";
+    private static final String LABEL_KEY = "SEARCH_TAB_GROUP";
 
 
     /**
