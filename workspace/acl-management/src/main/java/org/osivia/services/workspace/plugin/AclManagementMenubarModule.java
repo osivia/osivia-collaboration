@@ -14,6 +14,7 @@ import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.cms.impl.BasicPermissions;
+import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -85,7 +86,8 @@ public class AclManagementMenubarModule implements MenubarModule {
                 if (document != null) {
                     // Check permissions
                     BasicPermissions permissions = documentContext.getPermissions(BasicPermissions.class);
-                    if (permissions.isManageableByUser()) {
+                    BasicPublicationInfos publicationInfos = documentContext.getPublicationInfos(BasicPublicationInfos.class);
+                    if (!publicationInfos.isDraft() && permissions.isManageableByUser()) {
                         // HTTP servlet request
                         HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
                         // Bundle
