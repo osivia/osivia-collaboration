@@ -248,12 +248,12 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
         try {
             // Publication infos
             CMSPublicationInfos publicationInfos = cmsService.getPublicationInfos(cmsContext, space.getPath());
-            // Parent path
-            String parentPath = publicationInfos.getParentSpaceID();
+            // Path
+            String path = publicationInfos.getParentSpaceID();
 
-            while ((workspace == null) && StringUtils.isNotBlank(parentPath)) {
+            while ((workspace == null) && StringUtils.isNotBlank(path)) {
                 // Space config
-                CMSItem spaceConfig = cmsService.getSpaceConfig(cmsContext, parentPath);
+                CMSItem spaceConfig = cmsService.getSpaceConfig(cmsContext, path);
                 // Document type
                 DocumentType documentType = spaceConfig.getType();
 
@@ -261,7 +261,8 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
                     workspace = (Document) spaceConfig.getNativeItem();
                 } else {
                     // Loop on parent path
-                    parentPath = publicationInfos.getParentSpaceID();
+                    publicationInfos = cmsService.getPublicationInfos(cmsContext, path);
+                    path = publicationInfos.getParentSpaceID();
                 }
             }
         } catch (CMSException e) {
