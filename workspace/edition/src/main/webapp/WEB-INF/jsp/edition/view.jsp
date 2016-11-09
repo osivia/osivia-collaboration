@@ -48,12 +48,15 @@
                 
                 <!-- Description -->
                 <c:set var="placeholder"><op:translate key="WORKSPACE_DESCRIPTION_PLACEHOLDER" args="${fragment}" /></c:set>
-                <div class="form-group">
-                    <form:label path="description" cssClass="col-sm-3 control-label" ><op:translate key="WORKSPACE_DESCRIPTION" /></form:label>
-                    <div class="col-sm-9">
-                        <form:textarea path="description" cssClass="form-control" placeholder="${placeholder}" />
+                <spring:bind path="description">
+                    <div class="form-group ${editionForm.root ? 'required' : ''} ${status.error ? 'has-error' : ''}">
+                        <form:label path="description" cssClass="col-sm-3 control-label" ><op:translate key="WORKSPACE_DESCRIPTION" /></form:label>
+                        <div class="col-sm-9">
+                            <form:textarea path="description" cssClass="form-control" placeholder="${placeholder}" />
+                            <form:errors path="description" cssClass="help-block" />
+                        </div>
                     </div>
-                </div>
+                </spring:bind>
                 
                 <!-- Type -->
                 <c:if test="${editionForm.root}">
