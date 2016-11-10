@@ -257,8 +257,6 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
     }
 
 
-
-
     /**
      * Generate document name from title.
      *
