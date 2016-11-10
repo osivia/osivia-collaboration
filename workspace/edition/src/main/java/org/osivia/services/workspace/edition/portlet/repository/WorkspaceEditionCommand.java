@@ -108,19 +108,19 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
         documentService.setProperty(workspace, "dc:description", this.form.getDescription());
         if (this.form.isRoot()) {
             documentService.setProperty(workspace, "ttcs:visibility", type.getId());
-        }
 
-        if (WorkspaceType.PUBLIC.equals(type)) {
-            // Grant read permission to everyone
-            documentService.addPermission(workspace, "Everyone", "Read");
-        } else {
-            // TODO pouvoir supprimer une permission unitairement
+            if (WorkspaceType.PUBLIC.equals(type)) {
+                // Grant read permission to everyone
+                documentService.addPermission(workspace, "Everyone", "Read");
+            } else {
+                // TODO pouvoir supprimer une permission unitairement
 
-            // Remove all permissions to everyone, including inheritance blocking
-            documentService.removePermissions(workspace, "Everyone", null);
+                // Remove all permissions to everyone, including inheritance blocking
+                documentService.removePermissions(workspace, "Everyone", null);
 
-            // Maintain inheritance blocking
-            documentService.setPermission(workspace, "Everyone", "Everything", false);
+                // Maintain inheritance blocking
+                documentService.setPermission(workspace, "Everyone", "Everything", false);
+            }
         }
         
         // Vignette
