@@ -22,18 +22,18 @@
 
 <div class="forum forum-thread">
     <div class="media">
-        <div class="pull-left">
+        <div class="media-left">
             <!-- Avatar -->
             <p>
                 <c:choose>
-                    <c:when test="${not empty thread.profileURL and not empty thread.person.avatar.url}">
-                        <a href="${thread.profileURL}">
+                    <c:when test="${not empty thread.profileUrl and not empty thread.person.avatar.url}">
+                        <a href="${thread.profileUrl}">
                             <img src="${thread.person.avatar.url}" alt="${thread.author}" class="media-object img-responsive">
                         </a>
                     </c:when>
                     
-                    <c:when test="${not empty thread.profileURL}">
-                        <a href="${thread.profileURL}">
+                    <c:when test="${not empty thread.profileUrl}">
+                        <a href="${thread.profileUrl}">
                             <i class="glyphicons glyphicons-user"></i>
                         </a>
                     </c:when>
@@ -51,18 +51,18 @@
             </p>
         </div>
         
-        <div>
+        <div class="media-body">
             <p>
                 <!-- Author -->
                 <c:choose>
-                    <c:when test="${not empty thread.profileURL and not empty thread.person.displayName}">
-                        <a href="${thread.profileURL}">
+                    <c:when test="${not empty thread.profileUrl and not empty thread.person.displayName}">
+                        <a href="${thread.profileUrl}">
                             <strong>${thread.person.displayName}</strong>
                         </a>
                     </c:when>
                 
-                    <c:when test="${not empty thread.profileURL}">
-                        <a href="${thread.profileURL}">
+                    <c:when test="${not empty thread.profileUrl}">
+                        <a href="${thread.profileUrl}">
                             <strong>${thread.author}</strong>
                         </a>
                     </c:when>

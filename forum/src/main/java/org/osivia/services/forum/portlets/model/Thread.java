@@ -1,11 +1,16 @@
 package org.osivia.services.forum.portlets.model;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Forum thread view object.
  *
  * @author Cédric Krommenhoek
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Thread extends ThreadObject {
 
     /** Commentable indicator. */

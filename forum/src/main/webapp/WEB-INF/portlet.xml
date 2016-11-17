@@ -13,6 +13,15 @@
 
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.forum.portlets.configuration.ForumPortletConfiguration</value>
+        </init-param>
+
         <expiration-cache>180</expiration-cache>
 
         <supports>

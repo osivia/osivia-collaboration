@@ -9,7 +9,7 @@
 
 
 <div class="media">
-    <div class="pull-left">
+    <div class="media-left">
         <!-- Avatar -->
         <p>
             <c:choose>
@@ -26,18 +26,18 @@
         </p>
     </div>
     
-    <div>
+    <div class="media-body">
         <p>
             <!-- Author -->
             <c:choose>
-                <c:when test="${not empty post.profileURL and not empty post.person.displayName}">
-                    <a href="${post.profileURL}">
+                <c:when test="${not empty post.profileUrl and not empty post.person.displayName}">
+                    <a href="${post.profileUrl}">
                         <strong>${post.person.displayName}</strong>
                     </a>
                 </c:when>
             
-                <c:when test="${not empty post.profileURL}">
-                    <a href="${post.profileURL}">
+                <c:when test="${not empty post.profileUrl}">
+                    <a href="${post.profileUrl}">
                         <strong>${post.author}</strong>
                     </a>
                 </c:when>

@@ -2,7 +2,7 @@ package org.osivia.services.forum.portlets.model;
 
 import java.util.Date;
 
-import org.osivia.portal.api.directory.entity.DirectoryPerson;
+import org.osivia.portal.api.directory.v2.model.Person;
 
 /**
  * Thread object abstract super-class.
@@ -15,10 +15,10 @@ public abstract class ThreadObject {
     private String message;
     /** Author. */
     private String author;
-    /** Directory person */
-    private DirectoryPerson person;
+    /** Person */
+    private Person person;
     /** Profile URL. */
-    private String profileURL;
+    private String profileUrl;
     /** Creation date. */
     private Date date;
 
@@ -72,8 +72,8 @@ public abstract class ThreadObject {
      * 
      * @return the person
      */
-    public DirectoryPerson getPerson() {
-        return this.person;
+    public Person getPerson() {
+        return person;
     }
 
     /**
@@ -81,26 +81,26 @@ public abstract class ThreadObject {
      * 
      * @param person the person to set
      */
-    public void setPerson(DirectoryPerson person) {
+    public void setPerson(Person person) {
         this.person = person;
     }
 
     /**
-     * Getter for profileURL.
+     * Getter for profileUrl.
      * 
-     * @return the profileURL
+     * @return the profileUrl
      */
-    public String getProfileURL() {
-        return this.profileURL;
+    public String getProfileUrl() {
+        return profileUrl;
     }
 
     /**
-     * Setter for profileURL.
+     * Setter for profileUrl.
      * 
-     * @param profileURL the profileURL to set
+     * @param profileUrl the profileUrl to set
      */
-    public void setProfileURL(String profileURL) {
-        this.profileURL = profileURL;
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
     }
 
     /**
@@ -109,7 +109,7 @@ public abstract class ThreadObject {
      * @return the date
      */
     public Date getDate() {
-        return this.date;
+        return date;
     }
 
     /**

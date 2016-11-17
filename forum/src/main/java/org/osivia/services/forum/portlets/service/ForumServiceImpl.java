@@ -3,25 +3,18 @@ package org.osivia.services.forum.portlets.service;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.PortalException;
-import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.directory.IDirectoryService;
-import org.osivia.portal.api.directory.IDirectoryServiceLocator;
-import org.osivia.portal.api.directory.entity.DirectoryPerson;
-import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.directory.v2.model.Person;
+import org.osivia.portal.api.directory.v2.service.PersonService;
+import org.osivia.portal.api.urls.Link;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -32,6 +25,10 @@ import org.osivia.services.forum.portlets.model.Thread;
 import org.osivia.services.forum.portlets.model.ThreadObject;
 import org.osivia.services.forum.portlets.model.ThreadPost;
 import org.osivia.services.forum.portlets.model.ThreadPostReplyForm;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,35 +37,41 @@ import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.domain.CommentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.domain.ThreadPostDTO;
 import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCommentsService;
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
+import fr.toutatice.portail.cms.nuxeo.api.services.tag.INuxeoTagService;
 
 /**
  * Forum service implementation.
  *
  * @author Cédric Krommenhoek
  * @see IForumService
+ * @see ApplicationContextAware
  */
 @Service
-public class ForumServiceImpl implements IForumService {
+public class ForumServiceImpl implements IForumService, ApplicationContextAware {
 
     /** Document request attribute name. */
     private static final String DOCUMENT_REQUEST_ATTRIBUTE = "osivia.forum.document";
 
-    /** Portal URL factory. */
-    private final IPortalUrlFactory portalURLFactory;
-    /** Directory service locator. */
-    private final IDirectoryServiceLocator directoryServiceLocator;
+
+    /** Nuxeo service. */
+    @Autowired
+    private INuxeoService nuxeoService;
+
+    /** Person service. */
+    @Autowired
+    private PersonService personService;
+
+
+    /** Application context. */
+    private ApplicationContext applicationContext;
 
 
     /**
-     * Default constructor.
+     * Constructor.
      */
     public ForumServiceImpl() {
         super();
-
-        // Portal URL factory
-        this.portalURLFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
-        // Directory service locator
-        this.directoryServiceLocator = Locator.findMBean(IDirectoryServiceLocator.class, IDirectoryServiceLocator.MBEAN_NAME);
     }
 
 
@@ -82,17 +85,13 @@ public class ForumServiceImpl implements IForumService {
             if (document == null) {
                 // Request
                 PortletRequest request = nuxeoController.getRequest();
-                // Response
-                PortletResponse response = nuxeoController.getResponse();
-                // Portlet context
-                PortletContext portletContext = nuxeoController.getPortletCtx();
                 // Current window
                 PortalWindow window = WindowFactory.getWindow(request);
                 // Path
                 String path = window.getProperty(Constants.WINDOW_PROP_URI);
 
                 // Nuxeo document
-                NuxeoDocumentContext nuxeoDocumentContext = NuxeoController.getDocumentContext(request, response, portletContext, path);
+                NuxeoDocumentContext nuxeoDocumentContext = nuxeoController.getDocumentContext(path);
                 document = nuxeoDocumentContext.getDoc();
 
                 // Save document in request
@@ -222,7 +221,7 @@ public class ForumServiceImpl implements IForumService {
      */
     private Thread toViewObject(NuxeoController nuxeoController, Document document) throws PortletException {
         try {
-            Thread vo = new Thread();
+            Thread vo = this.applicationContext.getBean(Thread.class);
             vo.setAuthor(document.getString("dc:creator"));
             vo.setMessage(document.getString("ttcth:message"));
 
@@ -234,17 +233,22 @@ public class ForumServiceImpl implements IForumService {
             boolean isCommentable = this.isThreadCommentable(nuxeoController, document);
             vo.setCommentable(isCommentable);
 
-            // Directory person
-            IDirectoryService directoryService = this.directoryServiceLocator.getDirectoryService();
-            if (directoryService != null) {
-                DirectoryPerson person = directoryService.getPerson(vo.getAuthor());
-                vo.setPerson(person);
+            // Person
+            Person person = this.personService.getPerson(vo.getAuthor());
+            vo.setPerson(person);
 
-                // Profile URL
-                if (person != null) {
-                    String profileURL = this.getUserProfilePageURL(nuxeoController, vo.getAuthor(), person.getDisplayName());
-                    vo.setProfileURL(profileURL);
-                }
+            // Profile URL
+            if (person != null) {
+                // Tag service
+                INuxeoTagService tagService = this.nuxeoService.getTagService();
+
+                // Display name
+                String displayName = StringUtils.defaultIfEmpty(person.getDisplayName(), vo.getAuthor());
+
+                // Profile link
+                Link link = tagService.getUserProfileLink(nuxeoController, vo.getAuthor(), displayName);
+
+                vo.setProfileUrl(link.getUrl());
             }
 
             return vo;
@@ -263,7 +267,7 @@ public class ForumServiceImpl implements IForumService {
      */
     private ThreadPost toViewObject(NuxeoController nuxeoController, ThreadPostDTO dto) throws PortletException {
         try {
-            ThreadPost vo = new ThreadPost();
+            ThreadPost vo = this.applicationContext.getBean(ThreadPost.class);
             BeanUtils.copyProperties(vo, dto);
             vo.setMessage(dto.getContent());
             vo.setDate(dto.getCreationDate());
@@ -302,17 +306,22 @@ public class ForumServiceImpl implements IForumService {
      * @param vo view-object
      */
     private void addDirectoryPerson(NuxeoController nuxeoController, ThreadObject vo) {
-        // Directory person
-        IDirectoryService directoryService = this.directoryServiceLocator.getDirectoryService();
-        if (directoryService != null) {
-            DirectoryPerson person = directoryService.getPerson(vo.getAuthor());
-            vo.setPerson(person);
+        // Person
+        Person person = this.personService.getPerson(vo.getAuthor());
+        vo.setPerson(person);
 
-            // Profile URL
-            if (person != null) {
-                String profileURL = this.getUserProfilePageURL(nuxeoController, vo.getAuthor(), person.getDisplayName());
-                vo.setProfileURL(profileURL);
-            }
+        // Profile URL
+        if (person != null) {
+            // Tag service
+            INuxeoTagService tagService = this.nuxeoService.getTagService();
+
+            // Display name
+            String displayName = StringUtils.defaultIfBlank(person.getDisplayName(), vo.getAuthor());
+
+            // Profile link
+            Link link = tagService.getUserProfileLink(nuxeoController, vo.getAuthor(), displayName);
+
+            vo.setProfileUrl(link.getUrl());
         }
     }
 
@@ -361,37 +370,11 @@ public class ForumServiceImpl implements IForumService {
 
 
     /**
-     * Get user profile page URL.
-     *
-     * @param nuxeoController Nuxeo controller
-     * @param name user name
-     * @param displayName user display name
-     * @return user profile page URL
+     * {@inheritDoc}
      */
-    private String getUserProfilePageURL(NuxeoController nuxeoController, String name, String displayName) {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = nuxeoController.getPortalCtx();
-
-        // Page properties
-        Map<String, String> properties = new HashMap<String, String>();
-        properties.put("osivia.hideTitle", "1");
-        properties.put("osivia.ajaxLink", "1");
-        properties.put("theme.dyna.partial_refresh_enabled", "true");
-        properties.put("uidFichePersonne", name);
-
-        // Page parameters
-        Map<String, String> parameters = new HashMap<String, String>(0);
-
-
-        String url;
-        try {
-            url = this.portalURLFactory.getStartPortletInNewPage(portalControllerContext, "myprofile", displayName, "directory-person-card-instance",
-                    properties, parameters);
-        } catch (PortalException e) {
-            url = null;
-        }
-
-        return url;
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
 }

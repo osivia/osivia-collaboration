@@ -40,8 +40,8 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
  * @see PortletContextAware
  * @see PortletConfigAware
  */
-@Controller(value = "forumController")
-@RequestMapping(value = "VIEW")
+@Controller
+@RequestMapping("VIEW")
 public class ForumPortletController extends CMSPortlet implements PortletContextAware, PortletConfigAware {
 
     /** View path. */

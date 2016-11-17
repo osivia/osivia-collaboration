@@ -3,11 +3,17 @@ package org.osivia.services.forum.portlets.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  * Thread post view-object.
  *
  * @author Cédric Krommenhoek
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ThreadPost extends ThreadObject {
 
     /** Identifier. */
