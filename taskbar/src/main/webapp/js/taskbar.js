@@ -21,7 +21,7 @@ $JQry(function() {
 		// Affix
 		if (!loaded && $element.hasClass("taskbar-affix")) {
 			var $pageContent = $JQry("#page-content"),
-				$navbarAffix = $pageContent.find(".content-navbar-affix"),
+				$navbarAffix = $pageContent.find(".content-navbar-affix-container"),
 				navbarHeight = Math.round(($navbarAffix.length > 0) ? $navbarAffix.outerHeight(true) : 0);
 			
 			updateTaskbarAffixValues($element);
@@ -131,7 +131,7 @@ function updateTaskbarAffixValues($container) {
 	var $row = $container.find(".portlet-container").closest(".row"),
 		$window = $JQry(window),
 		$pageContent = $JQry("#page-content"),
-		$navbarAffix = $pageContent.find(".content-navbar-affix"),
+		$navbarAffix = $pageContent.find(".content-navbar-affix-container"),
 		navbarHeight = Math.round(($navbarAffix.length > 0) ? $navbarAffix.outerHeight(true) : 0);
 	
 	if ($JQry(window).width() >= 768) {
