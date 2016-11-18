@@ -19,7 +19,6 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
-import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 import org.osivia.services.workspace.edition.portlet.model.comparator.TasksComparator;
 import org.osivia.services.workspace.edition.portlet.repository.WorkspaceEditionRepository;
 import org.springframework.beans.BeansException;
@@ -27,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
@@ -78,32 +78,12 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
      * {@inheritDoc}
      */
     @Override
-    public WorkspaceEditionOptions getOptions(PortalControllerContext portalControllerContext) throws PortletException {
-        // Options
-        WorkspaceEditionOptions options = this.applicationContext.getBean(WorkspaceEditionOptions.class);
-
-        // Workspace document
-        Document workspace = this.repository.getWorkspace(portalControllerContext);
-
-        options.setWorkspace(workspace);
-        options.setPath(workspace.getPath());
-        options.setType(workspace.getType());
-
-        return options;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
-        // Form
-        WorkspaceEditionForm form = this.applicationContext.getBean(WorkspaceEditionForm.class);
-
         // Workspace document
         Document workspace = this.repository.getWorkspace(portalControllerContext);
 
+        // Form
+        WorkspaceEditionForm form = this.applicationContext.getBean(WorkspaceEditionForm.class, workspace);
         form.setTitle(workspace.getTitle());
         form.setDescription(workspace.getString("dc:description"));
 
@@ -115,7 +95,7 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         if (root) {
             String visibility = workspace.getString("ttcs:visibility");
             if (StringUtils.isNotEmpty(visibility)) {
-                form.setType(WorkspaceType.valueOf(visibility));
+                form.setWorkspaceType(WorkspaceType.valueOf(visibility));
             }
         }
 
@@ -217,7 +197,7 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
      * {@inheritDoc}
      */
     @Override
-    public void save(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options, WorkspaceEditionForm form) throws PortletException {
+    public void save(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
@@ -225,12 +205,12 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         Collections.sort(form.getTasks(), this.tasksComparator);
 
         // Save
-        this.repository.save(portalControllerContext, options, form);
+        this.repository.save(portalControllerContext, form);
 
 
         // Internationalization fragment
         String fragment;
-        if ("Room".equals(options.getType())) {
+        if ("Room".equals(form.getDocument().getType())) {
             fragment = bundle.getString("WORKSPACE_EDITION_ROOM_FRAGMENT");
         } else {
             fragment = bundle.getString("WORKSPACE_EDITION_WORKSPACE_FRAGMENT");
@@ -247,9 +227,28 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
      * {@inheritDoc}
      */
     @Override
-    public String delete(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException {
+    public void validate(Errors errors, WorkspaceEditionForm form) {
+        // Available workspace title indicator
+        boolean available;
+        try {
+            available = this.repository.checkTitleAvailability(form);
+        } catch (PortletException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (!available) {
+            errors.rejectValue("title", "NotAvailable");
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String delete(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
         // Delete
-        this.repository.delete(portalControllerContext, options);
+        this.repository.delete(portalControllerContext, form);
 
         // Redirection URL
         String url;
@@ -314,9 +313,11 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
      * {@inheritDoc}
      */
     @Override
-    public String getWorkspaceUrl(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException {
-        return this.portalUrlFactory.getCMSUrl(portalControllerContext, null, options.getPath(), null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null,
-                null, null);
+    public String getWorkspaceUrl(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+        // Workspace path
+        String path = form.getDocument().getPath();
+
+        return this.portalUrlFactory.getCMSUrl(portalControllerContext, null, path, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null, null);
     }
 
 

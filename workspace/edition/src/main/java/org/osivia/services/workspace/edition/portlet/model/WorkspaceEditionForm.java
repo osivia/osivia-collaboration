@@ -3,6 +3,7 @@ package org.osivia.services.workspace.edition.portlet.model;
 import java.util.Arrays;
 import java.util.List;
 
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.portlet.Refreshable;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -27,24 +28,29 @@ public class WorkspaceEditionForm {
     /** Workspace root type indicator. */
     private boolean root;
     /** Workspace type (only for root). */
-    private WorkspaceType type;
+    private WorkspaceType workspaceType;
     /** Workspace vignette. */
     private Image vignette;
-    /** Workspace banner. */
+    /** Workspace banner (only for root). */
     private Image banner;
     /** Workspace tasks. */
     private List<Task> tasks;
 
+    /** Workspace Nuxeo document. */
+    private final Document document;
     /** Workspace types. */
-    private final List<WorkspaceType> types;
+    private final List<WorkspaceType> workspaceTypes;
 
 
     /**
      * Constructor.
+     * 
+     * @param document workspace Nuxeo document
      */
-    public WorkspaceEditionForm() {
+    public WorkspaceEditionForm(Document document) {
         super();
-        this.types = Arrays.asList(WorkspaceType.values());
+        this.document = document;
+        this.workspaceTypes = Arrays.asList(WorkspaceType.values());
     }
 
 
@@ -103,21 +109,21 @@ public class WorkspaceEditionForm {
     }
 
     /**
-     * Getter for type.
+     * Getter for workspaceType.
      * 
-     * @return the type
+     * @return the workspaceType
      */
-    public WorkspaceType getType() {
-        return type;
+    public WorkspaceType getWorkspaceType() {
+        return workspaceType;
     }
 
     /**
-     * Setter for type.
+     * Setter for workspaceType.
      * 
-     * @param type the type to set
+     * @param workspaceType the workspaceType to set
      */
-    public void setType(WorkspaceType type) {
-        this.type = type;
+    public void setWorkspaceType(WorkspaceType workspaceType) {
+        this.workspaceType = workspaceType;
     }
 
     /**
@@ -176,12 +182,21 @@ public class WorkspaceEditionForm {
     }
 
     /**
-     * Getter for types.
+     * Getter for document.
      * 
-     * @return the types
+     * @return the document
      */
-    public List<WorkspaceType> getTypes() {
-        return types;
+    public Document getDocument() {
+        return document;
+    }
+
+    /**
+     * Getter for workspaceTypes.
+     * 
+     * @return the workspaceTypes
+     */
+    public List<WorkspaceType> getWorkspaceTypes() {
+        return workspaceTypes;
     }
 
 }

@@ -6,7 +6,7 @@ import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
-import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
+import org.springframework.validation.Errors;
 
 /**
  * Workspace edition service interface.
@@ -14,16 +14,6 @@ import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptio
  * @author Cédric Krommenhoek
  */
 public interface WorkspaceEditionService {
-
-    /**
-     * Get options.
-     * 
-     * @param portalControllerContext portal controller context
-     * @return options
-     * @throws PortletException
-     */
-    WorkspaceEditionOptions getOptions(PortalControllerContext portalControllerContext) throws PortletException;
-
 
     /**
      * Get workspace edition form.
@@ -91,22 +81,30 @@ public interface WorkspaceEditionService {
      * Save edition.
      *
      * @param portalControllerContext portal controller context
-     * @param options options
      * @param form workspace edition form
      * @throws PortletException
      */
-    void save(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options, WorkspaceEditionForm form) throws PortletException;
+    void save(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
 
+    
+    /**
+     * Validate workspace edition form.
+     * 
+     * @param errors errors
+     * @param form workspace edition form
+     */
+    void validate(Errors errors, WorkspaceEditionForm form);
+    
 
     /**
      * Delete workspace and return redirection URL.
      * 
      * @param portalControllerContext portal controller context
-     * @param options options
+     * @param form workspace edition form
      * @return URL
      * @throws PortletException
      */
-    String delete(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException;
+    String delete(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
 
 
     /**
@@ -135,10 +133,10 @@ public interface WorkspaceEditionService {
      * Get workspace URL.
      *
      * @param portalControllerContext portal controller context
-     * @param options options
+     * @param form workspace edition form
      * @return URL
      * @throws PortletException
      */
-    String getWorkspaceUrl(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException;
+    String getWorkspaceUrl(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
 
 }

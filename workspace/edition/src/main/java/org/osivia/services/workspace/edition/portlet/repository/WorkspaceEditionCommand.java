@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
@@ -20,7 +19,6 @@ import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
-import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -38,8 +36,6 @@ import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class WorkspaceEditionCommand implements INuxeoCommand {
 
-    /** Options. */
-    private final WorkspaceEditionOptions options;
     /** Form. */
     private final WorkspaceEditionForm form;
 
@@ -47,12 +43,10 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
     /**
      * Constructor.
      *
-     * @param options options
      * @param form form
      */
-    public WorkspaceEditionCommand(WorkspaceEditionOptions options, WorkspaceEditionForm form) {
+    public WorkspaceEditionCommand(WorkspaceEditionForm form) {
         super();
-        this.options = options;
         this.form = form;
     }
 
@@ -66,7 +60,7 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
 
         // Workspace
-        Document workspace = this.getWorkspace(nuxeoSession);
+        Document workspace = this.form.getDocument();
 
         // Update workspace
         this.updateWorkspace(documentService, workspace);
@@ -79,21 +73,6 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
 
 
     /**
-     * Get workspace document.
-     *
-     * @param nuxeoSession Nuxeo session
-     * @return document
-     * @throws Exception
-     */
-    private Document getWorkspace(Session nuxeoSession) throws Exception {
-        OperationRequest request = nuxeoSession.newRequest("Document.FetchLiveDocument");
-        request.setHeader(Constants.HEADER_NX_SCHEMAS, "*");
-        request.set("value", this.options.getPath());
-        return (Document) request.execute();
-    }
-
-
-    /**
      * Update workspace.
      *
      * @param documentService document service
@@ -102,7 +81,7 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
      */
     private void updateWorkspace(DocumentService documentService, Document workspace) throws Exception {
         // Workspace type
-        WorkspaceType type = this.form.getType();
+        WorkspaceType type = this.form.getWorkspaceType();
 
         documentService.setProperty(workspace, "dc:title", this.form.getTitle());
         documentService.setProperty(workspace, "dc:description", this.form.getDescription());

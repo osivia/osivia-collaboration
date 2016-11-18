@@ -3,9 +3,11 @@ package org.osivia.services.workspace.edition.portlet.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
@@ -23,12 +25,12 @@ import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
-import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.portlet.context.PortletContextAware;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
@@ -44,7 +46,7 @@ import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
  * @see ApplicationContextAware
  */
 @Repository
-public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepository, ApplicationContextAware {
+public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepository, ApplicationContextAware, PortletContextAware {
 
     /** Current workspace attribute name. */
     private static final String CURRENT_WORKSPACE_ATTRIBUTE = "osivia.workspace.edition.currentWorkspace";
@@ -65,6 +67,8 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
 
     /** Application context. */
     private ApplicationContext applicationContext;
+    /** Portlet context. */
+    private PortletContext portletContext;
 
 
     /**
@@ -245,26 +249,26 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
-    public void save(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options, WorkspaceEditionForm form) throws PortletException {
+    public void save(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(WorkspaceEditionCommand.class, options, form);
+        INuxeoCommand command = this.applicationContext.getBean(WorkspaceEditionCommand.class, form);
         nuxeoController.executeNuxeoCommand(command);
 
 
         // Reload vignette
         try {
-            nuxeoController.fetchFileContent(options.getPath(), "ttc:vignette", true);
+            nuxeoController.fetchFileContent(form.getDocument().getPath(), "ttc:vignette", true);
         } catch (NuxeoException e) {
             // Do nothing: maybe the vignette does not exist
         }
 
         // Reload banner
         try {
-            nuxeoController.fetchFileContent(options.getPath(), "ttcs:headImage", true);
+            nuxeoController.fetchFileContent(form.getDocument().getPath(), "ttcs:headImage", true);
         } catch (NuxeoException e) {
             // Do nothing: maybe the banner does not exist
         }
@@ -275,20 +279,37 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
-    public void delete(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException {
+    public boolean checkTitleAvailability(WorkspaceEditionForm form) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(this.portletContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(CheckTitleAvailabilityCommand.class, form);
+        Boolean available = (Boolean) nuxeoController.executeNuxeoCommand(command);
+
+        return BooleanUtils.isTrue(available);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void delete(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
         // Workspace identifier
-        Document workspace = options.getWorkspace();
+        Document workspace = form.getDocument();
         String workspaceId = workspace.getString("webc:url");
 
         this.workspaceService.delete(workspaceId);
 
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(DeleteWorkspaceCommand.class, options.getPath());
+        INuxeoCommand command = this.applicationContext.getBean(DeleteWorkspaceCommand.class, workspace.getPath());
         nuxeoController.executeNuxeoCommand(command);
     }
 
@@ -299,6 +320,15 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setPortletContext(PortletContext portletContext) {
+        this.portletContext = portletContext;
     }
 
 }

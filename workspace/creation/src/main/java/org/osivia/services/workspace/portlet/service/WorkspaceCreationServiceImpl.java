@@ -68,6 +68,16 @@ public class WorkspaceCreationServiceImpl implements WorkspaceCreationService, A
      * {@inheritDoc}
      */
     @Override
+    public boolean checkTitleAvailability(PortalControllerContext portalControllerContext, String modelWebId, String procedureInstanceUuid, String title,
+            String titleVariableName) throws PortletException {
+        return this.repository.checkTitleAvailability(portalControllerContext, modelWebId, procedureInstanceUuid, title, titleVariableName);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void create(PortalControllerContext portalControllerContext, WorkspaceCreationForm form) throws PortletException {
         // Locale
         Locale locale = portalControllerContext.getHttpServletRequest().getLocale();

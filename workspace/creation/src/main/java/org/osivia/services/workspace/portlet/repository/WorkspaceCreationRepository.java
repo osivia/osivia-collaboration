@@ -45,4 +45,19 @@ public interface WorkspaceCreationRepository {
      */
     void updatePermissions(PortalControllerContext portalControllerContext, WorkspaceCreationForm form, Document workspace) throws PortletException;
 
+
+    /**
+     * Check workspace title availability.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param modelWebId model webId
+     * @param procedureInstanceUuid procedure instance UUID
+     * @param title workspace title
+     * @param titleVariableName workspace title variable name
+     * @return true if workspace title is available
+     * @throws PortletException
+     */
+    boolean checkTitleAvailability(PortalControllerContext portalControllerContext, String modelWebId, String procedureInstanceUuid, String title,
+            String titleVariableName) throws PortletException;
+
 }

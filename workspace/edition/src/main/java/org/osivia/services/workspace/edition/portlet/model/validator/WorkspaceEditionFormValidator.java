@@ -1,6 +1,8 @@
 package org.osivia.services.workspace.edition.portlet.model.validator;
 
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
+import org.osivia.services.workspace.edition.portlet.service.WorkspaceEditionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -15,6 +17,11 @@ import org.springframework.validation.Validator;
 @Component
 public class WorkspaceEditionFormValidator implements Validator {
 
+    /** Portlet service. */
+    @Autowired
+    private WorkspaceEditionService service;
+
+
     /**
      * Constructor.
      */
@@ -28,7 +35,7 @@ public class WorkspaceEditionFormValidator implements Validator {
      */
     @Override
     public boolean supports(Class<?> clazz) {
-        return WorkspaceEditionForm.class.isAssignableFrom(clazz);
+        return clazz.isAssignableFrom(WorkspaceEditionForm.class);
     }
 
 
@@ -44,7 +51,9 @@ public class WorkspaceEditionFormValidator implements Validator {
 
         if (form.isRoot()) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "NotEmpty");
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", "NotEmpty");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "workspaceType", "NotEmpty");
+
+            this.service.validate(errors, form);
         }
     }
 

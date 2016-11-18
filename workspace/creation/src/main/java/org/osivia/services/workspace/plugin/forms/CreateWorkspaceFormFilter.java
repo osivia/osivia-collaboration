@@ -13,6 +13,10 @@ import org.osivia.directory.v2.service.RoleService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.service.PersonService;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.services.workspace.portlet.model.WorkspaceCreationForm;
 import org.osivia.services.workspace.portlet.service.WorkspaceCreationService;
 import org.osivia.services.workspace.util.ApplicationContextProvider;
@@ -55,7 +59,8 @@ public class CreateWorkspaceFormFilter implements FormFilter {
     /** Workspace creation service. */
     private WorkspaceCreationService service;
     
-    
+    /** Internationalization bundle factory. */
+    private final IBundleFactory bundleFactory;
     /** Person service. */
     private final PersonService personService;
     /** Role service. */
@@ -67,7 +72,14 @@ public class CreateWorkspaceFormFilter implements FormFilter {
      */
     public CreateWorkspaceFormFilter() {
         super();
+
+        // Internationalization bundle factory
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        // Person service
         this.personService = DirServiceFactory.getService(PersonService.class);
+        // Role service
         this.roleService = DirServiceFactory.getService(RoleService.class);
     }
 
@@ -132,22 +144,36 @@ public class CreateWorkspaceFormFilter implements FormFilter {
         // HTTP servlet request
         HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
         
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(servletRequest.getLocale());
+
         // User
         String user = servletRequest.getRemoteUser();
         // User DN
         Name dn = this.personService.getEmptyPerson().buildDn(user);
+
+        // Model webId
+        String modelWebId = context.getModelWebId();
+        // Procedure instance UUID
+        String procedureInstanceUuid = context.getProcedureInstanceUuid();
         
+        // Variables
+        Map<String, String> variables = context.getVariables();
+
+        // Workspace title
+        String titleVariableName = context.getParamValue(executor, TITLE_VARIABLE_NAME);
+        String title = variables.get(titleVariableName);
+
+        // Check workspace title availability
+        if (!this.checkTitleAvailability(portalControllerContext, modelWebId, procedureInstanceUuid, title, titleVariableName)) {
+            String message = bundle.getString("MESSAGE_WORKSPACE_TITLE_NOT_AVAILABLE_ERROR");
+            throw new FormFilterException(message);
+        }
+
         // Granted user indicator
         boolean granted = this.roleService.hasRole(dn, "role_workspace-management");
         
         if (granted) {
-            // Variables
-            Map<String, String> variables = context.getVariables();
-
-            // Title
-            String titleVariableName = context.getParamValue(executor, TITLE_VARIABLE_NAME);
-            String title = variables.get(titleVariableName);
-
             // Description
             String descriptionVariableName = context.getParamValue(executor, DESCRIPTION_VARIABLE_NAME);
             String description = variables.get(descriptionVariableName);
@@ -187,6 +213,29 @@ public class CreateWorkspaceFormFilter implements FormFilter {
                 context.setNextStep(IFormsService.ENDSTEP);
             }
         }
+    }
+
+
+    /**
+     * Check workspace title availability.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param modelWebId model webId
+     * @param procedureInstanceUuid procedure instance UUID
+     * @param title workspace title
+     * @param titleVariableName workspace title variable name
+     * @return true if workspace title is available
+     * @throws FormFilterException
+     */
+    private boolean checkTitleAvailability(PortalControllerContext portalControllerContext, String modelWebId, String procedureInstanceUuid, String title,
+            String titleVariableName) throws FormFilterException {
+        boolean available;
+        try {
+            available = this.getService().checkTitleAvailability(portalControllerContext, modelWebId, procedureInstanceUuid, title, titleVariableName);
+        } catch (PortletException e) {
+            throw new FormFilterException(e);
+        }
+        return available;
     }
 
 

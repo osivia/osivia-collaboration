@@ -20,7 +20,7 @@
 
 
 <c:choose>
-    <c:when test="${options.type eq 'Room'}"><c:set var="fragment"><op:translate key="WORKSPACE_EDITION_ROOM_FRAGMENT" /></c:set></c:when>
+    <c:when test="${editionForm.document.type eq 'Room'}"><c:set var="fragment"><op:translate key="WORKSPACE_EDITION_ROOM_FRAGMENT" /></c:set></c:when>
     <c:otherwise><c:set var="fragment"><op:translate key="WORKSPACE_EDITION_WORKSPACE_FRAGMENT" /></c:set></c:otherwise>
 </c:choose>
 
@@ -58,16 +58,16 @@
                     </div>
                 </spring:bind>
                 
-                <!-- Type -->
+                <!-- Workspace type -->
                 <c:if test="${editionForm.root}">
-                    <spring:bind path="type">
+                    <spring:bind path="workspaceType">
                         <div class="form-group required ${status.error ? 'has-error' : ''}">
-                            <form:label path="type" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_TYPE" /></form:label>
+                            <form:label path="workspaceType" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_TYPE" /></form:label>
                             <div class="col-sm-9">
-                                <c:forEach var="type" items="${editionForm.types}">
+                                <c:forEach var="type" items="${editionForm.workspaceTypes}">
                                     <div class="radio">
                                         <label>
-                                            <form:radiobutton path="type" value="${type.id}" />
+                                            <form:radiobutton path="workspaceType" value="${type.id}" />
                                             <span class="label label-${type.color}">
                                                 <i class="${type.icon}"></i>
                                                 <span><op:translate key="${type.key}" /></span>
@@ -78,7 +78,7 @@
                                         </p>
                                     </div>
                                 </c:forEach>
-                                <form:errors path="type" cssClass="help-block" />
+                                <form:errors path="workspaceType" cssClass="help-block" />
                             </div>
                         </div>
                     </spring:bind>

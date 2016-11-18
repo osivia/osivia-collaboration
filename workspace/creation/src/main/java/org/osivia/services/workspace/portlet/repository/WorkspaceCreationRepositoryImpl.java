@@ -14,6 +14,7 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.directory.v2.model.CollabProfile;
@@ -204,6 +205,25 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(WorkspacePermissionsCommand.class, workspace, permissions);
         nuxeoController.executeNuxeoCommand(command);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean checkTitleAvailability(PortalControllerContext portalControllerContext, String modelWebId, String procedureInstanceUuid, String title,
+            String titleVariableName) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(CheckTitleAvailabilityCommand.class, modelWebId, procedureInstanceUuid, title,
+                titleVariableName);
+        Boolean available = (Boolean) nuxeoController.executeNuxeoCommand(command);
+
+        return BooleanUtils.isTrue(available);
     }
 
 

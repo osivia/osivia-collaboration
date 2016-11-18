@@ -28,7 +28,7 @@ public class TaskCreationFormValidator implements Validator {
      */
     @Override
     public boolean supports(Class<?> clazz) {
-        return TaskCreationForm.class.isAssignableFrom(clazz);
+        return clazz.isAssignableFrom(TaskCreationForm.class);
     }
 
 

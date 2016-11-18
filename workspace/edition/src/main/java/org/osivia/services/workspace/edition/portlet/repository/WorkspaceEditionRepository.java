@@ -9,7 +9,6 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
-import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 
 /**
  * Workspace edition repository interface.
@@ -65,20 +64,29 @@ public interface WorkspaceEditionRepository {
      * Save edition.
      *
      * @param portalControllerContext portal controller context
-     * @param options options
      * @param form workspace edition form
      * @throws PortletException
      */
-    void save(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options, WorkspaceEditionForm form) throws PortletException;
+    void save(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
+
+
+    /**
+     * Check workspace title availability.
+     * 
+     * @param form workspace edition form
+     * @return true if no workspace with this title exists
+     * @throws PortletException
+     */
+    boolean checkTitleAvailability(WorkspaceEditionForm form) throws PortletException;
 
 
     /**
      * Delete workspace.
      * 
      * @param portalControllerContext portal controller context
-     * @param options options
+     * @param form workspace edition form
      * @throws PortletException
      */
-    void delete(PortalControllerContext portalControllerContext, WorkspaceEditionOptions options) throws PortletException;
+    void delete(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
 
 }

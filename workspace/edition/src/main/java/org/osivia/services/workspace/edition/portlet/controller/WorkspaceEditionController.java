@@ -25,7 +25,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
-import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionOptions;
 import org.osivia.services.workspace.edition.portlet.model.validator.WorkspaceEditionFormValidator;
 import org.osivia.services.workspace.edition.portlet.service.WorkspaceEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,23 +217,22 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
      *
      * @param request action request
      * @param response action response
-     * @param options options
      * @param form workspace edition form model attribute
      * @param result binding result
      * @throws PortletException
      * @throws IOException
      */
     @ActionMapping(name = "save", params = "save")
-    public void save(ActionRequest request, ActionResponse response, @ModelAttribute("options") WorkspaceEditionOptions options,
-            @ModelAttribute("editionForm") @Validated WorkspaceEditionForm form, BindingResult result) throws PortletException, IOException {
+    public void save(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") @Validated WorkspaceEditionForm form, BindingResult result)
+            throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         if (!result.hasErrors()) {
-            this.service.save(portalControllerContext, options, form);
+            this.service.save(portalControllerContext, form);
 
             // Redirection
-            String url = this.service.getWorkspaceUrl(portalControllerContext, options);
+            String url = this.service.getWorkspaceUrl(portalControllerContext, form);
             response.sendRedirect(url);
         }
     }
@@ -245,18 +243,18 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
      *
      * @param request action request
      * @param response action response
-     * @param options options model attribute
+     * @param form workspace edition form model attribute
      * @throws PortletException
      * @throws IOException
      */
     @ActionMapping(name = "save", params = "cancel")
-    public void cancel(ActionRequest request, ActionResponse response, @ModelAttribute("options") WorkspaceEditionOptions options)
+    public void cancel(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form)
             throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         // Redirection
-        String url = this.service.getWorkspaceUrl(portalControllerContext, options);
+        String url = this.service.getWorkspaceUrl(portalControllerContext, form);
         response.sendRedirect(url);
     }
 
@@ -304,17 +302,17 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
      *
      * @param request action request
      * @param response action response
-     * @param options options model attribute
+     * @param form workspace edition form model attribute
      * @throws PortletException
      * @throws IOException
      */
     @ActionMapping("delete")
-    public void delete(ActionRequest request, ActionResponse response, @ModelAttribute("options") WorkspaceEditionOptions options)
+    public void delete(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form)
             throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        String url = this.service.delete(portalControllerContext, options);
+        String url = this.service.delete(portalControllerContext, form);
 
         // Redirection
         response.sendRedirect(url);
@@ -395,23 +393,6 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
         // Copy
         IOUtils.copy(inputSteam, outputStream);
         outputStream.close();
-    }
-
-
-    /**
-     * Get options model attribute.
-     * 
-     * @param request portlet request
-     * @param response portlet response
-     * @return options
-     * @throws PortletException
-     */
-    @ModelAttribute("options")
-    public WorkspaceEditionOptions getOptions(PortletRequest request, PortletResponse response) throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        return this.service.getOptions(portalControllerContext);
     }
 
 
