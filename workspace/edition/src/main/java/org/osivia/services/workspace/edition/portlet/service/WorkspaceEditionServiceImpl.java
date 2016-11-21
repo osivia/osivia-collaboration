@@ -16,6 +16,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
@@ -247,18 +248,52 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
      */
     @Override
     public String delete(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
         // Delete
         this.repository.delete(portalControllerContext, form);
 
+        
         // Redirection URL
-        String url;
+        String redirectionUrl;
+        if ("Room".equals(form.getDocument().getType())) {
+            CMSObjectPath objectPath = CMSObjectPath.parse(form.getDocument().getPath());
+            CMSObjectPath parentObjectPath = objectPath.getParent();
+            String parentPath = parentObjectPath.toString();
+            redirectionUrl = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, parentPath, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null,
+                    null, null, null);
+        } else {
+            try {
+                redirectionUrl = this.portalUrlFactory.getHomePageUrl(portalControllerContext, true);
+            } catch (PortalException e) {
+                throw new PortletException(e);
+            }
+        }
+        
+        
+        // Destroy page URL
+        String destroyPageUrl;
         try {
-            url = this.portalUrlFactory.getDestroyCurrentPageUrl(portalControllerContext);
+            destroyPageUrl = this.portalUrlFactory.getDestroyCurrentPageUrl(portalControllerContext, redirectionUrl, true);
         } catch (PortalException e) {
             throw new PortletException(e);
         }
 
-        return url;
+
+        // Internationalization key
+        String key;
+        if ("Room".equals(form.getDocument().getType())) {
+            key = "MESSAGE_WORKSPACE_DELETE_ROOM_SUCCESS";
+        } else {
+            key = "MESSAGE_WORKSPACE_DELETE_WORKSPACE_SUCCESS";
+        }
+
+        // Notification
+        String message = bundle.getString(key, form.getTitle());
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+
+        return destroyPageUrl;
     }
 
 
