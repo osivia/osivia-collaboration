@@ -28,6 +28,8 @@ import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
 
+import fr.toutatice.portail.cms.nuxeo.api.ContextualizationHelper;
+
 /**
  * Workspace ACL management menubar module.
  *
@@ -77,7 +79,7 @@ public class AclManagementMenubarModule implements MenubarModule {
     @Override
     public void customizeDocument(PortalControllerContext portalControllerContext, List<MenubarItem> menubar,
             DocumentContext<? extends EcmDocument> documentContext) throws PortalException {
-        if (documentContext != null) {
+        if ((documentContext != null) && ContextualizationHelper.isCurrentDocContextualized(portalControllerContext)) {
             // Check type
             DocumentType type = documentContext.getType();
             if ((type != null) && !type.isRootType()) {
