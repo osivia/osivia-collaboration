@@ -35,29 +35,31 @@
 
 <!-- Toolbar -->
 <div class="btn-toolbar" role="toolbar">
-    <div class="btn-group">
-        <!-- Today -->
-        <a href="${actionToday}" class="btn btn-default">
-            <span><op:translate key="CALENDAR_TODAY" /></span>
-        </a>
-    </div>
-    
-    <div class="btn-group">
-        <!-- Previous period -->
-        <a href="${actionPrevious}" class="btn btn-default">
-            <i class="halflings halflings-chevron-left"></i>
-        </a>
-    
-        <!-- Selected date -->
-        <a href="#" class="btn btn-default disabled">
-            <span>${calendarData.displayDate}</span>
-        </a>
+    <c:if test="${'planning' ne calendarData.periodType.name}">
+        <div class="btn-group">
+            <!-- Today -->
+            <a href="${actionToday}" class="btn btn-default">
+                <span><op:translate key="CALENDAR_TODAY" /></span>
+            </a>
+        </div>
         
-        <!-- Next period -->
-        <a href="${actionNext}" class="btn btn-default">
-            <i class="halflings halflings-chevron-right"></i>
-        </a>
-    </div>
+        <div class="btn-group">
+            <!-- Previous period -->
+            <a href="${actionPrevious}" class="btn btn-default">
+                <i class="halflings halflings-chevron-left"></i>
+            </a>
+        
+            <!-- Selected date -->
+            <a href="#" class="btn btn-default disabled">
+                <span>${calendarData.displayDate}</span>
+            </a>
+            
+            <!-- Next period -->
+            <a href="${actionNext}" class="btn btn-default">
+                <i class="halflings halflings-chevron-right"></i>
+            </a>
+        </div>
+    </c:if>
 
     <div class="btn-group pull-right">    
         <!-- Day -->

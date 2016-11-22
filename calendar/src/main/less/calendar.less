@@ -235,34 +235,11 @@
     
     
     // Planning
-    &.planning-calendar {
-        .table {
-            td {
-                padding: 8px;
-                
-                &.date {
-                    background-color: transparent;
-                }
-            }
-            
-            .fixed-column {
-                width: 140px;
-                min-width: 140px;
-                
-                + .fixed-column {
-                    width: 160px;
-                    min-width: 160px;
-                }
-            }
-        }
-        
+    &.planning-calendar {        
         .day-of-month {
-            font-size: 200%;
-            margin-right: 10px;
-            
-            ~ * {
-                overflow: hidden;
-            }
+            width: 32px;
+            text-align: center;
+            font-size: 180%;
         }
     }
 }

@@ -146,4 +146,13 @@ public class PlanningCalendarEventHeader implements Comparable<PlanningCalendarE
         this.month = month;
     }
 
+    /**
+     * Getter for date.
+     * 
+     * @return the date
+     */
+    public Date getDate() {
+        return date;
+    }
+
 }

@@ -62,7 +62,7 @@ public class MonthlyCalendarGeneratorImpl extends CalendarGeneratorImpl {
         // Period type
         PeriodTypes periodType = this.getPeriodType();
         // Selected date
-        Date selectedDate = this.getSelectedDate(portalControllerContext);
+        Date selectedDate = this.getSelectedDate(portalControllerContext, periodType);
         // Start date
         Date startDate = this.getStartDate(portalControllerContext, periodType, selectedDate);
         // End date

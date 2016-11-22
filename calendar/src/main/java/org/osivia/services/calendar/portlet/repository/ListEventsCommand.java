@@ -2,6 +2,7 @@ package org.osivia.services.calendar.portlet.repository;
 
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
@@ -54,13 +55,21 @@ public class ListEventsCommand implements INuxeoCommand {
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
         String start = DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.format(this.startDate);
-        String end = DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.format(this.endDate);
+
+        String end;
+        if (this.endDate == null) {
+            end = null;
+        } else {
+            end = DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.format(this.endDate);
+        }
 
         // Clause
         StringBuilder clause = new StringBuilder();
         clause.append("ecm:mixinType = 'Schedulable' ");
         clause.append("AND ecm:path STARTSWITH '").append(this.contextPath).append("' ");
-        clause.append("AND (vevent:dtstart < TIMESTAMP '").append(end).append("') ");
+        if (StringUtils.isNotEmpty(end)) {
+            clause.append("AND (vevent:dtstart < TIMESTAMP '").append(end).append("') ");
+        }
         clause.append("AND (vevent:dtend > TIMESTAMP '").append(start).append("') ");
         clause.append("ORDER BY vevent:dtstart");
 

@@ -35,8 +35,9 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
     /** Default scroll top hour. */
     protected static final int DEFAULT_SCROLL_TOP_HOUR = 7;
 
-    /** Planning day limit. */
-    private static final int PLANNING_DAY_LIMIT = 20;
+    /** Planning compact maximum number of days to display. */
+    protected static final int PLANNING_COMPACT_MAX = 5;
+
     /** Round factor. */
     private static final float ROUND_FACTOR = 1000;
 
@@ -126,7 +127,7 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
         Date selectedDate = forcedSelectedDate;
         if (selectedDate == null) {
             // Parameterized date
-            selectedDate = this.getSelectedDate(portalControllerContext);
+            selectedDate = this.getSelectedDate(portalControllerContext, periodType);
         }
         calendarData.setSelectedDate(selectedDate);
 
@@ -148,22 +149,27 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
      * Get selected date.
      *
      * @param portalControllerContext portal controller context
+     * @param periodType period type
      * @return selected date
      */
-    protected Date getSelectedDate(PortalControllerContext portalControllerContext) {
-        Date selectedDate = null;
-        String parameter = portalControllerContext.getRequest().getParameter(ICalendarService.SELECTED_DATE_PARAMETER);
-        if (parameter != null) {
-            try {
-                selectedDate = ICalendarService.SELECTED_DATE_FORMAT.parse(parameter);
-            } catch (ParseException e) {
-                // Do nothing
+    protected Date getSelectedDate(PortalControllerContext portalControllerContext, PeriodTypes periodType) {
+        Date selectedDate;
+
+        if (PeriodTypes.PLANNING.equals(periodType)) {
+            selectedDate = new Date();
+        } else {
+            String parameter = portalControllerContext.getRequest().getParameter(ICalendarService.SELECTED_DATE_PARAMETER);
+            if (parameter == null) {
+                selectedDate = new Date();
+            } else {
+                try {
+                    selectedDate = ICalendarService.SELECTED_DATE_FORMAT.parse(parameter);
+                } catch (ParseException e) {
+                    selectedDate = new Date();
+                }
             }
         }
-        if (selectedDate == null) {
-            // Default date
-            selectedDate = new Date();
-        }
+
         return DateUtils.truncate(selectedDate, Calendar.DAY_OF_MONTH);
     }
 
@@ -204,27 +210,32 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
      * @return end date
      */
     protected Date getEndDate(PortalControllerContext portalControllerContext, PeriodTypes periodType, Date selectedDate, Date startDate) {
-        Calendar calendar = GregorianCalendar.getInstance(portalControllerContext.getRequest().getLocale());
-        if (PeriodTypes.MONTH.equals(periodType)) {
-            calendar.setTime(selectedDate);
-            // Set last day of month
-            calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-            // Flush calendar between 2 "set" calls
-            calendar.getTimeInMillis();
-            // Set first day of last week
-            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-            // Add a week
-            calendar.add(Calendar.WEEK_OF_YEAR, 1);
+        // End date
+        Date endDate;
+        
+        if (PeriodTypes.PLANNING.equals(periodType)) {
+            endDate = null;
         } else {
-            calendar.setTime(startDate);
-            if (PeriodTypes.PLANNING.equals(periodType)) {
-                calendar.add(periodType.getField(), PLANNING_DAY_LIMIT);
+            Calendar calendar = GregorianCalendar.getInstance(portalControllerContext.getRequest().getLocale());
+            if (PeriodTypes.MONTH.equals(periodType)) {
+                calendar.setTime(selectedDate);
+                // Set last day of month
+                calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+                // Flush calendar between 2 "set" calls
+                calendar.getTimeInMillis();
+                // Set first day of last week
+                calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+                // Add a week
+                calendar.add(Calendar.WEEK_OF_YEAR, 1);
             } else {
+                calendar.setTime(startDate);
                 calendar.add(periodType.getField(), 1);
             }
+            calendar.add(Calendar.MILLISECOND, -1);
+            endDate = calendar.getTime();
         }
-        calendar.add(Calendar.MILLISECOND, -1);
-        return calendar.getTime();
+        
+        return endDate;
     }
 
 

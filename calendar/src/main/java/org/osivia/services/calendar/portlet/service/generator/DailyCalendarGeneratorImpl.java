@@ -67,7 +67,7 @@ public class DailyCalendarGeneratorImpl extends CalendarGeneratorImpl {
         DailyCalendarData calendarData = new DailyCalendarData();
 
         // Selected date
-        Date selectedDate = this.getSelectedDate(portalControllerContext);
+        Date selectedDate = this.getSelectedDate(portalControllerContext, this.getPeriodType());
 
         // Header
         calendarData.setHeader(this.getHeader(portalControllerContext, selectedDate));

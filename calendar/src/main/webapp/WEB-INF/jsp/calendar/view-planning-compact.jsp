@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 <%@ page contentType="text/html" isELIgnored="false"%>
@@ -9,62 +10,70 @@
 
 
 <div class="calendar planning-calendar">
-    <div class="row">
-        <div class="col-xs-12">
-            <table class="table table-hover">
-                <!-- Header -->
-                <thead>
-                    <tr>
-                        <th><op:translate key="CALENDAR_TIME" /></th>
-                        <th><op:translate key="CALENDAR_EVENT" /></th>
-                    </tr>
-                </thead>
+    <div class="table">
+        <!-- Header -->
+        <div class="table-row table-header">
+            <div class="row">
+                <!-- Time -->
+                <div class="col-sm-6 col-md-5 col-lg-4">
+                    <span><op:translate key="CALENDAR_TIME" /></span>
+                </div>
                 
-                <!-- Body -->
-                <tbody>
-                    <c:forEach var="eventsMap" items="${eventsData.mappedEvents}">
-                        <c:set var="eventHeader" value="${eventsMap.key}" />
-                    
-                        <!-- Date -->
-                        <tr>
-                            <td colspan="2" class="date">
-                                <div class="clearfix">
-                                    <div class="day-of-month pull-left">${eventHeader.dayOfMonth}</div>
-                                    <div>
-                                        <div>${eventHeader.dayOfWeek}</div>
-                                        <div class="small">${eventHeader.month}</div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        
-                        <!-- Events -->
-                        <c:forEach var="event" items="${eventsMap.value}">
-                            <tr>
-                                <!-- Time -->
-                                <td>
-                                    <c:if test="${not event.begin}">
-                                        <i class="glyphicons glyphicons-arrow-left"></i>
-                                    </c:if>
-                                    
-                                    <span>${event.time}</span>
-                                    
-                                    <c:if test="${not event.end}">
-                                        <i class="glyphicons glyphicons-arrow-right"></i>
-                                    </c:if>
-                                </td>
-                                
-                                <!-- Title -->
-                                <td>
-                                    <a href="${event.viewURL}" class="no-ajax-link">
-                                        <span>${event.title}</span>
-                                    </a>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </c:forEach>
-                </tbody>
-            </table>
+                <!-- Event -->
+                <div class="col-sm-6 col-md-7 col-lg-8">
+                    <span><op:translate key="CALENDAR_EVENT" /></span>
+                </div>
+            </div>
         </div>
+        
+        <!-- Body -->
+        <c:forEach var="dailyEvents" items="${eventsData.mappedEvents}">
+            <div class="table-row">
+                <!-- Date -->
+                <div class="media">
+                    <div class="media-left media-middle">
+                        <div class="day-of-month">
+                            <p>${dailyEvents.key.dayOfMonth}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="media-body media-middle">
+                        <p>
+                            <span>${dailyEvents.key.dayOfWeek}</span>
+                            <br>
+                            <small>${dailyEvents.key.month}</small>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Daily events -->
+                <c:forEach var="event" items="${dailyEvents.value}">
+                    <div class="row">
+                        <!-- Time -->
+                        <div class="col-sm-6 col-md-5 col-lg-4">
+                            <span>${event.time}</span>
+                        </div>
+                        
+                        <!-- Event -->
+                        <div class="col-sm-6 col-md-7 col-lg-8">
+                            <p>
+                                <a href="${event.viewURL}" class="no-ajax-link">
+                                    <span>${event.title}</span>
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </c:forEach>
+            </div>
+        </c:forEach>
     </div>
+    
+    
+    <c:if test="${not empty eventsData.lastDate}">
+        <c:set var="lastDate"><fmt:formatDate value="${eventsData.lastDate}" type="date" dateStyle="full" /></c:set>
+        
+        <p class="text-muted">
+            <span><op:translate key="CALENDAR_LAST_DATE_MESSAGE" args="${lastDate}" /></span>
+        </p>
+    </c:if>
 </div>

@@ -4,11 +4,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -21,8 +21,6 @@ import org.osivia.services.calendar.portlet.model.calendar.CalendarData;
 import org.osivia.services.calendar.portlet.model.events.DailyEvent;
 import org.osivia.services.calendar.portlet.model.events.Event;
 import org.osivia.services.calendar.portlet.model.events.EventsData;
-import org.osivia.services.calendar.portlet.model.events.PlanningCalendarCompactEventsData;
-import org.osivia.services.calendar.portlet.model.events.PlanningCalendarEvent;
 import org.osivia.services.calendar.portlet.model.events.PlanningCalendarEventHeader;
 import org.osivia.services.calendar.portlet.model.events.PlanningCalendarEventsData;
 import org.osivia.services.calendar.portlet.service.ICalendarService;
@@ -45,7 +43,7 @@ public class PlanningCalendarGeneratorImpl extends CalendarGeneratorImpl {
 
 
     /**
-     * Default constructor.
+     * Constructor.
      */
     public PlanningCalendarGeneratorImpl() {
         super();
@@ -84,14 +82,7 @@ public class PlanningCalendarGeneratorImpl extends CalendarGeneratorImpl {
      */
     @Override
     protected String getDisplayDate(PortalControllerContext portalControllerContext, CalendarData calendarData) throws PortletException {
-        // Date format
-        DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, portalControllerContext.getRequest().getLocale());
-
-        StringBuilder builder = new StringBuilder();
-        builder.append(dateFormat.format(calendarData.getStartDate()));
-        builder.append(" - ");
-        builder.append(dateFormat.format(calendarData.getEndDate()));
-        return builder.toString();
+        return null;
     }
 
 
@@ -117,8 +108,7 @@ public class PlanningCalendarGeneratorImpl extends CalendarGeneratorImpl {
         StringBuilder builder;
 
         // Events
-        List<PlanningCalendarEvent> planningEvents = new ArrayList<PlanningCalendarEvent>(events.size());
-        SortedMap<PlanningCalendarEventHeader, List<DailyEvent>> planningCompactEvents = new TreeMap<PlanningCalendarEventHeader, List<DailyEvent>>();
+        SortedMap<PlanningCalendarEventHeader, List<DailyEvent>> planningEvents = new TreeMap<PlanningCalendarEventHeader, List<DailyEvent>>();
         for (Event event : events) {
             startCalendar.setTime(event.getStartDate());
             endCalendar.setTime(event.getEndDate());
@@ -130,14 +120,9 @@ public class PlanningCalendarGeneratorImpl extends CalendarGeneratorImpl {
                 // Current date
                 Date currentDate = DateUtils.truncate(startCalendar.getTime(), Calendar.DAY_OF_MONTH);
 
-                if (!currentDate.before(calendarData.getStartDate()) && currentDate.before(calendarData.getEndDate())) {
+                if (!currentDate.before(calendarData.getStartDate())) {
                     // Planning event
-                    DailyEvent planningEvent;
-                    if (compact) {
-                        planningEvent = new DailyEvent(event, currentDate);
-                    } else {
-                        planningEvent = new PlanningCalendarEvent(event, currentDate);
-                    }
+                    DailyEvent planningEvent = new DailyEvent(event, currentDate);
 
                     // Begin indicator
                     planningEvent.setBegin(begin);
@@ -177,18 +162,12 @@ public class PlanningCalendarGeneratorImpl extends CalendarGeneratorImpl {
                     header.setMonth(builder.toString());
 
 
-                    if (compact) {
-                        List<DailyEvent> dailyEvents = planningCompactEvents.get(header);
-                        if (dailyEvents == null) {
-                            dailyEvents = new ArrayList<DailyEvent>();
-                            planningCompactEvents.put(header, dailyEvents);
-                        }
-                        dailyEvents.add(planningEvent);
-                    } else {
-                        PlanningCalendarEvent planningCalendarEvent = (PlanningCalendarEvent) planningEvent;
-                        planningCalendarEvent.setHeader(header);
-                        planningEvents.add(planningCalendarEvent);
+                    List<DailyEvent> dailyEvents = planningEvents.get(header);
+                    if (dailyEvents == null) {
+                        dailyEvents = new ArrayList<DailyEvent>();
+                        planningEvents.put(header, dailyEvents);
                     }
+                    dailyEvents.add(planningEvent);
                 }
 
                 // Increment calendar
@@ -197,22 +176,25 @@ public class PlanningCalendarGeneratorImpl extends CalendarGeneratorImpl {
                 begin = false;
             }
         }
-
+        
+        
         // Events data
-        EventsData eventsData;
-        if (compact) {
-            PlanningCalendarCompactEventsData planningCompactEventsData = new PlanningCalendarCompactEventsData();
-            eventsData = planningCompactEventsData;
+        PlanningCalendarEventsData eventsData = new PlanningCalendarEventsData();
 
-            planningCompactEventsData.setMappedEvents(planningCompactEvents);
-        } else {
-            PlanningCalendarEventsData planningEventsData = new PlanningCalendarEventsData();
-            eventsData = planningEventsData;
 
-            // Sort events
-            Collections.sort(planningEvents);
-            planningEventsData.setEvents(planningEvents);
+        if (compact && (planningEvents.size() > PLANNING_COMPACT_MAX)) {
+            Set<PlanningCalendarEventHeader> keySet = planningEvents.keySet();
+            PlanningCalendarEventHeader[] keys = keySet.toArray(new PlanningCalendarEventHeader[keySet.size()]);
+            PlanningCalendarEventHeader key = keys[PLANNING_COMPACT_MAX];
+            planningEvents = planningEvents.headMap(key);
+            
+            // Last date
+            PlanningCalendarEventHeader lastKey = planningEvents.lastKey();
+            eventsData.setLastDate(lastKey.getDate());
         }
+        
+        eventsData.setMappedEvents(planningEvents);
+
         return eventsData;
     }
 

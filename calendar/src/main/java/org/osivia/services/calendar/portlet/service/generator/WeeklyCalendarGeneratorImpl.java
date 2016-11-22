@@ -71,7 +71,7 @@ public class WeeklyCalendarGeneratorImpl extends CalendarGeneratorImpl {
         WeeklyCalendarData calendarData = new WeeklyCalendarData();
 
         // Selected date
-        Date selectedDate = this.getSelectedDate(portalControllerContext);
+        Date selectedDate = this.getSelectedDate(portalControllerContext, this.getPeriodType());
         // Start date
         Date startDate = this.getStartDate(portalControllerContext, this.getPeriodType(), selectedDate);
 

@@ -19,7 +19,7 @@ public enum PeriodTypes {
     /** Month. */
     MONTH("month", Calendar.MONTH, "calendar/view-month", false),
     /** Planning. */
-    PLANNING("planning", Calendar.DAY_OF_MONTH, "calendar/view-planning", true);
+    PLANNING("planning", -1, "calendar/view-planning", true);
 
 
     /** Period type name. */
