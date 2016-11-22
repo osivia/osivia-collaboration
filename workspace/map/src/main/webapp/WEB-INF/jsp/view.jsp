@@ -11,11 +11,11 @@
 <portlet:resourceURL id="lazyLoading" var="lazyLoadingUrl">
     <portlet:param name="cmsBasePath" value="${options.workspacePath}" />
     <portlet:param name="cmsNavigationPath" value="${options.navigationPath}" />
-    <portlet:param name="includedTypes" value="Workspace,Room" />
+    <portlet:param name="excludedTypes" value="Staple" />
+    <portlet:param name="navigation" value="true" />
     <portlet:param name="live" value="true" />
     <portlet:param name="link" value="true" />
     <portlet:param name="fullLoad" value="true" />
-    <portlet:param name="hideUnavailable" value="true" />
 </portlet:resourceURL>
 
 
@@ -31,7 +31,7 @@
                     <i class="halflings halflings-filter"></i>
                 </span>
                 
-                <input type="text" class="form-control" placeholder="${filterLabel}">
+                <input type="text" class="form-control" placeholder="${filterLabel}" data-expand="true">
                 
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
