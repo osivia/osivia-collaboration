@@ -105,29 +105,39 @@ public class CheckTitleAvailabilityCommand implements INuxeoCommand {
     private boolean checkInPendingWorkspaces(Session nuxeoSession) throws Exception {
         // Model
         Document model = this.getModel(nuxeoSession);
-        // Model webId
-        String modelWebId = model.getString("ttc:webid");
 
-        // Workspace title variable name
-        String titleVariableName = this.getTitleVariableName(model);
+        // Available workspace title indicator
+        boolean available;
+
+        if (model == null) {
+            available = true;
+        } else {
+            // Model webId
+            String modelWebId = model.getString("ttc:webid");
+
+            // Workspace title variable name
+            String titleVariableName = this.getTitleVariableName(model);
 
 
-        // Clause
-        StringBuilder clause = new StringBuilder();
-        clause.append("ecm:primaryType = 'ProcedureInstance' ");
-        clause.append("AND pi:procedureModelWebId = '").append(modelWebId).append("' ");
-        clause.append("AND pi:task.ecm:currentLifeCycleState = 'opened' ");
-        clause.append("AND pi:globalVariablesValues.").append(titleVariableName).append(" = '").append(this.title).append("' ");
+            // Clause
+            StringBuilder clause = new StringBuilder();
+            clause.append("ecm:primaryType = 'ProcedureInstance' ");
+            clause.append("AND pi:procedureModelWebId = '").append(modelWebId).append("' ");
+            clause.append("AND pi:task.ecm:currentLifeCycleState = 'opened' ");
+            clause.append("AND pi:globalVariablesValues.").append(titleVariableName).append(" = '").append(this.title).append("' ");
 
-        // Operation request
-        OperationRequest request = nuxeoSession.newRequest("Document.QueryES");
-        request.set(Constants.HEADER_NX_SCHEMAS, "dublincore");
-        request.set("query", "SELECT * FROM Document WHERE " + clause.toString());
+            // Operation request
+            OperationRequest request = nuxeoSession.newRequest("Document.QueryES");
+            request.set(Constants.HEADER_NX_SCHEMAS, "dublincore");
+            request.set("query", "SELECT * FROM Document WHERE " + clause.toString());
 
-        // Results
-        Documents results = (Documents) request.execute();
+            // Results
+            Documents results = (Documents) request.execute();
 
-        return results.isEmpty();
+            available = results.isEmpty();
+        }
+
+        return available;
     }
 
 
