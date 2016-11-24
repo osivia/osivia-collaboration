@@ -149,6 +149,15 @@ $JQry(function() {
 	});
 	
 	
+	$JQry(".workspace-acl-management input[type=radio][name=inherited]").change(function(event) {
+		var $target = $JQry(event.target),
+			$formGroup = $target.closest(".form-group"),
+			$submit = $formGroup.find("input[type=submit]");
+		
+		$submit.click();
+	});
+	
+	
 	$JQry(".workspace-acl-management select").change(function(event) {
 		var $target = $JQry(event.target),
 			$fieldset = $target.closest("fieldset"),
@@ -189,5 +198,5 @@ $JQry(function() {
 		$form.find("fieldset[disabled]").prop("disabled", false);
 		$form.find("input[type=hidden][value=true]").val(false);
 	});
-	
+
 });

@@ -106,6 +106,15 @@ public class AclManagementServiceImpl implements AclManagementService {
      * {@inheritDoc}
      */
     @Override
+    public void changeInheritance(PortalControllerContext portalControllerContext, AclEntries entries) throws PortletException {
+        this.repository.changeInheritance(portalControllerContext, entries);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void update(PortalControllerContext portalControllerContext, AclEntries entries, List<Role> roles) throws PortletException {
         this.repository.update(portalControllerContext, entries, roles);
     }

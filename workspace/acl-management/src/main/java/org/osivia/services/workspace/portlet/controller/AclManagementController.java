@@ -124,6 +124,25 @@ public class AclManagementController extends CMSPortlet implements PortletConfig
 
 
     /**
+     * Change inheritance action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param entries ACL entries model attribute
+     * @throws PortletException
+     */
+    @ActionMapping(name = "update", params = "change-inheritance")
+    public void changeInheritance(ActionRequest request, ActionResponse response, @ModelAttribute("entries") AclEntries entries) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.changeInheritance(portalControllerContext, entries);
+
+        this.copyRenderParameter(request, response);
+    }
+
+
+    /**
      * Update action mapping.
      *
      * @param request action request
@@ -132,7 +151,7 @@ public class AclManagementController extends CMSPortlet implements PortletConfig
      * @param roles roles model attribute
      * @throws PortletException
      */
-    @ActionMapping(name = "update")
+    @ActionMapping(name = "update", params = "save")
     public void update(ActionRequest request, ActionResponse response, @ModelAttribute("entries") AclEntries entries, @ModelAttribute("roles") List<Role> roles)
             throws PortletException {
         // Portal controller context

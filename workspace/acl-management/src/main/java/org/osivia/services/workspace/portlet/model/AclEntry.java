@@ -10,6 +10,8 @@ public class AclEntry extends Record {
 
     /** Role. */
     private Role role;
+    /** Editable. */
+    private boolean editable;
     /** Updated indicator. */
     private boolean updated;
     /** Deleted indicator. */
@@ -41,6 +43,24 @@ public class AclEntry extends Record {
      */
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    /**
+     * Getter for editable.
+     * 
+     * @return the editable
+     */
+    public boolean isEditable() {
+        return editable;
+    }
+
+    /**
+     * Setter for editable.
+     * 
+     * @param editable the editable to set
+     */
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 
     /**

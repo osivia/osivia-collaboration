@@ -80,6 +80,16 @@ public interface AclManagementRepository {
 
 
     /**
+     * Change inheritance.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param entries ACL entries
+     * @throws PortletException
+     */
+    void changeInheritance(PortalControllerContext portalControllerContext, AclEntries entries) throws PortletException;
+
+
+    /**
      * Update ACL entries.
      *
      * @param portalControllerContext portal controller context

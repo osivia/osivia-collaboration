@@ -11,14 +11,14 @@ import org.nuxeo.ecm.automation.client.model.Document;
  */
 public class AclEntries {
 
+    /** Inherited ACL entries indicator. */
+    private boolean inherited;
     /** ACL entries. */
     private List<AclEntry> entries;
     /** Workspace identifier. */
     private String workspaceId;
     /** Document. */
     private Document document;
-    /** Inherited ACL entries indicator. */
-    private boolean inherited;
 
 
     /**
@@ -28,6 +28,24 @@ public class AclEntries {
         super();
     }
 
+
+    /**
+     * Getter for inherited.
+     *
+     * @return the inherited
+     */
+    public boolean isInherited() {
+        return this.inherited;
+    }
+
+    /**
+     * Setter for inherited.
+     *
+     * @param inherited the inherited to set
+     */
+    public void setInherited(boolean inherited) {
+        this.inherited = inherited;
+    }
 
     /**
      * Getter for entries.
@@ -81,24 +99,6 @@ public class AclEntries {
      */
     public void setDocument(Document document) {
         this.document = document;
-    }
-
-    /**
-     * Getter for inherited.
-     *
-     * @return the inherited
-     */
-    public boolean isInherited() {
-        return this.inherited;
-    }
-
-    /**
-     * Setter for inherited.
-     *
-     * @param inherited the inherited to set
-     */
-    public void setInherited(boolean inherited) {
-        this.inherited = inherited;
     }
 
 }

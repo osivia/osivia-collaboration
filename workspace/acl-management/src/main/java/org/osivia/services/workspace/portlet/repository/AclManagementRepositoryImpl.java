@@ -138,6 +138,9 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
+        // Current user
+        String user = request.getRemoteUser();
+
         // Window
         PortalWindow window = WindowFactory.getWindow(request);
         // Path window property
@@ -232,6 +235,8 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
                     String avatar = null;
                     // Extra informations
                     String extra;
+                    // Editable ACL entry indicator
+                    boolean editable;
 
                     if (permission.isGroup()) {
                         // Group
@@ -248,6 +253,8 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
                             // Hide other workspace groups
                             continue;
                         }
+
+                        editable = true;
                     } else {
                         // User
                         type = RecordType.USER;
@@ -258,20 +265,23 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
                             continue;
                         } else {
                             Person person = member.getMember();
-                            displayName = person.getDisplayName();
+                            displayName = StringUtils.defaultIfBlank(person.getDisplayName(), person.getUid());
                             avatar = person.getAvatar().getUrl();
                             extra = person.getMail();
                         }
+
+                        editable = entries.isInherited() || !StringUtils.equals(user, id);
                     }
 
                     // ACL entry
                     AclEntry entry = new AclEntry();
                     entry.setId(id);
                     entry.setType(type);
-                    entry.setRole(role);
                     entry.setDisplayName(displayName);
                     entry.setAvatar(avatar);
                     entry.setExtra(extra);
+                    entry.setRole(role);
+                    entry.setEditable(editable);
 
                     entries.getEntries().add(entry);
                 }
@@ -348,7 +358,7 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
                         displayName = bundle.getString("ALL");
                         extra = bundle.getString("ALL_WORKSPACE_MEMBERS");
                     } else {
-                        displayName = group.getDisplayName();
+                        displayName = StringUtils.defaultIfBlank(group.getDisplayName(), group.getCn());
                         extra = group.getDescription();
                     }
                     record.setDisplayName(displayName);
@@ -385,7 +395,7 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
                 Record record = new Record();
                 record.setId(person.getUid());
                 record.setType(RecordType.USER);
-                record.setDisplayName(person.getDisplayName());
+                record.setDisplayName(StringUtils.defaultIfBlank(person.getDisplayName(), person.getUid()));
 
                 // Avatar
                 record.setAvatar(person.getAvatar().getUrl());
@@ -398,6 +408,108 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
         }
 
         return records;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void changeInheritance(PortalControllerContext portalControllerContext, AclEntries entries) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
+
+        // Document
+        Document document = entries.getDocument();
+        
+        // Current user
+        String user = request.getRemoteUser();
+        // Current workspace member
+        WorkspaceMember member = this.workspaceService.getMember(entries.getWorkspaceId(), user);
+
+        // Nuxeo command
+        INuxeoCommand command;
+
+        if (entries.isInherited()) {
+            // Permission names
+            List<String> names = new ArrayList<>();
+            names.add(Permission.getInheritanceBlocking().getName());
+            if (member != null) {
+                names.add(user);
+            }
+
+            // Remove permissions
+            command = new RemovePermissionsCommand(document, names);
+
+            // Update model
+            if (member != null) {
+                // Removed entries
+                List<AclEntry> removedEntries = new ArrayList<>();
+                for (AclEntry entry : entries.getEntries()) {
+                    if (StringUtils.equals(user, entry.getId())) {
+                        removedEntries.add(entry);
+                    }
+                }
+                entries.getEntries().removeAll(removedEntries);
+            }
+        } else {
+            // Permissions
+            List<Permission> permissions = new ArrayList<>();
+
+            if (member != null) {
+                // Current user administration permission
+                Permission userPermission = new Permission();
+                userPermission.setName(user);
+                userPermission.setValues(Arrays.asList(WorkspaceRole.ADMIN.getPermissions()));
+
+                permissions.add(userPermission);
+            }
+
+            permissions.add(Permission.getInheritanceBlocking());
+
+            // Add permissions
+            command = new AddPermissionsCommand(document, permissions);
+
+
+            // Update model
+            if (member != null) {
+                // Remove previous ACL entries
+                List<AclEntry> removedEntries = new ArrayList<>();
+                for (AclEntry entry : entries.getEntries()) {
+                    if (StringUtils.equals(user, entry.getId())) {
+                        removedEntries.add(entry);
+                    }
+                }
+                entries.getEntries().removeAll(removedEntries);
+                
+                // Current person
+                Person person = member.getMember();
+
+                // Current role
+                Role role = new Role(WorkspaceRole.ADMIN);
+                role.setDisplayName(bundle.getString(WorkspaceRole.ADMIN.getKey(), WorkspaceRole.ADMIN.getClassLoader()));
+
+                // ACL entry
+                AclEntry entry = new AclEntry();
+                entry.setId(user);
+                entry.setType(RecordType.USER);
+                entry.setDisplayName(StringUtils.defaultIfBlank(person.getDisplayName(), user));
+                entry.setAvatar(person.getAvatar().getUrl());
+                entry.setExtra(person.getMail());
+                entry.setRole(role);
+                entry.setEditable(false);
+
+                entries.getEntries().add(entry);
+            }
+        }
+
+        nuxeoController.executeNuxeoCommand(command);
     }
 
 
@@ -450,10 +562,6 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
         if (!updatedEntries.isEmpty()) {
             List<Permission> permissions = new ArrayList<>(updatedEntries.size());
 
-            if (entries.isInherited()) {
-                permissions.addAll(this.getInheritanceBlockingPermissions(entries));
-            }
-
             for (AclEntry entry : updatedEntries) {
                 // Workspace role
                 WorkspaceRole workspaceRole = WorkspaceRole.fromId(entry.getRole().getId());
@@ -472,7 +580,6 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
 
 
         // Update model
-        entries.setInherited(false);
         entries.getEntries().removeAll(removedEntries);
     }
 
@@ -501,10 +608,6 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
             // Removed ACL entries
             List<AclEntry> removedEntries = new ArrayList<>();
 
-            if (entries.isInherited()) {
-                permissions.addAll(this.getInheritanceBlockingPermissions(entries));
-            }
-
             for (Record record : records) {
                 int index = entries.getEntries().indexOf(record);
                 if (index != -1) {
@@ -527,10 +630,12 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
                 AclEntry addedEntry = new AclEntry();
                 addedEntry.setId(record.getId());
                 addedEntry.setType(record.getType());
-                addedEntry.setDisplayName(record.getDisplayName());
+                addedEntry.setDisplayName(StringUtils.defaultIfBlank(record.getDisplayName(), record.getId()));
                 addedEntry.setAvatar(record.getAvatar());
                 addedEntry.setExtra(record.getExtra());
                 addedEntry.setRole(role);
+                addedEntry.setEditable(true);
+
                 addedEntries.add(addedEntry);
             }
 
@@ -554,7 +659,6 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
 
 
             // Update model
-            entries.setInherited(false);
             entries.getEntries().removeAll(removedEntries);
             entries.getEntries().addAll(addedEntries);
         }
@@ -580,14 +684,17 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
         // Local permissions JSON array
         JSONArray array = result.getJSONArray("local");
         List<String> names = new ArrayList<>(array.size());
+
+        if (!entries.isInherited()) {
+            Permission permission = Permission.getInheritanceBlocking();
+            names.add(permission.getName());
+        }
+
         for (int i = 0; i < array.size(); i++) {
             JSONObject object = array.getJSONObject(i);
 
             if (object.getBoolean("isGranted")) {
                 names.add(object.getString("username"));
-            } else {
-                Permission permission = Permission.getInheritanceBlocking();
-                names.add(permission.getName());
             }
         }
 
@@ -600,53 +707,6 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
         entries.setInherited(true);
         AclEntries updatedEntries = this.getAclEntries(portalControllerContext, entries.getWorkspaceId());
         entries.setEntries(updatedEntries.getEntries());
-    }
-
-
-    /**
-     * Get inheritance blocking permissions.
-     *
-     * @param entries ACL entries
-     * @return permissions
-     */
-    private List<Permission> getInheritanceBlockingPermissions(AclEntries entries) {
-        // Permissions
-        List<Permission> permissions;
-
-        if (entries.isInherited()) {
-            permissions = new ArrayList<>(entries.getEntries().size());
-            permissions.add(Permission.getInheritanceBlocking());
-
-            // Workspace groups
-            List<CollabProfile> groups = this.workspaceService.findByWorkspaceId(entries.getWorkspaceId());
-            Map<String, CollabProfile> groupMap = new HashMap<>(groups.size());
-            for (CollabProfile group : groups) {
-                groupMap.put(group.getCn(), group);
-            }
-
-            for (AclEntry entry : entries.getEntries()) {
-                if (RecordType.GROUP.equals(entry.getType())) {
-                    CollabProfile group = groupMap.get(entry.getId());
-                    if (!WorkspaceGroupType.space_group.equals(group.getType()) && !WorkspaceGroupType.local_group.equals(group.getType())) {
-                        // Ignore other workspace groups
-                        continue;
-                    }
-                }
-
-                // Workspace role
-                WorkspaceRole workspaceRole = WorkspaceRole.fromId(entry.getRole().getId());
-                if (workspaceRole != null) {
-                    Permission permission = new Permission();
-                    permission.setName(entry.getId());
-                    permission.setValues(Arrays.asList(workspaceRole.getPermissions()));
-                    permissions.add(permission);
-                }
-            }
-        } else {
-            permissions = new ArrayList<>(0);
-        }
-
-        return permissions;
     }
 
 }
