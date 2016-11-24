@@ -35,7 +35,7 @@ public class InvitationsCreationFormValidator implements Validator {
      */
     @Override
     public boolean supports(Class<?> clazz) {
-        return clazz.isAssignableFrom(InvitationsCreationForm.class);
+        return InvitationsCreationForm.class.isAssignableFrom(clazz);
     }
 
 

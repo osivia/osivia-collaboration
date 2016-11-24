@@ -35,7 +35,7 @@ public class WorkspaceEditionFormValidator implements Validator {
      */
     @Override
     public boolean supports(Class<?> clazz) {
-        return clazz.isAssignableFrom(WorkspaceEditionForm.class);
+        return WorkspaceEditionForm.class.isAssignableFrom(clazz);
     }
 
 

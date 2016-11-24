@@ -27,7 +27,7 @@ public class AddFormValidator implements Validator {
      */
     @Override
     public boolean supports(Class<?> clazz) {
-        return clazz.isAssignableFrom(AddForm.class);
+        return AddForm.class.isAssignableFrom(clazz);
     }
 
 
