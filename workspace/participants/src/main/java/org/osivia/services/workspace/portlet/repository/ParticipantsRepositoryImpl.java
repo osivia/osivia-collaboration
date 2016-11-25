@@ -390,10 +390,9 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
             groups = new ArrayList<>(0);
         } else {
             // JSON array
-            JSONArray array = result.getJSONArray("local");
-            if (array.isEmpty()) {
-                array = result.getJSONArray("inherited");
-            }
+            JSONArray array = new JSONArray();
+            array.addAll(result.getJSONArray("local"));
+            array.addAll(result.getJSONArray("inherited"));
 
 
             // Workspace profiles

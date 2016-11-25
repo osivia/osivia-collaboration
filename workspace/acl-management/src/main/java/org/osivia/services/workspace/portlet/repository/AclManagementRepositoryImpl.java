@@ -169,10 +169,6 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
             } else {
                 // JSON array
                 JSONArray array = result.getJSONArray("local");
-                if (array.isEmpty()) {
-                    array = result.getJSONArray("inherited");
-                    entries.setInherited(true);
-                }
 
 
                 // Workspace groups
@@ -193,6 +189,7 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
 
                 // Permissions
                 Map<String, Permission> permissions = new HashMap<>(array.size());
+                boolean inherited = true;
                 for (int i = 0; i < array.size(); i++) {
                     JSONObject object = array.getJSONObject(i);
 
@@ -212,8 +209,12 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
                             permissions.put(name, permission);
                         }
                         permission.getValues().add(object.getString("permission"));
+                    } else {
+                        inherited = false;
                     }
                 }
+                entries.setInherited(inherited);
+
                 entries.setEntries(new ArrayList<AclEntry>(permissions.size()));
                 for (Permission permission : permissions.values()) {
                     // Permission values
@@ -226,6 +227,7 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
                     }
                     // Role
                     Role role = new Role(workspaceRole);
+                    role.setDisplayName(bundle.getString(workspaceRole.getKey(), workspaceRole.getClassLoader()));
                     // Identifier
                     String id = permission.getName();
                     // Type
