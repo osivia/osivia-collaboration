@@ -422,6 +422,7 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
     @InitBinder("editionForm")
     public void editionFormInitBinder(PortletRequestDataBinder binder) {
         binder.addValidators(this.editionFormValidator);
+        binder.setDisallowedFields("root", "initialWorkspaceType");
     }
 
 

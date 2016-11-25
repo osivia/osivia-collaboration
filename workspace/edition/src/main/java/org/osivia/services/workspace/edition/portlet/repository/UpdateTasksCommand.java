@@ -1,6 +1,5 @@
 package org.osivia.services.workspace.edition.portlet.repository;
 
-import java.io.File;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,45 +8,44 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
-import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
-import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
-import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
- * Workspace edition Nuxeo command.
+ * Update workspace or room tasks Nuxeo command.
  *
  * @author Cédric Krommenhoek
  * @see INuxeoCommand
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class WorkspaceEditionCommand implements INuxeoCommand {
+public class UpdateTasksCommand implements INuxeoCommand {
 
-    /** Form. */
-    private final WorkspaceEditionForm form;
+    /** Nuxeo document. */
+    private final Document workspace;
+    /** Tasks. */
+    private final List<Task> tasks;
 
 
     /**
      * Constructor.
-     *
-     * @param form form
+     * 
+     * @param workspace workspace or room Nuxeo document
+     * @param tasks tasks
      */
-    public WorkspaceEditionCommand(WorkspaceEditionForm form) {
+    public UpdateTasksCommand(Document workspace, List<Task> tasks) {
         super();
-        this.form = form;
+        this.workspace = workspace;
+        this.tasks = tasks;
     }
 
 
@@ -58,96 +56,6 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
     public Object execute(Session nuxeoSession) throws Exception {
         // Document service
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
-
-        // Workspace
-        Document workspace = this.form.getDocument();
-
-        // Update workspace
-        this.updateWorkspace(documentService, workspace);
-
-        // Update tasks
-        this.updateTasks(nuxeoSession, documentService, workspace);
-
-        return null;
-    }
-
-
-    /**
-     * Update workspace.
-     *
-     * @param documentService document service
-     * @param workspace workspace document
-     * @throws Exception
-     */
-    private void updateWorkspace(DocumentService documentService, Document workspace) throws Exception {
-        // Workspace type
-        WorkspaceType type = this.form.getWorkspaceType();
-
-        documentService.setProperty(workspace, "dc:title", this.form.getTitle());
-        documentService.setProperty(workspace, "dc:description", this.form.getDescription());
-        if (this.form.isRoot()) {
-            documentService.setProperty(workspace, "ttcs:visibility", type.getId());
-
-            if (WorkspaceType.PUBLIC.equals(type)) {
-                // Grant read permission to everyone
-                documentService.addPermission(workspace, "Everyone", "Read");
-            } else {
-                // TODO pouvoir supprimer une permission unitairement
-
-                // Remove all permissions to everyone, including inheritance blocking
-                documentService.removePermissions(workspace, "Everyone", null);
-
-                // Maintain inheritance blocking
-                documentService.setPermission(workspace, "Everyone", "Everything", false);
-            }
-        }
-        
-        // Vignette
-        Image vignette = this.form.getVignette();
-        if (vignette.isUpdated()) {
-            // Temporary file
-            File temporaryFile = vignette.getTemporaryFile();
-            // File blob
-            Blob blob = new FileBlob(temporaryFile);
-
-            documentService.setBlob(workspace, blob, "ttc:vignette");
-
-            // Delete temporary file
-            temporaryFile.delete();
-        } else if (vignette.isDeleted()) {
-            documentService.removeBlob(workspace, "ttc:vignette");
-        }
-
-        // Banner
-        if (this.form.isRoot()) {
-            Image banner = this.form.getBanner();
-            if (banner.isUpdated()) {
-                // Temporary file
-                File temporaryFile = banner.getTemporaryFile();
-                // File blob
-                Blob blob = new FileBlob(temporaryFile);
-
-                documentService.setBlob(workspace, blob, "ttcs:headImage");
-
-                // Delete temporary file
-                temporaryFile.delete();
-            } else if (banner.isDeleted()) {
-                documentService.removeBlob(workspace, "ttcs:headImage");
-            }
-        }
-    }
-
-
-    /**
-     * Update tasks.
-     *
-     * @param nuxeoSession Nuxeo session
-     * @param documentService document service
-     * @param workspace workspace document
-     * @throws Exception
-     */
-    private void updateTasks(Session nuxeoSession, DocumentService documentService, Document workspace) throws Exception {
-        List<Task> tasks = this.form.getTasks();
 
         // WebId prefix
         String webIdPrefix = ITaskbarService.WEBID_PREFIX + workspace.getString("webc:url") + "_";
@@ -233,6 +141,8 @@ public class WorkspaceEditionCommand implements INuxeoCommand {
             // Execution
             request.execute();
         }
+
+        return null;
     }
 
 

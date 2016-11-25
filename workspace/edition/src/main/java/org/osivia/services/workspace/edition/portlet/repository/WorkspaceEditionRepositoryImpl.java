@@ -14,6 +14,7 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
+import org.osivia.portal.api.cms.impl.BasicPermissions;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -37,6 +38,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
  * Workspace edition repository implementation.
@@ -249,13 +251,61 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
-    public void save(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+    public boolean checkPermissions(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        // Nuxeo document context
+        NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(workspace.getPath());
+        // Permissions
+        BasicPermissions permissions = documentContext.getPermissions(BasicPermissions.class);
+
+        return permissions.isManageableByUser();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateWorkspaceType(PortalControllerContext portalControllerContext, Document workspace, WorkspaceType workspaceType) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
+
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(UpdateWorkspaceTypeCommand.class, workspace, workspaceType);
+        nuxeoController.executeNuxeoCommand(command);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateTasks(PortalControllerContext portalControllerContext, Document workspace, List<Task> tasks) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
+
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(UpdateTasksCommand.class, workspace, tasks);
+        nuxeoController.executeNuxeoCommand(command);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateProperties(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(WorkspaceEditionCommand.class, form);
+        INuxeoCommand command = this.applicationContext.getBean(UpdatePropertiesCommand.class, form);
         nuxeoController.executeNuxeoCommand(command);
 
 

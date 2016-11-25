@@ -10,6 +10,8 @@ import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
+
 /**
  * Workspace edition repository interface.
  *
@@ -61,13 +63,46 @@ public interface WorkspaceEditionRepository {
 
 
     /**
-     * Save edition.
+     * Check permissions.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspace workspace or room Nuxeo document
+     * @return true if current user has management permissions
+     * @throws PortletException
+     */
+    boolean checkPermissions(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
+
+
+    /**
+     * Update workspace type.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspace workspace Nuxeo document
+     * @param workspaceType updated workspace type
+     * @throws PortletException
+     */
+    void updateWorkspaceType(PortalControllerContext portalControllerContext, Document workspace, WorkspaceType workspaceType) throws PortletException;
+
+
+    /**
+     * Update tasks.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspace workspace or room Nuxeo document
+     * @param tasks tasks
+     * @throws PortletException
+     */
+    void updateTasks(PortalControllerContext portalControllerContext, Document workspace, List<Task> tasks) throws PortletException;
+
+
+    /**
+     * Update workspace or room properties.
      *
      * @param portalControllerContext portal controller context
      * @param form workspace edition form
      * @throws PortletException
      */
-    void save(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
+    void updateProperties(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
 
 
     /**

@@ -92,11 +92,13 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         boolean root = "Workspace".equals(workspace.getType());
         form.setRoot(root);
 
-        // Type
+        // Workspace type
         if (root) {
             String visibility = workspace.getString("ttcs:visibility");
             if (StringUtils.isNotEmpty(visibility)) {
-                form.setWorkspaceType(WorkspaceType.valueOf(visibility));
+                WorkspaceType workspaceType = WorkspaceType.valueOf(visibility);
+                form.setWorkspaceType(workspaceType);
+                form.setInitialWorkspaceType(workspaceType);
             }
         }
 
@@ -202,12 +204,8 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
-        // Sort tasks
-        Collections.sort(form.getTasks(), this.tasksComparator);
-
-        // Save
-        this.repository.save(portalControllerContext, form);
-
+        // Workspace or room Nuxeo document
+        Document workspace = form.getDocument();
 
         // Internationalization fragment
         String fragment;
@@ -218,9 +216,35 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         }
 
 
-        // Notification
-        String message = bundle.getString("MESSAGE_WORKSPACE_EDITION_SUCCESS", fragment);
-        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        if (this.repository.checkPermissions(portalControllerContext, workspace)) {
+            // Update workspace type
+            if (form.isRoot()) {
+                WorkspaceType workspaceType = form.getWorkspaceType();
+                WorkspaceType initialWorkspaceType = form.getInitialWorkspaceType();
+
+                if (!workspaceType.equals(initialWorkspaceType)) {
+                    this.repository.updateWorkspaceType(portalControllerContext, workspace, workspaceType);
+                }
+            }
+
+
+            // Update tasks
+            List<Task> tasks = form.getTasks();
+            Collections.sort(tasks, this.tasksComparator);
+            this.repository.updateTasks(portalControllerContext, workspace, tasks);
+
+            // Update properties
+            this.repository.updateProperties(portalControllerContext, form);
+
+
+            // Notification
+            String message = bundle.getString("MESSAGE_WORKSPACE_EDITION_SUCCESS", fragment);
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        } else {
+            // Notification
+            String message = bundle.getString("MESSAGE_WORKSPACE_EDITION_FORBIDDEN_ERROR", fragment);
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
+        }
     }
 
 

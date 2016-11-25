@@ -29,6 +29,8 @@ public class WorkspaceEditionForm {
     private boolean root;
     /** Workspace type (only for root). */
     private WorkspaceType workspaceType;
+    /** Initial workspace type (only for root). */
+    private WorkspaceType initialWorkspaceType;
     /** Workspace vignette. */
     private Image vignette;
     /** Workspace banner (only for root). */
@@ -124,6 +126,24 @@ public class WorkspaceEditionForm {
      */
     public void setWorkspaceType(WorkspaceType workspaceType) {
         this.workspaceType = workspaceType;
+    }
+
+    /**
+     * Getter for initialWorkspaceType.
+     * 
+     * @return the initialWorkspaceType
+     */
+    public WorkspaceType getInitialWorkspaceType() {
+        return initialWorkspaceType;
+    }
+
+    /**
+     * Setter for initialWorkspaceType.
+     * 
+     * @param initialWorkspaceType the initialWorkspaceType to set
+     */
+    public void setInitialWorkspaceType(WorkspaceType initialWorkspaceType) {
+        this.initialWorkspaceType = initialWorkspaceType;
     }
 
     /**
