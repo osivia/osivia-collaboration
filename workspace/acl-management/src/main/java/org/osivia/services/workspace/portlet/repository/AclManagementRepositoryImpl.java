@@ -87,6 +87,7 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
     public String getWorkspaceId(PortalControllerContext portalControllerContext) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setForcePublicationInfosScope("superuser_context");
 
         // Window
         PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());

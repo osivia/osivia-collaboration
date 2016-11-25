@@ -236,6 +236,7 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
     private String getWorkspaceId(PortalControllerContext portalControllerContext, Document space) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setForcePublicationInfosScope("superuser_context");
 
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();

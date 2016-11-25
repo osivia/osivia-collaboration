@@ -53,13 +53,16 @@ public class WorkspaceMapRepositoryImpl implements WorkspaceMapRepository {
         // CMS service context
         CMSServiceCtx cmsContext = nuxeoController.getCMSCtx();
 
-        // Path
-        String path = nuxeoController.getBasePath();
 
         // Workspace Nuxeo document
         Document workspace = null;
-        try {
-            while ((workspace == null) && StringUtils.isNotEmpty(path)) {
+        // Path
+        String path = nuxeoController.getBasePath();
+        // Last authorized document
+        Document lastAuthorizedDocument = null;
+
+        while ((workspace == null) && StringUtils.isNotEmpty(path)) {
+            try {
                 // Publication infos
                 CMSPublicationInfos publicationInfos = cmsService.getPublicationInfos(cmsContext, path);
                 // Base path
@@ -68,18 +71,23 @@ public class WorkspaceMapRepositoryImpl implements WorkspaceMapRepository {
                 CMSItem spaceConfig = cmsService.getSpaceConfig(cmsContext, basePath);
                 // Document type
                 DocumentType documentType = spaceConfig.getType();
+                // Update last authorized document
+                lastAuthorizedDocument = (Document) spaceConfig.getNativeItem();
 
                 if ((documentType != null) && ("Workspace".equals(documentType.getName()))) {
-                    workspace = (Document) spaceConfig.getNativeItem();
+                    workspace = lastAuthorizedDocument;
                 } else {
                     // Loop on parent path
                     path = publicationInfos.getParentSpaceID();
                 }
+            } catch (CMSException e) {
+                if (CMSException.ERROR_FORBIDDEN == e.getErrorCode()) {
+                    workspace = lastAuthorizedDocument;
+                } else {
+                    throw new PortletException(e);
+                }
             }
-        } catch (CMSException e) {
-            throw new PortletException(e);
         }
-
 
         // Workspace path
         String workspacePath;
