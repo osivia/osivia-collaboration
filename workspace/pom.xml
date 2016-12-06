@@ -23,6 +23,7 @@
         <module>map</module>
         <module>acl-management</module>
         <module>participants</module>
+        <module>trash</module>
     </modules>
 
 
