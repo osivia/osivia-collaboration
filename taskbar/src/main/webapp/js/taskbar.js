@@ -106,18 +106,16 @@ $JQry(window).resize(function() {
 function updateTaskbarStyles($container) {
 	var $row = $container.find(".portlet-container").closest(".row"),
 		windowWidth = $JQry(window).width();
-	
-	if (windowWidth < 768) {
-		$container.css({
-			top: 0
-		});
-	}
+
+	$container.css({
+		top: ((windowWidth >= 768) ? "auto" : 0)
+	});
 	
 	$container.parent().css({
 		"min-height": ((windowWidth >= 768) ? $row.height() : "auto")
 	});
 	$container.next().css({
-		"padding-left": ((windowWidth >= 768) ? $row.width() : 0)
+		"padding-left": ((windowWidth >= 768) ? $container.width() : 0)
 	});
 }
 
