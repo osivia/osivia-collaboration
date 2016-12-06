@@ -68,6 +68,9 @@ public class SetEditableWindow extends EditableWindow {
         properties.put(ViewList.CONTENT_FILTER_WINDOW_PROPERTY, null);
 
         properties.put(ViewList.PERMALINK_REFERENCE_WINDOW_PROPERTY, null);
+        
+        properties.put(ViewList.USE_ES_WINDOW_PROPERTY, String.valueOf(true));
+        
         properties.put(ViewList.RSS_REFERENCE_WINDOW_PROPERTY, null);
         properties.put(ViewList.RSS_TITLE_WINDOW_PROPERTY, null);
 
