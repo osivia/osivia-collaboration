@@ -29,18 +29,20 @@ public interface TrashRepository {
      * Delete all items.
      * 
      * @param portalControllerContext portal controller context
+     * @return rejected documents
      * @throws PortletException
      */
-    void deleteAll(PortalControllerContext portalControllerContext) throws PortletException;
+    List<TrashedDocument> deleteAll(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**
      * Restore all items.
      * 
      * @param portalControllerContext portal controller context
+     * @return rejected documents
      * @throws PortletException
      */
-    void restoreAll(PortalControllerContext portalControllerContext) throws PortletException;
+    List<TrashedDocument> restoreAll(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**
@@ -48,9 +50,10 @@ public interface TrashRepository {
      * 
      * @param portalControllerContext portal controller context
      * @param selectedPaths selected item paths
+     * @return rejected documents
      * @throws PortletException
      */
-    void delete(PortalControllerContext portalControllerContext, List<String> selectedPaths) throws PortletException;
+    List<TrashedDocument> delete(PortalControllerContext portalControllerContext, List<String> selectedPaths) throws PortletException;
 
 
     /**
@@ -58,9 +61,10 @@ public interface TrashRepository {
      * 
      * @param portalControllerContext portal controller context
      * @param selectedPaths selected paths
+     * @return rejected documents
      * @throws PortletException
      */
-    void restore(PortalControllerContext portalControllerContext, List<String> selectedPaths) throws PortletException;
+    List<TrashedDocument> restore(PortalControllerContext portalControllerContext, List<String> selectedPaths) throws PortletException;
 
 
     /**

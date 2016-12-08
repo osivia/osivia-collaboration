@@ -152,14 +152,11 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
         Locale locale = portalControllerContext.getRequest().getLocale();
         Bundle bundle = this.bundleFactory.getBundle(locale);
         
-        this.repository.deleteAll(portalControllerContext);
+        // Service invocation
+        List<TrashedDocument> rejected = this.repository.deleteAll(portalControllerContext);
 
         // Update model
-        form.getTrashedDocuments().clear();
-
-        // Notification
-        String message = bundle.getString("TRASH_EMPTY_TRASH_MESSAGE_SUCCESS");
-        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        this.updateModel(portalControllerContext, form, null, rejected, bundle, "TRASH_EMPTY_TRASH_MESSAGE_");
     }
 
 
@@ -172,14 +169,11 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
         Locale locale = portalControllerContext.getRequest().getLocale();
         Bundle bundle = this.bundleFactory.getBundle(locale);
 
-        this.repository.restoreAll(portalControllerContext);
+        // Service invocation
+        List<TrashedDocument> rejected = this.repository.restoreAll(portalControllerContext);
 
         // Update model
-        form.getTrashedDocuments().clear();
-
-        // Notification
-        String message = bundle.getString("TRASH_RESTORE_ALL_MESSAGE_SUCCESS");
-        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        this.updateModel(portalControllerContext, form, null, rejected, bundle, "TRASH_RESTORE_ALL_MESSAGE_");
     }
 
 
@@ -197,14 +191,11 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
         // Selected paths
         List<String> selectedPaths = this.getSelectedPaths(selection);
 
-        this.repository.delete(portalControllerContext, selectedPaths);
+        // Service invocation
+        List<TrashedDocument> rejected = this.repository.delete(portalControllerContext, selectedPaths);
 
         // Update model
-        form.getTrashedDocuments().removeAll(selection);
-
-        // Notification
-        String message = bundle.getString("TRASH_DELETE_SELECTION_MESSAGE_SUCCESS");
-        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        this.updateModel(portalControllerContext, form, selection, rejected, bundle, "TRASH_DELETE_SELECTION_MESSAGE_");
     }
 
 
@@ -222,14 +213,11 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
         // Selected paths
         List<String> selectedPaths = this.getSelectedPaths(selection);
 
-        this.repository.restore(portalControllerContext, selectedPaths);
+        // Service invocation
+        List<TrashedDocument> rejected = this.repository.restore(portalControllerContext, selectedPaths);
 
         // Update model
-        form.getTrashedDocuments().removeAll(selection);
-
-        // Notification
-        String message = bundle.getString("TRASH_RESTORE_SELECTION_MESSAGE_SUCCESS");
-        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        this.updateModel(portalControllerContext, form, selection, rejected, bundle, "TRASH_RESTORE_SELECTION_MESSAGE_");
     }
 
 
@@ -279,6 +267,45 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
         }
 
         return paths;
+    }
+
+
+    /**
+     * Update model.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form trash form
+     * @param selection selected documents
+     * @param rejected rejected documents
+     * @param bundle internationalization bundle
+     * @param messagePrefix message prefix
+     */
+    private void updateModel(PortalControllerContext portalControllerContext, TrashForm form, List<TrashedDocument> selection, List<TrashedDocument> rejected,
+            Bundle bundle, String messagePrefix) {
+        if (selection == null) {
+            // Select all documents
+            selection = new ArrayList<>(form.getTrashedDocuments());
+        }
+
+        if (rejected == null) {
+            // Notification
+            String message = bundle.getString(messagePrefix + "SUCCESS");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        } else if (CollectionUtils.isNotEmpty(rejected)) {
+            // Rejected titles
+            List<String> titles = new ArrayList<>(rejected.size());
+            for (TrashedDocument document : rejected) {
+                titles.add(document.getTitle());
+                selection.remove(document);
+            }
+
+            // Notification
+            String message = bundle.getString(messagePrefix + "WARNING", StringUtils.join(titles, ", "));
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.WARNING);
+        }
+
+        // Update model
+        form.getTrashedDocuments().removeAll(selection);
     }
 
 

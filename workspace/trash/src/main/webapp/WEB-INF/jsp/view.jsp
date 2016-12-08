@@ -166,7 +166,7 @@
                 <!-- No results -->
                 <c:if test="${empty trashForm.trashedDocuments}">
                     <div class="table-row">
-                        <div class="text-center"><op:translate key="TRASH_EMPTY_MESSAGE" /></div>
+                        <div class="text-center text-muted"><op:translate key="TRASH_EMPTY_MESSAGE" /></div>
                     </div>
                 </c:if>
             </div>
@@ -208,7 +208,7 @@
         
         
         <!-- Delete selection -->
-        <div id="${namespace}-empty-trash" class="modal fade" tabindex="-1" role="dialog">
+        <div id="${namespace}-delete-selection" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">

@@ -3,82 +3,7 @@
 // --------------------------------------------------
 
 
-@screen-sm-min: 768px;
-@screen-md-min: 992px;
-@screen-lg-min: 1200px;
-
-@screen-xs-max: (@screen-sm-min - 1);
-@screen-sm-max: (@screen-md-min - 1);
-@screen-md-max: (@screen-lg-min - 1);
-
-
 .trash {
-    .table {
-        .table-header {
-            position: relative;
-            
-            .contextual-toolbar {
-                left: 0;
-                right: 0;
-                z-index: -1;
-                
-                opacity: 0;
-                
-                &, ~ * {
-                    .transition-property(@transition-property: opacity);
-                    .transition-duration(@transition-duration: 200ms);
-                }
-                
-                &.in {
-                    z-index: 1;
-                    
-                    opacity: 1;
-                    
-                    
-                }
-                
-                .navbar {
-                    margin-bottom: 0;
-                }
-                
-                
-                @media screen and (max-width: @screen-xs-max) {
-                    position: fixed;
-                    bottom: 0;
-                    
-                    .navbar {
-                        border-style: solid none none;
-                    }
-                }
-                
-                @media screen and (min-width: @screen-sm-min) {
-                    position: absolute;
-                    bottom: -1px;
-                    
-                    &.in {
-                        ~ * {
-                            opacity: 0;
-                        }
-                    }
-                }
-            }
-        }
-        
-        ul {
-            margin-bottom: 0;
-        }
-    }
-    
-    
-    .contextual-toolbar {
-       @media screen and (min-width: @screen-md-min) {
-           .container-fluid {
-               padding: 0;
-           }
-       }
-    }    
-    
-    
     .popover-container {
         position: relative;
         
@@ -92,29 +17,4 @@
             }
         }
     }
-}
-
-
-// Transitions
-.transition-property(@transition-property) {
-  -webkit-transition-property: @transition-property;
-          transition-property: @transition-property;
-}
-.transition-delay(@transition-delay) {
-  -webkit-transition-delay: @transition-delay;
-          transition-delay: @transition-delay;
-}
-.transition-duration(@transition-duration) {
-  -webkit-transition-duration: @transition-duration;
-          transition-duration: @transition-duration;
-}
-.transition-timing-function(@timing-function) {
-  -webkit-transition-timing-function: @timing-function;
-          transition-timing-function: @timing-function;
-}
-.transition-transform(@transition) {
-  -webkit-transition: -webkit-transform @transition;
-     -moz-transition: -moz-transform @transition;
-       -o-transition: -o-transform @transition;
-          transition: transform @transition;
 }

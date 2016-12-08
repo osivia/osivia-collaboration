@@ -149,7 +149,12 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
 
         // Last contributor
         String lastContributorId = document.getString("dc:lastContributor");
-        Person lastContributorPerson = this.personService.getPerson(lastContributorId);
+        Person lastContributorPerson;
+        if (lastContributorId == null) {
+            lastContributorPerson = null;
+        } else {
+            lastContributorPerson = this.personService.getPerson(lastContributorId);
+        }
         String lastContributorDisplayName;
         if (lastContributorPerson == null) {
             lastContributorDisplayName = lastContributorId;
@@ -196,8 +201,8 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
      * {@inheritDoc}
      */
     @Override
-    public void deleteAll(PortalControllerContext portalControllerContext) throws PortletException {
-        this.delete(portalControllerContext, null);
+    public List<TrashedDocument> deleteAll(PortalControllerContext portalControllerContext) throws PortletException {
+        return this.delete(portalControllerContext, null);
     }
 
 
@@ -205,8 +210,8 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
      * {@inheritDoc}
      */
     @Override
-    public void restoreAll(PortalControllerContext portalControllerContext) throws PortletException {
-        this.restore(portalControllerContext, null);
+    public List<TrashedDocument> restoreAll(PortalControllerContext portalControllerContext) throws PortletException {
+        return this.restore(portalControllerContext, null);
     }
 
 
@@ -214,8 +219,8 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
      * {@inheritDoc}
      */
     @Override
-    public void delete(PortalControllerContext portalControllerContext, List<String> selectedPaths) throws PortletException {
-        this.executeTrashCommand(portalControllerContext, DeleteDocumentsCommand.class, selectedPaths);
+    public List<TrashedDocument> delete(PortalControllerContext portalControllerContext, List<String> selectedPaths) throws PortletException {
+        return this.executeTrashCommand(portalControllerContext, DeleteDocumentsCommand.class, selectedPaths);
     }
 
 
@@ -223,8 +228,8 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
      * {@inheritDoc}
      */
     @Override
-    public void restore(PortalControllerContext portalControllerContext, List<String> selectedPaths) throws PortletException {
-        this.executeTrashCommand(portalControllerContext, RestoreDocumentsCommand.class, selectedPaths);
+    public List<TrashedDocument> restore(PortalControllerContext portalControllerContext, List<String> selectedPaths) throws PortletException {
+        return this.executeTrashCommand(portalControllerContext, RestoreDocumentsCommand.class, selectedPaths);
     }
 
 
@@ -234,10 +239,11 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
      * @param portalControllerContext portal controller context
      * @param clazz trash command class
      * @param selectedPaths selected item paths, may be null
+     * @return rejected documents
      * @throws PortletException
      */
-    private void executeTrashCommand(PortalControllerContext portalControllerContext, Class<? extends TrashCommand> clazz, List<String> selectedPaths)
-            throws PortletException {
+    private List<TrashedDocument> executeTrashCommand(PortalControllerContext portalControllerContext, Class<? extends TrashCommand> clazz,
+            List<String> selectedPaths) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -255,9 +261,30 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
             command = this.applicationContext.getBean(clazz, selectedPaths);
         }
 
-        if (command != null) {
-            nuxeoController.executeNuxeoCommand(command);
+
+        // Rejected documents
+        List<TrashedDocument> rejected;
+
+        if (command == null) {
+            rejected = null;
+        } else {
+            Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
+            rejected = new ArrayList<>(documents.size());
+            for (Document document : documents.list()) {
+                TrashedDocument trashedDocument;
+                try {
+                    trashedDocument = this.getTrashedDocument(nuxeoController, document);
+                } catch (CMSException e) {
+                    throw new PortletException(e);
+                }
+
+                if (trashedDocument != null) {
+                    rejected.add(trashedDocument);
+                }
+            }
         }
+
+        return rejected;
     }
 
 
