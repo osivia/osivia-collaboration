@@ -2,6 +2,7 @@ package org.osivia.services.workspace.edition.portlet.model;
 
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItemRestriction;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 
 /**
@@ -123,6 +124,15 @@ public abstract class TaskbarItemDecorator implements TaskbarItem {
     @Override
     public void setToDefault(int order) {
         // Do nothing
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TaskbarItemRestriction getRestriction() {
+        return this.item.getRestriction();
     }
 
 }

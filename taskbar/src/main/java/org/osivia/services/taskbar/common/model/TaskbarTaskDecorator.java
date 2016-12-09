@@ -1,6 +1,7 @@
 package org.osivia.services.taskbar.common.model;
 
 import org.osivia.portal.api.panels.PanelPlayer;
+import org.osivia.portal.api.taskbar.TaskbarItemRestriction;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 
@@ -150,6 +151,15 @@ public abstract class TaskbarTaskDecorator implements TaskbarTask {
     @Override
     public void setToDefault(int order) {
         // Do nothing
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TaskbarItemRestriction getRestriction() {
+        return this.task.getRestriction();
     }
 
 }

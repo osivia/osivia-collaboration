@@ -7,6 +7,7 @@ import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.taskbar.TaskbarFactory;
 import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItemRestriction;
 import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.services.workspace.portlet.service.TrashService;
 import org.osivia.services.workspace.util.ApplicationContextProvider;
@@ -82,6 +83,8 @@ public class TrashPlugin extends AbstractPluginPortlet {
 
         // Trash taskbar item
         TaskbarItem item = factory.createStapledTaskbarItem(TrashService.TASK_ID, "TRASH_TASK", "glyphicons glyphicons-bin", player);
+        factory.restrict(item, TaskbarItemRestriction.EDITION);
+
         items.add(item);
     }
 
