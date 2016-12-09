@@ -24,6 +24,7 @@
         <module>taskbar</module>
         <module>widgets</module>
         <module>workspace</module>
+        <module>pad</module>
 
         <module>ear</module>
     </modules>
