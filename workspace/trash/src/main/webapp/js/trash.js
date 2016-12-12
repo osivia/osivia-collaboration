@@ -99,6 +99,16 @@ $JQry(function() {
 		$button.popover("toggle");
 	});
 	
+	
+	$JQry(".trash .modal button[type=submit]").click(function(event) {
+		var $target = $JQry(event.target),
+			$modal = $target.closest(".modal");
+		
+		console.log("[Trash] submit click"); // FIXME
+		
+		$modal.modal("hide");
+	});
+	
 });
 
 

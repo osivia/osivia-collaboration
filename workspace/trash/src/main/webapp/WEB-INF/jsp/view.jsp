@@ -151,10 +151,6 @@
                                                 <i class="${trashedDocument.location.icon}"></i>
                                                 <span>${trashedDocument.location.title}</span>
                                             </button>
-                                            <%-- <a href="#" class="btn btn-default text-overflow no-ajax-link location" data-toggle="popover" data-content="..." data-container=".table-row" data-placement="top" data-trigger="focus" tabindex="0" role="button">
-                                                <i class="${trashedDocument.location.icon}"></i>
-                                                <span>${trashedDocument.location.title}</span>
-                                            </a> --%>
                                         </div>
                                     </div>
                                 </div>
@@ -194,7 +190,7 @@
                     </div>
                     
                     <div class="modal-footer">
-                        <button type="submit" name="restore" class="btn btn-primary" data-dismiss="modal">
+                        <button type="submit" name="restore" class="btn btn-primary">
                             <span><op:translate key="TRASH_RESTORE_SELECTION" /></span>
                         </button>
                         
@@ -233,7 +229,7 @@
                     </div>
                     
                     <div class="modal-footer">
-                        <button type="submit" name="delete" class="btn btn-danger" data-dismiss="modal">
+                        <button type="submit" name="delete" class="btn btn-danger">
                             <span><op:translate key="TRASH_DELETE_SELECTION" /></span>
                         </button>
                         

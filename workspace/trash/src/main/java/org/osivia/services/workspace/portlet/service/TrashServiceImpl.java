@@ -287,11 +287,11 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
             selection = new ArrayList<>(form.getTrashedDocuments());
         }
 
-        if (rejected == null) {
+        if (CollectionUtils.isEmpty(rejected)) {
             // Notification
             String message = bundle.getString(messagePrefix + "SUCCESS");
             this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
-        } else if (CollectionUtils.isNotEmpty(rejected)) {
+        } else {
             // Rejected titles
             List<String> titles = new ArrayList<>(rejected.size());
             for (TrashedDocument document : rejected) {

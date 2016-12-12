@@ -27,7 +27,7 @@
 
 <div class="workspace-edition">
     <form:form id="${namespace}-workspace-edition-form" action="${saveUrl}" method="post" enctype="multipart/form-data" modelAttribute="editionForm" cssClass="form-horizontal" role="form">
-        <div class="portlet-filler col-auto">
+        <div class="portlet-filler container-fluid">
             <!-- <div> -->
                 <div class="row">
                     <div class="col-lg-8">
