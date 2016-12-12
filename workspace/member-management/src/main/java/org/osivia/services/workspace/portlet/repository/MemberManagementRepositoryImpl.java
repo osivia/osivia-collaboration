@@ -172,7 +172,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, workspaceId, true, InvitationState.SENT);
+        INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, workspaceId, InvitationState.SENT, true);
         Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
 
         return documents.size();
@@ -233,7 +233,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         }
 
         // Member dates
-        Map<String, Date> dates = getMemberDates(portalControllerContext);
+        Map<String, Date> dates = this.getMemberDates(portalControllerContext);
 
         // Members
         List<Member> members = new ArrayList<>(workspaceMembers.size());
@@ -245,7 +245,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     && ((currentRole == null) || (workspaceMember.getRole() == null) || (currentRole.getWeight() >= workspaceMember.getRole().getWeight()));
 
             // Member
-            Member member = getMember(workspaceMember, date, editable);
+            Member member = this.getMember(workspaceMember, date, editable);
 
             members.add(member);
         }
@@ -256,16 +256,15 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
     /**
      * Get member dates.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return member dates
      * @throws PortletException
      */
-    private Map<String, Date> getMemberDates(PortalControllerContext portalControllerContext)
-            throws PortletException {
+    private Map<String, Date> getMemberDates(PortalControllerContext portalControllerContext) throws PortletException {
         // Workspace Nuxeo document
         Document workspace = this.getCurrentWorkspace(portalControllerContext);
-        
+
         // Members
         PropertyList members = workspace.getProperties().getList("ttcs:spaceMembers");
 
@@ -279,14 +278,14 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
             dates.put(user, date);
         }
-        
+
         return dates;
     }
 
 
     /**
      * Get member.
-     * 
+     *
      * @param workspaceMember workspace member
      * @param date member date
      * @param editable editable indicator
@@ -361,7 +360,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
             if ((InvitationState.SENT.equals(state)) || (StringUtils.isNotEmpty(uid) && !memberIdentifiers.contains(uid))) {
                 // Invitation
-                Invitation invitation = getInvitation(uid, document, variables);
+                Invitation invitation = this.getInvitation(uid, document, variables);
                 invitation.setDocument(document);
 
                 invitations.add(invitation);
@@ -374,7 +373,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
     /**
      * Get invitation.
-     * 
+     *
      * @param uid user identifier
      * @param document invitation Nuxeo document
      * @param variables invitation variables
@@ -440,13 +439,13 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             criteria.setMail(filter);
         } else {
             String tokenizedFilter = filter + "*";
-            String tokenizedFilterSubStr = "*" +filter + "*";
+            String tokenizedFilterSubStr = "*" + filter + "*";
 
             criteria.setUid(tokenizedFilter);
             criteria.setSn(tokenizedFilter);
             criteria.setGivenName(tokenizedFilter);
             criteria.setMail(tokenizedFilter);
-            
+
             criteria.setDisplayName(tokenizedFilterSubStr);
         }
 
@@ -655,7 +654,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
             if ((InvitationState.SENT.equals(state)) || (StringUtils.isNotEmpty(uid) && !memberIdentifiers.contains(uid))) {
                 // Invitation request
-                InvitationRequest request = getInvitationRequest(uid, document, variables);
+                InvitationRequest request = this.getInvitationRequest(uid, document, variables);
                 request.setDocument(document);
 
                 requests.add(request);
@@ -668,7 +667,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
     /**
      * Get invitation request.
-     * 
+     *
      * @param uid user identifier
      * @param variables invitation request variables
      * @return invitation request
@@ -802,41 +801,22 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public boolean isPendingInvitation(PortalControllerContext portalControllerContext, String workspaceId, String uid, boolean request)
-            throws PortletException {
+    public List<Document> getPendingInvitations(PortalControllerContext portalControllerContext, String uid) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
 
         // Identifiers
-        Set<String> identifier = new HashSet<>(1);
-        identifier.add(uid);
+        Set<String> identifiers = new HashSet<>(1);
+        identifiers.add(uid);
 
         // Nuxeo command
-        INuxeoCommand command = applicationContext.getBean(GetInvitationsCommand.class, workspaceId, request, identifier);
+        INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, null, InvitationState.SENT, identifiers);
 
         // Nuxeo documents
         Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
 
-        // Pending invitation
-        boolean pending;
-
-        if (documents.isEmpty()) {
-            pending = false;
-        } else {
-            // Nuxeo document
-            Document document = documents.get(0);
-
-            // Variables
-            PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
-
-            // Invitation state
-            InvitationState state = InvitationState.fromName(variables.getString(MemberManagementRepository.INVITATION_STATE_PROPERTY));
-
-            pending = InvitationState.SENT.equals(state);
-        }
-
-        return pending;
+        return documents.list();
     }
 
 
@@ -865,6 +845,10 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
             // Update ACL
             this.updateInvitationAcl(portalControllerContext, workspaceId, true, uid);
+
+            // Notification
+            String message = bundle.getString("MESSAGE_WORKSPACE_REQUEST_CREATION_SUCCESS");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
         } catch (PortalException | FormFilterException e) {
             // Error notification
             String message = bundle.getString("MESSAGE_WORKSPACE_REQUEST_CREATION_ERROR");
@@ -910,7 +894,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
     /**
      * Get workspace Nuxeo document.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param workspaceId workspace identifier
      * @return Nuxeo document
@@ -940,7 +924,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
     /**
      * Update invitation ACL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param workspaceId workspace identifier
      * @param request request indicator

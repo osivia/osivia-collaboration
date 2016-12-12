@@ -89,7 +89,7 @@
         </div>
         
         <!-- Body -->
-        <div class="table-body-wrapper">
+        <div class="portlet-filler">
             <c:forEach var="member" items="${members.members}" varStatus="status">                  
                 <div class="table-row">
                     <form:hidden path="members[${status.index}].edited" />
@@ -148,33 +148,37 @@
                     </fieldset>
                 </div>
             </c:forEach>
+            
+            <!-- No results -->
+            <c:if test="${empty members.members}">
+                <div class="table-row">
+                    <div class="text-center text-muted"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_NO_MEMBER" /></div>
+                </div>
+            </c:if>
         </div>
-        
-        <!-- No results -->
-        <c:if test="${empty members.members}">
-            <div class="table-row">
-                <div class="text-center"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_NO_MEMBER" /></div>
-            </div>
-        </c:if>
     </div>
     
-    
-    <div id="${namespace}-buttons" class="form-group collapse">
-        <div class="alert alert-warning">
-            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_MEMBERS_MESSAGE" /></span>
-        </div>
-    
-        <div>
-            <!-- Save -->
-            <button type="submit" class="btn btn-primary">
-                <i class="glyphicons glyphicons-floppy-disk"></i>
-                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_MEMBERS" /></span>
-            </button>
+
+    <div class="portlet-toolbar">
+        <div id="${namespace}-buttons" class="panel panel-default collapse">
+            <div class="panel-body">
+                <div class="alert alert-warning">
+                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_MEMBERS_MESSAGE" /></span>
+                </div>
             
-            <!-- Cancel -->
-            <button type="reset" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-buttons">
-                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CANCEL_MEMBERS" /></span>
-            </button>
+                <div>
+                    <!-- Save -->
+                    <button type="submit" class="btn btn-primary">
+                        <i class="glyphicons glyphicons-floppy-disk"></i>
+                        <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_MEMBERS" /></span>
+                    </button>
+                    
+                    <!-- Cancel -->
+                    <button type="reset" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-buttons">
+                        <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CANCEL_MEMBERS" /></span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </form:form>

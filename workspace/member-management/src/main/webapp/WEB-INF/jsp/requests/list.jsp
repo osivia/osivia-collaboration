@@ -86,7 +86,7 @@
         </div>
         
         <!-- Body -->
-        <div class="table-body-wrapper">
+        <div class="portlet-filler">
             <c:forEach var="invitationRequest" items="${invitationRequests.requests}" varStatus="status">                  
                 <div class="table-row">
                     <form:hidden path="requests[${status.index}].edited" />
@@ -171,33 +171,37 @@
                     </fieldset>
                 </div>
             </c:forEach>
+            
+            <!-- No results -->
+            <c:if test="${empty invitationRequests.requests}">
+                <div class="table-row">
+                    <div class="text-center text-muted"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_NO_MEMBER" /></div>
+                </div>
+            </c:if>
         </div>
-        
-        <!-- No results -->
-        <c:if test="${empty invitationRequests.requests}">
-            <div class="table-row">
-                <div class="text-center"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_NO_INVITATION_REQUEST" /></div>
-            </div>
-        </c:if>
     </div>
     
     
-    <div id="${namespace}-buttons" class="form-group collapse">
-        <div class="alert alert-warning">
-            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_INVITATION_REQUESTS_MESSAGE" /></span>
-        </div>
-    
-        <div>
-            <!-- Save -->
-            <button type="submit" class="btn btn-primary">
-                <i class="glyphicons glyphicons-floppy-disk"></i>
-                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_INVITATION_REQUESTS" /></span>
-            </button>
+    <div class="portlet-toolbar">
+        <div id="${namespace}-buttons" class="panel panel-default collapse">
+            <div class="panel-body">
+                <div class="alert alert-warning">
+                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_INVITATION_REQUESTS_MESSAGE" /></span>
+                </div>
             
-            <!-- Cancel -->
-            <button type="reset" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-buttons">
-                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CANCEL_INVITATION_REQUESTS" /></span>
-            </button>
+                <div>
+                    <!-- Save -->
+                    <button type="submit" class="btn btn-primary">
+                        <i class="glyphicons glyphicons-floppy-disk"></i>
+                        <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_INVITATION_REQUESTS" /></span>
+                    </button>
+                    
+                    <!-- Cancel -->
+                    <button type="reset" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-buttons">
+                        <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CANCEL_INVITATION_REQUESTS" /></span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </form:form>

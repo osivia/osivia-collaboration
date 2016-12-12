@@ -18,74 +18,58 @@
         </portlet:actionURL>
     
     
-        <li>
-            <div class="media">
-                <!-- Vignette -->
-                <c:if test="${not empty vignetteUrl}">
-                    <div class="media-left">
-                        <img src="${vignetteUrl}" alt="" class="media-object">
+        <li class="media">
+            <!-- Vignette -->
+            <c:if test="${not empty vignetteUrl}">
+                <div class="media-left media-middle">
+                    <img src="${vignetteUrl}" alt="" class="media-object">
+                </div>
+            </c:if>
+            
+            <div class="media-body media-middle">
+                <!-- Title -->
+                <h3 class="h4 media-heading">
+                    <ttc:title document="${document}" linkable="${(workspaceType.id eq 'PUBLIC')}" />
+                </h3>
+                
+                
+                <div class="clearfix">
+                    <!-- Type -->
+                    <c:if test="${not empty workspaceType}">
+                        <p class="pull-left">
+                            <span class="label label-${workspaceType.color}">
+                                <i class="${workspaceType.icon}"></i>
+                                <span><op:translate key="LIST_TEMPLATE_${workspaceType.key}" /></span>
+                            </span>
+                        </p>
+                    </c:if>
+
+                    <!-- Action -->
+                    <div class="pull-right">
+                        <c:choose>
+                            <c:when test="${empty memberStatus}">
+                                <a href="${createRequestUrl}" class="btn btn-default btn-sm">
+                                    <span><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CREATION" /></span>
+                                </a>
+                            </c:when>
+                            
+                            <c:otherwise>
+                                <p class="text-${memberStatus.color}">
+                                    <i class="${memberStatus.icon}"></i>
+                                    <span><op:translate key="${memberStatus.key}" /></span>
+                                </p>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
+                </div>
+                
+                <!-- Description -->
+                <c:if test="${not empty description}">
+                    <p>${description}</p>
                 </c:if>
                 
-                <div class="media-body media-middle">
-                    <!-- Title -->
-                    <h3 class="h4 media-heading">
-                        <ttc:title document="${document}" linkable="${(workspaceType.id eq 'PUBLIC') or(memberStatus.id eq 'member')}" />
-                        <c:if test="${not empty workspaceType}">
-                            <small>
-                                <span class="label label-${workspaceType.color}">
-                                    <i class="${workspaceType.icon}"></i>
-                                    <span><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_${workspaceType.key}" /></span>
-                                </span>
-                            </small>
-                        </c:if>
-                    </h3>
-                    
-                    <!-- Description -->
-                    <div>${description}</div>
-                </div>
                 
-                <!-- Status -->
-                <div class="media-right media-middle hidden-xs">
-                    <c:choose>
-                        <c:when test="${empty memberStatus}">
-                            <a href="${createRequestUrl}" class="btn btn-default">
-                                <span><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CREATION" /></span>
-                            </a>
-                        </c:when>
-                        
-                        <c:otherwise>
-                            <span class="text-nowrap text-${memberStatus.color}">
-                                <i class="${memberStatus.icon}"></i>
-                                <span><op:translate key="${memberStatus.key}" /></span>
-                            </span>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
             </div>
-            
-            <div class="media visible-xs">
-                <div class="media-body">
-                    <c:choose>
-                        <c:when test="${empty memberStatus}">
-                            <a href="${createRequestUrl}" class="btn btn-default">
-                                <span><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CREATION" /></span>
-                            </a>
-                        </c:when>
-                        
-                        <c:otherwise>
-                            <span class="text-${memberStatus.color}">
-                                <i class="${memberStatus.icon}"></i>
-                                <span><op:translate key="${memberStatus.key}" /></span>
-                            </span>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-            </div>
-            
-            <c:if test="${not status.last}">
-                <hr>
-            </c:if>
         </li>
     </c:forEach>
     

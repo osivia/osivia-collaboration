@@ -1,7 +1,7 @@
 package org.osivia.services.workspace.plugin.portlet;
 
 import java.io.IOException;
-import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,19 +9,20 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.osivia.directory.v2.model.ext.WorkspaceMember;
-import org.osivia.directory.v2.service.WorkspaceService;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.services.workspace.portlet.repository.MemberManagementRepository;
 import org.osivia.services.workspace.util.ApplicationContextProvider;
 import org.springframework.context.ApplicationContext;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.portlet.PrivilegedPortletModule;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
@@ -37,9 +38,6 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
     /** Portlet repository. */
     private MemberManagementRepository repository;
 
-    /** Workspace service. */
-    private final WorkspaceService workspaceService;
-
 
     /**
      * Constructor.
@@ -48,7 +46,6 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
      */
     public RequestsListTemplateModule(PortletContext portletContext) {
         super(portletContext);
-        this.workspaceService = DirServiceFactory.getService(WorkspaceService.class);
     }
 
 
@@ -65,8 +62,28 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
      * {@inheritDoc}
      */
     @Override
-    public String getFilter() {
-        return "ecm:primaryType = 'Workspace' AND ttcs:visibility IN ('PUBLIC', 'PRIVATE')";
+    public String getFilter(PortalControllerContext portalControllerContext) {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+        // Current user
+        String user = request.getRemoteUser();
+
+        // Request filter
+        String filter;
+
+        if (user == null) {
+            // No results
+            filter = FILTER_NO_RESULTS;
+        } else {
+            StringBuilder builder = new StringBuilder();
+            builder.append("ecm:primaryType = 'Workspace' ");
+            builder.append("AND ttcs:spaceMembers/*/login <> '").append(user).append("' ");
+            builder.append("AND ttcs:visibility IN ('").append(WorkspaceType.PUBLIC.getId()).append("', '").append(WorkspaceType.PRIVATE.getId()).append("') ");
+
+            filter = builder.toString();
+        }
+
+        return filter;
     }
 
 
@@ -80,24 +97,25 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
         // Portlet repository
         MemberManagementRepository repository = this.getRepository();
 
-        // Principal
-        Principal principal = request.getUserPrincipal();
-        
-        if (principal != null) {
-            // User
-            String user = principal.getName();
+        // Current user
+        String user = request.getRemoteUser();
 
+        if (StringUtils.isNotEmpty(user)) {
             // Workspaces
             List<?> workspaces = (List<?>) request.getAttribute("documents");
+            // Pending invitations
+            List<Document> pendingInvitations = repository.getPendingInvitations(portalControllerContext, user);
+            // Pending invitations member status
+            Map<String, MemberStatus> pendingStatus = getPendingStatus(pendingInvitations);
 
             for (Object object : workspaces) {
                 // Workspace
                 DocumentDTO workspace = (DocumentDTO) object;
                 // Workspace properties
                 Map<String, Object> properties = workspace.getProperties();
+
                 // Workspace identifier
                 String workspaceId = (String) properties.get("webc:url");
-
 
                 // Workspace type
                 String visibility = (String) properties.get("ttcs:visibility");
@@ -106,29 +124,55 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
                     properties.put("workspaceType", type);
                 }
 
-
-                // Search user in workspace members
-                WorkspaceMember member = this.workspaceService.getMember(workspaceId, user);
-
                 // Workspace member status
-                MemberStatus status;
-                if (member != null) {
-                    // Member
-                    status = MemberStatus.MEMBER;
-                } else if (repository.isPendingInvitation(portalControllerContext, workspaceId, user, false)) {
-                    // Invitation pending
-                    status = MemberStatus.INVITATION_PENDING;
-                } else if (repository.isPendingInvitation(portalControllerContext, workspaceId, user, true)) {
-                    // Request pending
-                    status = MemberStatus.REQUEST_PENDING;
-                } else {
-                    // No status
-                    status = null;
-                }
-
+                MemberStatus status = pendingStatus.get(workspaceId);
                 properties.put("memberStatus", status);
             }
         }
+    }
+
+
+    /**
+     * Get pending invitation member status.
+     * 
+     * @param pendingInvitations pending invitations
+     * @return pending invitation member status
+     */
+    private Map<String, MemberStatus> getPendingStatus(List<Document> pendingInvitations) {
+        Map<String, MemberStatus> pendingStatus = new HashMap<>(pendingInvitations.size());
+
+        for (Document pendingInvitation : pendingInvitations) {
+            // Model webId
+            String modelWebId = pendingInvitation.getString("pi:procedureModelWebId");
+            // Model identifier
+            String modelId = StringUtils.removeStart(modelWebId, IFormsService.FORMS_WEB_ID_PREFIX);
+
+            // Member status
+            MemberStatus status;
+            if (MemberManagementRepository.INVITATION_MODEL_ID.equals(modelId)) {
+                status = MemberStatus.INVITATION_PENDING;
+            } else if (MemberManagementRepository.REQUEST_MODEL_ID.equals(modelId)) {
+                status = MemberStatus.REQUEST_PENDING;
+            } else {
+                status = null;
+            }
+
+            if (status != null) {
+                // Variables
+                PropertyMap variables = pendingInvitation.getProperties().getMap("pi:globalVariablesValues");
+
+                if (variables != null) {
+                    // Workspace identifier
+                    String workspaceId = variables.getString(MemberManagementRepository.WORKSPACE_IDENTIFIER_PROPERTY);
+
+                    if (StringUtils.isNotEmpty(workspaceId)) {
+                        pendingStatus.put(workspaceId, status);
+                    }
+                }
+            }
+        }
+
+        return pendingStatus;
     }
     
 
@@ -142,14 +186,12 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
         // Portlet repository
         MemberManagementRepository repository = this.getRepository();
 
-        // Principal
-        Principal principal = request.getUserPrincipal();
+        // Current user
+        String user = request.getRemoteUser();
         // Action
         String action = request.getParameter(ActionRequest.ACTION_NAME);
 
-        if ((principal != null) && "createRequest".equals(action)) {
-            // User
-            String user = principal.getName();
+        if (StringUtils.isNotEmpty(user) && "createRequest".equals(action)) {
             // Workspace identifier
             String workspaceId = request.getParameter("id");
 
@@ -176,17 +218,15 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
 
     /**
      * Workspace member status enumeration.
-     * 
+     *
      * @author Cédric Krommenhoek
      */
     public enum MemberStatus {
-        
+
         /** Workspace invitation pending. */
-        INVITATION_PENDING("LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_STATUS_INVITATION_PENDING", "warning", "glyphicons glyphicons-alert"),
+        INVITATION_PENDING("LIST_TEMPLATE_STATUS_INVITATION_PENDING", "warning", "glyphicons glyphicons-alert"),
         /** Workspace request pending. */
-        REQUEST_PENDING("LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_STATUS_REQUEST_PENDING", "info", "glyphicons glyphicons-hourglass"),
-        /** Workspace member. */
-        MEMBER("LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_STATUS_MEMBER", "success", "glyphicons glyphicons-tick");
+        REQUEST_PENDING("LIST_TEMPLATE_STATUS_REQUEST_PENDING", "info", "glyphicons glyphicons-hourglass");
 
 
         /** Identifier. */
@@ -201,7 +241,7 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
 
         /**
          * Constructor.
-         * 
+         *
          * @param key internationalization key
          * @param color color
          * @param icon icon
@@ -216,7 +256,7 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
 
         /**
          * Getter for id.
-         * 
+         *
          * @return the id
          */
         public String getId() {
@@ -225,7 +265,7 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
 
         /**
          * Getter for key.
-         * 
+         *
          * @return the key
          */
         public String getKey() {
@@ -234,7 +274,7 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
 
         /**
          * Getter for color.
-         * 
+         *
          * @return the color
          */
         public String getColor() {
@@ -243,13 +283,13 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
 
         /**
          * Getter for icon.
-         * 
+         *
          * @return the icon
          */
         public String getIcon() {
             return icon;
         }
-        
+
     }
 
 }

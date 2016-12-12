@@ -14,6 +14,7 @@ import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.services.workspace.plugin.forms.AcceptWorkspaceInvitationFormFilter;
 import org.osivia.services.workspace.plugin.forms.DeclineWorkspaceInvitationFormFilter;
 import org.osivia.services.workspace.plugin.menubar.WorkspaceMemberManagementMenubarModule;
+import org.osivia.services.workspace.plugin.portlet.ManageableWorkspacesListTemplateModule;
 import org.osivia.services.workspace.plugin.portlet.RequestsListTemplateModule;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
@@ -95,6 +96,12 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
 
         // List templates
         Map<String, ListTemplate> templates = this.getListTemplates(context);
+
+        // Manageable workspaces
+        ListTemplate manageableWorkspaces = new ListTemplate("manageable-workspaces", bundle.getString("LIST_TEMPLATE_MANAGEABLE_WORKSPACES"),
+                "dublincore, toutatice, toutatice_space");
+        manageableWorkspaces.setModule(new ManageableWorkspacesListTemplateModule(getPortletContext()));
+        templates.put(manageableWorkspaces.getKey(), manageableWorkspaces);
 
         // Workspace member requests
         ListTemplate requests = new ListTemplate("workspace-member-requests", bundle.getString("LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS"),
