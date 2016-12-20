@@ -15,6 +15,7 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.services.workspace.edition.portlet.model.Image;
@@ -254,15 +255,33 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
     @Override
     public void validate(Errors errors, WorkspaceEditionForm form) {
         // Available workspace title indicator
-        boolean available;
         try {
-            available = this.repository.checkTitleAvailability(form);
+            if (!this.repository.checkTitleAvailability(form)) {
+                errors.rejectValue("title", "NotAvailable");
+            }
         } catch (PortletException e) {
             throw new RuntimeException(e);
         }
+        
+        
+        for (Task task : form.getTasks()) {
+            if (task.isActive() && StringUtils.isEmpty(task.getPath())) {
+                // Check webId availability
+                StringBuilder webId = new StringBuilder();
+                webId.append(ITaskbarService.WEBID_PREFIX);
+                webId.append(form.getDocument().getString("webc:url"));
+                webId.append("_");
+                webId.append(StringUtils.lowerCase(task.getId()));
 
-        if (!available) {
-            errors.rejectValue("title", "NotAvailable");
+                try {
+                    if (!this.repository.checkWebIdAvailability(webId.toString())) {
+                        Object arguments[] = new Object[]{task.getDisplayName()};
+                        errors.rejectValue("tasks", "NotAvailable", arguments, null);
+                    }
+                } catch (PortletException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 

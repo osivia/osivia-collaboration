@@ -24,6 +24,10 @@ import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.osivia.services.workspace.edition.portlet.model.validator.WorkspaceEditionFormValidator;
 import org.osivia.services.workspace.edition.portlet.service.WorkspaceEditionService;
@@ -71,6 +75,14 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
     /** Workspace edition service. */
     @Autowired
     private WorkspaceEditionService service;
+
+    /** Bundle factory. */
+    @Autowired
+    private IBundleFactory bundleFactory;
+
+    /** Notifications service. */
+    @Autowired
+    private INotificationsService notificationsService;
 
 
     /**
@@ -227,8 +239,14 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
             throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
-        if (!result.hasErrors()) {
+        if (result.hasErrors()) {
+            // Notification
+            String message = bundle.getString("MESSAGE_WORKSPACE_EDITION_ERROR");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
+        } else {
             this.service.save(portalControllerContext, form);
 
             // Redirection

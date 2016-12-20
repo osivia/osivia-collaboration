@@ -136,7 +136,8 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
         // Empty trash
         String emptyTrashTitle = bundle.getString("TRASH_MENUBAR_EMPTY_TRASH");
         String emptyTrashUrl = "#" + namespace + "-empty-trash";
-        MenubarItem emptyTrashItem = new MenubarItem("TRASH_EMPTY_TRASH", emptyTrashTitle, "glyphicons glyphicons-bin", MenubarGroup.SPECIFIC, 2, emptyTrashUrl,
+        MenubarItem emptyTrashItem = new MenubarItem("TRASH_EMPTY_TRASH", emptyTrashTitle, "glyphicons glyphicons-bin", MenubarGroup.SPECIFIC, 2,
+                emptyTrashUrl,
                 null, null, null);
         emptyTrashItem.getData().put("toggle", "modal");
         menubar.add(emptyTrashItem);

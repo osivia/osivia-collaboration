@@ -84,6 +84,7 @@ public class TrashPlugin extends AbstractPluginPortlet {
         // Trash taskbar item
         TaskbarItem item = factory.createStapledTaskbarItem(TrashService.TASK_ID, "TRASH_TASK", "glyphicons glyphicons-bin", player);
         factory.restrict(item, TaskbarItemRestriction.EDITION);
+        item.setToDefault(10);
 
         items.add(item);
     }

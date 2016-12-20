@@ -38,7 +38,7 @@ public class UpdateTasksCommand implements INuxeoCommand {
 
     /**
      * Constructor.
-     * 
+     *
      * @param workspace workspace or room Nuxeo document
      * @param tasks tasks
      */
@@ -58,12 +58,12 @@ public class UpdateTasksCommand implements INuxeoCommand {
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
 
         // WebId prefix
-        String webIdPrefix = ITaskbarService.WEBID_PREFIX + workspace.getString("webc:url") + "_";
+        String webIdPrefix = ITaskbarService.WEBID_PREFIX + this.workspace.getString("webc:url") + "_";
 
         // Active tasks
-        List<Task> activeTasks = new ArrayList<>(tasks.size());
+        List<Task> activeTasks = new ArrayList<>(this.tasks.size());
 
-        for (Task task : tasks) {
+        for (Task task : this.tasks) {
             if (task.isActive()) {
                 activeTasks.add(task);
             }
@@ -106,8 +106,9 @@ public class UpdateTasksCommand implements INuxeoCommand {
                     properties.set("ttc:webid", webId);
                 }
 
-                // Creation
-                Document document = documentService.createDocument(workspace, type, name, properties);
+
+                // Created document
+                Document document = documentService.createDocument(this.workspace, type, name, properties);
 
                 // Update task
                 task.setPath(document.getPath());

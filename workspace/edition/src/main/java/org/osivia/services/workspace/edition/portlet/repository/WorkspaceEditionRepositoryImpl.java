@@ -346,6 +346,23 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
+    public boolean checkWebIdAvailability(String webId) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(this.portletContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(CheckWebIdAvailabilityCommand.class, webId);
+        Boolean available = (Boolean) nuxeoController.executeNuxeoCommand(command);
+
+        return BooleanUtils.isTrue(available);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void delete(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);

@@ -116,6 +116,16 @@ public interface WorkspaceEditionRepository {
 
 
     /**
+     * Check webId availability.
+     * 
+     * @param webId webId
+     * @return true if webId is available
+     * @throws PortletException
+     */
+    boolean checkWebIdAvailability(String webId) throws PortletException;
+
+
+    /**
      * Delete workspace.
      * 
      * @param portalControllerContext portal controller context
