@@ -3,8 +3,9 @@ package org.osivia.services.workspace.portlet.repository;
 import java.util.List;
 
 import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.adapters.DocumentService;
+import org.nuxeo.ecm.automation.client.adapters.DocumentSecurityService;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.DocumentPermissions;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
@@ -20,6 +21,10 @@ public class AddPermissionsCommand implements INuxeoCommand {
     private final Document document;
     /** Permissions. */
     private final List<Permission> permissions;
+    /** Group of permissions where permissions are added. */
+    private final String groupPermissions;
+    /** Blocking inheritance permissions identifier. */
+    private final boolean blockingInheritance;
 
 
     /**
@@ -28,10 +33,13 @@ public class AddPermissionsCommand implements INuxeoCommand {
      * @param document document
      * @param permissions permissions
      */
-    public AddPermissionsCommand(Document document, List<Permission> permissions) {
+    public AddPermissionsCommand(Document document, List<Permission> permissions, String groupPermissions,
+            boolean blockingInheritance) {
         super();
         this.document = document;
         this.permissions = permissions;
+        this.groupPermissions = groupPermissions;
+        this.blockingInheritance = blockingInheritance;
     }
 
 
@@ -39,23 +47,16 @@ public class AddPermissionsCommand implements INuxeoCommand {
      * {@inheritDoc}
      */
     @Override
-    public Object execute(Session nuxeoSession) throws Exception {
-        // Document service
-        DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
-
-        for (Permission permission : this.permissions) {
-            for (String value : permission.getValues()) {
-                if (permission.isGranted()) {
-                    documentService.addPermission(this.document, permission.getName(), value);
-                } else {
-                    documentService.setPermission(this.document, permission.getName(), value, false);
-                }
-            }
-        }
-
-        return null;
+    public Document execute(Session nuxeoSession) throws Exception {
+        // Document Service
+        DocumentSecurityService securityService = nuxeoSession.getAdapter(DocumentSecurityService.class);
+        // Permissions
+        DocumentPermissions documentPermissions = PermissionsAdapter.getAs(this.permissions);
+        
+        return securityService.addPermissions(this.document, documentPermissions, this.groupPermissions, 
+                this.blockingInheritance);
     }
-
+    
 
     /**
      * {@inheritDoc}

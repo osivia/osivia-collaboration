@@ -3,8 +3,9 @@ package org.osivia.services.workspace.portlet.repository;
 import java.util.List;
 
 import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.adapters.DocumentService;
+import org.nuxeo.ecm.automation.client.adapters.DocumentSecurityService;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.DocumentPermissions;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -45,21 +46,12 @@ public class WorkspacePermissionsCommand implements INuxeoCommand {
      */
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
-        // Document service
-        DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
-
-        // Add permissions
-        for (Permission permission : this.permissions) {
-            for (String value : permission.getValues()) {
-                if (permission.isGranted()) {
-                    documentService.addPermission(this.document, permission.getName(), value);
-                } else {
-                    documentService.setPermission(this.document, permission.getName(), value, false);
-                }
-            }
-        }
-
-        return null;
+        // Document security service
+        DocumentSecurityService securityService = nuxeoSession.getAdapter(DocumentSecurityService.class);
+        // Get permissions
+        DocumentPermissions docPermissions = PermissionsAdapter.getAs(this.permissions);
+        
+        return securityService.addPermissions(this.document, docPermissions, PermissionsAdapter.LOCAL_GROUP_PERMISSIONS, true);
     }
 
 

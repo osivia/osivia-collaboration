@@ -9,6 +9,9 @@ import java.util.Map;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -43,8 +46,6 @@ import org.springframework.stereotype.Repository;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Workspace ACL management repository implementation.
@@ -422,97 +423,28 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
-        // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();
-
-        // Bundle
-        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
         // Document
         Document document = entries.getDocument();
-        
-        // Current user
-        String user = request.getRemoteUser();
-        // Current workspace member
-        WorkspaceMember member = this.workspaceService.getMember(entries.getWorkspaceId(), user);
 
-        // Nuxeo command
-        INuxeoCommand command;
-
-        if (entries.isInherited()) {
-            // Permission names
-            List<String> names = new ArrayList<>();
-            names.add(Permission.getInheritanceBlocking().getName());
-            if (member != null) {
-                names.add(user);
-            }
-
-            // Remove permissions
-            command = new RemovePermissionsCommand(document, names);
-
-            // Update model
-            if (member != null) {
-                // Removed entries
-                List<AclEntry> removedEntries = new ArrayList<>();
-                for (AclEntry entry : entries.getEntries()) {
-                    if (StringUtils.equals(user, entry.getId())) {
-                        removedEntries.add(entry);
-                    }
-                }
-                entries.getEntries().removeAll(removedEntries);
-            }
-        } else {
-            // Permissions
-            List<Permission> permissions = new ArrayList<>();
-
-            if (member != null) {
-                // Current user administration permission
-                Permission userPermission = new Permission();
-                userPermission.setName(user);
-                userPermission.setValues(Arrays.asList(WorkspaceRole.ADMIN.getPermissions()));
-
-                permissions.add(userPermission);
-            }
-
-            permissions.add(Permission.getInheritanceBlocking());
-
-            // Add permissions
-            command = new AddPermissionsCommand(document, permissions);
-
-
-            // Update model
-            if (member != null) {
-                // Remove previous ACL entries
-                List<AclEntry> removedEntries = new ArrayList<>();
-                for (AclEntry entry : entries.getEntries()) {
-                    if (StringUtils.equals(user, entry.getId())) {
-                        removedEntries.add(entry);
-                    }
-                }
-                entries.getEntries().removeAll(removedEntries);
-                
-                // Current person
-                Person person = member.getMember();
-
-                // Current role
-                Role role = new Role(WorkspaceRole.ADMIN);
-                role.setDisplayName(bundle.getString(WorkspaceRole.ADMIN.getKey(), WorkspaceRole.ADMIN.getClassLoader()));
-
-                // ACL entry
-                AclEntry entry = new AclEntry();
-                entry.setId(user);
-                entry.setType(RecordType.USER);
-                entry.setDisplayName(StringUtils.defaultIfBlank(person.getDisplayName(), user));
-                entry.setAvatar(person.getAvatar().getUrl());
-                entry.setExtra(person.getMail());
-                entry.setRole(role);
-                entry.setEditable(false);
-
-                entries.getEntries().add(entry);
+        // Permissions 
+        List<Permission> permissions = new ArrayList<Permission>();
+        // Build from model
+        if(entries != null && CollectionUtils.isNotEmpty(entries.getEntries())){
+            for(AclEntry aclEntry : entries.getEntries()){
+                Permission permission = PermissionsAdapter.buildPermission(aclEntry);
+                permissions.add(permission);
             }
         }
-
+        
+        // Update permissions blocking inheritance or not
+        INuxeoCommand command = new AddPermissionsCommand(document, permissions, PermissionsAdapter.LOCAL_GROUP_PERMISSIONS, !entries.isInherited());
         nuxeoController.executeNuxeoCommand(command);
+        
+        // Update model:
+        // Fetch of ACLs cause there are implicit inheritance rules managed by back office
+        AclEntries updatedEntries = this.getAclEntries(portalControllerContext, entries.getWorkspaceId());
+        entries.setEntries(updatedEntries.getEntries());
     }
 
 
@@ -529,55 +461,49 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
         Document document = entries.getDocument();
 
 
-        // Updated ACL entries
-        List<AclEntry> updatedEntries = new ArrayList<>();
+        // Updated Permissions
+        List<Permission> updatedPermissions = new ArrayList<Permission>();
+        // Removed Permissions by user
+        List<String> users = new ArrayList<String>();
         // Removed ACL entries
-        List<AclEntry> removedEntries = new ArrayList<>();
+        List<AclEntry> removedEntries = new ArrayList<AclEntry>();
 
         for (AclEntry entry : entries.getEntries()) {
             if (entry.isDeleted()) {
+                // User whose remove permissions
+                users.add(entry.getId());
+                
+                // AclEntry
                 removedEntries.add(entry);
             } else if (entry.isUpdated()) {
-                updatedEntries.add(entry);
-
+                // Updated permission to add
+                Permission permission = PermissionsAdapter.buildPermission(entry);
+                updatedPermissions.add(permission);
+                
+                // User whose remove permissions
+                users.add(entry.getId());
+                
+                // AclEntry
                 entry.setUpdated(false);
             }
         }
 
 
+        // Update: remove permissions by users and add permissions:
+        
         // Remove permissions
-        if (!updatedEntries.isEmpty() || !removedEntries.isEmpty()) {
-            List<String> names = new ArrayList<>(updatedEntries.size() + removedEntries.size());
-            for (AclEntry entry : updatedEntries) {
-                names.add(entry.getId());
-            }
-            for (AclEntry entry : removedEntries) {
-                names.add(entry.getId());
-            }
-
+        if (!updatedPermissions.isEmpty() || !users.isEmpty()) {
             // Nuxeo command
-            INuxeoCommand command = new RemovePermissionsCommand(document, names);
+            INuxeoCommand command = new RemovePermissionsCommand(document, PermissionsAdapter.LOCAL_GROUP_PERMISSIONS, users,  
+                    !entries.isInherited());
             nuxeoController.executeNuxeoCommand(command);
         }
 
-
         // Add permissions
-        if (!updatedEntries.isEmpty()) {
-            List<Permission> permissions = new ArrayList<>(updatedEntries.size());
-
-            for (AclEntry entry : updatedEntries) {
-                // Workspace role
-                WorkspaceRole workspaceRole = WorkspaceRole.fromId(entry.getRole().getId());
-                if (workspaceRole != null) {
-                    Permission permission = new Permission();
-                    permission.setName(entry.getId());
-                    permission.setValues(Arrays.asList(workspaceRole.getPermissions()));
-                    permissions.add(permission);
-                }
-            }
-
+        if (!updatedPermissions.isEmpty()) {
             // Nuxeo command
-            INuxeoCommand command = new AddPermissionsCommand(document, permissions);
+            INuxeoCommand command = new AddPermissionsCommand(document, updatedPermissions, 
+                    PermissionsAdapter.LOCAL_GROUP_PERMISSIONS, !entries.isInherited());
             nuxeoController.executeNuxeoCommand(command);
         }
 
@@ -603,8 +529,10 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
         }
 
         if (CollectionUtils.isNotEmpty(records) && (selectedWorkspaceRole != null)) {
-            // Permissions
-            List<Permission> permissions = new ArrayList<>(records.size());
+            // Added Permissions
+            List<Permission> addedPermissions = new ArrayList<Permission>(records.size());
+            // RemovedPermissions
+            List<Permission> removedPermissions = new ArrayList<Permission>(records.size());
 
             // Added ACL entries
             List<AclEntry> addedEntries = new ArrayList<>(records.size());
@@ -618,6 +546,12 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
                     if (role.getWeight() > entry.getRole().getWeight()) {
                         // Replace ACL entry
                         removedEntries.add(entry);
+                        
+                        // Replace permission
+                        Permission permission = new Permission();
+                        permission.setName(entry.getId());
+                        permission.setValues(Arrays.asList(selectedWorkspaceRole.getPermissions()));
+                        removedPermissions.add(permission);
                     } else {
                         // Ignore record
                         continue;
@@ -627,7 +561,7 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
                 Permission permission = new Permission();
                 permission.setName(record.getId());
                 permission.setValues(Arrays.asList(selectedWorkspaceRole.getPermissions()));
-                permissions.add(permission);
+                addedPermissions.add(permission);
 
                 // Added ACL entry
                 AclEntry addedEntry = new AclEntry();
@@ -645,18 +579,15 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
 
             // Remove permissions
             if (!removedEntries.isEmpty()) {
-                List<String> names = new ArrayList<>(removedEntries.size());
-                for (AclEntry entry : removedEntries) {
-                    names.add(entry.getId());
-                }
-
-                INuxeoCommand command = new RemovePermissionsCommand(entries.getDocument(), names);
+                INuxeoCommand command = new RemovePermissionsCommand(entries.getDocument(), removedPermissions, 
+                        PermissionsAdapter.LOCAL_GROUP_PERMISSIONS, !entries.isInherited());
                 nuxeoController.executeNuxeoCommand(command);
             }
 
             // Add permissions
-            if (!permissions.isEmpty()) {
-                INuxeoCommand command = new AddPermissionsCommand(entries.getDocument(), permissions);
+            if (!addedPermissions.isEmpty()) {
+                INuxeoCommand command = new AddPermissionsCommand(entries.getDocument(), addedPermissions, 
+                        PermissionsAdapter.LOCAL_GROUP_PERMISSIONS, !entries.isInherited());
                 nuxeoController.executeNuxeoCommand(command);
             }
 
@@ -679,31 +610,10 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
 
         // Document
         Document document = entries.getDocument();
-
-        // Get permissions Nuxeo command
-        INuxeoCommand getPermissionsCommand = new GetPermissionsCommand(document);
-        JSONObject result = (JSONObject) nuxeoController.executeNuxeoCommand(getPermissionsCommand);
-
-        // Local permissions JSON array
-        JSONArray array = result.getJSONArray("local");
-        List<String> names = new ArrayList<>(array.size());
-
-        if (!entries.isInherited()) {
-            Permission permission = Permission.getInheritanceBlocking();
-            names.add(permission.getName());
-        }
-
-        for (int i = 0; i < array.size(); i++) {
-            JSONObject object = array.getJSONObject(i);
-
-            if (object.getBoolean("isGranted")) {
-                names.add(object.getString("username"));
-            }
-        }
-
-        // Remove permissions Nuxeo command
-        INuxeoCommand removePermissionsCommand = new RemovePermissionsCommand(document, names);
-        nuxeoController.executeNuxeoCommand(removePermissionsCommand);
+        
+        // Remove local ACL non blocking inheritance
+        INuxeoCommand removeGroupPermissionsCommand = new RemovePermissionsCommand(document, PermissionsAdapter.LOCAL_GROUP_PERMISSIONS, false);
+        nuxeoController.executeNuxeoCommand(removeGroupPermissionsCommand);
 
 
         // Update ACL entries
@@ -711,6 +621,6 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
         AclEntries updatedEntries = this.getAclEntries(portalControllerContext, entries.getWorkspaceId());
         entries.setEntries(updatedEntries.getEntries());
     }
-
+    
 }
 

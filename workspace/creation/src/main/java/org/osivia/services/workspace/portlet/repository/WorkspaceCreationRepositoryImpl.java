@@ -183,7 +183,6 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
 
         // Permissions
         List<Permission> permissions = new ArrayList<>(groups.size());
-        permissions.add(Permission.getInheritanceBlocking());
 
         if (WorkspaceType.PUBLIC.equals(form.getType())) {
             // Public permission

@@ -149,9 +149,7 @@ public class AclManagementServiceImpl implements AclManagementService {
      */
     @Override
     public void reset(PortalControllerContext portalControllerContext, AclEntries entries) throws PortletException {
-        if (!entries.isInherited()) {
-            this.repository.reset(portalControllerContext, entries);
-        }
+        this.repository.reset(portalControllerContext, entries);
     }
 
 
