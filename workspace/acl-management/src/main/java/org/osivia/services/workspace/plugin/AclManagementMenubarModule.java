@@ -89,7 +89,7 @@ public class AclManagementMenubarModule implements MenubarModule {
                     // Check permissions
                     BasicPermissions permissions = documentContext.getPermissions(BasicPermissions.class);
                     BasicPublicationInfos publicationInfos = documentContext.getPublicationInfos(BasicPublicationInfos.class);
-                    if (!publicationInfos.isDraft() && permissions.isManageableByUser()) {
+                    if (publicationInfos.isLiveSpace() && !publicationInfos.isDraft() && permissions.isManageableByUser()) {
                         // HTTP servlet request
                         HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
                         // Bundle
