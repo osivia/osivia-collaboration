@@ -107,10 +107,6 @@ function updateTaskbarStyles($container) {
 	var $row = $container.find(".portlet-container").closest(".row"),
 		windowWidth = $JQry(window).width();
 
-	$container.css({
-		top: ((windowWidth >= 768) ? "auto" : 0)
-	});
-	
 	$container.parent().css({
 		"min-height": ((windowWidth >= 768) ? $row.height() : "auto")
 	});
