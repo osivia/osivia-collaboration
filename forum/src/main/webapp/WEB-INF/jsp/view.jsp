@@ -88,6 +88,22 @@
                     <!-- Message -->
                     <p>${thread.message}</p>
                     
+                    <!-- Attachements -->
+	              <c:if test="${not empty thread.attachments}">
+				        <hr>
+			                <h5 class="panel-title">
+			                    <i class="glyphicons glyphicons-paperclip"></i>
+			                    <span><op:translate key="ATTACHMENTS" /></span>
+			                </h5>
+				            <div class="list-group">
+				                <c:forEach var="attachment" items="${thread.attachments}">
+				                    <a href="${attachment.url}" class="list-group-item">
+				                        <span>${attachment.name}</span>
+				                    </a>
+				                </c:forEach>
+				            </div>
+				    </c:if>                    
+                    
                     <!-- Buttons -->
                     <c:if test="${thread.commentable}">
                         <div class="text-right">

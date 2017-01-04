@@ -11,6 +11,8 @@ import javax.portlet.PortletRequest;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.PropertyList;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.directory.v2.service.PersonService;
@@ -35,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.domain.CommentDTO;
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentAttachmentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.domain.ThreadPostDTO;
 import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCommentsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
@@ -93,13 +96,43 @@ public class ForumServiceImpl implements IForumService, ApplicationContextAware 
                 // Nuxeo document
                 NuxeoDocumentContext nuxeoDocumentContext = nuxeoController.getDocumentContext(path);
                 document = nuxeoDocumentContext.getDoc();
-
+                
                 // Save document in request
                 nuxeoController.getRequest().setAttribute(DOCUMENT_REQUEST_ATTRIBUTE, document);
             }
             return document;
         } catch (Exception e) {
             throw new PortletException(e);
+        }
+    }
+    
+    
+    /**
+     * Generate document attachments.
+     *
+     * @param nuxeoController Nuxeo controller
+     * @param document Nuxeo document
+     * @param documentDTO document DTO
+     */
+    private void generateAttachments(NuxeoController nuxeoController, Document document, Thread documentDTO) {
+        List<DocumentAttachmentDTO> attachments = documentDTO.getAttachments();
+        PropertyList files = document.getProperties().getList("files:files");
+        if (files != null) {
+            for (int i = 0; i < files.size(); i++) {
+                PropertyMap map = files.getMap(i);
+
+                DocumentAttachmentDTO attachment = new DocumentAttachmentDTO();
+
+                // Attachment name
+                String name = map.getString("filename");
+                attachment.setName(name);
+
+                // Attachement URL
+                String url = nuxeoController.createAttachedFileLink(document.getPath(), String.valueOf(i));
+                attachment.setUrl(url);
+
+                attachments.add(attachment);
+            }
         }
     }
 
@@ -110,7 +143,9 @@ public class ForumServiceImpl implements IForumService, ApplicationContextAware 
     @Override
     public Thread getThread(NuxeoController nuxeoController) throws PortletException {
         Document document = this.getDocument(nuxeoController);
-        return this.toViewObject(nuxeoController, document);
+        Thread viewObject = toViewObject(nuxeoController, document);
+        generateAttachments(nuxeoController, document, viewObject);
+        return viewObject;
     }
 
 
