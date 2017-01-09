@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.portlet.model;
 
 import java.util.List;
+import java.util.Set;
 
 import org.osivia.portal.api.portlet.Refreshable;
 import org.springframework.context.annotation.Scope;
@@ -19,6 +20,8 @@ public class InvitationsForm {
 
     /** Invitations. */
     private List<Invitation> invitations;
+    /** Invitation identifiers. */
+    private Set<String> identifiers;
     /** Loaded invitations indicator. */
     private boolean loaded;
 
@@ -47,6 +50,24 @@ public class InvitationsForm {
      */
     public void setInvitations(List<Invitation> invitations) {
         this.invitations = invitations;
+    }
+
+    /**
+     * Getter for identifiers.
+     * 
+     * @return the identifiers
+     */
+    public Set<String> getIdentifiers() {
+        return identifiers;
+    }
+
+    /**
+     * Setter for identifiers.
+     * 
+     * @param identifiers the identifiers to set
+     */
+    public void setIdentifiers(Set<String> identifiers) {
+        this.identifiers = identifiers;
     }
 
     /**

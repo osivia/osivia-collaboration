@@ -10,9 +10,6 @@ import java.util.regex.Pattern;
 
 import javax.portlet.PortletException;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
@@ -43,6 +40,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Workspace member management service implementation.
@@ -219,6 +218,15 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, workspaceId, identifiers);
             form.setInvitations(invitations);
 
+            // Invitation identifiers
+            Set<String> invitationIdentifiers = new HashSet<>();
+            for (Invitation invitation : invitations) {
+                if (InvitationState.SENT.equals(invitation.getState())) {
+                    invitationIdentifiers.add(invitation.getId());
+                }
+            }
+            form.setIdentifiers(invitationIdentifiers);
+
             form.setLoaded(true);
         }
 
@@ -251,15 +259,11 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Invitation only indicator
         boolean invitationOnly = WorkspaceType.INVITATION.equals(options.getWorkspaceType());
 
-        // Member idenfiers
+        // Member identifiers
         Set<String> memberIdentifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
-        Set<String> invitationsIdentifiers = new HashSet<String>();
         // Invitation identifiers
-        for(Invitation invit : getInvitationsForm(portalControllerContext).getInvitations()) {
-        	invitationsIdentifiers.add(invit.getId());
-        }
-        
-        // Requests identifiers
+        Set<String> invitationIndentifiers = this.getInvitationsForm(portalControllerContext).getIdentifiers();
+        // Request identifiers
         Set<String> requestIdentifiers;
         if (invitationOnly) {
             requestIdentifiers = null;
@@ -280,7 +284,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                     boolean alreadyMember = memberIdentifiers.contains(person.getUid());
                     
                     // Already invited
-                    boolean alreadyInvited = invitationsIdentifiers.contains(person.getUid());
+                    boolean alreadyInvited = invitationIndentifiers.contains(person.getUid());
                     
                     // Existing request indicator
                     boolean existingRequest = !invitationOnly && requestIdentifiers.contains(person.getUid());
@@ -347,8 +351,6 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         object.put("displayName", displayName);
         object.put("extra", extra);
-
-        //object.put("avatar", person.getAvatar().getUrl());
 
         return object;
     }
@@ -495,13 +497,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                     creationForm);
 
             if (created) {
-                // Member idenfiers
-                Set<String> memberIdentifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
-
                 // Update model
-                List<Invitation> invitations = this.repository.getInvitations(portalControllerContext, options.getWorkspaceId(), memberIdentifiers);
-                invitationsForm.setInvitations(invitations);
                 options.setInvitationsCount(this.repository.getInvitationsCount(portalControllerContext, options.getWorkspaceId()));
+                invitationsForm.setLoaded(false);
+                this.getInvitationsForm(portalControllerContext);
 
                 // Notification
                 String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_CREATION_SUCCESS");
