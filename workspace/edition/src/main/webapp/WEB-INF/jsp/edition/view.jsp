@@ -27,7 +27,8 @@
 
 <div class="workspace-edition">
     <form:form id="${namespace}-workspace-edition-form" action="${saveUrl}" method="post" enctype="multipart/form-data" modelAttribute="editionForm" cssClass="form-horizontal" role="form">
-        <div class="portlet-filler container-fluid">
+        <!-- <div class="portlet-filler container-fluid"> -->
+        <div>
             <div class="row">
                 <div class="col-lg-8">
                     <!-- Title -->
@@ -295,7 +296,8 @@
         </div>
     
         <!-- Buttons -->
-        <div class="portlet-toolbar adapt-scrollbar">
+        <!-- <div class="portlet-toolbar adapt-scrollbar"> -->
+        <div>
             <div class="row">
                 <div class="col-sm-offset-3 col-sm-9 col-lg-offset-2 col-lg-10">
                     <!-- Save -->
