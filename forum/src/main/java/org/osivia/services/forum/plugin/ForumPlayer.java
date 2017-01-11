@@ -64,7 +64,7 @@ public class ForumPlayer implements INuxeoPlayerModule {
         StringBuilder request = new StringBuilder();
         request.append("ecm:parentId = '").append(navigationInfos.getLiveId()).append("' ");
         request.append("AND ecm:primaryType = 'Thread' ");
-        request.append("ORDER BY dc:modified DESC ");
+        request.append("ORDER BY ttcth:lastCommentDate DESC ");
         return request.toString();
 	}
 

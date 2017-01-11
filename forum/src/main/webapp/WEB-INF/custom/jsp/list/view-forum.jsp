@@ -14,8 +14,17 @@
             <c:set var="url"><ttc:documentLink document="${document}" /></c:set>
             <c:set var="vignetteURL"><ttc:pictureLink document="${document}" property="ttc:vignette" /></c:set>
             <c:set var="description" value="${document.properties['dc:description']}" />
-            <c:set var="lastContributor" value="${document.properties['dc:lastContributor']}" />
-            <c:set var="modificationDate" value="${document.properties['dc:modified']}" />
+            
+	        <!-- Author -->
+	        <c:set var="threadCreator" value="${document.properties['dc:creator']}" />
+	        <!-- Date -->
+	        <c:set var="threadDate" value="${document.properties['dc:created']}" />
+	        
+	        <!-- comment author -->
+	        <c:set var="lastCommentAuthor" value="${document.properties['ttcth:lastCommentAuthor']}" />
+	        <!-- comment date -->
+	        <c:set var="lastCommentDate" value="${document.properties['ttcth:lastCommentDate']}" />
+        
             <c:set var="nbAnswers" value="${document.properties['ttcth:nbComments']}" />
         
         
@@ -57,13 +66,24 @@
                                             <p>${description}</p>
                                         </c:if>
                                         
-                                        <div class="small">
-                                           <span><op:translate key="LAST_ANSWER" /></span>
-                                           <span><op:translate key="DATE_ARTICLE_PREFIX" /></span>
-                                           <span><fmt:formatDate value="${modificationDate}" type="date" dateStyle="long" /></span>
-                                           <span><op:translate key="BY" /></span>
-                                           <span><ttc:user name="${lastContributor}" /></span>
-                                        </div>
+										<div class="small">
+				                            <span><op:translate key="TOPIC_STARTED" /></span>
+				                            <span><op:translate key="DATE_ARTICLE_PREFIX" /></span>
+				                            <span><fmt:formatDate value="${threadDate}" type="date" dateStyle="long" /></span>
+				                            <span><op:translate key="BY" /></span>
+				                            <span><ttc:user name="${threadCreator}" linkable="false" /></span>
+				                        </div>    
+				                        
+				                                            
+				                        <c:if test="${nbAnswers gt 0}">
+					                        <div class="small">
+					                            <span><op:translate key="LAST_ANSWER" /></span>
+					                            <span><op:translate key="DATE_ARTICLE_PREFIX" /></span>
+					                            <span><fmt:formatDate value="${lastCommentDate}" type="both" dateStyle="long" timeStyle="short"/></span>
+					                            <span><op:translate key="BY" /></span>
+					                            <span><ttc:user name="${lastCommentAuthor}" linkable="false" /></span>
+					                        </div>
+				                        </c:if>
                                     </div>
                                 </div>
                             </div>
