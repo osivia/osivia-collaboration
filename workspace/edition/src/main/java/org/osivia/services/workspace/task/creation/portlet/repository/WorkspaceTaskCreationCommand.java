@@ -14,6 +14,7 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.services.workspace.task.creation.portlet.model.TaskCreationForm;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -155,7 +156,12 @@ public class WorkspaceTaskCreationCommand implements INuxeoCommand {
         String webIdPrefix = ITaskbarService.WEBID_PREFIX + shortname + "_";
 
         for (TaskbarItem item : this.items) {
-            String type = item.getDocumentType();
+            String type;
+            if (TaskbarItemType.CMS.equals(item.getType())) {
+                type = item.getDocumentType();
+            } else {
+                type = "Staple";
+            }
             String title = this.bundle.getString(item.getKey(), item.getCustomizedClassLoader());
             String name = this.generateNameFromTitle(title);
             String webId = webIdPrefix + StringUtils.lowerCase(item.getId());

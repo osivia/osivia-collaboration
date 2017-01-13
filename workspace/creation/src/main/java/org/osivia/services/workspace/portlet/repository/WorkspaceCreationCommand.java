@@ -117,8 +117,10 @@ public class WorkspaceCreationCommand implements INuxeoCommand {
      * @throws Exception
      */
     private void createTaskbarItems(DocumentService documentService, Document workspace) throws Exception {
+        // Workspace shortname
+        String shortname = workspace.getString("webc:url");
         // WebId prefix
-        String webIdPrefix = ITaskbarService.WEBID_PREFIX + workspace.getString("webc:url") + "_";
+        String webIdPrefix = ITaskbarService.WEBID_PREFIX + shortname + "_";
 
         for (TaskbarItem item : this.items) {
             String type;
