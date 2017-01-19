@@ -54,7 +54,7 @@
             <!-- Date -->
             <span class="text-muted">
                 <span>&ndash;</span>
-                <span><fmt:formatDate value="${post.date}" type="both" dateStyle="long" timeStyle="short" /></span>
+                <span><op:formatRelativeDate value="${post.date}" /></span>
             </span>
         </p>
     

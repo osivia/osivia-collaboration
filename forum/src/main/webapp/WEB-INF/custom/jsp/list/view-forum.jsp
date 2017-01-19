@@ -68,8 +68,7 @@
                                         
 										<div class="small">
 				                            <span><op:translate key="TOPIC_STARTED" /></span>
-				                            <span><op:translate key="DATE_ARTICLE_PREFIX" /></span>
-				                            <span><fmt:formatDate value="${threadDate}" type="date" dateStyle="long" /></span>
+                                            <span><op:formatRelativeDate value="${threadDate}" /></span>
 				                            <span><op:translate key="BY" /></span>
 				                            <span><ttc:user name="${threadCreator}" linkable="false" /></span>
 				                        </div>    
@@ -78,8 +77,7 @@
 				                        <c:if test="${nbAnswers gt 0}">
 					                        <div class="small">
 					                            <span><op:translate key="LAST_ANSWER" /></span>
-					                            <span><op:translate key="DATE_ARTICLE_PREFIX" /></span>
-					                            <span><fmt:formatDate value="${lastCommentDate}" type="both" dateStyle="long" timeStyle="short"/></span>
+                                                <span><op:formatRelativeDate value="${lastCommentDate}" /></span>
 					                            <span><op:translate key="BY" /></span>
 					                            <span><ttc:user name="${lastCommentAuthor}" linkable="false" /></span>
 					                        </div>
