@@ -172,7 +172,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     public void updateMembers(PortalControllerContext portalControllerContext, MemberManagementOptions options, MembersForm form) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-
+        
         for (Member member : form.getMembers()) {
             this.repository.updateMember(portalControllerContext, options.getWorkspaceId(), member);
         }
@@ -255,9 +255,12 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Member idenfiers
         Set<String> memberIdentifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
         Set<String> invitationsIdentifiers = new HashSet<String>();
-        // Invitation identifiers
+        
+        // Invitation accepted identifiers
         for(Invitation invit : getInvitationsForm(portalControllerContext).getInvitations()) {
-        	invitationsIdentifiers.add(invit.getId());
+        	if(invit.getState() != InvitationState.REJECTED) {
+        		invitationsIdentifiers.add(invit.getId());
+        	}
         }
         
         // Requests identifiers

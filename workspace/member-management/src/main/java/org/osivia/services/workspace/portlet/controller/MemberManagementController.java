@@ -1,5 +1,7 @@
 package org.osivia.services.workspace.portlet.controller;
 
+import java.util.Iterator;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
@@ -11,7 +13,13 @@ import javax.portlet.RenderResponse;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.services.workspace.portlet.model.Member;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
@@ -41,6 +49,14 @@ public class MemberManagementController implements PortletContextAware {
     /** Member management service. */
     @Autowired
     private MemberManagementService service;
+
+    /** Bundle factory. */
+    @Autowired
+    private IBundleFactory bundleFactory;
+
+    /** Notifications service. */
+    @Autowired
+    private INotificationsService notificationsService;
 
 
     /**
@@ -111,8 +127,40 @@ public class MemberManagementController implements PortletContextAware {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.updateMembers(portalControllerContext, options, form);
+        // Check that an admin will still exist in the workspace after update
+        WorkspaceRole mostPoweredRole = null;
+        for(WorkspaceRole role : options.getRoles()) {
+        	if(mostPoweredRole == null || mostPoweredRole.getWeight() < role.getWeight()) {
+        		mostPoweredRole = role;
+        	}
+        }
 
+        boolean adminExists = false;
+        if(mostPoweredRole != null) {
+        	
+        	Iterator<Member> i = form.getMembers().iterator();
+        	while(!adminExists && i.hasNext()) {
+        		Member member = i.next();
+        		if(member.getRole() == mostPoweredRole) {
+        			adminExists = true;
+        		}
+        	}
+        }
+       
+        
+        if(adminExists) {
+	        this.service.updateMembers(portalControllerContext, options, form);
+	
+        }
+        else {
+            // Bundle
+            Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+            
+            // Notification
+            String message = bundle.getString("MESSAGE_WORKSPACE_MEMBERS_ADMIN_NEEDED");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
+        }
+        
         // Copy render parameters
         String sortParameter = request.getParameter("sort");
         if (StringUtils.isNotEmpty(sortParameter)) {

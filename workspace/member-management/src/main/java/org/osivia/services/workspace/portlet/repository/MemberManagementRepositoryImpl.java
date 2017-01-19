@@ -240,8 +240,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             // Date
             Date date = dates.get(workspaceMember.getMember().getUid());
             // Editable member indicator
-            boolean editable = !StringUtils.equals(currentUser, workspaceMember.getMember().getUid())
-                    && ((currentRole == null) || (workspaceMember.getRole() == null) || (currentRole.getWeight() >= workspaceMember.getRole().getWeight()));
+            boolean editable = ((currentRole == null) || (workspaceMember.getRole() == null) || (currentRole.getWeight() >= workspaceMember.getRole().getWeight()));
 
             // Member
             Member member = getMember(workspaceMember, date, editable);
