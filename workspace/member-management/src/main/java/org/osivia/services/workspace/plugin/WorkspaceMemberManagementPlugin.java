@@ -91,6 +91,8 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
      * @param context customization context
      */
     private void customizeListTemplates(CustomizationContext context) {
+        // Portlet context
+        PortletContext portletContext = this.getPortletContext();
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(context.getLocale());
 
@@ -100,13 +102,13 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
         // Manageable workspaces
         ListTemplate manageableWorkspaces = new ListTemplate("manageable-workspaces", bundle.getString("LIST_TEMPLATE_MANAGEABLE_WORKSPACES"),
                 "dublincore, toutatice, toutatice_space");
-        manageableWorkspaces.setModule(new ManageableWorkspacesListTemplateModule(getPortletContext()));
+        manageableWorkspaces.setModule(new ManageableWorkspacesListTemplateModule(portletContext));
         templates.put(manageableWorkspaces.getKey(), manageableWorkspaces);
 
         // Workspace member requests
         ListTemplate requests = new ListTemplate("workspace-member-requests", bundle.getString("LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS"),
                 "dublincore, toutatice, toutatice_space, webcontainer");
-        requests.setModule(new RequestsListTemplateModule(this.getPortletContext()));
+        requests.setModule(new RequestsListTemplateModule(portletContext));
         templates.put(requests.getKey(), requests);
     }
 
