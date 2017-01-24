@@ -8,87 +8,120 @@
 
 
 <div class="forum-list">
-    <ul class="list-unstyled">
-        <c:forEach var="document" items="${documents}">
-            <!-- Document properties -->
-            <c:set var="url"><ttc:documentLink document="${document}" /></c:set>
-            <c:set var="vignetteURL"><ttc:pictureLink document="${document}" property="ttc:vignette" /></c:set>
-            <c:set var="description" value="${document.properties['dc:description']}" />
+    <c:if test="${not empty forums}">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <i class="glyphicons glyphicons-conversation"></i>
+                    <span><op:translate key="LIST_TEMPLATE_SUB_FORUMS" /></span>
+                </h3>
+            </div>
             
-	        <!-- Author -->
-	        <c:set var="threadCreator" value="${document.properties['dc:creator']}" />
-	        <!-- Date -->
-	        <c:set var="threadDate" value="${document.properties['dc:created']}" />
-	        
-	        <!-- comment author -->
-	        <c:set var="lastCommentAuthor" value="${document.properties['ttcth:lastCommentAuthor']}" />
-	        <!-- comment date -->
-	        <c:set var="lastCommentDate" value="${document.properties['ttcth:lastCommentDate']}" />
-        
-            <c:set var="nbAnswers" value="${document.properties['ttcth:nbComments']}" />
-        
-        
-            <li>
-                <div class="panel panel-default">
-                    <div class="panel-body">
+            <ul class="list-group">
+                <c:forEach var="forum" items="${forums}">
+                    <!-- Document properties -->
+                    <c:set var="vignetteUrl"><ttc:pictureLink document="${forum}" property="ttc:vignette" /></c:set>
+                    <c:set var="description" value="${forum.properties['dc:description']}" />
+                    
+                    <li class="list-group-item">
                         <div class="media">
-                            <div class="media-left media-middle">
-                                <div class="text-center">
-                                    <div class="media-heading h2">
-                                        <c:choose>
-                                            <c:when test="${empty nbAnswers}">-</c:when>
-                                            <c:otherwise>${nbAnswers}</c:otherwise>
-                                        </c:choose>
-                                    </div>
-                                    <div>
-                                        <c:choose>
-                                            <c:when test="${nbAnswers gt 1}"><op:translate key="FORUM_ANSWERS" /></c:when>
-                                            <c:otherwise><op:translate key="FORUM_ANSWER" /></c:otherwise>
-                                        </c:choose>
-                                    </div>
+                            <!-- Vignette -->
+                            <c:if test="${not empty vignetteUrl}">
+                                <div class="media-left media-middle">
+                                    <img src="${vignetteUrl}" alt="" class="media-object">
                                 </div>
+                            </c:if>
+                            
+                            <div class="media-body media-middle">
+                                <!-- Title -->
+                                <h3 class="h4 media-heading">
+                                    <span><ttc:title document="${forum}" /></span>
+                                </h3>
+                                                        
+                                <!-- Description -->
+                                <c:if test="${not empty description}">
+                                    <p>${description}</p>
+                                </c:if>
                             </div>
+                        </div>
+                    </li>
+                </c:forEach>
+            </ul>
+        </div>
+    </c:if>
+
+    <c:if test="${not empty threads}">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <i class="glyphicons glyphicons-chat"></i>
+                    <span><op:translate key="LIST_TEMPLATE_THREADS" /></span>
+                </h3>
+            </div>
+            
+            <ul class="list-group">
+                <c:forEach var="thread" items="${threads}">
+                    <!-- Document properties -->
+                    <c:set var="url"><ttc:documentLink document="${thread}" /></c:set>
+                    <c:set var="vignetteUrl"><ttc:pictureLink document="${thread}" property="ttc:vignette" /></c:set>
+                    <c:set var="description" value="${thread.properties['dc:description']}" />
+                    <c:set var="threadCreator" value="${thread.properties['dc:creator']}" />
+                    <c:set var="threadDate" value="${thread.properties['dc:created']}" />
+                    <c:set var="lastCommentAuthor" value="${thread.properties['ttcth:lastCommentAuthor']}" />
+                    <c:set var="lastCommentDate" value="${thread.properties['ttcth:lastCommentDate']}" />
+                    <c:set var="nbAnswers" value="${thread.properties['ttcth:nbComments']}" />
+                
+                    <li class="list-group-item">
+                        <div class="media">
+                            <c:if test="${not empty vignetteUrl}">
+                                <div class="media-left media-middle">
+                                    <img src="${vignetteUrl}" alt="" class="media-object">
+                                </div>
+                            </c:if>
                             
                             <div class="media-body">
-                                <h3 class="media-heading h4">
-                                    <a href="${url}" class="no-ajax-link">${document.title}</a>
+                                <h3 class="h4 media-heading">
+                                    <a href="${url}" class="no-ajax-link">${thread.title}</a>
                                 </h3>
+                            
+                                <c:if test="${not empty description}">
+                                    <p>${description}</p>
+                                </c:if>
                                 
-                                <div class="media">
-                                    <c:if test="${not empty vignetteURL}">
-                                        <div class="media-left">
-                                            <img src="${vignetteURL}" alt="" class="media-object">
-                                        </div>
-                                    </c:if>
+                                <p class="text-muted">
+                                    <span><op:translate key="TOPIC_STARTED" /></span>
+                                    <span><op:formatRelativeDate value="${threadDate}" /></span>
+                                    <span><op:translate key="BY" /></span>
+                                    <span><ttc:user name="${threadCreator}" /></span>
                                     
-                                    <div class="media-body">
-                                        <c:if test="${not empty description}">
-                                            <p>${description}</p>
-                                        </c:if>
-                                        
-										<div class="small">
-				                            <span><op:translate key="TOPIC_STARTED" /></span>
-                                            <span><op:formatRelativeDate value="${threadDate}" /></span>
-				                            <span><op:translate key="BY" /></span>
-				                            <span><ttc:user name="${threadCreator}" linkable="false" /></span>
-				                        </div>    
-				                        
-				                                            
-				                        <c:if test="${nbAnswers gt 0}">
-					                        <div class="small">
-					                            <span><op:translate key="LAST_ANSWER" /></span>
-                                                <span><op:formatRelativeDate value="${lastCommentDate}" /></span>
-					                            <span><op:translate key="BY" /></span>
-					                            <span><ttc:user name="${lastCommentAuthor}" linkable="false" /></span>
-					                        </div>
-				                        </c:if>
+                                    <c:if test="${nbAnswers gt 0}">
+                                        <br>
+                                    
+                                        <span><op:translate key="LAST_ANSWER" /></span>
+                                        <span><op:formatRelativeDate value="${lastCommentDate}" /></span>
+                                        <span><op:translate key="BY" /></span>
+                                        <span><ttc:user name="${lastCommentAuthor}" /></span>
+                                    </c:if>
+                                </p>
+                            </div>
+                            
+                            <c:if test="${not empty nbAnswers}">
+                                <div class="media-right">
+                                    <div class="text-center">
+                                        <div class="h2 media-heading">${nbAnswers}</div>
+                                        <div>
+                                            <c:choose>
+                                                <c:when test="${nbAnswers gt 1}"><op:translate key="FORUM_ANSWERS" /></c:when>
+                                                <c:otherwise><op:translate key="FORUM_ANSWER" /></c:otherwise>
+                                            </c:choose>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>     
-                    </div>
-                </div>
-            </li>
-        </c:forEach>
-    </ul>
+                            </c:if>
+                        </div>
+                    </li>
+                </c:forEach>
+            </ul>
+        </div>
+    </c:if>
 </div>

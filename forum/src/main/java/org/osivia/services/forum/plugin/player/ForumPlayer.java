@@ -14,7 +14,7 @@
  *
  *
  */
-package org.osivia.services.forum.plugin;
+package org.osivia.services.forum.plugin.player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,27 +26,26 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
 import org.osivia.portal.api.player.Player;
+import org.osivia.services.forum.plugin.ForumPlugin;
 
 import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 import fr.toutatice.portail.cms.nuxeo.api.portlet.ViewList;
 
-
-
 /**
- * The Class PlayerModule.
+ * Forum player.
  *
  * @author Jean-Sébastien Steux
+ * @see INuxeoPlayerModule
  */
 public class ForumPlayer implements INuxeoPlayerModule {
 
-
     /**
-     * Instantiates a new player module.
-     *
-     * @param portletContext the portlet context
+     * Constructor.
+     * 
+     * @param portletContext portlet context
      */
     public ForumPlayer(PortletContext portletContext) {
-
+        super();
     }
 
 
@@ -58,13 +57,12 @@ public class ForumPlayer implements INuxeoPlayerModule {
      * @return request
      */
 	private String createForumPlayerRequest(DocumentContext<Document> docCtx) {
-
 		BasicPublicationInfos navigationInfos = docCtx.getPublicationInfos(BasicPublicationInfos.class);
 
         StringBuilder request = new StringBuilder();
         request.append("ecm:parentId = '").append(navigationInfos.getLiveId()).append("' ");
-        request.append("AND ecm:primaryType = 'Thread' ");
-        request.append("ORDER BY ttcth:lastCommentDate DESC ");
+        request.append("AND ecm:primaryType IN ('Forum', 'Thread') ");
+        request.append("ORDER BY ttcth:lastCommentDate DESC, dc:title ASC");
         return request.toString();
 	}
 
@@ -78,7 +76,6 @@ public class ForumPlayer implements INuxeoPlayerModule {
      * @return CMS forum player
      */
 	private Player getForumPlayer(DocumentContext<Document> docCtx) {
-
 		BasicPublicationInfos navigationInfos = docCtx.getPublicationInfos(BasicPublicationInfos.class);
 
         Map<String, String> windowProperties = new HashMap<String, String>();
@@ -92,7 +89,6 @@ public class ForumPlayer implements INuxeoPlayerModule {
         if (docCtx.getDoc() != null) {
             windowProperties.put(ViewList.CREATION_PARENT_PATH_WINDOW_PROPERTY, docCtx.getDoc().getPath());
         }
-
 
         Player linkProps = new Player();
         linkProps.setWindowProperties(windowProperties);
@@ -124,9 +120,9 @@ public class ForumPlayer implements INuxeoPlayerModule {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see org.osivia.portal.api.cms.IPlayerModule#getCMSPlayer(org.osivia.portal.api.cms.DocumentContext)
-	 */
+    /**
+     * {@inheritDoc}
+     */
 	@Override
 	public Player getCMSPlayer(DocumentContext<Document> docCtx) {
         Document doc = docCtx.getDoc();

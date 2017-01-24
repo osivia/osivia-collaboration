@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.portlet.PortletContext;
+
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.customization.Plugin;
@@ -32,6 +34,8 @@ import org.osivia.portal.api.player.IPlayerModule;
 import org.osivia.portal.api.taskbar.TaskbarFactory;
 import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItems;
+import org.osivia.services.forum.plugin.player.ForumPlayer;
+import org.osivia.services.forum.plugin.portlet.ForumListTemplateModule;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
@@ -105,7 +109,7 @@ public class ForumPlugin extends AbstractPluginPortlet {
         types.put(thread.getName(), thread);
 
         // Forum
-        DocumentType forum = new DocumentType("Forum", true, true, false, false, true, true, Arrays.asList(thread.getName()), null,
+        DocumentType forum = new DocumentType("Forum", true, true, false, false, true, true, Arrays.asList("Forum", "Thread"), null,
                 "glyphicons glyphicons-conversation");
         types.put(forum.getName(), forum);
     }
@@ -133,7 +137,9 @@ public class ForumPlugin extends AbstractPluginPortlet {
      * @param context customization context
      */
     private void customizeListTemplates(CustomizationContext context) {
-        // Bundle
+        // Portlet context
+        PortletContext portletContext = this.getPortletContext();
+        // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(context.getLocale());
 
         // List templates
@@ -141,6 +147,7 @@ public class ForumPlugin extends AbstractPluginPortlet {
 
         // Forum list template
         ListTemplate forum = new ListTemplate(FORUM_LIST_TEMPLATE, bundle.getString("LIST_TEMPLATE_FORUM"), SCHEMAS);
+        forum.setModule(new ForumListTemplateModule(portletContext));
         templates.put(forum.getKey(), forum);
     }
 
