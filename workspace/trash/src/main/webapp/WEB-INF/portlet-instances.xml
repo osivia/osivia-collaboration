@@ -5,6 +5,8 @@
     <deployment>
         <if-exists>overwrite</if-exists>
         <instance>
+            <display-name xml:lang="en">OSIVIA - Workspace trash</display-name>
+            <display-name xml:lang="fr">OSIVIA - Corbeille d'un espace</display-name>
             <instance-id>osivia-services-workspace-trash-instance</instance-id>
             <portlet-ref>osivia-services-workspace-trash</portlet-ref>
             <security-constraint>
@@ -13,6 +15,12 @@
                     <unchecked />
                 </policy-permission>
             </security-constraint>
+            <preferences>
+                <preference>
+                    <name>hide</name>
+                    <value>true</value>
+                </preference>
+            </preferences>
         </instance>
     </deployment>
 </deployments>
