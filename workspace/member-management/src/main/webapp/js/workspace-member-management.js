@@ -16,11 +16,17 @@ $JQry(function() {
 			data: function(params) {
 				return {
 					filter: params.term,
+					page: params.page
 				};
 			},
-			processResults: function(data, params) {				
+			processResults: function(data, params) {
+				params.page = params.page || 1;
+				
 				return {
-					results: data
+					results: data.items,
+					pagination: {
+						more: (params.page * data.pageSize) < data.total
+					}
 				};
 			},
 			cache: true
@@ -37,7 +43,7 @@ $JQry(function() {
 						filter: term,
 						tokenizer: true
 					}, function(data, status, xhr) {
-						$JQry.each(data, function(key, value) {
+						$JQry.each(data.items, function(key, value) {
 							callback(value);
 						});
 					});

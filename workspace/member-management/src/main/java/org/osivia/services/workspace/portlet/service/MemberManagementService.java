@@ -10,7 +10,7 @@ import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.springframework.validation.Errors;
 
-import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Member management service interface.
@@ -25,6 +25,9 @@ public interface MemberManagementService {
     String INVITATIONS_HELP_LOCATION_PROPERTY = "workspace-member-management.invitations.help.location";
     /** Invitation requests help location property name. */
     String INVITATION_REQUESTS_HELP_LOCATION_PROPERTY = "workspace-member-management.requests.help.location";
+
+    /** Select2 results page size. */
+    int SELECT2_RESULTS_PAGE_SIZE = 6;
 
 
     /**
@@ -106,11 +109,12 @@ public interface MemberManagementService {
      * @param portalControllerContext portal controller context
      * @param options options
      * @param filter search filter
+     * @param page pagination page number
      * @param tokenizer tokenizer indicator
-     * @return JSON array
+     * @return JSON object
      * @throws PortletException
      */
-    JSONArray searchPersons(PortalControllerContext portalControllerContext, MemberManagementOptions options, String filter, boolean tokenizer)
+    JSONObject searchPersons(PortalControllerContext portalControllerContext, MemberManagementOptions options, String filter, int page, boolean tokenizer)
             throws PortletException;
 
 

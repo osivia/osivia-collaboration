@@ -251,8 +251,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
-    public JSONArray searchPersons(PortalControllerContext portalControllerContext, MemberManagementOptions options, String filter, boolean tokenizer)
-            throws PortletException {
+    public JSONObject searchPersons(PortalControllerContext portalControllerContext, MemberManagementOptions options, String filter, int page,
+            boolean tokenizer) throws PortletException {
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
@@ -271,8 +271,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             requestIdentifiers = this.getInvitationRequestsForm(portalControllerContext).getIdentifiers();
         }
 
-        // Results JSON array
-        JSONArray array = new JSONArray();
+        // JSON objects
+        List<JSONObject> objects = new ArrayList<>();
 
         if (StringUtils.isNotBlank(filter)) {
             String[] parts = StringUtils.split(filter, ",;");
@@ -292,17 +292,39 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                     // Search result
                     JSONObject object = getSearchResult(person, alreadyMember, alreadyInvited, existingRequest, bundle);
 
-                    array.add(object);
+                    objects.add(object);
                 }
 
                 // Add person creation
                 if (this.enablePersonCreation() && !(tokenizer && !persons.isEmpty())) {
-                    this.addPersonCreationSearchResult(persons, array, part, bundle);
+                    this.addPersonCreationSearchResult(persons, objects, part, bundle);
                 }
             }
         }
 
-        return array;
+
+        // Results JSON object
+        JSONObject results = new JSONObject();
+
+        // Items JSON array
+        JSONArray items = new JSONArray();
+        if (tokenizer) {
+            items.addAll(objects);
+        } else {
+            int begin = (page - 1) * SELECT2_RESULTS_PAGE_SIZE;
+            int end = Math.min(objects.size(), begin + SELECT2_RESULTS_PAGE_SIZE);
+            for (int i = begin; i < end; i++) {
+                JSONObject object = objects.get(i);
+                items.add(object);
+            }
+
+            results.put("page", page);
+            results.put("pageSize", SELECT2_RESULTS_PAGE_SIZE);
+        }
+        results.put("items", items);
+        results.put("total", objects.size());
+
+        return results;
     }
 
 
@@ -352,6 +374,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         object.put("displayName", displayName);
         object.put("extra", extra);
 
+        object.put("avatar", person.getAvatar().getUrl());
+
         return object;
     }
 
@@ -370,13 +394,13 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     /**
      * Add person creation search result.
      * 
-     * @param filtered persons
-     * @param array search result JSON array
+     * @param persons filtered persons
+     * @param objects JSON objects
      * @param filter search filter
      * @param bundle internationalization bundle
      * @throws PortletException
      */
-    protected void addPersonCreationSearchResult(List<Person> persons, JSONArray array, String filter, Bundle bundle) throws PortletException {
+    protected void addPersonCreationSearchResult(List<Person> persons, List<JSONObject> objects, String filter, Bundle bundle) throws PortletException {
         // Mail pattern matcher
         Matcher matcher = this.mailPattern.matcher(filter);
 
@@ -405,7 +429,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 object.put("disabled", true);
             }
 
-            array.add(object);
+            objects.add(object);
         }
     }
 
