@@ -35,13 +35,9 @@ public class PermissionsAdapter {
      */
     public static DocumentPermissions getAs(List<Permission> permissions){
         DocumentPermissions docPermissions = new DocumentPermissions(0);
-        if(permissions != null) {
-            for(Permission permission : permissions){
-                String usrGrp = permission.getName();
-                
-                for(String right : permission.getValues()){
-                    docPermissions.set(usrGrp, right);
-                }
+        if (permissions != null) {
+            for (Permission permission : permissions) {
+                docPermissions.setPermissions(permission.getName(), permission.getValues());
             }
         }
         return docPermissions;

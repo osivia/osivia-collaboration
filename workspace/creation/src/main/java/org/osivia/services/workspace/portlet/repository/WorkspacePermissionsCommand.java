@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.portlet.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.automation.client.Session;
@@ -51,7 +52,14 @@ public class WorkspacePermissionsCommand implements INuxeoCommand {
         // Get permissions
         DocumentPermissions docPermissions = PermissionsAdapter.getAs(this.permissions);
         
-        return securityService.addPermissions(this.document, docPermissions, PermissionsAdapter.LOCAL_GROUP_PERMISSIONS, true);
+        securityService.addPermissions(this.document, docPermissions, PermissionsAdapter.LOCAL_GROUP_PERMISSIONS, true);
+        
+        // Remove creator of Workspace from ACLs (default Nx rule)
+        String username = nuxeoSession.getLogin().getUsername();
+        List<String> userNames = new ArrayList<>(1);
+        userNames.add(username);
+        
+        return securityService.removePermissions(document, null, userNames, PermissionsAdapter.LOCAL_GROUP_PERMISSIONS, false, true);
     }
 
 
