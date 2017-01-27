@@ -532,8 +532,15 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         List<Invitation> updatedInvitations = new ArrayList<Invitation>(form.getPendingInvitations().size());
 
         for (Invitation pendingInvitation : form.getPendingInvitations()) {
+        	
             // User identifier
-            String uid = StringUtils.lowerCase(StringUtils.trim(pendingInvitation.getId()));
+        	String uid = pendingInvitation.getId();
+        	
+        	// clean uid if it is a new user
+        	if(pendingInvitation.isUnknownUser()) {
+        		uid = StringUtils.lowerCase(StringUtils.trim(uid));
+        	}
+
             // User display name
             String displayName;
             if (pendingInvitation.getPerson() == null) {
