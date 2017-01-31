@@ -158,6 +158,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         // Picture
         DocumentType picture = new DocumentType("Picture", false, false, false, false, false, true, new ArrayList<String>(0), null,
                 "glyphicons glyphicons-picture", false, true, true);
+        picture.setFile(true);
         types.put(picture.getName(), picture);
         this.addSubType(context, "PortalSite", picture.getName());
         this.addSubType(context, "PortalPage", picture.getName());
@@ -174,6 +175,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         // Audio
         DocumentType audio = new DocumentType("Audio", false, false, false, false, false, true, new ArrayList<String>(0), null, "glyphicons glyphicons-music",
                 false, true, true);
+        audio.setFile(true);
         types.put(audio.getName(), audio);
         this.addSubType(context, "PortalSite", audio.getName());
         this.addSubType(context, "PortalPage", audio.getName());
@@ -183,6 +185,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         // Video
         DocumentType video = new DocumentType("Video", false, false, false, false, false, true, new ArrayList<String>(0), null, "glyphicons glyphicons-film",
                 false, true, true);
+        video.setFile(true);
         types.put(video.getName(), video);
         this.addSubType(context, "PortalSite", video.getName());
         this.addSubType(context, "PortalPage", video.getName());
