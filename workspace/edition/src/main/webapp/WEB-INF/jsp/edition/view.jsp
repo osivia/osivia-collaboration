@@ -3,6 +3,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
 
 <%@ page contentType="text/html" isELIgnored="false" %>
 
@@ -27,276 +28,322 @@
 
 <div class="workspace-edition">
     <form:form id="${namespace}-workspace-edition-form" action="${saveUrl}" method="post" enctype="multipart/form-data" modelAttribute="editionForm" cssClass="form-horizontal" role="form">
-        <!-- <div class="portlet-filler container-fluid"> -->
-        <div>
-            <div class="row">
-                <div class="col-lg-8">
-                    <!-- Title -->
-                    <c:set var="placeholder"><op:translate key="WORKSPACE_TITLE_PLACEHOLDER" args="${fragment}" /></c:set>
-                    <spring:bind path="title">
-                        <div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
-                            <form:label path="title" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_TITLE" /></form:label>
-                            <div class="col-sm-9">
-                                <form:input path="title" cssClass="form-control" placeholder="${placeholder}" />
-                                <c:if test="${status.error}">
-                                    <span class="form-control-feedback">
-                                        <i class="glyphicons glyphicons-remove"></i>
-                                    </span>
-                                </c:if>
-                                <form:errors path="title" cssClass="help-block" />
-                            </div>
-                        </div>
-                    </spring:bind>
-                    
-                    <!-- Description -->
-                    <c:set var="placeholder"><op:translate key="WORKSPACE_DESCRIPTION_PLACEHOLDER" args="${fragment}" /></c:set>
-                    <spring:bind path="description">
-                        <div class="form-group ${editionForm.root ? 'required' : ''} ${status.error ? 'has-error' : ''}">
-                            <form:label path="description" cssClass="col-sm-3 control-label" ><op:translate key="WORKSPACE_DESCRIPTION" /></form:label>
-                            <div class="col-sm-9">
-                                <form:textarea path="description" cssClass="form-control" placeholder="${placeholder}" />
-                                <form:errors path="description" cssClass="help-block" />
-                            </div>
-                        </div>
-                    </spring:bind>
-                    
-                    <!-- Workspace type -->
-                    <c:if test="${editionForm.root}">
-                        <spring:bind path="workspaceType">
-                            <div class="form-group required ${status.error ? 'has-error' : ''}">
-                                <form:label path="workspaceType" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_TYPE" /></form:label>
-                                <div class="col-sm-9">
-                                    <c:forEach var="type" items="${editionForm.workspaceTypes}">
-                                        <div class="radio">
-                                            <label>
-                                                <form:radiobutton path="workspaceType" value="${type.id}" />
-                                                <span class="label label-${type.color}">
-                                                    <i class="${type.icon}"></i>
-                                                    <span><op:translate key="${type.key}" /></span>
-                                                </span>
-                                            </label>
-                                            <p class="text-muted">
-                                                <span><op:translate key="${type.key}_HELP" /></span>
-                                            </p>
-                                        </div>
-                                    </c:forEach>
-                                    <form:errors path="workspaceType" cssClass="help-block" />
-                                </div>
-                            </div>
-                        </spring:bind>
-                    </c:if>
-                </div>
-                
-                <div class="col-lg-4">
-                    <!-- Vignette -->
-                    <div class="form-group">
-                        <form:label path="vignette.upload" cssClass="col-sm-3 col-lg-6 control-label"><op:translate key="WORKSPACE_VIGNETTE" /></form:label>
-                        <div class="col-sm-9 col-lg-6">
-                            <!-- Preview -->
-                            <c:choose>
-                                <c:when test="${editionForm.vignette.updated}">
-                                    <!-- Preview -->
-                                    <portlet:resourceURL id="vignettePreview" var="previewUrl">
-                                        <portlet:param name="ts" value="${currentDate.time}" />
-                                    </portlet:resourceURL>
-                                    <p>
-                                        <img src="${previewUrl}" alt="" class="img-responsive">
-                                    </p>
-                                </c:when>
-                                
-                                <c:when test="${editionForm.vignette.deleted}">
-                                    <!-- Deleted vignette -->
-                                    <p class="form-control-static text-muted">
-                                        <span><op:translate key="WORKSPACE_DELETED_VIGNETTE" /></span>
-                                    </p>
-                                </c:when>
-                            
-                                <c:when test="${empty editionForm.vignette.url}">
-                                    <!-- No vignette -->
-                                    <p class="form-control-static text-muted">
-                                        <span><op:translate key="WORKSPACE_NO_VIGNETTE" /></span>
-                                    </p>
-                                </c:when>
-                                
-                                <c:otherwise>
-                                    <!-- Vignette -->
-                                    <p>
-                                        <img src="${editionForm.vignette.url}" alt="" class="img-responsive">
-                                    </p>
-                                </c:otherwise>
-                            </c:choose>
-                        
-                            <div>
-                                <!-- Upload -->
-                                <label class="btn btn-sm btn-default btn-file">
-                                    <i class="halflings halflings-folder-open"></i>
-                                    <span><op:translate key="WORKSPACE_IMAGE_UPLOAD" /></span>
-                                    <form:input type="file" path="vignette.upload" />
-                                </label>
-                                <input type="submit" name="upload-vignette" class="hidden">
-                                
-                                <!-- Delete -->
-                                <button type="submit" name="delete-vignette" class="btn btn-sm btn-default">
-                                    <i class="halflings halflings-trash"></i>
-                                    <span class="sr-only"><op:translate key="WORKSPACE_IMAGE_DELETE" /></span>
-                                </button>
-                            </div>
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Title -->
+                <c:set var="placeholder"><op:translate key="WORKSPACE_TITLE_PLACEHOLDER" args="${fragment}" /></c:set>
+                <spring:bind path="title">
+                    <div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
+                        <form:label path="title" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_TITLE" /></form:label>
+                        <div class="col-sm-9">
+                            <form:input path="title" cssClass="form-control" placeholder="${placeholder}" />
+                            <c:if test="${status.error}">
+                                <span class="form-control-feedback">
+                                    <i class="glyphicons glyphicons-remove"></i>
+                                </span>
+                            </c:if>
+                            <form:errors path="title" cssClass="help-block" />
                         </div>
                     </div>
-                    
-                    <!-- Banner -->
-                    <c:if test="${editionForm.root}">
-                        <div class="form-group">
-                            <form:label path="banner.upload" cssClass="col-sm-3 col-lg-6 control-label"><op:translate key="WORKSPACE_BANNER" /></form:label>
-                            <div class="col-sm-9 col-lg-6">
-                                <!-- Preview -->
-                                <c:choose>
-                                    <c:when test="${editionForm.banner.updated}">
-                                        <!-- Preview -->
-                                        <portlet:resourceURL id="bannerPreview" var="previewUrl">
-                                            <portlet:param name="ts" value="${currentDate.time}" />
-                                        </portlet:resourceURL>
-                                        <p>
-                                            <img src="${previewUrl}" alt="" class="img-responsive">
+                </spring:bind>
+                
+                <!-- Description -->
+                <c:set var="placeholder"><op:translate key="WORKSPACE_DESCRIPTION_PLACEHOLDER" args="${fragment}" /></c:set>
+                <spring:bind path="description">
+                    <div class="form-group ${editionForm.root ? 'required' : ''} ${status.error ? 'has-error' : ''}">
+                        <form:label path="description" cssClass="col-sm-3 control-label" ><op:translate key="WORKSPACE_DESCRIPTION" /></form:label>
+                        <div class="col-sm-9">
+                            <form:textarea path="description" cssClass="form-control" placeholder="${placeholder}" />
+                            <form:errors path="description" cssClass="help-block" />
+                        </div>
+                    </div>
+                </spring:bind>
+                
+                <!-- Workspace type -->
+                <c:if test="${editionForm.root}">
+                    <spring:bind path="workspaceType">
+                        <div class="form-group required ${status.error ? 'has-error' : ''}">
+                            <form:label path="workspaceType" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_TYPE" /></form:label>
+                            <div class="col-sm-9">
+                                <c:forEach var="type" items="${editionForm.workspaceTypes}">
+                                    <div class="radio">
+                                        <label>
+                                            <form:radiobutton path="workspaceType" value="${type.id}" />
+                                            <span class="label label-${type.color}">
+                                                <i class="${type.icon}"></i>
+                                                <span><op:translate key="${type.key}" /></span>
+                                            </span>
+                                        </label>
+                                        <p class="text-muted">
+                                            <span><op:translate key="${type.key}_HELP" /></span>
                                         </p>
-                                    </c:when>
-                                    
-                                    <c:when test="${editionForm.banner.deleted}">
-                                        <!-- Deleted banner -->
-                                        <p class="form-control-static text-muted">
-                                            <span><op:translate key="WORKSPACE_DELETED_BANNER" /></span>
-                                        </p>
-                                    </c:when>
-                                
-                                    <c:when test="${empty editionForm.banner.url}">
-                                        <!-- No banner -->
-                                        <p class="form-control-static text-muted">
-                                            <span><op:translate key="WORKSPACE_NO_BANNER" /></span>
-                                        </p>
-                                    </c:when>
-                                    
-                                    <c:otherwise>
-                                        <!-- Banner -->
-                                        <p>
-                                            <img src="${editionForm.banner.url}" alt="" class="img-responsive">
-                                        </p>
-                                    </c:otherwise>
-                                </c:choose>
-                            
-                                <div>
-                                    <!-- Upload -->
-                                    <label class="btn btn-sm btn-default btn-file">
-                                        <i class="halflings halflings-folder-open"></i>
-                                        <span><op:translate key="WORKSPACE_IMAGE_UPLOAD" /></span>
-                                        <form:input type="file" path="banner.upload" />
-                                    </label>
-                                    <input type="submit" name="upload-banner" class="hidden">
-                                    
-                                    <!-- Delete -->
-                                    <button type="submit" name="delete-banner" class="btn btn-sm btn-default">
-                                        <i class="halflings halflings-trash"></i>
-                                        <span class="sr-only"><op:translate key="WORKSPACE_IMAGE_DELETE" /></span>
-                                    </button>
-                                </div>
+                                    </div>
+                                </c:forEach>
+                                <form:errors path="workspaceType" cssClass="help-block" />
                             </div>
                         </div>
-                    </c:if>
+                    </spring:bind>
+                </c:if>
+            </div>
+            
+            <div class="col-lg-4">
+                <!-- Vignette -->
+                <div class="form-group">
+                    <form:label path="vignette.upload" cssClass="col-sm-3 col-lg-6 control-label"><op:translate key="WORKSPACE_VIGNETTE" /></form:label>
+                    <div class="col-sm-9 col-lg-6">
+                        <!-- Preview -->
+                        <c:choose>
+                            <c:when test="${editionForm.vignette.updated}">
+                                <!-- Preview -->
+                                <portlet:resourceURL id="vignettePreview" var="previewUrl">
+                                    <portlet:param name="ts" value="${currentDate.time}" />
+                                </portlet:resourceURL>
+                                <p>
+                                    <img src="${previewUrl}" alt="" class="img-responsive">
+                                </p>
+                            </c:when>
+                            
+                            <c:when test="${editionForm.vignette.deleted}">
+                                <!-- Deleted vignette -->
+                                <p class="form-control-static text-muted">
+                                    <span><op:translate key="WORKSPACE_DELETED_VIGNETTE" /></span>
+                                </p>
+                            </c:when>
+                        
+                            <c:when test="${empty editionForm.vignette.url}">
+                                <!-- No vignette -->
+                                <p class="form-control-static text-muted">
+                                    <span><op:translate key="WORKSPACE_NO_VIGNETTE" /></span>
+                                </p>
+                            </c:when>
+                            
+                            <c:otherwise>
+                                <!-- Vignette -->
+                                <p>
+                                    <img src="${editionForm.vignette.url}" alt="" class="img-responsive">
+                                </p>
+                            </c:otherwise>
+                        </c:choose>
+                    
+                        <div>
+                            <!-- Upload -->
+                            <label class="btn btn-sm btn-default btn-file">
+                                <i class="halflings halflings-folder-open"></i>
+                                <span><op:translate key="WORKSPACE_IMAGE_UPLOAD" /></span>
+                                <form:input type="file" path="vignette.upload" />
+                            </label>
+                            <input type="submit" name="upload-vignette" class="hidden">
+                            
+                            <!-- Delete -->
+                            <button type="submit" name="delete-vignette" class="btn btn-sm btn-default">
+                                <i class="halflings halflings-trash"></i>
+                                <span class="sr-only"><op:translate key="WORKSPACE_IMAGE_DELETE" /></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Banner -->
+                <div class="form-group">
+                    <form:label path="banner.upload" cssClass="col-sm-3 col-lg-6 control-label"><op:translate key="WORKSPACE_BANNER" /></form:label>
+                    <div class="col-sm-9 col-lg-6">
+                        <!-- Preview -->
+                        <c:choose>
+                            <c:when test="${editionForm.banner.updated}">
+                                <!-- Preview -->
+                                <portlet:resourceURL id="bannerPreview" var="previewUrl">
+                                    <portlet:param name="ts" value="${currentDate.time}" />
+                                </portlet:resourceURL>
+                                <p>
+                                    <img src="${previewUrl}" alt="" class="img-responsive">
+                                </p>
+                            </c:when>
+                            
+                            <c:when test="${editionForm.banner.deleted}">
+                                <!-- Deleted banner -->
+                                <p class="form-control-static text-muted">
+                                    <span><op:translate key="WORKSPACE_DELETED_BANNER" /></span>
+                                </p>
+                            </c:when>
+                        
+                            <c:when test="${empty editionForm.banner.url}">
+                                <!-- No banner -->
+                                <p class="form-control-static text-muted">
+                                    <span><op:translate key="WORKSPACE_NO_BANNER" /></span>
+                                </p>
+                            </c:when>
+                            
+                            <c:otherwise>
+                                <!-- Banner -->
+                                <p>
+                                    <img src="${editionForm.banner.url}" alt="" class="img-responsive">
+                                </p>
+                            </c:otherwise>
+                        </c:choose>
+                    
+                        <div>
+                            <!-- Upload -->
+                            <label class="btn btn-sm btn-default btn-file">
+                                <i class="halflings halflings-folder-open"></i>
+                                <span><op:translate key="WORKSPACE_IMAGE_UPLOAD" /></span>
+                                <form:input type="file" path="banner.upload" />
+                            </label>
+                            <input type="submit" name="upload-banner" class="hidden">
+                            
+                            <!-- Delete -->
+                            <button type="submit" name="delete-banner" class="btn btn-sm btn-default">
+                                <i class="halflings halflings-trash"></i>
+                                <span class="sr-only"><op:translate key="WORKSPACE_IMAGE_DELETE" /></span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-                
-            <!-- Tasks -->
-            <spring:bind path="tasks">
-                <div class="form-group ${status.error ? 'has-error' : ''}">
-                    <input type="submit" name="sort" class="hidden">
-                    <label class="col-sm-3 col-lg-2 control-label"><op:translate key="WORKSPACE_TASKS" /></label>
-                    <div class="col-sm-9 col-lg-10">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="panel panel-primary">
-                                    <div class="panel-heading"><op:translate key="WORKSPACE_ACTIVE_TASKS" /></div>
-                                    <div class="panel-body">
-                                        <p class="text-muted"><op:translate key="WORKSPACE_ACTIVE_TASKS_HELP" /></p>
-                                        <ul class="list-sortable workspace-edition-sortable active-tasks">
-                                            <c:forEach var="task" items="${editionForm.tasks}" varStatus="varStatus">
-                                                <c:if test="${task.active}">
-                                                    <li>
-                                                        <form:hidden path="tasks[${varStatus.index}].active" />
-                                                        <form:hidden path="tasks[${varStatus.index}].order" />
-                                                    
-                                                        <div class="clearfix">
-                                                            <div class="pull-left ${task.custom ? 'text-info' : ''}">
-                                                                <i class="${task.icon}"></i>
-                                                                <span>${task.displayName}</span>
-                                                                
-                                                                <c:if test="${task.custom}">
-                                                                    <small><op:translate key="WORKSPACE_CUSTOM_TASK_INDICATOR" /></small>
-                                                                </c:if>
-                                                            </div>
-                                                            
-                                                            <div class="pull-right">
-                                                                <portlet:actionURL name="hide" var="url">
-                                                                    <portlet:param name="index" value="${varStatus.index}" />
-                                                                </portlet:actionURL>
-                                                                <a href="${url}" class="small">
-                                                                    <span><op:translate key="WORKSPACE_HIDE_TASK" /></span>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                </c:if>
-                                            </c:forEach>
-                                        </ul>
-                                    </div>
+        </div>
+            
+        <!-- Tasks -->
+        <spring:bind path="tasks">
+            <div class="form-group ${status.error ? 'has-error' : ''}">
+                <input type="submit" name="sort" class="hidden">
+                <label class="col-sm-3 col-lg-2 control-label"><op:translate key="WORKSPACE_TASKS" /></label>
+                <div class="col-sm-9 col-lg-10">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title"><op:translate key="WORKSPACE_ACTIVE_TASKS" /></h3>
                                 </div>
-                            </div>
-                            
-                            <div class="col-sm-6">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading"><op:translate key="WORKSPACE_IDLE_TASKS" /></div>
-                                    <div class="panel-body">
-                                        <p class="text-muted"><op:translate key="WORKSPACE_IDLE_TASKS_HELP" /></p>
-                                        <ul class="list-sortable workspace-edition-sortable idle-tasks">
-                                            <c:forEach var="task" items="${editionForm.tasks}" varStatus="varStatus">
-                                                <c:if test="${not task.active}">
-                                                    <li>
+                                
+                                <div class="panel-body">
+                                    <p class="text-muted"><op:translate key="WORKSPACE_ACTIVE_TASKS_HELP" /></p>
+                                    <ul class="list-sortable workspace-edition-sortable active-tasks">
+                                        <c:forEach var="task" items="${editionForm.tasks}" varStatus="varStatus">
+                                            <c:if test="${task.active}">
+                                                <li>
+                                                    <div class="media ${task.custom ? 'text-info' : ''}">
                                                         <form:hidden path="tasks[${varStatus.index}].active" />
                                                         <form:hidden path="tasks[${varStatus.index}].order" />
                                                     
-                                                        <div class="clearfix">
-                                                            <div class="pull-left ${task.custom ? 'text-info' : ''}">
-                                                                <i class="${task.icon}"></i>
-                                                                <span>${task.displayName}</span>
-                                                                
-                                                                <c:if test="${task.custom}">
-                                                                    <small><op:translate key="WORKSPACE_CUSTOM_TASK_INDICATOR" /></small>
-                                                                </c:if>
-                                                            </div>
-                                                            
-                                                            <div class="pull-right">
-                                                                <portlet:actionURL name="show" var="url">
-                                                                    <portlet:param name="index" value="${varStatus.index}" />
-                                                                </portlet:actionURL>
-                                                                <a href="${url}" class="small">
-                                                                    <span><op:translate key="WORKSPACE_SHOW_TASK" /></span>
-                                                                </a>
-                                                            </div>
+                                                        <div class="media-left">
+                                                            <i class="${task.icon}"></i>
                                                         </div>
-                                                    </li>
-                                                </c:if>
-                                            </c:forEach>
-                                        </ul>
-                                    </div>
+                                                        
+                                                        <div class="media-body">
+                                                            <span>${task.displayName}</span>
+                                                            
+                                                            <c:if test="${task.custom}">
+                                                                <small><op:translate key="WORKSPACE_CUSTOM_TASK_INDICATOR" /></small>
+                                                            </c:if>
+                                                        </div>
+                                                        
+                                                        <div class="media-right">
+                                                            <portlet:actionURL name="hide" var="url">
+                                                                <portlet:param name="index" value="${varStatus.index}" />
+                                                            </portlet:actionURL>
+                                                            
+                                                            <a href="${url}" class="small">
+                                                                <span><op:translate key="WORKSPACE_HIDE_TASK" /></span>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </c:if>
+                                        </c:forEach>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
-                        <form:errors path="tasks" cssClass="help-block" />
+                        
+                        <div class="col-sm-6">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title"><op:translate key="WORKSPACE_IDLE_TASKS" /></h3>
+                                </div>
+                                
+                                <div class="panel-body">
+                                    <p class="text-muted"><op:translate key="WORKSPACE_IDLE_TASKS_HELP" /></p>
+                                    <ul class="list-sortable workspace-edition-sortable idle-tasks">
+                                        <c:forEach var="task" items="${editionForm.tasks}" varStatus="varStatus">
+                                            <c:if test="${not task.active}">
+                                                <li>
+                                                    <div class="media ${task.custom ? 'text-info' : ''}">
+                                                        <form:hidden path="tasks[${varStatus.index}].active" />
+                                                        <form:hidden path="tasks[${varStatus.index}].order" />
+                                                        
+                                                        <div class="media-left">
+                                                            <i class="${task.icon}"></i>
+                                                        </div>
+                                                        
+                                                        <div class="media-body">
+                                                            <span>${task.displayName}</span>
+                                                            
+                                                            <c:if test="${task.custom}">
+                                                                <small><op:translate key="WORKSPACE_CUSTOM_TASK_INDICATOR" /></small>
+                                                            </c:if>
+                                                        </div>
+                                                        
+                                                        <div class="media-right">
+                                                            <portlet:actionURL name="show" var="url">
+                                                                <portlet:param name="index" value="${varStatus.index}" />
+                                                            </portlet:actionURL>
+                                                            
+                                                            <a href="${url}" class="small">
+                                                                <span><op:translate key="WORKSPACE_SHOW_TASK" /></span>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </c:if>
+                                        </c:forEach>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <form:errors path="tasks" cssClass="help-block" />
                 </div>
-            </spring:bind>
-        </div>
-    
+            </div>
+        </spring:bind>
+        
+        <!-- Editorial -->
+        <spring:bind path="editorial.displayed">
+            <div class="form-group ${status.error ? 'has-error' : ''}" data-created="${not empty editionForm.editorial.document}">
+                <input type="submit" name="create-editorial" class="hidden">
+                <form:label path="editorial.displayed" cssClass="col-sm-3 col-lg-2 control-label"><op:translate key="WORKSPACE_EDITORIAL" /></form:label>
+                <div class="col-sm-9 col-lg-10">
+                    <div class="checkbox">
+                        <label>
+                            <form:checkbox path="editorial.displayed" />
+                            <span><op:translate key="WORKSPACE_EDITORIAL_DISPLAY_CHECKBOX" /></span>
+                        </label>
+                    </div>
+                    
+                    <c:if test="${not empty editionForm.editorial.document}">
+                        <p class="form-control-static">
+                            <c:set var="editionUrl"><ttc:documentLink document="${editionForm.editorial.document}" /></c:set>
+                                
+                            <a href="${editionUrl}" class="btn btn-default no-ajax-link">
+                                <span><op:translate key="WORKSPACE_EDITORIAL_EDIT" /></span>
+                            </a>
+                        
+                            <a href="#${namespace}-editorial-preview" data-toggle="collapse" class="btn btn-default no-ajax-link">
+                                <span><op:translate key="WORKSPACE_EDITORIAL_PREVIEW_DISPLAY" /></span>
+                            </a>
+                        </p>
+                        
+                        <div id="${namespace}-editorial-preview" class="panel panel-info collapse">
+                            <div class="panel-body">
+                                <div><ttc:transform document="${editionForm.editorial.document}" property="note:note" /></div>
+                            </div>
+                        </div>
+                    </c:if>
+                    
+                    <form:errors path="editorial.displayed" cssClass="help-block" />
+                </div>
+            </div>
+        </spring:bind>
+
         <!-- Buttons -->
-        <!-- <div class="portlet-toolbar adapt-scrollbar"> -->
         <div>
             <div class="row">
                 <div class="col-sm-offset-3 col-sm-9 col-lg-offset-2 col-lg-10">

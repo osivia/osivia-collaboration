@@ -6,6 +6,7 @@ import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
 /**
@@ -14,6 +15,10 @@ import org.springframework.validation.Errors;
  * @author Cédric Krommenhoek
  */
 public interface WorkspaceEditionService {
+
+    /** Workspace editorial task identifier. */
+    String WORKSPACE_EDITORIAL_TASK_ID = "WORKSPACE_EDITORIAL";
+
 
     /**
      * Get workspace edition form.
@@ -75,6 +80,17 @@ public interface WorkspaceEditionService {
      * @throws PortletException
      */
     void deleteBanner(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
+
+
+    /**
+     * Create editorial.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form workspace edition form
+     * @param result binding result
+     * @throws PortletException
+     */
+    void createEditorial(PortalControllerContext portalControllerContext, WorkspaceEditionForm form, BindingResult result) throws PortletException;
 
 
     /**

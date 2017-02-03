@@ -68,7 +68,7 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
                 remainingIds.remove(navigationTask.getId());
             }
 
-            if (!navigationTask.isDisabled()) {
+            if (!navigationTask.isDisabled() && !navigationTask.isHidden()) {
                 displayedTasks.add(navigationTask);
             }
         }

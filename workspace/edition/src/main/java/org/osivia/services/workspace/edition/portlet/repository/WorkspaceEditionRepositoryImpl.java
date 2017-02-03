@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.edition.portlet.repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.portlet.PortletContext;
@@ -23,9 +24,11 @@ import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
+import org.osivia.services.workspace.edition.portlet.model.Editorial;
 import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
+import org.osivia.services.workspace.edition.portlet.service.WorkspaceEditionService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -37,7 +40,9 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
@@ -61,6 +66,10 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
     /** Workspace service. */
     @Autowired
     private WorkspaceService workspaceService;
+
+    /** Document DAO. */
+    @Autowired
+    private DocumentDAO documentDao;
 
     /** Bundle factory. */
     @Autowired
@@ -176,7 +185,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
-    public List<Task> getTasks(PortalControllerContext portalControllerContext, String path) throws PortletException {
+    public List<Task> getTasks(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
@@ -184,7 +193,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         List<TaskbarTask> taskbarTasks;
         TaskbarItems taskbarItems;
         try {
-            taskbarTasks = this.taskbarService.getTasks(portalControllerContext, path, false);
+            taskbarTasks = this.taskbarService.getTasks(portalControllerContext, workspace.getPath(), false);
             taskbarItems = this.taskbarService.getItems(portalControllerContext);
         } catch (PortalException e) {
             throw new PortletException(e);
@@ -194,7 +203,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         // Available taskbar items
         List<TaskbarItem> availableItems = new ArrayList<>(taskbarItems.getAll().size());
         for (TaskbarItem item : taskbarItems.getAll()) {
-            if (!TaskbarItemType.TRANSVERSAL.equals(item.getType())) {
+            if (!TaskbarItemType.TRANSVERSAL.equals(item.getType()) && !item.isHidden()) {
                 availableItems.add(item);
             }
         }
@@ -210,28 +219,30 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         List<Task> tasks = new ArrayList<Task>(taskbarTasks.size() + availableItems.size());
         int order = 1;
         for (TaskbarTask taskbarTask : taskbarTasks) {
-            Task task = this.applicationContext.getBean(Task.class, taskbarTask);
-            task.setPath(taskbarTask.getPath());
+            if (!taskbarTask.isHidden()) {
+                Task task = this.applicationContext.getBean(Task.class, taskbarTask);
+                task.setPath(taskbarTask.getPath());
 
-            // Display name
-            String displayName;
-            if (taskbarTask.getKey() != null) {
-                displayName = bundle.getString(taskbarTask.getKey(), taskbarTask.getCustomizedClassLoader());
-            } else {
-                displayName = taskbarTask.getTitle();
+                // Display name
+                String displayName;
+                if (taskbarTask.getKey() != null) {
+                    displayName = bundle.getString(taskbarTask.getKey(), taskbarTask.getCustomizedClassLoader());
+                } else {
+                    displayName = taskbarTask.getTitle();
+                }
+                task.setDisplayName(displayName);
+
+                // Order
+                if (!taskbarTask.isDisabled()) {
+                    task.setActive(!taskbarTask.isDisabled());
+                    task.setOrder(order++);
+                }
+
+                // Custom task indicator
+                task.setCustom(taskbarTask.getKey() == null);
+
+                tasks.add(task);
             }
-            task.setDisplayName(displayName);
-
-            // Order
-            if (!taskbarTask.isDisabled()) {
-                task.setActive(!taskbarTask.isDisabled());
-                task.setOrder(order++);
-            }
-
-            // Custom task indicator
-            task.setCustom(taskbarTask.getKey() == null);
-
-            tasks.add(task);
         }
         for (TaskbarItem item : availableItems) {
             Task task = this.applicationContext.getBean(Task.class, item);
@@ -244,6 +255,63 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         }
 
         return tasks;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Editorial getEditorial(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // Task
+        TaskbarTask task;
+        try {
+            task = this.taskbarService.getTask(portalControllerContext, workspace.getPath(), WorkspaceEditionService.WORKSPACE_EDITORIAL_TASK_ID);
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+
+        // Editorial
+        Editorial editorial = this.applicationContext.getBean(Editorial.class);
+
+        if (task != null) {
+            // Nuxeo document context
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(task.getPath());
+            // Nuxeo document
+            Document document = documentContext.getDoc();
+
+            // Displayed indicator
+            boolean displayed = !task.isDisabled();
+            editorial.setDisplayed(displayed);
+            editorial.setInitialDisplayed(displayed);
+
+            // Document DTO
+            DocumentDTO documentDto = this.documentDao.toDTO(document);
+            editorial.setDocument(documentDto);
+        }
+
+        return editorial;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Editorial createEditorial(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
+        Task task = getEditorialTask(portalControllerContext, null);
+
+        if (task != null) {
+            task.setActive(true);
+
+            List<Task> tasks = Arrays.asList(new Task[]{task});
+            this.updateTasks(portalControllerContext, workspace, tasks);
+        }
+
+        return this.getEditorial(portalControllerContext, workspace);
     }
 
 
@@ -329,6 +397,33 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
+    public void updateEditorial(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+        // Editorial
+        Editorial editorial = form.getEditorial();
+        // Editorial document DTO
+        DocumentDTO document = editorial.getDocument();
+        
+        if (document != null) {
+            if (BooleanUtils.xor(new boolean[]{editorial.isDisplayed(), editorial.isInitialDisplayed()})) {
+                // Task
+                Task task = this.getEditorialTask(portalControllerContext, document);
+                if (task == null) {
+                    throw new PortletException("Workspace editorial task not found.");
+                } else {
+                    task.setActive(editorial.isDisplayed());
+
+                    List<Task> tasks = Arrays.asList(new Task[]{task});
+                    this.updateTasks(portalControllerContext, form.getDocument(), tasks);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean checkTitleAvailability(WorkspaceEditionForm form) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(this.portletContext);
@@ -378,6 +473,45 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(DeleteWorkspaceCommand.class, workspace.getPath());
         nuxeoController.executeNuxeoCommand(command);
+    }
+
+
+    /**
+     * Get editorial task.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param document editorial document DTO, may be null
+     * @return task
+     * @throws PortletException
+     */
+    private Task getEditorialTask(PortalControllerContext portalControllerContext, DocumentDTO document) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Item
+        TaskbarItem item;
+        try {
+            item = this.taskbarService.getItem(portalControllerContext, WorkspaceEditionService.WORKSPACE_EDITORIAL_TASK_ID);
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+
+        // Task
+        Task task;
+        if (item == null) {
+            task = null;
+        } else {
+            task = new Task(item);
+
+            if (document != null) {
+                task.setPath(document.getPath());
+            }
+            
+            // Display name
+            String displayName = bundle.getString(item.getKey(), item.getCustomizedClassLoader());
+            task.setDisplayName(displayName);
+        }
+        return task;
     }
 
 

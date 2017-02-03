@@ -162,4 +162,13 @@ public abstract class TaskbarTaskDecorator implements TaskbarTask {
         return this.task.getRestriction();
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isHidden() {
+        return this.task.isHidden();
+    }
+
 }

@@ -1,6 +1,5 @@
 package org.osivia.services.workspace.edition.portlet.repository;
 
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,8 +85,6 @@ public class UpdateTasksCommand implements INuxeoCommand {
                 }
                 // Title
                 String title = task.getDisplayName();
-                // Name
-                String name = this.generateNameFromTitle(title);
                 // WebId
                 String webId;
                 if (task.getId() == null) {
@@ -108,7 +105,7 @@ public class UpdateTasksCommand implements INuxeoCommand {
 
 
                 // Created document
-                Document document = documentService.createDocument(this.workspace, type, name, properties);
+                Document document = documentService.createDocument(this.workspace, type, null, properties);
 
                 // Update task
                 task.setPath(document.getPath());
@@ -144,44 +141,6 @@ public class UpdateTasksCommand implements INuxeoCommand {
         }
 
         return null;
-    }
-
-
-    /**
-     * Generate document name from title.
-     *
-     * @param title document title
-     * @return document name
-     */
-    private String generateNameFromTitle(String title) {
-        String name = title;
-
-        // Lower case
-        name = StringUtils.lowerCase(name);
-
-        // Remove accents
-        name = Normalizer.normalize(name, Normalizer.Form.NFD);
-        name = name.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
-
-        // Remove special characters
-        name = name.replaceAll("[^a-z0-9]", "-");
-
-        // Remove "-" prefix
-        while (StringUtils.startsWith(name, "-")) {
-            name = StringUtils.removeStart(name, "-");
-        }
-
-        // Remove "-" suffix
-        while (StringUtils.endsWith(name, "-")) {
-            name = StringUtils.removeEnd(name, "-");
-        }
-
-        // Remove consecutive "-"
-        while (StringUtils.contains(name, "--")) {
-            name = StringUtils.replace(name, "--", "-");
-        }
-
-        return name;
     }
 
 

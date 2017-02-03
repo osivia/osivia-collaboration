@@ -212,7 +212,7 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
      * 
      * @param request action request
      * @param response action response
-     * @param form
+     * @param form workspace edition form model attribute
      * @throws PortletException
      */
     @ActionMapping(name = "save", params = "delete-banner")
@@ -221,6 +221,25 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         this.service.deleteBanner(portalControllerContext, form);
+    }
+
+
+    /**
+     * Create editorial.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param form workspace edition form model attribute
+     * @param result binding result
+     * @throws PortletException
+     */
+    @ActionMapping(name = "save", params = "create-editorial")
+    public void createEditorial(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form, BindingResult result)
+            throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.createEditorial(portalControllerContext, form, result);
     }
 
 

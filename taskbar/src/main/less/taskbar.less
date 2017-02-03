@@ -131,17 +131,12 @@
     
     // Normal view
     &.taskbar-normal {
-        @height: 40px;
-        @line-height: 20px;
-        
         a {
-            height: @height;
-            padding: floor((@height - @line-height) / 2) @padding;
+            overflow: hidden;
+            text-overflow: ellipsis;
             
-            line-height: @line-height;
+            padding: @padding;
     
-            .text-overflow;
-            
             i {
                 margin-right: 3px;
             }

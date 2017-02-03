@@ -18,6 +18,7 @@ import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSObjectPath;
+import org.osivia.services.workspace.edition.portlet.model.Editorial;
 import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -108,15 +110,17 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         form.setVignette(vignette);
         
         // Banner
-        if (root) {
-            Image banner = this.repository.getBanner(portalControllerContext, workspace);
-            form.setBanner(banner);
-        }
+        Image banner = this.repository.getBanner(portalControllerContext, workspace);
+        form.setBanner(banner);
 
         // Tasks
-        List<Task> tasks = this.repository.getTasks(portalControllerContext, workspace.getPath());
+        List<Task> tasks = this.repository.getTasks(portalControllerContext, workspace);
         Collections.sort(tasks, this.tasksComparator);
         form.setTasks(tasks);
+
+        // Editorial
+        Editorial editorial = this.repository.getEditorial(portalControllerContext, workspace);
+        form.setEditorial(editorial);
 
         return form;
     }
@@ -201,6 +205,28 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
      * {@inheritDoc}
      */
     @Override
+    public void createEditorial(PortalControllerContext portalControllerContext, WorkspaceEditionForm form, BindingResult result) throws PortletException {
+        // Editorial webId
+        StringBuilder webId = new StringBuilder();
+        webId.append(ITaskbarService.WEBID_PREFIX);
+        webId.append(form.getDocument().getString("webc:url"));
+        webId.append("_");
+        webId.append(StringUtils.lowerCase(WORKSPACE_EDITORIAL_TASK_ID));
+
+        if (this.repository.checkWebIdAvailability(webId.toString())) {
+            Editorial editorial = this.repository.createEditorial(portalControllerContext, form.getDocument());
+            form.setEditorial(editorial);
+        } else {
+            result.rejectValue("editorial.displayed", "NotAvailable", null);
+            form.getEditorial().setDisplayed(false);
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void save(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
@@ -237,6 +263,9 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
             // Update properties
             this.repository.updateProperties(portalControllerContext, form);
 
+            // Update editorial
+            this.repository.updateEditorial(portalControllerContext, form);
+            
 
             // Notification
             String message = bundle.getString("MESSAGE_WORKSPACE_EDITION_SUCCESS", fragment);

@@ -37,6 +37,8 @@ public class WorkspaceEditionForm {
     private Image banner;
     /** Workspace tasks. */
     private List<Task> tasks;
+    /** Workspace editorial. */
+    private Editorial editorial;
 
     /** Workspace Nuxeo document. */
     private final Document document;
@@ -182,7 +184,6 @@ public class WorkspaceEditionForm {
         this.banner = banner;
     }
 
-
     /**
      * Getter for tasks.
      *
@@ -199,6 +200,24 @@ public class WorkspaceEditionForm {
      */
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    /**
+     * Getter for editorial.
+     * 
+     * @return the editorial
+     */
+    public Editorial getEditorial() {
+        return editorial;
+    }
+
+    /**
+     * Setter for editorial.
+     * 
+     * @param editorial the editorial to set
+     */
+    public void setEditorial(Editorial editorial) {
+        this.editorial = editorial;
     }
 
     /**

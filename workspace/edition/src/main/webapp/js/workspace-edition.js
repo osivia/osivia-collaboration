@@ -58,4 +58,16 @@ $JQry(function() {
 		$submit.click();
 	});
 	
+	
+	// Auto submit when checkbox is checked
+	$JQry(".workspace-edition input[type=checkbox][name='editorial.displayed']").change(function(event) {
+		var $target = $JQry(event.target),
+			$formGroup = $target.closest(".form-group"),
+			$submit = $formGroup.find("input[type=submit][name='create-editorial']");
+		
+		if (!$formGroup.data("created")) {
+			$submit.click();
+		}
+	});
+	
 });

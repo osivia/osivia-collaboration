@@ -6,6 +6,7 @@ import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.workspace.edition.portlet.model.Editorial;
 import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
@@ -33,7 +34,7 @@ public interface WorkspaceEditionRepository {
      * Get workspace vignette.
      * 
      * @param portalControllerContext portal controller context
-     * @param workspace workspace Nuxeo document
+     * @param workspace workspace or room Nuxeo document
      * @return vignette
      * @throws PortletException
      */
@@ -44,7 +45,7 @@ public interface WorkspaceEditionRepository {
      * Get workspace banner.
      * 
      * @param portalControllerContext portal controller context
-     * @param workspace workspace Nuxeo document
+     * @param workspace workspace or room Nuxeo document
      * @return banner
      * @throws PortletException
      */
@@ -52,14 +53,36 @@ public interface WorkspaceEditionRepository {
 
 
     /**
-     * Get tasks.
+     * Get workspace tasks.
      * 
      * @param portalControllerContext portal controller context
-     * @param path workspace path
+     * @param workspace workspace or room Nuxeo document
      * @return tasks
      * @throws PortletException
      */
-    List<Task> getTasks(PortalControllerContext portalControllerContext, String path) throws PortletException;
+    List<Task> getTasks(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
+
+
+    /**
+     * Get workspace editorial.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspace workspace or room Nuxeo document
+     * @return editorial
+     * @throws PortletException
+     */
+    Editorial getEditorial(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
+
+
+    /**
+     * Create workspace editorial.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspace workspace
+     * @return editorial
+     * @throws PortletException
+     */
+    Editorial createEditorial(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
 
 
     /**
@@ -103,6 +126,16 @@ public interface WorkspaceEditionRepository {
      * @throws PortletException
      */
     void updateProperties(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
+
+
+    /**
+     * Update workspace or room editorial.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form workspace edition form
+     * @throws PortletException
+     */
+    void updateEditorial(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
 
 
     /**

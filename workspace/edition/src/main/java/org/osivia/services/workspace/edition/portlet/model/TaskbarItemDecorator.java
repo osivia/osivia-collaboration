@@ -135,4 +135,13 @@ public abstract class TaskbarItemDecorator implements TaskbarItem {
         return this.item.getRestriction();
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isHidden() {
+        return this.item.isHidden();
+    }
+
 }

@@ -19,6 +19,8 @@ import org.springframework.web.portlet.multipart.PortletMultipartResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
+
 /**
  * Workspace edition configuration.
  *
@@ -109,6 +111,17 @@ public class WorkspaceEditionConfiguration {
     @Bean
     public WorkspaceService getWorkspaceService() {
         return DirServiceFactory.getService(WorkspaceService.class);
+    }
+
+
+    /**
+     * Get document DAO.
+     * 
+     * @return document DAO
+     */
+    @Bean
+    public DocumentDAO getDocumentDao() {
+        return DocumentDAO.getInstance();
     }
 
 

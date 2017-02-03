@@ -52,9 +52,9 @@ public class WorkspaceEditionFormValidator implements Validator {
         if (form.isRoot()) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "NotEmpty");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "workspaceType", "NotEmpty");
-
-            this.service.validate(errors, form);
         }
+
+        this.service.validate(errors, form);
     }
 
 }
