@@ -21,7 +21,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class CheckTitleAvailabilityCommand implements INuxeoCommand {
+public class CheckTitleAvailabilityInEditionCommand implements INuxeoCommand {
 
     /** Workspace creation model webId. */
     private final String modelWebId;
@@ -41,7 +41,7 @@ public class CheckTitleAvailabilityCommand implements INuxeoCommand {
      * @param title workspace title
      * @param titleVariableName workspace title variable name
      */
-    public CheckTitleAvailabilityCommand(String modelWebId, String procedureInstanceUuid, String title, String titleVariableName) {
+    public CheckTitleAvailabilityInEditionCommand(String modelWebId, String procedureInstanceUuid, String title, String titleVariableName) {
         super();
         this.modelWebId = modelWebId;
         this.procedureInstanceUuid = procedureInstanceUuid;

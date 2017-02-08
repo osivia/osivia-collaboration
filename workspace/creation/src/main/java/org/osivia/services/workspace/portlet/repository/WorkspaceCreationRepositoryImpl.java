@@ -218,7 +218,7 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
         nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
 
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(CheckTitleAvailabilityCommand.class, modelWebId, procedureInstanceUuid, title,
+        INuxeoCommand command = this.applicationContext.getBean(CheckTitleAvailabilityInEditionCommand.class, modelWebId, procedureInstanceUuid, title,
                 titleVariableName);
         Boolean available = (Boolean) nuxeoController.executeNuxeoCommand(command);
 
