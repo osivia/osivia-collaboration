@@ -11,25 +11,27 @@
 
 
 <div class="taskbar taskbar-normal no-ajax-link">
-    <ul>
-        <c:forEach items="${tasks}" var="task">
-            <portlet:actionURL name="start" var="startURL">
-                <portlet:param name="id" value="${task.id}" />
-            </portlet:actionURL>
-
-            <c:if test="${task.active}">
-                <c:set var="activeTask" value="${task}" />
-            </c:if>
+    <div class="portlet-filler">
+        <ul>
+            <c:forEach items="${tasks}" var="task">
+                <portlet:actionURL name="start" var="startURL">
+                    <portlet:param name="id" value="${task.id}" />
+                </portlet:actionURL>
+    
+                <c:if test="${task.active}">
+                    <c:set var="activeTask" value="${task}" />
+                </c:if>
+                
             
-        
-            <li
-                <c:if test="${task.active}">class="active"</c:if>
-            >
-                <a href="${startURL}">
-                    <i class="${task.icon}"></i>
-                    <span>${task.displayName}</span>
-                </a>
-            </li>
-        </c:forEach>
-    </ul>
+                <li
+                    <c:if test="${task.active}">class="active"</c:if>
+                >
+                    <a href="${startURL}">
+                        <i class="${task.icon}"></i>
+                        <span>${task.displayName}</span>
+                    </a>
+                </li>
+            </c:forEach>
+        </ul>
+    </div>
 </div>

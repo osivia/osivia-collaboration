@@ -12,8 +12,6 @@
 
         <header-content>
             <link rel="stylesheet" href="/css/taskbar.min.css" />
-            
-            <script type="text/javascript" src="/js/taskbar.js"></script>
         </header-content>
 
         <portlet-info>
