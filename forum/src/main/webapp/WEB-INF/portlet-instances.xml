@@ -19,20 +19,4 @@
         </instance>
     </deployment>
     
-    <deployment>
-        <if-exists>overwrite</if-exists>
-        <instance>
-            <display-name xml:lang="en">Forum plugin</display-name>
-            <display-name xml:lang="fr">Forum plugin</display-name>
-            <instance-id>osivia-services-forumPlugin-instance</instance-id>
-            <portlet-ref>osivia-services-forumPlugin</portlet-ref>
-            <preferences>
-                <preference>
-                    <name>hide</name>
-                    <value>true</value>
-                </preference>
-            </preferences>            
-        </instance>
-    </deployment>    
-
 </deployments>

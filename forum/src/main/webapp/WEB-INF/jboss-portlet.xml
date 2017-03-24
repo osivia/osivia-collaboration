@@ -24,9 +24,6 @@
         </portlet-info>
     </portlet>
 
-    <portlet>
-        <portlet-name>osivia-services-forumPlugin</portlet-name>
-    </portlet>
 
     <service>
         <service-name>CustomizationModulesRepository</service-name>

@@ -23,6 +23,14 @@
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
+        
+        <!-- Editor helpers -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-editor-helpers</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
 
         <!-- FAQ -->
         <dependency>
@@ -140,6 +148,13 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>osivia-services-calendar</artifactId>
                             <contextRoot>/osivia-services-calendar</contextRoot>
+                        </webModule>
+                        
+                        <!-- Editor helpers -->
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-editor-helpers</artifactId>
+                            <contextRoot>/osivia-services-editor-helpers</contextRoot>
                         </webModule>
                         
                         <!-- FAQ -->
