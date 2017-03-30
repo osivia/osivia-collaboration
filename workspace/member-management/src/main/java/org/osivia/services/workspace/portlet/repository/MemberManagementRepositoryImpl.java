@@ -25,6 +25,7 @@ import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceGroupType;
 import org.osivia.directory.v2.model.ext.WorkspaceMember;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
+import org.osivia.directory.v2.service.PersonUpdateService;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
@@ -71,7 +72,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
     /** Person service. */
     @Autowired
-    private PersonService personService;
+    private PersonUpdateService personService;
 
     /** Workspace service. */
     @Autowired
