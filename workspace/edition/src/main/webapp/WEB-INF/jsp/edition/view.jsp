@@ -223,6 +223,8 @@
                                                     <div class="media ${task.custom ? 'text-info' : ''}">
                                                         <form:hidden path="tasks[${varStatus.index}].active" />
                                                         <form:hidden path="tasks[${varStatus.index}].order" />
+                                                        <form:hidden path="tasks[${varStatus.index}].updated" />
+                                                        <form:hidden path="tasks[${varStatus.index}].sorted" />
                                                     
                                                         <div class="media-left">
                                                             <i class="${task.icon}"></i>
@@ -269,6 +271,8 @@
                                                     <div class="media ${task.custom ? 'text-info' : ''}">
                                                         <form:hidden path="tasks[${varStatus.index}].active" />
                                                         <form:hidden path="tasks[${varStatus.index}].order" />
+                                                        <form:hidden path="tasks[${varStatus.index}].updated" />
+                                                        <form:hidden path="tasks[${varStatus.index}].sorted" />
                                                         
                                                         <div class="media-left">
                                                             <i class="${task.icon}"></i>

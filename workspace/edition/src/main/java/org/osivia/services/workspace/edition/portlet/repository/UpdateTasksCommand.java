@@ -56,6 +56,24 @@ public class UpdateTasksCommand implements INuxeoCommand {
         // Document service
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
 
+        // Active tasks
+        List<Task> activeTasks = this.updateTasks(documentService);
+
+        // Reorder active tasks
+        this.reorderActiveTasks(nuxeoSession, activeTasks);
+
+        return null;
+    }
+
+
+    /**
+     * Update tasks.
+     * 
+     * @param documentService document service
+     * @return active tasks
+     * @throws Exception
+     */
+    private List<Task> updateTasks(DocumentService documentService) throws Exception {
         // WebId prefix
         String webIdPrefix = ITaskbarService.WEBID_PREFIX + this.workspace.getString("webc:url") + "_";
 
@@ -68,13 +86,15 @@ public class UpdateTasksCommand implements INuxeoCommand {
             }
 
             if (task.getPath() != null) {
-                // Document reference
-                DocRef ref = new DocRef(task.getPath());
+                if (task.isUpdated()) {
+                    // Document reference
+                    DocRef ref = new DocRef(task.getPath());
 
-                // Update document
-                PropertyMap properties = new PropertyMap();
-                properties.set("ttc:showInMenu", task.isActive());
-                documentService.update(ref, properties);
+                    // Update document
+                    PropertyMap properties = new PropertyMap();
+                    properties.set("ttc:showInMenu", task.isActive());
+                    documentService.update(ref, properties);
+                }
             } else if (task.isActive()) {
                 // Type
                 String type;
@@ -114,33 +134,45 @@ public class UpdateTasksCommand implements INuxeoCommand {
         }
 
 
-        // Reorder active tasks
+        return activeTasks;
+    }
+
+
+    /**
+     * Reorder active tasks.
+     * 
+     * @param nuxeoSession Nuxeo session
+     * @param activeTasks active tasks
+     * @throws Exception
+     */
+    private void reorderActiveTasks(Session nuxeoSession, List<Task> activeTasks) throws Exception {
         for (int i = (activeTasks.size() - 1); i >= 0; i--) {
             // Source
             Task sourceTask = activeTasks.get(i);
-            DocRef source = new DocRef(sourceTask.getPath());
 
-            // Target
-            DocRef target;
-            if (i == (activeTasks.size() - 1)) {
-                target = null;
-            } else {
-                Task targetTask = activeTasks.get(i + 1);
-                target = new DocRef(targetTask.getPath());
+            if (sourceTask.isSorted()) {
+                DocRef source = new DocRef(sourceTask.getPath());
+
+                // Target
+                DocRef target;
+                if (i == (activeTasks.size() - 1)) {
+                    target = null;
+                } else {
+                    Task targetTask = activeTasks.get(i + 1);
+                    target = new DocRef(targetTask.getPath());
+                }
+
+                // Operation request
+                OperationRequest request = nuxeoSession.newRequest("Document.OrderDocument");
+                request.set("sourceId", source);
+                if (target != null) {
+                    request.set("targetId", target);
+                }
+
+                // Execution
+                request.execute();
             }
-
-            // Operation request
-            OperationRequest request = nuxeoSession.newRequest("Document.OrderDocument");
-            request.set("sourceId", source);
-            if (target != null) {
-                request.set("targetId", target);
-            }
-
-            // Execution
-            request.execute();
         }
-
-        return null;
     }
 
 

@@ -12,12 +12,20 @@ $JQry(function() {
 		
 		update : function(event, ui) {
 			var $target = $JQry(event.target),
-				$formGroup = $target.closest(".form-group"),
-				$activeTasks = $formGroup.find("ul.active-tasks > li"),
-				$idleTasks = $formGroup.find("ul.idle-tasks > li");
-
-			$activeTasks.find("input[type=hidden][name$=active]").val(true);
-			$idleTasks.find("input[type=hidden][name$=active]").val(false);
+				$item = ui.item,
+				$activeInput = $item.find("input[type=hidden][name$=active]"),
+				$updatedInput = $item.find("input[type=hidden][name$=updated]"),
+				$sortedInput = $item.find("input[type=hidden][name$=sorted]"),
+				$ul = $item.closest("ul"),
+				active = $ul.hasClass("active-tasks");
+			
+			$activeInput.val(active);
+			
+			if (!$target.is($ul)) {
+				$updatedInput.val(true);
+			}
+			
+			$sortedInput.val(true);
 		},
 		
 		stop : function(event, ui) {

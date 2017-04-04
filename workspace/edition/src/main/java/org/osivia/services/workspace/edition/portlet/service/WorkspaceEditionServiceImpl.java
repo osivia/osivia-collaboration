@@ -403,6 +403,10 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
 
         // Active indicator
         task.setActive(active);
+        // Updated indicator
+        task.setUpdated(true);
+        // Sorted indicator
+        task.setSorted(true);
 
         // Order
         if (active) {

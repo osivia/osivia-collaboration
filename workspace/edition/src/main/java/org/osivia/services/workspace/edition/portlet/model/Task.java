@@ -27,6 +27,10 @@ public class Task extends TaskbarItemDecorator {
     private int order;
     /** Custom task indicator. */
     private boolean custom;
+    /** Updated task indicator. */
+    private boolean updated;
+    /** Sorted task indicator. */
+    private boolean sorted;
 
 
     /**
@@ -163,6 +167,42 @@ public class Task extends TaskbarItemDecorator {
      */
     public void setCustom(boolean custom) {
         this.custom = custom;
+    }
+
+    /**
+     * Getter for updated.
+     * 
+     * @return the updated
+     */
+    public boolean isUpdated() {
+        return updated;
+    }
+
+    /**
+     * Setter for updated.
+     * 
+     * @param updated the updated to set
+     */
+    public void setUpdated(boolean updated) {
+        this.updated = updated;
+    }
+
+    /**
+     * Getter for sorted.
+     * 
+     * @return the sorted
+     */
+    public boolean isSorted() {
+        return sorted;
+    }
+
+    /**
+     * Setter for sorted.
+     * 
+     * @param sorted the sorted to set
+     */
+    public void setSorted(boolean sorted) {
+        this.sorted = sorted;
     }
 
 }
