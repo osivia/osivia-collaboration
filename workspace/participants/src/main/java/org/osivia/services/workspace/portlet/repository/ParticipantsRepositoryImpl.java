@@ -5,10 +5,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.naming.Name;
 import javax.portlet.PortletException;
@@ -21,14 +23,12 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.directory.v2.model.CollabProfile;
-import org.osivia.directory.v2.model.ext.WorkspaceGroupType;
 import org.osivia.directory.v2.model.ext.WorkspaceMember;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
-import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -72,10 +72,6 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
     /** CMS service locator. */
     @Autowired
     private ICMSServiceLocator cmsServiceLocator;
-
-    /** Person service. */
-    @Autowired
-    private PersonService personService;
 
     /** Workspace service. */
     @Autowired
@@ -298,16 +294,48 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
         String workspaceId = workspace.getString("webc:url");
 
         // Joined dates
-        Map<String, Date> joinedDates = this.getJoinedDates(portalControllerContext, workspace);
+        Map<String, Date> joinedDates;
+        if (View.FULL.equals(configuration.getView())) {
+            joinedDates = this.getJoinedDates(portalControllerContext, workspace);
+        } else {
+            joinedDates = new HashMap<>(0);
+        }
 
-        // Workspace security profiles
-        CollabProfile profileCriteria = this.workspaceService.getEmptyProfile();
-        profileCriteria.setWorkspaceId(workspaceId);
-        profileCriteria.setType(WorkspaceGroupType.security_group);
-        List<CollabProfile> profiles = this.workspaceService.findByCriteria(profileCriteria);
+        
+        // Displayed workspace roles
+        Set<WorkspaceRole> displayedRoles;
+        if (View.FULL.equals(configuration.getView())) {
+            displayedRoles = new HashSet<>(Arrays.asList(WorkspaceRole.values()));
+        } else {
+            displayedRoles = new HashSet<>(configuration.getDisplay().size());
+            
+            for (Entry<WorkspaceRole, Boolean> entry : configuration.getDisplay().entrySet()) {
+                if (BooleanUtils.isTrue(entry.getValue())) {
+                    displayedRoles.add(entry.getKey());
+                }
+            }
+        }
+        
+        // Role persons
+        Map<WorkspaceRole, List<Person>> rolePersons = new HashMap<>(displayedRoles.size());
+        for (WorkspaceRole displayedRole : displayedRoles) {
+            List<Person> persons = new ArrayList<>();
+            rolePersons.put(displayedRole, persons);
+        }
+        
 
-        // Participant groups
-        List<Group> groups = new ArrayList<>(profiles.size());
+        // Workspace members
+        List<WorkspaceMember> workspaceMembers = this.workspaceService.getAllMembers(workspaceId);
+        
+        for (WorkspaceMember workspaceMember : workspaceMembers) {
+            WorkspaceRole role = workspaceMember.getRole();
+            List<Person> persons = rolePersons.get(role);
+            if (persons != null) {
+                Person person = workspaceMember.getMember();
+                persons.add(person);
+            }
+        }
+
 
         // Max
         int max;
@@ -317,47 +345,42 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
             max = configuration.getMax();
         }
 
-        for (CollabProfile profile : profiles) {
-            // Workspace role
-            WorkspaceRole role = profile.getRole();
 
-            if (View.FULL.equals(configuration.getView()) || configuration.getDisplay().get(role)) {
-                // Group
-                Group group = this.applicationContext.getBean(Group.class);
-                group.setRole(role);
+        // Participant groups
+        List<Group> groups = new ArrayList<>(rolePersons.size());
 
-                // Group members search
-                Person criteria = this.personService.getEmptyPerson();
-                criteria.setProfiles(Arrays.asList(new Name[]{profile.getDn()}));
-                List<Person> persons = this.personService.findByCriteria(criteria);
+        for (Entry<WorkspaceRole, List<Person>> entry : rolePersons.entrySet()) {
+            // Group
+            Group group = this.applicationContext.getBean(Group.class);
+            group.setRole(entry.getKey());
 
-                if (persons.size() > max) {
-                    Collections.sort(persons, this.personComparator);
-                }
+            // Persons
+            List<Person> persons = entry.getValue();
+            Collections.sort(persons, this.personComparator);
 
-                // Group members
-                List<Member> members = new ArrayList<>(Math.min(persons.size(), max));
+            // Group members
+            List<Member> members = new ArrayList<>(Math.min(persons.size(), max));
 
-                for (int i = 0; i < Math.min(persons.size(), max); i++) {
-                    // Person
-                    Person person = persons.get(i);
+            for (int i = 0; i < Math.min(persons.size(), max); i++) {
+                // Person
+                Person person = persons.get(i);
+                // Member
+                Member member = this.getMember(portalControllerContext, person);
 
-                    // Joined date
-                    Date joinedDate = joinedDates.get(person.getUid());
+                // Joined date
+                Date joinedDate = joinedDates.get(person.getUid());
+                member.setJoinedDate(joinedDate);
 
-                    Member member = this.getMember(portalControllerContext, person);
-                    member.setJoinedDate(joinedDate);
-                    members.add(member);
-                }
-
-                group.setMembers(members);
-
-                // More
-                int more = Math.max(persons.size() - max, 0);
-                group.setMore(more);
-
-                groups.add(group);
+                members.add(member);
             }
+
+            group.setMembers(members);
+
+            // More
+            int more = Math.max(persons.size() - max, 0);
+            group.setMore(more);
+
+            groups.add(group);
         }
 
         return groups;
