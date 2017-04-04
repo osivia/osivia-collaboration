@@ -26,7 +26,7 @@
         <module>taskbar</module>
         <module>widgets</module>
         <module>workspace</module>
-        
+        <module>versions</module>
 
         <module>ear</module>
     </modules>
