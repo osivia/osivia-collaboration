@@ -71,6 +71,14 @@
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
+        
+        <!-- Versions -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-versions</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
 
         <!-- Widgets -->
         <dependency>
