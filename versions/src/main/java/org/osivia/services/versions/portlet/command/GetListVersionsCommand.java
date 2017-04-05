@@ -22,7 +22,7 @@ public class GetListVersionsCommand implements INuxeoCommand {
     private final static String NX_QUERY_OP_ID = "Document.Query";
 
     /** Default page size (pagination). */
-    private static final int DEFAULT_PAGE_SIZE = 10;
+    private static final int DEFAULT_PAGE_SIZE = -1;
 
     /** Current document. */
     private Document document;
