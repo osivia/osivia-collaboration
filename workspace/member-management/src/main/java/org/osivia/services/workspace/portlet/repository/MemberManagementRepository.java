@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.portlet.PortletException;
 
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
@@ -229,16 +230,14 @@ public interface MemberManagementRepository {
 
 
     /**
-     * Check if a pending invitation exists.
+     * Get pending invitations.
      * 
      * @param portalControllerContext portal controller context
-     * @param workspaceId workspace identifier
      * @param uid user identifier
-     * @param invitationRequest invitation request indicator
-     * @return true if a pending invitation exists
+     * @return Nuxeo documents
      * @throws PortletException
      */
-    boolean isPendingInvitation(PortalControllerContext portalControllerContext, String workspaceId, String uid, boolean invitationRequest) throws PortletException;
+    List<Document> getPendingInvitations(PortalControllerContext portalControllerContext, String uid) throws PortletException;
 
 
     /**

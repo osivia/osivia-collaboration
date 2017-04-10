@@ -1,7 +1,5 @@
 package org.osivia.services.workspace.portlet.controller;
 
-import java.util.Iterator;
-
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
@@ -13,22 +11,20 @@ import javax.portlet.RenderResponse;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.internationalization.Bundle;
-import org.osivia.portal.api.internationalization.IBundleFactory;
-import org.osivia.portal.api.notifications.INotificationsService;
-import org.osivia.portal.api.notifications.NotificationsType;
-import org.osivia.services.workspace.portlet.model.Member;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
@@ -37,26 +33,22 @@ import org.springframework.web.portlet.context.PortletContextAware;
  * Workspace member management portlet view controller.
  *
  * @author Cédric Krommenhoek
+ * @see ApplicationContextAware
  * @see PortletContextAware
  */
 @Controller
 @RequestMapping("VIEW")
-public class MemberManagementController implements PortletContextAware {
+public class MemberManagementController implements ApplicationContextAware, PortletContextAware {
 
+    /** Application context. */
+    private ApplicationContext applicationContext;
     /** Portlet context. */
     private PortletContext portletContext;
+
 
     /** Member management service. */
     @Autowired
     private MemberManagementService service;
-
-    /** Bundle factory. */
-    @Autowired
-    private IBundleFactory bundleFactory;
-
-    /** Notifications service. */
-    @Autowired
-    private INotificationsService notificationsService;
 
 
     /**
@@ -127,40 +119,8 @@ public class MemberManagementController implements PortletContextAware {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        // Check that an admin will still exist in the workspace after update
-        WorkspaceRole mostPoweredRole = null;
-        for(WorkspaceRole role : options.getRoles()) {
-        	if(mostPoweredRole == null || mostPoweredRole.getWeight() < role.getWeight()) {
-        		mostPoweredRole = role;
-        	}
-        }
+        this.service.updateMembers(portalControllerContext, options, form);
 
-        boolean adminExists = false;
-        if(mostPoweredRole != null) {
-        	
-        	Iterator<Member> i = form.getMembers().iterator();
-        	while(!adminExists && i.hasNext()) {
-        		Member member = i.next();
-        		if(member.getRole() == mostPoweredRole) {
-        			adminExists = true;
-        		}
-        	}
-        }
-       
-        
-        if(adminExists) {
-	        this.service.updateMembers(portalControllerContext, options, form);
-	
-        }
-        else {
-            // Bundle
-            Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-            
-            // Notification
-            String message = bundle.getString("MESSAGE_WORKSPACE_MEMBERS_ADMIN_NEEDED");
-            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
-        }
-        
         // Copy render parameters
         String sortParameter = request.getParameter("sort");
         if (StringUtils.isNotEmpty(sortParameter)) {
@@ -229,8 +189,18 @@ public class MemberManagementController implements PortletContextAware {
      * {@inheritDoc}
      */
     @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setPortletContext(PortletContext portletContext) {
         this.portletContext = portletContext;
+        this.portletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
     }
 
 }

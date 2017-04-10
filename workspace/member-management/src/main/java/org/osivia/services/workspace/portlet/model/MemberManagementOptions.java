@@ -14,7 +14,7 @@ import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 /**
  * Member management options java-bean.
  * 
- * @author Cédric Krommenhoek 
+ * @author Cédric Krommenhoek
  */
 @Component
 @Scope(scopeName = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)

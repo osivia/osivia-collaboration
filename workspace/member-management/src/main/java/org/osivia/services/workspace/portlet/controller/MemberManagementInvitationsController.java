@@ -18,6 +18,7 @@ import javax.portlet.ResourceResponse;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
@@ -43,7 +44,7 @@ import org.springframework.web.portlet.context.PortletConfigAware;
 import org.springframework.web.portlet.context.PortletContextAware;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
-import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Member management portlet view invitations controller.
@@ -205,19 +206,21 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
      * @param response resource response
      * @param options options model attribute
      * @param filter search filter request parameter
+     * @param page pagination page number request parameter
      * @param tokenizer tokenizer indicator request parameter
      * @throws PortletException
      * @throws IOException
      */
     @ResourceMapping("search")
     public void search(ResourceRequest request, ResourceResponse response, @ModelAttribute("options") MemberManagementOptions options,
-            @RequestParam(value = "filter", required = false) String filter, @RequestParam(value = "tokenizer", required = false) String tokenizer)
-            throws PortletException, IOException {
+            @RequestParam(value = "filter", required = false) String filter, @RequestParam(value = "page", required = false) String page,
+            @RequestParam(value = "tokenizer", required = false) String tokenizer) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         // Search results
-        JSONArray results = this.service.searchPersons(portalControllerContext, options, filter, BooleanUtils.toBoolean(tokenizer));
+        JSONObject results = this.service.searchPersons(portalControllerContext, options, filter, NumberUtils.toInt(page, 1),
+                BooleanUtils.toBoolean(tokenizer));
 
         // Content type
         response.setContentType("application/json");

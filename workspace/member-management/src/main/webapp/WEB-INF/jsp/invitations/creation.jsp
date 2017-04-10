@@ -42,10 +42,11 @@
                     <c:set var="inputTooShort"><op:translate key="SELECT2_INPUT_TOO_SHORT" args="3" /></c:set>
                     <c:set var="noResults"><op:translate key="SELECT2_NO_RESULTS" /></c:set>
                     <c:set var="searching"><op:translate key="SELECT2_SEARCHING" /></c:set>
+                    <c:set var="loadingMore"><op:translate key="SELECT2_LOADING_MORE"/></c:set>
                     <spring:bind path="pendingInvitations">
                         <div class="form-group ${status.error ? 'has-error' : (creation.warning ? 'has-warning' : '')}">
                             <form:label path="pendingInvitations" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CREATE_INVITATIONS_ADD_PERSONS_LABEL" /></form:label>
-                            <form:select path="pendingInvitations" cssClass="form-control select2" data-placeholder="${placeholder}" data-url="${searchUrl}" data-input-too-short="${inputTooShort}" data-no-results="${noResults}" data-searching="${searching}">
+                            <form:select path="pendingInvitations" cssClass="form-control select2" data-placeholder="${placeholder}" data-url="${searchUrl}" data-input-too-short="${inputTooShort}" data-no-results="${noResults}" data-searching="${searching}" data-loading-more="${loadingMore}">
                                 <c:forEach var="invitation" items="${creation.pendingInvitations}">
                                     <form:option value="${invitation.id}" data-avatar="${invitation.person.avatar.url}">${invitation.displayName}</form:option>
                                 </c:forEach>
