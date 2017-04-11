@@ -21,9 +21,9 @@
 <c:set var="namespace"><portlet:namespace /></c:set>
 
 
-<div class="clearfix">
+<div class="clearfix margin-paragraph">
     <div class="pull-left">
-        <ul class="nav nav-pills">
+        <ul class="nav nav-pills" role="tablist">
             <li role="presentation" class="${tab eq 'members' ? 'active' : ''}">
                 <a href="${membersUrl}">
                     <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_TAB_MEMBERS" /></span>
@@ -65,8 +65,6 @@
         </div>
     </c:if>
 </div>
-
-<br>
 
 <!-- Help -->
 <c:if test="${not empty help}">

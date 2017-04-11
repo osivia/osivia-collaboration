@@ -13,7 +13,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.services.workspace.plugin.forms.AcceptWorkspaceInvitationFormFilter;
 import org.osivia.services.workspace.plugin.forms.DeclineWorkspaceInvitationFormFilter;
-import org.osivia.services.workspace.plugin.menubar.WorkspaceMemberManagementMenubarModule;
+import org.osivia.services.workspace.plugin.menubar.MemberManagementMenubarModule;
 import org.osivia.services.workspace.plugin.portlet.ManageableWorkspacesListTemplateModule;
 import org.osivia.services.workspace.plugin.portlet.RequestsListTemplateModule;
 
@@ -27,7 +27,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
  * @author Cédric Krommenhoek
  * @see AbstractPluginPortlet
  */
-public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
+public class MemberManagementPlugin extends AbstractPluginPortlet {
 
     /** Plugin name. */
     private static final String PLUGIN_NAME = "workspace-member-management.plugin";
@@ -43,9 +43,9 @@ public class WorkspaceMemberManagementPlugin extends AbstractPluginPortlet {
     /**
      * Constructor.
      */
-    public WorkspaceMemberManagementPlugin() {
+    public MemberManagementPlugin() {
         super();
-        this.menubarModule = new WorkspaceMemberManagementMenubarModule();
+        this.menubarModule = new MemberManagementMenubarModule();
 
         // Internationalization bundle factory
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,

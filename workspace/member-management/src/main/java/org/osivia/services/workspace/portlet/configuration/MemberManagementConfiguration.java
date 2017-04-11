@@ -24,12 +24,12 @@ import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoServiceFactory;
  */
 @Configuration
 @ComponentScan(basePackages = "org.osivia.services.workspace.portlet")
-public class WorkspaceMemberManagementConfiguration {
+public class MemberManagementConfiguration {
 
     /**
      * Constructor.
      */
-    public WorkspaceMemberManagementConfiguration() {
+    public MemberManagementConfiguration() {
         super();
     }
 

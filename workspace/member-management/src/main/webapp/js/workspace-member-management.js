@@ -3,8 +3,10 @@ $JQry(function() {
 	$JQry(".workspace-member-management select.select2").each(function(index, element) {
 		var $element = $JQry(element),
 			url = $element.data("url"),
+			minimumInputLength = $element.data("minimum-input-length"),
+			ajaxDataFunction = $element.data("ajax-data-function"),
  			options = {
-				minimumInputLength: 3,
+				minimumInputLength: (minimumInputLength ? minimumInputLength : 3),
 				theme: "bootstrap"
 			};
 		
@@ -14,10 +16,18 @@ $JQry(function() {
 			dataType: "json",
 			delay: 1000,
 			data: function(params) {
-				return {
-					filter: params.term,
-					page: params.page
-				};
+				var result;
+				
+				if (ajaxDataFunction) {
+					result = window[ajaxDataFunction]($element, params);
+				} else {
+					result = {
+						filter: params.term,
+						page: params.page
+					};
+				}
+				
+				return result;
 			},
 			processResults: function(data, params) {
 				params.page = params.page || 1;
@@ -64,6 +74,8 @@ $JQry(function() {
 			
 			if (params.loading) {
 				$result.text(params.text);
+			} else if (params.message) {
+				$result.text(params.message);
 			} else {
 				$result.addClass("person");
 				
@@ -78,7 +90,7 @@ $JQry(function() {
 					$icon.addClass("glyphicons glyphicons-user-add");
 					$icon.text("");
 					$icon.appendTo($personAvatar);
-				} else if (params.avatar !== undefined) {
+				} else if (params.avatar) {
 					// Avatar
 					$avatar = $JQry(document.createElement("img"));
 					$avatar.attr("src", params.avatar);

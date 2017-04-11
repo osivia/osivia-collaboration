@@ -273,6 +273,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         // JSON objects
         List<JSONObject> objects = new ArrayList<>();
+        // Total results
+        int total = 0;
 
         if (StringUtils.isNotBlank(filter)) {
             String[] parts = StringUtils.split(filter, ",;");
@@ -293,6 +295,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                     JSONObject object = getSearchResult(person, alreadyMember, alreadyInvited, existingRequest, bundle);
 
                     objects.add(object);
+                    total++;
                 }
 
                 // Add person creation
@@ -311,6 +314,24 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         if (tokenizer) {
             items.addAll(objects);
         } else {
+            // Message
+            if ((page == 1) && CollectionUtils.isNotEmpty(objects)) {
+                String message;
+                if (total == 0) {
+                    message = bundle.getString("SELECT2_NO_RESULT");
+                } else if (total == 1) {
+                    message = bundle.getString("SELECT2_ONE_RESULT");
+                } else if (total > SELECT2_MAX_RESULTS) {
+                    message = bundle.getString("SELECT2_TOO_MANY_RESULTS", SELECT2_MAX_RESULTS);
+                } else {
+                    message = bundle.getString("SELECT2_MULTIPLE_RESULTS", total);
+                }
+                JSONObject object = new JSONObject();
+                object.put("message", message);
+                items.add(object);
+            }
+
+            // Paginated results
             int begin = (page - 1) * SELECT2_RESULTS_PAGE_SIZE;
             int end = Math.min(objects.size(), begin + SELECT2_RESULTS_PAGE_SIZE);
             for (int i = begin; i < end; i++) {
@@ -318,6 +339,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 items.add(object);
             }
 
+            // Pagination informations
             results.put("page", page);
             results.put("pageSize", SELECT2_RESULTS_PAGE_SIZE);
         }

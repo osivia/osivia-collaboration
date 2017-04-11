@@ -185,26 +185,23 @@
     </div>
     
     
-    <div class="portlet-toolbar">
-        <div id="${namespace}-invitations-buttons" class="panel panel-default collapse">
-            <div class="panel-body">
-                <div class="alert alert-warning">
-                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_MEMBERS_MESSAGE" /></span>
-                </div>
+    <div id="${namespace}-invitations-buttons" class="panel panel-warning collapse margin-bottom-0">
+        <div class="panel-heading">
+            <i class="glyphicons glyphicons-alert"></i>
+            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_MEMBERS_MESSAGE" /></span>
+        </div>
+    
+        <div class="panel-body">
+            <!-- Save -->
+            <button type="submit" class="btn btn-primary">
+    			<i class="glyphicons glyphicons-floppy-disk"></i>
+                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_INVITATIONS" /></span>
+            </button>
             
-                <div>
-                    <!-- Save -->
-                    <button type="submit" class="btn btn-primary">
-            			<i class="glyphicons glyphicons-floppy-disk"></i>
-                        <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_INVITATIONS" /></span>
-                    </button>
-                    
-                    <!-- Cancel -->
-                    <button type="reset" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-invitations-buttons">
-                        <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CANCEL_INVITATIONS" /></span>
-                    </button>
-                </div>
-            </div>
+            <!-- Cancel -->
+            <button type="reset" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-invitations-buttons">
+                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CANCEL_INVITATIONS" /></span>
+            </button>
         </div>
     </div>
 </form:form>

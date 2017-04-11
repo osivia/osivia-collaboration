@@ -1,6 +1,5 @@
 package org.osivia.services.workspace.portlet.repository;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -101,10 +100,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
     /**
      * Constructor.
-     *
-     * @throws IOException
      */
-    public MemberManagementRepositoryImpl() throws IOException {
+    public MemberManagementRepositoryImpl() {
         super();
         this.log = LogFactory.getLog(this.getClass());
     }
@@ -442,6 +439,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             String tokenizedFilterSubStr = "*" + filter + "*";
 
             criteria.setUid(tokenizedFilter);
+            criteria.setCn(tokenizedFilter);
             criteria.setSn(tokenizedFilter);
             criteria.setGivenName(tokenizedFilter);
             criteria.setMail(tokenizedFilter);
@@ -528,7 +526,13 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
         for (Invitation pendingInvitation : form.getPendingInvitations()) {
             // User identifier
-            String uid = StringUtils.lowerCase(StringUtils.trim(pendingInvitation.getId()));
+            String uid;
+            if (pendingInvitation.isUnknownUser()) {
+                // Clean identifier in case of new user
+                uid = StringUtils.lowerCase(StringUtils.trim(pendingInvitation.getId()));
+            } else {
+                uid = pendingInvitation.getId();
+            }
             // User display name
             String displayName;
             if (pendingInvitation.getPerson() == null) {
@@ -865,7 +869,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * @param portalControllerContext portal controller context
      * @return Nuxeo document
      */
-    private Document getCurrentWorkspace(PortalControllerContext portalControllerContext) {
+    protected Document getCurrentWorkspace(PortalControllerContext portalControllerContext) {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
 
@@ -899,7 +903,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * @param workspaceId workspace identifier
      * @return Nuxeo document
      */
-    private Document getWorkspace(PortalControllerContext portalControllerContext, String workspaceId) {
+    protected Document getWorkspace(PortalControllerContext portalControllerContext, String workspaceId) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
@@ -930,7 +934,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * @param request request indicator
      * @param uid user identifier
      */
-    private void updateInvitationAcl(PortalControllerContext portalControllerContext, String workspaceId, boolean request, String uid) {
+    protected void updateInvitationAcl(PortalControllerContext portalControllerContext, String workspaceId, boolean request, String uid) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);

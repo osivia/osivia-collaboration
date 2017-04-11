@@ -19,7 +19,15 @@
 <c:set var="namespace"><portlet:namespace /></c:set>
 
 
-<div class="well">
+<div class="well clearfix relative">
+    <div id="shadowbox-${namespace}" class="ajax-shadowbox">
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped active" role="progressbar">
+                <span><op:translate key="AJAX_REFRESH" /></span>
+            </div>
+        </div>
+    </div>
+
     <form:form action="${createUrl}" method="post" modelAttribute="creation" role="form">
         <fieldset>
             <c:if test="${creation.warning}">
@@ -74,7 +82,7 @@
             <spring:bind path="*">
                 <div id="${namespace}-creation-buttons" class="collapse ${(status.error or creation.warning) ? 'in' : ''}">
                     <!-- Save -->
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" data-ajax-shadowbox="#shadowbox-${namespace}">
                         <span><op:translate key="${creation.warning ? 'WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATION_CONFIRM' : 'WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATION_SAVE'}" /></span>
                     </button>
                     

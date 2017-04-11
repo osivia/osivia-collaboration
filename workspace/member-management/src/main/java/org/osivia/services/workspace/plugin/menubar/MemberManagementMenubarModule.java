@@ -30,7 +30,7 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
  * @author Cédric Krommenhoek
  * @see MenubarModule
  */
-public class WorkspaceMemberManagementMenubarModule implements MenubarModule {
+public class MemberManagementMenubarModule implements MenubarModule {
 
     /** Menubar service. */
     private final IMenubarService menubarService;
@@ -43,7 +43,7 @@ public class WorkspaceMemberManagementMenubarModule implements MenubarModule {
     /**
      * Constructor.
      */
-    public WorkspaceMemberManagementMenubarModule() {
+    public MemberManagementMenubarModule() {
         super();
 
         // Menubar service

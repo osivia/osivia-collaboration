@@ -28,6 +28,8 @@ public interface MemberManagementService {
 
     /** Select2 results page size. */
     int SELECT2_RESULTS_PAGE_SIZE = 6;
+    /** Select2 max results. */
+    int SELECT2_MAX_RESULTS = 100;
 
 
     /**
