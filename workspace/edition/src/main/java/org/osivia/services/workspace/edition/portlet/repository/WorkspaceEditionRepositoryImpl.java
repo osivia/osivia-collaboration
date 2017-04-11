@@ -463,6 +463,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
+        nuxeoController.setAsynchronousCommand(true);
 
         // Workspace identifier
         Document workspace = form.getDocument();
