@@ -20,6 +20,8 @@ public class GetListVersionsCommand implements INuxeoCommand {
 
     /** Id of Nuxeo command. */
     private final static String NX_QUERY_OP_ID = "Document.Query";
+    /** Documt's data. */
+    private static final String SCHEMAS = "dublincore, common, file, toutatice";
 
     /** Default page size (pagination). */
     private static final int DEFAULT_PAGE_SIZE = -1;
@@ -77,7 +79,7 @@ public class GetListVersionsCommand implements INuxeoCommand {
         StringBuffer query = new StringBuffer().append("select * from Document where ecm:isVersion = 1 and ecm:versionVersionableId = '")
                 .append(this.document.getId()).append("' order by dc:modified desc");
 
-        OperationRequest request = nuxeoSession.newRequest(NX_QUERY_OP_ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(this.document)
+        OperationRequest request = nuxeoSession.newRequest(NX_QUERY_OP_ID).setHeader(Constants.HEADER_NX_SCHEMAS, SCHEMAS).setInput(this.document)
                 .set("query", query.toString()).set("pageSize", this.pageSize).set("currentPageIndex", this.currentPageIndex);
         return (Documents) request.execute();
     }
