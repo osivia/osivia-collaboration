@@ -87,7 +87,7 @@ public class WorkspaceTaskCreationCommand implements INuxeoCommand {
         properties.set("ttc:showInMenu", true);
 
         // Creation
-        Document document = documentService.createDocument(workspace, type, name, properties);
+        Document document = documentService.createDocument(workspace, type, name, properties, true);
 
         if ("Room".equals(type)) {
             // Update document
