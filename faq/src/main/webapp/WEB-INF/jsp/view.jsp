@@ -29,7 +29,7 @@
                 </div>
                 
                 <div id="${summaryQuestion.id}" class="panel-collapse collapse" role="tabpanel">
-                    <div class="panel-body">
+                    <div class="panel-body no-ajax-link">
                         <div><ttc:transform document="${summaryQuestion}" property="note:note" /></div>
                     </div>
                         
@@ -60,7 +60,7 @@
 </c:if>
 
 <c:if test="${not empty question}">
-    <div><ttc:transform document="${question}" property="note:note" /></div>
+    <div class="no-ajax-link"><ttc:transform document="${question}" property="note:note" /></div>
     
     <c:if test="${not empty question.attachments}">
         <div class="panel panel-default">
