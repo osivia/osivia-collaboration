@@ -65,7 +65,7 @@
                 
                 <!-- Description -->
                 <c:if test="${not empty description}">
-                    <p>${description}</p>
+                    <p class="text-pre-wrap">${description}</p>
                 </c:if>
                 
                 
