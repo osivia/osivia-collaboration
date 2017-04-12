@@ -123,6 +123,7 @@ public class CheckTitleAvailabilityCommand implements INuxeoCommand {
             StringBuilder clause = new StringBuilder();
             clause.append("ecm:primaryType = 'ProcedureInstance' ");
             clause.append("AND pi:procedureModelWebId = '").append(modelWebId).append("' ");
+            clause.append("AND pi:currentStep != 'information' ");
             clause.append("AND pi:task.ecm:currentLifeCycleState = 'opened' ");
             clause.append("AND pi:globalVariablesValues.").append(titleVariableName).append(" = '").append(this.title).append("' ");
 
