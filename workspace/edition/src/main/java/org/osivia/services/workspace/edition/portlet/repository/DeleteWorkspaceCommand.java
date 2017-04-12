@@ -56,7 +56,10 @@ public class DeleteWorkspaceCommand implements INuxeoCommand {
      */
     @Override
     public String getId() {
-        return null;
+        StringBuilder builder = new StringBuilder();
+        builder.append(this.getClass().getName());
+        builder.append(this.path);
+        return builder.toString();
     }
 
 }
