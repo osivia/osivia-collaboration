@@ -172,7 +172,7 @@ public class WorkspaceTaskCreationCommand implements INuxeoCommand {
             properties.set("ttc:showInMenu", true);
             properties.set("ttc:webid", webId);
 
-            documentService.createDocument(room, type, name, properties);
+            documentService.createDocument(room, type, name, properties, true);
         }
     }
 
