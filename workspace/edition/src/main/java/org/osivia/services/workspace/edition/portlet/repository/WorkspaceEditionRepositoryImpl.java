@@ -411,6 +411,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
                     throw new PortletException("Workspace editorial task not found.");
                 } else {
                     task.setActive(editorial.isDisplayed());
+                    task.setUpdated(true);
 
                     List<Task> tasks = Arrays.asList(new Task[]{task});
                     this.updateTasks(portalControllerContext, form.getDocument(), tasks);
