@@ -93,7 +93,7 @@ public class UpdateTasksCommand implements INuxeoCommand {
                     // Update document
                     PropertyMap properties = new PropertyMap();
                     properties.set("ttc:showInMenu", task.isActive());
-                    documentService.update(ref, properties);
+                    documentService.update(ref, properties, true);
                 }
             } else if (task.isActive()) {
                 // Type
