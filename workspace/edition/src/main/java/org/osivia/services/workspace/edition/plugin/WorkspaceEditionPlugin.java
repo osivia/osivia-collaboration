@@ -44,7 +44,7 @@ public class WorkspaceEditionPlugin extends AbstractPluginPortlet {
      * {@inheritDoc}
      */
     @Override
-    protected void customizeCMSProperties(String customizationID, CustomizationContext context) {
+    protected void customizeCMSProperties(CustomizationContext context) {
         // Menubar modules
         this.customizeMenubarModules(context);
 

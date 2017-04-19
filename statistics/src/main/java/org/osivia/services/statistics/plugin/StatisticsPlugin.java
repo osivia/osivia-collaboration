@@ -31,7 +31,7 @@ public class StatisticsPlugin extends AbstractPluginPortlet {
      * {@inheritDoc}
      */
     @Override
-    protected void customizeCMSProperties(String customizationId, CustomizationContext context) {
+    protected void customizeCMSProperties(CustomizationContext context) {
         // Taskbar items
         this.customizeTaskbarItems(context);
     }

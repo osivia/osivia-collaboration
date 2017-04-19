@@ -59,7 +59,7 @@ public class CalendarPlugin extends AbstractPluginPortlet  {
      * {@inheritDoc}
      */
     @Override
-    protected void customizeCMSProperties(String customizationID, CustomizationContext context) {
+    protected void customizeCMSProperties(CustomizationContext context) {
         // Document types
         this.customizeDocumentTypes(context);
         // Players

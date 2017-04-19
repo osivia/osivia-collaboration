@@ -46,7 +46,7 @@ public class AclManagementPlugin extends AbstractPluginPortlet {
      * {@inheritDoc}
      */
     @Override
-    protected void customizeCMSProperties(String customizationID, CustomizationContext context) {
+    protected void customizeCMSProperties(CustomizationContext context) {
         // Menubar modules
         List<MenubarModule> menubarModules = this.getMenubarModules(context);
         menubarModules.add(this.menubarModule);

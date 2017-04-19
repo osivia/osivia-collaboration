@@ -67,7 +67,7 @@ public class MemberManagementPlugin extends AbstractPluginPortlet {
      * {@inheritDoc}
      */
     @Override
-    protected void customizeCMSProperties(String customizationId, CustomizationContext context) {
+    protected void customizeCMSProperties(CustomizationContext context) {
         // Portlet context
         PortletContext portletContext = getPortletContext();
 

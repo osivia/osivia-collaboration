@@ -128,7 +128,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
      * {@inheritDoc}
      */
     @Override
-    protected void customizeCMSProperties(String customizationId, CustomizationContext context) {
+    protected void customizeCMSProperties(CustomizationContext context) {
         // Document types
         this.customizeDocumentTypes(context);
         // Players

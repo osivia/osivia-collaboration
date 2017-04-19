@@ -41,7 +41,7 @@ public class WorkspaceCreationPlugin extends AbstractPluginPortlet {
      * {@inheritDoc}
      */
     @Override
-    protected void customizeCMSProperties(String customizationId, CustomizationContext context) {
+    protected void customizeCMSProperties(CustomizationContext context) {
         // Form filters
         Map<String, FormFilter> formFilters = this.getFormFilters(context);
         formFilters.put(CreateWorkspaceFormFilter.IDENTIFIER, new CreateWorkspaceFormFilter());
