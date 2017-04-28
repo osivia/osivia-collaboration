@@ -53,7 +53,7 @@
                     <div class="form-group ${editionForm.root ? 'required' : ''} ${status.error ? 'has-error' : ''}">
                         <form:label path="description" cssClass="col-sm-3 control-label" ><op:translate key="WORKSPACE_DESCRIPTION" /></form:label>
                         <div class="col-sm-9">
-                            <form:textarea path="description" cssClass="form-control" placeholder="${placeholder}" />
+                            <form:textarea path="description" cssClass="form-control" rows="3" placeholder="${placeholder}" />
                             <form:errors path="description" cssClass="help-block" />
                         </div>
                     </div>
@@ -98,7 +98,7 @@
                                 <portlet:resourceURL id="vignettePreview" var="previewUrl">
                                     <portlet:param name="ts" value="${currentDate.time}" />
                                 </portlet:resourceURL>
-                                <p>
+                                <p class="form-control-static">
                                     <img src="${previewUrl}" alt="" class="img-responsive">
                                 </p>
                             </c:when>
@@ -119,7 +119,7 @@
                             
                             <c:otherwise>
                                 <!-- Vignette -->
-                                <p>
+                                <p class="form-control-static">
                                     <img src="${editionForm.vignette.url}" alt="" class="img-responsive">
                                 </p>
                             </c:otherwise>
@@ -154,7 +154,7 @@
                                 <portlet:resourceURL id="bannerPreview" var="previewUrl">
                                     <portlet:param name="ts" value="${currentDate.time}" />
                                 </portlet:resourceURL>
-                                <p>
+                                <p class="form-control-static">
                                     <img src="${previewUrl}" alt="" class="img-responsive">
                                 </p>
                             </c:when>
@@ -175,7 +175,7 @@
                             
                             <c:otherwise>
                                 <!-- Banner -->
-                                <p>
+                                <p class="form-control-static">
                                     <img src="${editionForm.banner.url}" alt="" class="img-responsive">
                                 </p>
                             </c:otherwise>
