@@ -183,7 +183,7 @@
     
     
     <div class="portlet-toolbar">
-        <div id="${namespace}-buttons" class="panel panel-default collapse">
+        <div id="${namespace}-buttons" class="panel panel-default collapse toggle-on-change">
             <div class="panel-body">
                 <div class="alert alert-warning">
                     <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_INVITATION_REQUESTS_MESSAGE" /></span>

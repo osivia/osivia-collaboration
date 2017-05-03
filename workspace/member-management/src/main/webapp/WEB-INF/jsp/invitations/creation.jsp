@@ -72,7 +72,7 @@
             
             <!-- Buttons -->
             <spring:bind path="*">
-                <div id="${namespace}-creation-buttons" class="collapse ${(status.error or creation.warning) ? 'in' : ''}">
+                <div id="${namespace}-creation-buttons" class="collapse ${(status.error or creation.warning) ? 'in' : ''} toggle-on-change">
                     <!-- Save -->
                     <button type="submit" class="btn btn-primary">
                         <span><op:translate key="${creation.warning ? 'WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATION_CONFIRM' : 'WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATION_SAVE'}" /></span>
