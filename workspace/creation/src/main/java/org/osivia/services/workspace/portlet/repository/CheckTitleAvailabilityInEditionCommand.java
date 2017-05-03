@@ -76,7 +76,7 @@ public class CheckTitleAvailabilityInEditionCommand implements INuxeoCommand {
         // Clause
         StringBuilder clause = new StringBuilder();
         clause.append("ecm:primaryType = 'Workspace' ");
-        clause.append("AND dc:title = '").append(this.title).append("' ");
+        clause.append("AND dc:title = '").append(StringUtils.replace(this.title, "'", "\\'")).append("' ");
 
         // Filtered clause
         String filteredClause = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE, clause.toString());
@@ -109,7 +109,8 @@ public class CheckTitleAvailabilityInEditionCommand implements INuxeoCommand {
             clause.append("AND pi:globalVariablesValues.uuid <> '").append(this.procedureInstanceUuid).append("' ");
         }
         clause.append("AND pi:task.ecm:currentLifeCycleState = 'opened' ");
-        clause.append("AND pi:globalVariablesValues.").append(this.titleVariableName).append(" = '").append(this.title).append("' ");
+        clause.append("AND pi:globalVariablesValues.").append(this.titleVariableName).append(" = '").append(StringUtils.replace(this.title, "'", "\\'"))
+                .append("' ");
 
         // Operation request
         OperationRequest request = nuxeoSession.newRequest("Document.QueryES");

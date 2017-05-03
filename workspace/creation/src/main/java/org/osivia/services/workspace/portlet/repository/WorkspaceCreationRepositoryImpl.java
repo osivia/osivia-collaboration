@@ -214,8 +214,10 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
     public boolean checkTitleAvailability(PortalControllerContext portalControllerContext, String modelWebId, String procedureInstanceUuid, String title,
             String titleVariableName) throws PortletException {
         // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        NuxeoController nuxeoController = new NuxeoController(this.portletContext);
+        nuxeoController.setServletRequest(portalControllerContext.getHttpServletRequest());
         nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(CheckTitleAvailabilityInEditionCommand.class, modelWebId, procedureInstanceUuid, title,
