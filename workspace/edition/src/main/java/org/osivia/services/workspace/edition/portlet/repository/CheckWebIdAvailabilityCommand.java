@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.edition.portlet.repository;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
@@ -43,7 +44,7 @@ public class CheckWebIdAvailabilityCommand implements INuxeoCommand {
         // Query
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM Document ");
-        query.append("WHERE ttc:webid = '").append(webId).append("' ");
+        query.append("WHERE ttc:webid = '").append(StringUtils.replace(this.webId, "'", "\\'")).append("' ");
 
         // Operation request
         OperationRequest request = nuxeoSession.newRequest("Document.QueryES");
