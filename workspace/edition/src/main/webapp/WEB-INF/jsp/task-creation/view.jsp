@@ -36,7 +36,7 @@
         <div class="form-group">
             <form:label path="description" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_CREATE_TASK_DESCRIPTION" /></form:label>
             <div class="col-sm-9">
-                <form:textarea path="description" cssClass="form-control" placeholder="${placeholder}" />
+                <form:textarea path="description" cssClass="form-control" rows="3" placeholder="${placeholder}" />
             </div>
         </div>
         
