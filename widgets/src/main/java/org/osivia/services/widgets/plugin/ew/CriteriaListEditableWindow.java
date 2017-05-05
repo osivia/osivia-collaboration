@@ -159,11 +159,14 @@ public class CriteriaListEditableWindow extends EditableWindow {
      * @return the criterion's request on keywords.
      */
     protected String getKeyWordsCriterion(StringBuffer keyWordsCriterion, PropertyList keyWords, boolean firstCriterion) {
+        // Keywords Nuxeo documents property
+        String keywordsProperty = System.getProperty("nuxeo.keywords.property", "ttc:keywords");
+
         if (!keyWords.isEmpty()) {
             if (!firstCriterion) {
                 keyWordsCriterion.append(CRITERIA_SEPARATOR);
             }
-            keyWordsCriterion.append("ttc:keywords in (").append(generateQuotedList(new StringBuffer(), keyWords)).append(")");
+            keyWordsCriterion.append(keywordsProperty).append(" IN (").append(generateQuotedList(new StringBuffer(), keyWords)).append(")");
         }
         return keyWordsCriterion.toString();
     }
