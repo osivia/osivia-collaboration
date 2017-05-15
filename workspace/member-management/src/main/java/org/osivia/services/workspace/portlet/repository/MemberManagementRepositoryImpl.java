@@ -761,7 +761,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
 
                 // Document
-                Document document = documentContext.getDoc();
+                Document document = documentContext.getDocument();
 
                 // Transformation
                 help = nuxeoController.transformHTMLContent(StringUtils.trimToEmpty(document.getString("note:note")));
@@ -887,7 +887,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(basePath);
 
             // Nuxeo document
-            workspace = documentContext.getDoc();
+            workspace = documentContext.getDocument();
 
             request.setAttribute(CURRENT_WORKSPACE_ATTRIBUTE, workspace);
         }

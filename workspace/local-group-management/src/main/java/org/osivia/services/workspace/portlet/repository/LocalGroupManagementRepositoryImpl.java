@@ -75,7 +75,7 @@ public class LocalGroupManagementRepositoryImpl implements LocalGroupManagementR
         NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(basePath);
 
         // Nuxeo document
-        Document document = documentContext.getDoc();
+        Document document = documentContext.getDocument();
 
         return document.getString("webc:url");
     }

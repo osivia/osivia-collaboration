@@ -96,8 +96,8 @@ public class ZoomFragmentModule extends FragmentModule {
             nuxeoPath = nuxeoController.getComputedPath(nuxeoPath);
 
             // Document
-            NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(request, response, portletContext, nuxeoPath);
-            Document document = documentContext.getDoc();
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(nuxeoPath);
+            Document document = documentContext.getDocument();
 
             // Title
             if (document.getTitle() != null) {

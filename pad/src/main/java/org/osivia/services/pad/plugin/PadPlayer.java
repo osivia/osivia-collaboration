@@ -22,43 +22,49 @@ import java.util.Map;
 import javax.portlet.PortletContext;
 
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.osivia.portal.api.cms.DocumentContext;
-import org.osivia.portal.api.cms.impl.BasicPermissions;
 import org.osivia.portal.api.player.Player;
 import org.osivia.services.pad.portlet.service.PadService;
 
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
 import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 import fr.toutatice.portail.cms.nuxeo.api.plugin.PluginModule;
 
 /**
+ * PAD player.
+ * 
  * @author Loïc Billon
- *
+ * @see PluginModule
+ * @see INuxeoPlayerModule
  */
 public class PadPlayer extends PluginModule implements INuxeoPlayerModule {
 
 	/**
-	 * @param portletContext
-	 */
+     * Constructor.
+     * 
+     * @param portletContext portlet context
+     */
 	public PadPlayer(PortletContext portletContext) {
 		super(portletContext);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osivia.portal.api.player.IPlayerModule#getCMSPlayer(org.osivia.portal.api.cms.DocumentContext)
-	 */
+
+    /**
+     * {@inheritDoc}
+     */
 	@Override
-	public Player getCMSPlayer(DocumentContext<Document> docCtx) {
+	public Player getCMSPlayer(NuxeoDocumentContext documentContext) {
 				
         // Document
-        Document document = docCtx.getDoc();
+        Document document = documentContext.getDocument();
 
-        if(docCtx.getType().getName().equals(PadPlugin.TOUTATICE_PAD)) {    
+        if (documentContext.getDocumentType().getName().equals(PadPlugin.TOUTATICE_PAD)) {
             
             Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put(PadService.PAD_REF, document.getPath());
             
-            BasicPermissions permissions = docCtx.getPermissions(BasicPermissions.class);
-            windowProperties.put(PadService.PAD_CAN_EDIT, Boolean.toString(permissions.isEditableByUser()));
+            NuxeoPermissions permissions = documentContext.getPermissions();
+            windowProperties.put(PadService.PAD_CAN_EDIT, Boolean.toString(permissions.isEditable()));
             
             windowProperties.put("osivia.title", document.getTitle());
             

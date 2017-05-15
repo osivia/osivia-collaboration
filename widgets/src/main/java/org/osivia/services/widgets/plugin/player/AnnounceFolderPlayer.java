@@ -10,11 +10,10 @@ import javax.portlet.PortletContext;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.cms.DocumentContext;
-import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
 import org.osivia.portal.api.player.Player;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 import fr.toutatice.portail.cms.nuxeo.api.plugin.PluginModule;
 import fr.toutatice.portail.cms.nuxeo.api.portlet.ViewList;
@@ -42,26 +41,21 @@ public class AnnounceFolderPlayer extends PluginModule implements INuxeoPlayerMo
      * {@inheritDoc}
      */
     @Override
-    public Player getCMSPlayer(DocumentContext<Document> documentContext) {
+    public Player getCMSPlayer(NuxeoDocumentContext documentContext) {
         // Document
-        Document document = documentContext.getDoc();
+        Document document = documentContext.getDocument();
 
         if ("AnnonceFolder".equals(document.getType())) {
-            // Publication infos
-            BasicPublicationInfos publicationInfos = documentContext.getPublicationInfos(BasicPublicationInfos.class);
-
             Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put("osivia.nuxeoRequest", NuxeoController.createFolderRequest(documentContext, false));
             windowProperties.put("osivia.cms.style", ViewList.LIST_TEMPLATE_EDITORIAL);
             windowProperties.put("osivia.hideDecorators", "1");
             windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
-            windowProperties.put(Constants.WINDOW_PROP_SCOPE, publicationInfos.getScope());
-            windowProperties.put(Constants.WINDOW_PROP_VERSION, publicationInfos.getState().toString());
+            windowProperties.put(Constants.WINDOW_PROP_SCOPE, documentContext.getScope());
+            windowProperties.put(Constants.WINDOW_PROP_VERSION, documentContext.getDocumentState().toString());
             windowProperties.put("osivia.document.metadata", String.valueOf(false));
             windowProperties.put("osivia.title", document.getTitle());
-            if (documentContext.getDoc() != null) {
-                windowProperties.put(ViewList.CREATION_PARENT_PATH_WINDOW_PROPERTY, documentContext.getDoc().getPath());
-            }
+            windowProperties.put(ViewList.CREATION_PARENT_PATH_WINDOW_PROPERTY, document.getPath());
 
             Player player = new Player();
             player.setWindowProperties(windowProperties);

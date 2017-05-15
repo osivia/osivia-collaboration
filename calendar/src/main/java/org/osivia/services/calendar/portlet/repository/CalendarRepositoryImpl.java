@@ -249,9 +249,8 @@ public class CalendarRepositoryImpl implements ICalendarRepository {
             try {
                 String cmsPath = this.getCMSPath(nuxeoController);
                 if (StringUtils.isNotEmpty(cmsPath)) {
-                    NuxeoDocumentContext documentContext = NuxeoController.getDocumentContext(request, nuxeoController.getResponse(),
-                            nuxeoController.getPortletCtx(), cmsPath);
-                    document = documentContext.getDoc();
+                    NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(cmsPath);
+                    document = documentContext.getDocument();
                     request.setAttribute(DOCUMENT_REQUEST_ATTRIBUTE, document);
                 }
             } catch (NuxeoException e) {

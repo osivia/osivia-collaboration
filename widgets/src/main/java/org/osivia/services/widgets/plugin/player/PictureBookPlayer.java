@@ -19,8 +19,6 @@ import java.util.Map;
 import javax.portlet.PortletContext;
 
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.osivia.portal.api.cms.DocumentContext;
-import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
 import org.osivia.portal.api.player.Player;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -28,6 +26,8 @@ import org.osivia.services.widgets.plugin.WidgetsPlugin;
 
 import fr.toutatice.portail.cms.nuxeo.api.FileBrowserView;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
 import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 import fr.toutatice.portail.cms.nuxeo.api.plugin.PluginModule;
 
@@ -55,22 +55,20 @@ public class PictureBookPlayer extends PluginModule implements INuxeoPlayerModul
     /**
      * Get picturebook player.
      *
-     * @param documentContext CMS context
+     * @param documentContext document context
      * @return player properties
      * @throws CMSException
      */
-    public Player getCMSPictureBookPlayer(DocumentContext<Document> documentContext) {
+    public Player getCMSPictureBookPlayer(NuxeoDocumentContext documentContext) {
         // Document
-        Document doc = documentContext.getDoc();
-        // Publication infos
-        BasicPublicationInfos navigationInfos = documentContext.getPublicationInfos(BasicPublicationInfos.class);
+        Document document = documentContext.getDocument();
 
         Map<String, String> windowProperties = new HashMap<String, String>();
-        windowProperties.put("osivia.title", doc.getTitle());
-        windowProperties.put("osivia.cms.uri", doc.getPath());
+        windowProperties.put("osivia.title", document.getTitle());
+        windowProperties.put("osivia.cms.uri", document.getPath());
         windowProperties.put("osivia.hideDecorators", "1");
         windowProperties.put("osivia.ajaxLink", "1");
-        windowProperties.put("osivia.cms.displayLiveVersion", navigationInfos.getState().toString());
+        windowProperties.put("osivia.cms.displayLiveVersion", documentContext.getDocumentState().toString());
         windowProperties.put("osivia.cms.style", WidgetsPlugin.STYLE_PICTUREBOOK);
         windowProperties.put("osivia.nuxeoRequest", NuxeoController.createFolderRequest(documentContext, false));
         windowProperties.put("osivia.cms.pageSize", "24");
@@ -89,15 +87,15 @@ public class PictureBookPlayer extends PluginModule implements INuxeoPlayerModul
      * {@inheritDoc}
      */
     @Override
-    public Player getCMSPlayer(DocumentContext<Document> documentContext) {
+    public Player getCMSPlayer(NuxeoDocumentContext documentContext) {
         // Document
-        Document document = documentContext.getDoc();
+        Document document = documentContext.getDocument();
 
         if ("PictureBook".equals(document.getType())) {
             // Publication infos
-            BasicPublicationInfos navigationInfos = documentContext.getPublicationInfos(BasicPublicationInfos.class);
+            NuxeoPublicationInfos navigationInfos = documentContext.getPublicationInfos();
             // Workspace indicator
-            boolean workspace = (navigationInfos.isContextualized() && navigationInfos.isLiveSpace());
+            boolean workspace = (documentContext.isContextualized() && navigationInfos.isLiveSpace());
 
             if (workspace) {
                 // File browser

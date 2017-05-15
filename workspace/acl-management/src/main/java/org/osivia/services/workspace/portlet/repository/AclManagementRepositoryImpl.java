@@ -9,9 +9,6 @@ import java.util.Map;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -46,6 +43,8 @@ import org.springframework.stereotype.Repository;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Workspace ACL management repository implementation.
@@ -156,9 +155,10 @@ public class AclManagementRepositoryImpl implements AclManagementRepository {
             entries.setEntries(new ArrayList<AclEntry>(0));
         } else {
             // Nuxeo document context
-            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path, true);
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
+            documentContext.reload();
             // Nuxeo document
-            Document document = documentContext.getDoc();
+            Document document = documentContext.getDocument();
             entries.setDocument(document);
 
             // Nuxeo command

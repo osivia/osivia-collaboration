@@ -39,7 +39,6 @@ import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.windows.PortalWindow;
@@ -165,9 +164,9 @@ public class FaqPortlet extends CMSPortlet {
 
             NuxeoDocumentContext documentContext = null;
             if (path != null) {
-                documentContext = NuxeoController.getDocumentContext(request, response, getPortletContext(), path);
+                documentContext = nuxeoController.getDocumentContext(path);
             } else {
-                documentContext = NuxeoController.getDocumentContext(request, response, getPortletContext());
+                documentContext = nuxeoController.getCurrentDocumentContext();
             }
 
             // Contextualization indicator
@@ -177,7 +176,7 @@ public class FaqPortlet extends CMSPortlet {
 
             if (documentContext != null) {
                 // Fetch
-                Document document = documentContext.getDoc();
+                Document document = documentContext.getDocument();
 
                 // Type
                 String type = document.getType();
@@ -193,11 +192,11 @@ public class FaqPortlet extends CMSPortlet {
                     // FAQ folder path
                     String faqPath = NuxeoController.getParentPath(question.getPath());
                     // Fetch FAQ folder
-                    NuxeoDocumentContext faqContext = NuxeoController.getDocumentContext(request, response, getPortletContext(), faqPath);
+                    NuxeoDocumentContext faqContext = nuxeoController.getDocumentContext(faqPath);
 
                     List<PortletPathItem> portletPath = new ArrayList<PortletPathItem>();
                     addPathItem(portletPath, question);
-                    addPathItem(portletPath, faqContext.getDoc());
+                    addPathItem(portletPath, faqContext.getDocument());
                     request.setAttribute("osivia.portletPath", portletPath);
 
                     // DTO
@@ -212,7 +211,7 @@ public class FaqPortlet extends CMSPortlet {
 
                     // Get all questions
                     String faqPath = faq.getPath();
-                    String faqLiveId = faqContext.getPublicationInfos(BasicPublicationInfos.class).getLiveId();
+                    String faqLiveId = faqContext.getPublicationInfos().getLiveId();
 
                     NuxeoQueryFilterContext queryContext = nuxeoController.getQueryFilterContextForPath(faqPath);
                     INuxeoCommand command = new FaqFetchChildrenCommand(queryContext, faqLiveId);

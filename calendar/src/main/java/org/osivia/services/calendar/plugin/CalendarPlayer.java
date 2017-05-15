@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  *
- *    
+ * 
  */
 package org.osivia.services.calendar.plugin;
 
@@ -23,35 +23,40 @@ import javax.portlet.PortletContext;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.player.Player;
 
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 
 
 /**
- * @author lbillon
- *
+ * Calendar player.
+ * 
+ * @author Loïc Billon
+ * @author Cédric Krommenhoek
+ * @see INuxeoPlayerModule
  */
 public class CalendarPlayer implements INuxeoPlayerModule {
 
-	/**
-	 * 
-	 */
-	public CalendarPlayer(PortletContext context) {
+    /**
+     * Constructor.
+     * 
+     * @param context portlet context
+     */
+    public CalendarPlayer(PortletContext context) {
+        super();
+    }
 
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.osivia.portal.api.cms.IPlayerModule#getCMSPlayer(org.osivia.portal.api.cms.DocumentContext)
-	 */
-	@Override
-	public Player getCMSPlayer(DocumentContext<Document> docCtx) {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Player getCMSPlayer(NuxeoDocumentContext documentContext) {
         // Document
-        Document document = docCtx.getDoc();
-        
+        Document document = documentContext.getDocument();
+
         if ("Agenda".equals(document.getType())) {
-        	
             Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
             windowProperties.put("osivia.title", document.getTitle());
@@ -65,8 +70,7 @@ public class CalendarPlayer implements INuxeoPlayerModule {
             props.setPortletInstance("osivia-services-calendar-instance");
 
             return props;
-        }
-        else if ("VEVENT".equals(document.getType())) {
+        } else if ("VEVENT".equals(document.getType())) {
             // Window properties
             Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put("osivia.document.dispatch.jsp", "calendar-event");
@@ -77,10 +81,9 @@ public class CalendarPlayer implements INuxeoPlayerModule {
             props.setPortletInstance("toutatice-portail-cms-nuxeo-viewDocumentPortletInstance");
 
             return props;
+        } else {
+            return null;
         }
-        else {
-        	return null;
-        }
-	}
-	
+    }
+
 }

@@ -15,7 +15,6 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
-import org.osivia.portal.api.cms.impl.BasicPermissions;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -40,6 +39,7 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
@@ -115,10 +115,11 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
             }
 
             // Nuxeo document context
-            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(basePath, true);
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(basePath);
+            documentContext.reload();
 
             // Nuxeo document
-            workspace = documentContext.getDoc();
+            workspace = documentContext.getDocument();
 
             request.setAttribute(CURRENT_WORKSPACE_ATTRIBUTE, workspace);
         }
@@ -281,7 +282,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
             // Nuxeo document context
             NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(task.getPath());
             // Nuxeo document
-            Document document = documentContext.getDoc();
+            Document document = documentContext.getDocument();
 
             // Displayed indicator
             boolean displayed = !task.isDisabled();
@@ -325,9 +326,9 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         // Nuxeo document context
         NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(workspace.getPath());
         // Permissions
-        BasicPermissions permissions = documentContext.getPermissions(BasicPermissions.class);
+        NuxeoPermissions permissions = documentContext.getPermissions();
 
-        return permissions.isManageableByUser();
+        return permissions.isManageable();
     }
 
 

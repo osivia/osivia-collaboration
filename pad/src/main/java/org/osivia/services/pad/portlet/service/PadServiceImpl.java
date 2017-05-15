@@ -48,7 +48,7 @@ public class PadServiceImpl implements PadService {
 
 		// Contextualisation
 		NuxeoDocumentContext documentContext = controller.getDocumentContext(padPath);
-		controller.setCurrentDoc(documentContext.getDoc());
+		controller.setCurrentDoc(documentContext.getDocument());
 		controller.insertContentMenuBarItems();
 		
 		return ret;

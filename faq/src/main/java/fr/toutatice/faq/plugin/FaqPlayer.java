@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  *
- *    
+ * 
  */
 package fr.toutatice.faq.plugin;
 
@@ -21,29 +21,38 @@ import java.util.Map;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.player.Player;
 
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 
 /**
- * @author lbillon
- *
+ * FAQ player.
+ * 
+ * @author Loïc Billon
+ * @author Cédric Krommenhoek
+ * @see INuxeoPlayerModule
  */
 public class FaqPlayer implements INuxeoPlayerModule {
 
+    /**
+     * Constructor.
+     */
+    public FaqPlayer() {
+        super();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.osivia.portal.api.cms.IPlayerModule#getCMSPlayer(org.osivia.portal.api.cms.DocumentContext)
-	 */
-	@Override
-	public Player getCMSPlayer(DocumentContext<Document> docCtx) {
-		Document doc = docCtx.getDoc();
-		
-        if ("FaqFolder".equals(doc.getType()) || "Question".equals(doc.getType())) {
-        	
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Player getCMSPlayer(NuxeoDocumentContext documentContext) {
+        Document document = documentContext.getDocument();
+
+        if ("FaqFolder".equals(document.getType()) || "Question".equals(document.getType())) {
             Map<String, String> windowProperties = new HashMap<String, String>();
-            windowProperties.put(Constants.WINDOW_PROP_URI, doc.getPath());
+            windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
             windowProperties.put("osivia.ajaxLink", "1");
             windowProperties.put("osivia.hideDecorators", "1");
             Player linkProps = new Player();
@@ -51,8 +60,9 @@ public class FaqPlayer implements INuxeoPlayerModule {
             linkProps.setPortletInstance("osivia-services-faqInstance");
 
             return linkProps;
+        } else {
+            return null;
         }
-        else return null;
-	}
+    }
 
 }

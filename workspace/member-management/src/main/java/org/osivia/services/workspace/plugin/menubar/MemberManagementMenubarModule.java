@@ -10,8 +10,7 @@ import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
-import org.osivia.portal.api.cms.EcmDocument;
-import org.osivia.portal.api.cms.impl.BasicPermissions;
+import org.osivia.portal.api.cms.Permissions;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -61,18 +60,18 @@ public class MemberManagementMenubarModule implements MenubarModule {
      * {@inheritDoc}
      */
     @Override
-    public void customizeSpace(PortalControllerContext portalControllerContext, List<MenubarItem> menubar,
-            DocumentContext<? extends EcmDocument> spaceDocumentContext) throws PortalException {
+    public void customizeSpace(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext spaceDocumentContext)
+            throws PortalException {
         if (spaceDocumentContext != null) {
             // Space document
-            Document space = (Document) spaceDocumentContext.getDoc();
+            Document space = (Document) spaceDocumentContext.getDocument();
             if (space != null) {
                 // Check type
                 String type = space.getType();
                 if ("Workspace".equals(type)) {
                     // Check permissions
-                    BasicPermissions permissions = spaceDocumentContext.getPermissions(BasicPermissions.class);
-                    if (permissions.isManageableByUser()) {
+                    Permissions permissions = spaceDocumentContext.getPermissions();
+                    if (permissions.isManageable()) {
                         // HTTP servlet request
                         HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
                         // Bundle
@@ -111,8 +110,8 @@ public class MemberManagementMenubarModule implements MenubarModule {
      * {@inheritDoc}
      */
     @Override
-    public void customizeDocument(PortalControllerContext portalControllerContext, List<MenubarItem> menubar,
-            DocumentContext<? extends EcmDocument> documentContext) throws PortalException {
+    public void customizeDocument(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext documentContext)
+            throws PortalException {
         // Do nothing
     }
 

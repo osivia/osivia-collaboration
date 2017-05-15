@@ -11,9 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
-import org.osivia.portal.api.cms.EcmDocument;
-import org.osivia.portal.api.cms.impl.BasicPermissions;
-import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
+import org.osivia.portal.api.cms.Permissions;
+import org.osivia.portal.api.cms.PublicationInfos;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -39,11 +38,12 @@ public class PadMenubarModule implements MenubarModule {
     private final IPortalUrlFactory portalUrlFactory;
     /** Bundle factory. */
     private final IBundleFactory bundleFactory;
+
     
     /**
-	 * 
-	 */
-	public PadMenubarModule() {
+     * Constructor.
+     */
+    public PadMenubarModule() {
         super();
 
         // Menubar service
@@ -54,81 +54,75 @@ public class PadMenubarModule implements MenubarModule {
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
         this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.osivia.portal.api.menubar.MenubarModule#customizeSpace(org.osivia.portal.api.context.PortalControllerContext, java.util.List, org.osivia.portal.api.cms.DocumentContext)
-	 */
-	@Override
-	public void customizeSpace(PortalControllerContext portalControllerContext,
-			List<MenubarItem> menubar,
-			DocumentContext<? extends EcmDocument> spaceDocumentContext)
-			throws PortalException {
-		// do nothing
-		
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see org.osivia.portal.api.menubar.MenubarModule#customizeDocument(org.osivia.portal.api.context.PortalControllerContext, java.util.List, org.osivia.portal.api.cms.DocumentContext)
-	 */
-	@Override
-	public void customizeDocument(
-			PortalControllerContext portalControllerContext,
-			List<MenubarItem> menubar,
-			DocumentContext<? extends EcmDocument> documentContext)
-			throws PortalException {
-		
 
-		if(documentContext.getType().getName().equals(PadPlugin.TOUTATICE_PAD)) {
-			BasicPermissions permissions = documentContext.getPermissions(BasicPermissions.class);
-			if(permissions.isEditableByUser()) {
-				
-				// HTTP servlet request
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void customizeSpace(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext spaceDocumentContext)
+            throws PortalException {
+        // do nothing
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void customizeDocument(PortalControllerContext portalControllerContext, List<MenubarItem> menubar,
+            DocumentContext documentContext) throws PortalException {
+
+
+        if (documentContext.getDocumentType().getName().equals(PadPlugin.TOUTATICE_PAD)) {
+            Permissions permissions = documentContext.getPermissions();
+            if (permissions.isEditable()) {
+                // HTTP servlet request
                 HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
                 // Bundle
                 Bundle bundle = this.bundleFactory.getBundle(servletRequest.getLocale());
-                
-                
-				String title = bundle.getString("JOIN_PAD");
-				String icon = "glyphicons glyphicons-pencil";
-				MenubarDropdown parent = this.menubarService.getDropdown(portalControllerContext, MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID);
-				int order = 1;
-				
+
+
+                String title = bundle.getString("JOIN_PAD");
+                String icon = "glyphicons glyphicons-pencil";
+                MenubarDropdown parent = this.menubarService.getDropdown(portalControllerContext, MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID);
+                int order = 1;
+
                 Map<String, String> requestParameters = new HashMap<String, String>();
-                BasicPublicationInfos publicationInfos = documentContext.getPublicationInfos(BasicPublicationInfos.class);
-				String url = getEcmPadUrl( publicationInfos.getContentPath(), requestParameters);
-				
-				
-				MenubarItem joinPad = new MenubarItem("JOIN_PAD", title, icon, parent, order , url, null, null, "fancyframe_refresh");
-				menubar.add(joinPad);
-				
-				
-				// Suppression du lien éditer par défaut
-				MenubarItem edit = null;
-				for (MenubarItem item : menubar) {
-					if(item.getId().equals("EDIT")) {
-						edit = item;
-					}
-				}
-				if(edit != null) {
-					menubar.remove(edit);
-				}
-			}
-		}
-		
-	}
-	
+                PublicationInfos publicationInfos = documentContext.getPublicationInfos();
+                String url = getEcmPadUrl(publicationInfos.getPath(), requestParameters);
+
+                MenubarItem joinPad = new MenubarItem("JOIN_PAD", title, icon, parent, order, url, null, null, "fancyframe_refresh");
+                menubar.add(joinPad);
+
+
+                // Suppression du lien éditer par défaut
+                MenubarItem edit = null;
+                for (MenubarItem item : menubar) {
+                    if (item.getId().equals("EDIT")) {
+                        edit = item;
+                    }
+                }
+                if (edit != null) {
+                    menubar.remove(edit);
+                }
+            }
+        }
+
+    }
+
     private String getEcmPadUrl(String path, Map<String, String> requestParameters) {
-    	
+
         // get the default domain and app name
         String uri = NuxeoConnectionProperties.getPublicBaseUri().toString();
 
-//        if (requestParameters == null) {
-//            requestParameters = new HashMap<String, String>();
-//        }
+        // if (requestParameters == null) {
+        // requestParameters = new HashMap<String, String>();
+        // }
 
         String url = uri.toString() + "/nxpath/default" + path + "@toutapad_join_pad?";
-                
+
         return url;
     }
 

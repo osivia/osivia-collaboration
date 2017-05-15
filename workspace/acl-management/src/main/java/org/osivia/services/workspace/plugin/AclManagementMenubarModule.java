@@ -12,9 +12,8 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.DocumentType;
-import org.osivia.portal.api.cms.EcmDocument;
-import org.osivia.portal.api.cms.impl.BasicPermissions;
-import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
+import org.osivia.portal.api.cms.Permissions;
+import org.osivia.portal.api.cms.PublicationInfos;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -68,7 +67,7 @@ public class AclManagementMenubarModule implements MenubarModule {
      */
     @Override
     public void customizeSpace(PortalControllerContext portalControllerContext, List<MenubarItem> menubar,
-            DocumentContext<? extends EcmDocument> spaceDocumentContext) throws PortalException {
+            DocumentContext spaceDocumentContext) throws PortalException {
         // Do nothing
     }
 
@@ -78,18 +77,18 @@ public class AclManagementMenubarModule implements MenubarModule {
      */
     @Override
     public void customizeDocument(PortalControllerContext portalControllerContext, List<MenubarItem> menubar,
-            DocumentContext<? extends EcmDocument> documentContext) throws PortalException {
+            DocumentContext documentContext) throws PortalException {
         if ((documentContext != null) && ContextualizationHelper.isCurrentDocContextualized(portalControllerContext)) {
             // Check type
-            DocumentType type = documentContext.getType();
+            DocumentType type = documentContext.getDocumentType();
             if ((type != null) && !type.isRootType()) {
                 // Document
-                Document document = (Document) documentContext.getDoc();
+                Document document = (Document) documentContext.getDocument();
                 if (document != null) {
                     // Check permissions
-                    BasicPermissions permissions = documentContext.getPermissions(BasicPermissions.class);
-                    BasicPublicationInfos publicationInfos = documentContext.getPublicationInfos(BasicPublicationInfos.class);
-                    if (publicationInfos.isLiveSpace() && !publicationInfos.isDraft() && permissions.isManageableByUser()) {
+                    Permissions permissions = documentContext.getPermissions();
+                    PublicationInfos publicationInfos = documentContext.getPublicationInfos();
+                    if (publicationInfos.isLiveSpace() && !publicationInfos.isDraft() && permissions.isManageable()) {
                         // HTTP servlet request
                         HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
                         // Bundle

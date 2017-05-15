@@ -94,8 +94,8 @@ public class ForumServiceImpl implements IForumService, ApplicationContextAware 
                 String path = window.getProperty(Constants.WINDOW_PROP_URI);
 
                 // Nuxeo document
-                NuxeoDocumentContext nuxeoDocumentContext = nuxeoController.getDocumentContext(path);
-                document = nuxeoDocumentContext.getDoc();
+                NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
+                document = documentContext.getDocument();
                 
                 // Save document in request
                 nuxeoController.getRequest().setAttribute(DOCUMENT_REQUEST_ATTRIBUTE, document);

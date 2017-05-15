@@ -36,8 +36,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.portlet.PortletFileUpload;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.cms.impl.BasicPermissions;
-import org.osivia.portal.api.cms.impl.BasicPublicationInfos;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.locator.Locator;
@@ -87,6 +85,8 @@ public class PicturebookTemplateModule extends PortletModule {
      */
     @Override
     protected void doView(RenderRequest request, RenderResponse response, PortletContext portletContext) throws PortletException, IOException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
         // Window
         PortalWindow window = WindowFactory.getWindow(request);
 
@@ -95,11 +95,10 @@ public class PicturebookTemplateModule extends PortletModule {
 
         if (StringUtils.isNotEmpty(path)) {
             // Nuxeo controller
-            NuxeoDocumentContext document = NuxeoController.getDocumentContext(request, response, portletContext);
+            NuxeoDocumentContext document = nuxeoController.getDocumentContext(path);
 
-            request.setAttribute("editable", document.getPermissions(BasicPermissions.class).isEditableByUser());
-            request.setAttribute("parentId", document.getPublicationInfos(BasicPublicationInfos.class).getLiveId());
-
+            request.setAttribute("editable", document.getPermissions().isEditable());
+            request.setAttribute("parentId", document.getPublicationInfos().getLiveId());
         }
     }
 
