@@ -82,7 +82,7 @@
                         </c:if>
                         
                         <c:if test="${post.deletable}">
-                            <a href="#${namespace}-delete-fancybox" onclick="selectDelete(this, '${post.id}')" class="btn btn-default fancybox_inline no-ajax-link">
+                            <a href="javascript:;" onclick="selectDelete(this, '${post.id}')" class="btn btn-default" data-fancybox data-src="#${namespace}-delete-fancybox">
                                 <i class="halflings halflings-trash"></i>
                                 <span>${deleteTitle}</span>
                             </a>
