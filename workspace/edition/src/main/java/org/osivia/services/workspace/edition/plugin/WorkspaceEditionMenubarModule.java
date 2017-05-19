@@ -151,7 +151,7 @@ public class WorkspaceEditionMenubarModule implements MenubarModule {
 
 
                         // Menubar item
-                        MenubarItem item = new MenubarItem("ADD", bundle.getString("ADD"), "halflings halflings-plus", MenubarGroup.CMS, 2, "#", null, null,
+                        MenubarItem item = new MenubarItem("ADD", bundle.getString("ADD"), "halflings halflings-plus", MenubarGroup.ADD, 0, "#", null, null,
                                 null);
                         item.setAjaxDisabled(true);
                         item.getData().put("target", "#osivia-modal");
