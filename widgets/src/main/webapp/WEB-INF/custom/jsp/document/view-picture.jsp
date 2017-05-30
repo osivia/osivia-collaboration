@@ -8,10 +8,6 @@
 <c:set var="previewUrl"><ttc:documentLink document="${document}" picture="true" displayContext="Medium" /></c:set>
 
 
-<!-- Download menubar item -->
-<ttc:addMenubarItem id="DOWNLOAD" labelKey="DOWNLOAD" order="20" url="${url}" glyphicon="glyphicons glyphicons-download-alt" />
-
-
 <div class="picture">
     <!-- Preview -->
     <p><img src="${previewUrl}" alt="${name}" class="img-responsive"></p>

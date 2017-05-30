@@ -105,12 +105,12 @@ public class ForumPlugin extends AbstractPluginPortlet {
 
         // Forum thread
         DocumentType thread = new DocumentType("Thread", false, false, false, false, true, true, new ArrayList<String>(0), null, "glyphicons glyphicons-chat",
-                false, false);
+                false, true);
         types.put(thread.getName(), thread);
 
         // Forum
         DocumentType forum = new DocumentType("Forum", true, true, false, false, true, true, Arrays.asList("Forum", "Thread"), null,
-                "glyphicons glyphicons-conversation");
+                "glyphicons glyphicons-conversation", false, true);
         types.put(forum.getName(), forum);
     }
 

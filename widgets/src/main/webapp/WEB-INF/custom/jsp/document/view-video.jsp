@@ -12,10 +12,6 @@
 <c:set var="mimeType" value="${document.properties['file:content']['mime-type']}" />
 
 
-<!-- Download menubar item -->
-<ttc:addMenubarItem id="DOWNLOAD" labelKey="DOWNLOAD" order="20" url="${url}" glyphicon="glyphicons glyphicons-download-alt" />
-
-
 <div class="video">
     <!-- Video player -->
     <c:choose>

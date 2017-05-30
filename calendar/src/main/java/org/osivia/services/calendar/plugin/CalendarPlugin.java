@@ -80,7 +80,7 @@ public class CalendarPlugin extends AbstractPluginPortlet  {
 
         // Calendar event
         DocumentType event = new DocumentType("VEVENT", false, false, false, false, true, true, new ArrayList<String>(0), null,
-                "glyphicons glyphicons-important-day", false, false);
+                "glyphicons glyphicons-important-day");
         types.put(event.getName(), event);
 
         // Calendar
