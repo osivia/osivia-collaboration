@@ -81,7 +81,7 @@ public class AclManagementMenubarModule implements MenubarModule {
         if ((documentContext != null) && ContextualizationHelper.isCurrentDocContextualized(portalControllerContext)) {
             // Check type
             DocumentType type = documentContext.getDocumentType();
-            if ((type != null) && !type.isRootType()) {
+            if ((type != null) && !type.isRoot()) {
                 // Document
                 Document document = (Document) documentContext.getDocument();
                 if (document != null) {

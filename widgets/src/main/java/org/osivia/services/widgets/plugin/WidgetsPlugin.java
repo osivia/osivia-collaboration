@@ -16,8 +16,6 @@
  */
 package org.osivia.services.widgets.plugin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -156,57 +154,73 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         Map<String, DocumentType> types = this.getDocTypes(context);
 
         // Picture
-        DocumentType picture = new DocumentType("Picture", false, false, false, false, false, true, new ArrayList<String>(0), null,
-                "glyphicons glyphicons-picture", false, true, true);
-        picture.setFile(true);
+        DocumentType picture = DocumentType.createFile("Picture");
+        picture.setIcon("glyphicons glyphicons-picture");
+        picture.setEditable(true);
+        picture.setMovable(true);
         types.put(picture.getName(), picture);
-        this.addSubType(context, "PortalSite", picture.getName());
-        this.addSubType(context, "PortalPage", picture.getName());
-        this.addSubType(context, "Folder", picture.getName());
-        this.addSubType(context, "OrderedFolder", picture.getName());
+        this.addSubtype(context, "PortalSite", picture.getName());
+        this.addSubtype(context, "PortalPage", picture.getName());
+        this.addSubtype(context, "Folder", picture.getName());
+        this.addSubtype(context, "OrderedFolder", picture.getName());
 
         // Picture book
-        DocumentType picturebook = new DocumentType("PictureBook", true, true, true, true, false, true, Arrays.asList(picture.getName(), "PictureBook"), null,
-                "glyphicons glyphicons-pictures", false, true);
+        DocumentType picturebook = DocumentType.createNode("PictureBook");
+        picturebook.addSubtypes(picturebook.getName(), picture.getName());
+        picturebook.setIcon("glyphicons glyphicons-pictures");
+        picturebook.setOrdered(true);
+        picturebook.setEditable(true);
+        picturebook.setMovable(true);
         types.put(picturebook.getName(), picturebook);
-        this.addSubType(context, "Workspace", picturebook.getName());
-        this.addSubType(context, "Room", picturebook.getName());
+        this.addSubtype(context, "Workspace", picturebook.getName());
+        this.addSubtype(context, "Room", picturebook.getName());
 
         // Audio
-        DocumentType audio = new DocumentType("Audio", false, false, false, false, false, true, new ArrayList<String>(0), null, "glyphicons glyphicons-music",
-                false, true, true);
-        audio.setFile(true);
+        DocumentType audio = DocumentType.createFile("Audio");
+        audio.setIcon("glyphicons glyphicons-music");
+        audio.setEditable(true);
+        audio.setMovable(true);
         types.put(audio.getName(), audio);
-        this.addSubType(context, "PortalSite", audio.getName());
-        this.addSubType(context, "PortalPage", audio.getName());
-        this.addSubType(context, "Folder", audio.getName());
-        this.addSubType(context, "OrderedFolder", audio.getName());
+        this.addSubtype(context, "PortalSite", audio.getName());
+        this.addSubtype(context, "PortalPage", audio.getName());
+        this.addSubtype(context, "Folder", audio.getName());
+        this.addSubtype(context, "OrderedFolder", audio.getName());
 
         // Video
-        DocumentType video = new DocumentType("Video", false, false, false, false, false, true, new ArrayList<String>(0), null, "glyphicons glyphicons-film",
-                false, true, true);
-        video.setFile(true);
+        DocumentType video = DocumentType.createFile("Video");
+        video.setIcon("glyphicons glyphicons-film");
+        video.setEditable(true);
+        video.setMovable(true);
         types.put(video.getName(), video);
-        this.addSubType(context, "PortalSite", video.getName());
-        this.addSubType(context, "PortalPage", video.getName());
-        this.addSubType(context, "Folder", video.getName());
-        this.addSubType(context, "OrderedFolder", video.getName());
+        this.addSubtype(context, "PortalSite", video.getName());
+        this.addSubtype(context, "PortalPage", video.getName());
+        this.addSubtype(context, "Folder", video.getName());
+        this.addSubtype(context, "OrderedFolder", video.getName());
 
         // Annonce
-        DocumentType annonce = new DocumentType("Annonce", false, false, false, false, false, true, new ArrayList<String>(0), null,
-                "glyphicons glyphicons-newspaper", false, true);
+        DocumentType annonce = DocumentType.createLeaf("Annonce");
+        annonce.setIcon("glyphicons glyphicons-newspaper");
+        annonce.setEditable(true);
+        annonce.setMovable(true);
         types.put(annonce.getName(), annonce);
-        this.addSubType(context, "PortalSite", annonce.getName());
-        this.addSubType(context, "PortalPage", annonce.getName());
+        this.addSubtype(context, "PortalSite", annonce.getName());
+        this.addSubtype(context, "PortalPage", annonce.getName());
 
         // Annonce folder
-        DocumentType annonceFolder = new DocumentType("AnnonceFolder", true, true, false, false, false, true, Arrays.asList(annonce.getName()), null,
-                "glyphicons glyphicons-newspaper");
+        DocumentType annonceFolder = DocumentType.createNode("AnnonceFolder");
+        annonceFolder.addSubtypes(annonce.getName());
+        annonceFolder.setIcon("glyphicons glyphicons-newspaper");
+        annonceFolder.setBrowsable(false);
+        annonceFolder.setEditable(true);
         types.put(annonceFolder.getName(), annonceFolder);
 
         // Document URL container
-        DocumentType urlContainer = new DocumentType("DocumentUrlContainer", true, true, true, true, false, true, Arrays.asList("DocumentUrlContainer",
-                "ContextualLink"), null, "glyphicons glyphicons-bookmark", false, true);
+        DocumentType urlContainer = DocumentType.createNode("DocumentUrlContainer");
+        urlContainer.addSubtypes(urlContainer.getName(), "ContextualLink");
+        urlContainer.setIcon("glyphicons glyphicons-bookmark");
+        urlContainer.setOrdered(true);
+        urlContainer.setEditable(true);
+        urlContainer.setMovable(true);
         types.put("DocumentUrlContainer", urlContainer);
     }
 

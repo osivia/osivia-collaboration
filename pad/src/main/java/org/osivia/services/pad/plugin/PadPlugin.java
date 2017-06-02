@@ -14,7 +14,6 @@
  */
 package org.osivia.services.pad.plugin;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -78,13 +77,16 @@ public class PadPlugin extends AbstractPluginPortlet  {
         Map<String, DocumentType> types = this.getDocTypes(context);
         
         // ToutaticePad
-        DocumentType pad = new DocumentType(TOUTATICE_PAD, false, false, false, false, true, true, new ArrayList<String>(0), null, "glyphicons glyphicons-blackboard");
+        DocumentType pad = DocumentType.createLeaf(TOUTATICE_PAD);
+        pad.setIcon("glyphicons glyphicons-blackboard");
+        pad.setForceContextualization(true);
+        pad.setEditable(true);
         types.put(pad.getName(), pad);
-        this.addSubType(context, "Folder", pad.getName());
-        
-        
+
+        this.addSubtype(context, "Folder", pad.getName());
     }
     
+
     /**
      * Customize players.
      *

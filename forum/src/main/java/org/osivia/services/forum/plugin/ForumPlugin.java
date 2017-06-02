@@ -16,8 +16,6 @@
  */
 package org.osivia.services.forum.plugin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -104,13 +102,19 @@ public class ForumPlugin extends AbstractPluginPortlet {
         Map<String, DocumentType> types = this.getDocTypes(context);
 
         // Forum thread
-        DocumentType thread = new DocumentType("Thread", false, false, false, false, true, true, new ArrayList<String>(0), null, "glyphicons glyphicons-chat",
-                false, true);
+        DocumentType thread = DocumentType.createLeaf("Thread");
+        thread.setIcon("glyphicons glyphicons-chat");
+        thread.setForceContextualization(true);
+        thread.setEditable(true);
         types.put(thread.getName(), thread);
 
         // Forum
-        DocumentType forum = new DocumentType("Forum", true, true, false, false, true, true, Arrays.asList("Forum", "Thread"), null,
-                "glyphicons glyphicons-conversation", false, true);
+        DocumentType forum = DocumentType.createNode("Forum");
+        forum.addSubtypes(forum.getName(), thread.getName());
+        forum.setIcon("glyphicons glyphicons-conversation");
+        thread.setForceContextualization(true);
+        thread.setEditable(true);
+        thread.setMovable(true);
         types.put(forum.getName(), forum);
     }
 

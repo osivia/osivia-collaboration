@@ -141,7 +141,7 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
         if (type == null) {
             icon = null;
         } else {
-            icon = type.getGlyph();
+            icon = type.getIcon();
         }
 
         // Deletion date
@@ -175,7 +175,7 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
             location = this.applicationContext.getBean(ParentDocument.class, parentDocument.getPath());
             location.setTitle(parentDocument.getTitle());
             if (parentNavigationItem.getType() != null) {
-                location.setIcon(parentNavigationItem.getType().getGlyph());
+                location.setIcon(parentNavigationItem.getType().getIcon());
             }
         }
 
@@ -325,7 +325,7 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
                 ParentDocument parent = this.applicationContext.getBean(ParentDocument.class, document.getPath());
                 parent.setTitle(document.getTitle());
                 if (navigationItem.getType() != null) {
-                    parent.setIcon(navigationItem.getType().getGlyph());
+                    parent.setIcon(navigationItem.getType().getIcon());
                 }
 
                 parents.add(0, parent);

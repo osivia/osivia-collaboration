@@ -16,8 +16,6 @@
  */
 package org.osivia.services.calendar.plugin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -79,13 +77,19 @@ public class CalendarPlugin extends AbstractPluginPortlet  {
         Map<String, DocumentType> types = this.getDocTypes(context);
 
         // Calendar event
-        DocumentType event = new DocumentType("VEVENT", false, false, false, false, true, true, new ArrayList<String>(0), null,
-                "glyphicons glyphicons-important-day");
+        DocumentType event = DocumentType.createNode("VEVENT");
+        event.setIcon("glyphicons glyphicons-important-day");
+        event.setForceContextualization(true);
+        event.setEditable(true);
         types.put(event.getName(), event);
 
         // Calendar
-        DocumentType calendar = new DocumentType("Agenda", true, true, false, false, true, true, Arrays.asList(event.getName()), null,
-                "glyphicons glyphicons-calendar");
+        DocumentType calendar = DocumentType.createNode("Agenda");
+        calendar.addSubtypes(event.getName());
+        calendar.setIcon("glyphicons glyphicons-calendar");
+        calendar.setBrowsable(false);
+        calendar.setForceContextualization(true);
+        calendar.setEditable(true);
         types.put(calendar.getName(), calendar);
     }
 

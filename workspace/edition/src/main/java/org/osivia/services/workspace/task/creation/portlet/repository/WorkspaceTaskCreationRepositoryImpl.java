@@ -78,7 +78,7 @@ public class WorkspaceTaskCreationRepositoryImpl implements WorkspaceTaskCreatio
         if (workspaceDocumentType == null) {
             workspaceSubTypes = new ArrayList<>(0);
         } else {
-            workspaceSubTypes = workspaceDocumentType.getPortalFormSubTypes();
+            workspaceSubTypes = workspaceDocumentType.getSubtypes();
         }
 
         // Types

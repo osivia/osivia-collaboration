@@ -16,8 +16,6 @@
  */
 package fr.toutatice.faq.plugin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -77,13 +75,19 @@ public class FaqPlugin extends AbstractPluginPortlet {
         Map<String, DocumentType> types = this.getDocTypes(context);
 
         // FAQ question
-        DocumentType faqQuestion = new DocumentType("Question", false, false, false, false, false, true, new ArrayList<String>(0), null,
-                "glyphicons glyphicons-question-sign");
+        DocumentType faqQuestion = DocumentType.createLeaf("Question");
+        faqQuestion.setIcon("glyphicons glyphicons-question-sign");
+        faqQuestion.setEditable(true);
         types.put(faqQuestion.getName(), faqQuestion);
 
         // FAQ folder
-        DocumentType faqFolder = new DocumentType("FaqFolder", true, false, false, true, false, true, Arrays.asList(faqQuestion.getName()), null,
-                "glyphicons glyphicons-question-sign");
+        DocumentType faqFolder = DocumentType.createNode("FaqFolder");
+        faqFolder.addSubtypes(faqQuestion.getName());
+        faqFolder.setIcon("glyphicons glyphicons-question-sign");
+        faqFolder.setBrowsable(false);
+        faqFolder.setNavigable(false);
+        faqFolder.setOrdered(true);
+        faqFolder.setEditable(true);
         types.put(faqFolder.getName(), faqFolder);
     }
 
