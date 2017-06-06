@@ -33,8 +33,6 @@ import fr.toutatice.portail.cms.nuxeo.api.portlet.PortletModule;
  */
 public class SliderTemplateModule extends PortletModule {
 
-    /** Type of document displayed in slider. */
-    public static final String SLIDER_DOC_TYPE = "docType";
     /** Temporisation of slider */
     public static final String SLIDER_TIMER = "timer";
 

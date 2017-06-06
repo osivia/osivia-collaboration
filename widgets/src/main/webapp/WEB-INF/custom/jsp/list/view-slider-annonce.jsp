@@ -6,11 +6,8 @@
 <%@ page isELIgnored="false"%>
 
 
-<script src="/osivia-services-widgets/js/bxslider-fragment-integration.js"></script>
-
-
 <div class="bxslider-container">
-    <ul class="list-unstyled bxfgtSlider clearfix" data-timer="${timer}">
+    <ul class="list-unstyled bxslider bxslider-default clearfix" data-pause="${timer}">
         <c:forEach var="document" items="${documents}" varStatus="status">
             <!-- Document properties -->
             <c:set var="imageUrl"><ttc:pictureLink document="${document}" property="annonce:image" /></c:set>
@@ -19,7 +16,7 @@
 
 
             <li class="bxslider-slide">
-                <article>
+                <article class="clearfix">
                     <div class="row">
                         <c:if test="${not empty imageUrl}">
                             <div class="col-md-4 col-lg-3">
@@ -42,7 +39,6 @@
                             <!-- Date -->
                             <p class="text-muted">
                                 <span>${created}</span>
-
                             </p>
                         
                             <!-- Resume -->
