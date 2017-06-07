@@ -7,6 +7,7 @@ import java.util.List;
 import org.osivia.portal.api.directory.v2.model.Person;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentAttachmentDTO;
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 
 /**
  * Thread object abstract super-class.
@@ -15,6 +16,8 @@ import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentAttachmentDTO;
  */
 public abstract class ThreadObject {
 
+	/** Document */
+	private DocumentDTO document;
     /** Message. */
     private String message;
     /** Author. */
@@ -35,7 +38,6 @@ public abstract class ThreadObject {
         super();
     }
 
-
     /**
      * Getter for message.
      * 
@@ -55,6 +57,22 @@ public abstract class ThreadObject {
     }
 
     /**
+     * 
+     * @return
+     */
+    public DocumentDTO getDocument() {
+		return document;
+	}
+
+    /**
+     * 
+     * @param document
+     */
+	public void setDocument(DocumentDTO document) {
+		this.document = document;
+	}
+
+	/**
      * Getter for author.
      * 
      * @return the author

@@ -38,9 +38,11 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.domain.CommentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentAttachmentDTO;
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.domain.ThreadPostDTO;
 import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCommentsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import fr.toutatice.portail.cms.nuxeo.api.services.tag.INuxeoTagService;
 
 /**
@@ -257,8 +259,13 @@ public class ForumServiceImpl implements IForumService, ApplicationContextAware 
     private Thread toViewObject(NuxeoController nuxeoController, Document document) throws PortletException {
         try {
             Thread vo = this.applicationContext.getBean(Thread.class);
-            vo.setAuthor(document.getString("dc:creator"));
+            
+            // Get Document for raw message 
+            DocumentDTO dto = DocumentDAO.getInstance().toDTO(document);
+            vo.setDocument(dto);
+            
             vo.setMessage(document.getString("ttcth:message"));
+            vo.setAuthor(document.getString("dc:creator"));
 
             // Date
             Date date = document.getDate("dc:created");
@@ -267,6 +274,7 @@ public class ForumServiceImpl implements IForumService, ApplicationContextAware 
             // Commentable
             boolean isCommentable = this.isThreadCommentable(nuxeoController, document);
             vo.setCommentable(isCommentable);
+            
 
             // Person
             Person person = this.personService.getPerson(vo.getAuthor());

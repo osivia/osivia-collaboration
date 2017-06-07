@@ -4,6 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
+<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc"%>
 
 <%@ page contentType="text/html" isELIgnored="false"%>
 
@@ -85,8 +86,8 @@
 
             <div class="panel panel-default">
                 <!-- Message -->
-                <div class="panel-body">
-                    <div>${thread.message}</div>
+                <div class="panel-body no-ajax-link">
+                    <div><ttc:transform document="${thread.document}" property="ttcth:message" /></div>
                 </div>
 
                 <!-- Attachements -->
