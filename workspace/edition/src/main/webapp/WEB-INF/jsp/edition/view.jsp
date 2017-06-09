@@ -59,6 +59,21 @@
                     </div>
                 </spring:bind>
                 
+                <!-- Template -->
+                <c:if test="${editionForm.root}">
+                    <div class="form-group">
+                        <form:label path="template" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_TEMPLATE" /></form:label>
+                        <div class="col-sm-9">
+                            <form:select path="template" cssClass="form-control">
+                                <form:option value=""><op:translate key="WORKSPACE_DEFAULT_TEMPLATE"/></form:option>
+                                <c:forEach var="template" items="${editionForm.templates}">
+                                    <form:option value="${template.key}">${template.value}</form:option>
+                                </c:forEach>
+                            </form:select>
+                        </div>
+                    </div>
+                </c:if>
+                
                 <!-- Workspace type -->
                 <c:if test="${editionForm.root}">
                     <spring:bind path="workspaceType">

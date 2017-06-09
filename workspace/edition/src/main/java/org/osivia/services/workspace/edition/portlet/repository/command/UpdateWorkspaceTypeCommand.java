@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.edition.portlet.repository;
+package org.osivia.services.workspace.edition.portlet.repository.command;
 
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;

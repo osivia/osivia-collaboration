@@ -2,6 +2,7 @@ package org.osivia.services.workspace.edition.portlet.model;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.portlet.Refreshable;
@@ -27,6 +28,10 @@ public class WorkspaceEditionForm {
     private String description;
     /** Workspace root type indicator. */
     private boolean root;
+    /** Workspace template (only for root). */
+    private String template;
+    /** Workspace templates (only for root). */
+    private Map<String, String> templates;
     /** Workspace type (only for root). */
     private WorkspaceType workspaceType;
     /** Initial workspace type (only for root). */
@@ -35,6 +40,7 @@ public class WorkspaceEditionForm {
     private Image vignette;
     /** Workspace banner (only for root). */
     private Image banner;
+
     /** Workspace tasks. */
     private List<Task> tasks;
     /** Workspace editorial. */
@@ -110,6 +116,42 @@ public class WorkspaceEditionForm {
      */
     public void setRoot(boolean root) {
         this.root = root;
+    }
+
+    /**
+     * Getter for template.
+     * 
+     * @return the template
+     */
+    public String getTemplate() {
+        return template;
+    }
+
+    /**
+     * Setter for template.
+     * 
+     * @param template the template to set
+     */
+    public void setTemplate(String template) {
+        this.template = template;
+    }
+
+    /**
+     * Getter for templates.
+     * 
+     * @return the templates
+     */
+    public Map<String, String> getTemplates() {
+        return templates;
+    }
+
+    /**
+     * Setter for templates.
+     * 
+     * @param templates the templates to set
+     */
+    public void setTemplates(Map<String, String> templates) {
+        this.templates = templates;
     }
 
     /**
