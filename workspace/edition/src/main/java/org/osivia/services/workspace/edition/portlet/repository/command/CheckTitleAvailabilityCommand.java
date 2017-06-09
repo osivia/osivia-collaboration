@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.edition.portlet.repository;
+package org.osivia.services.workspace.edition.portlet.repository.command;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Constants;

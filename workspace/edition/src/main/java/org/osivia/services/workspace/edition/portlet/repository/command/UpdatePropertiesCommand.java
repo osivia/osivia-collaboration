@@ -1,12 +1,14 @@
-package org.osivia.services.workspace.edition.portlet.repository;
+package org.osivia.services.workspace.edition.portlet.repository.command;
 
 import java.io.File;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -50,9 +52,16 @@ public class UpdatePropertiesCommand implements INuxeoCommand {
 
         // Workspace
         Document workspace = this.form.getDocument();
-        documentService.setProperty(workspace, "dc:title", this.form.getTitle());
-        documentService.setProperty(workspace, "dc:description", this.form.getDescription());
         
+        // Updated properties
+        PropertyMap properties = new PropertyMap();
+        properties.set("dc:title", this.form.getTitle());
+        properties.set("dc:description", this.form.getDescription());
+        if (this.form.isRoot()) {
+            properties.set("ttc:pageTemplate", StringUtils.trimToNull(this.form.getTemplate()));
+        }
+        documentService.update(workspace, properties, this.form.isRoot());
+
         // Vignette
         Image vignette = this.form.getVignette();
         if (vignette.isUpdated()) {

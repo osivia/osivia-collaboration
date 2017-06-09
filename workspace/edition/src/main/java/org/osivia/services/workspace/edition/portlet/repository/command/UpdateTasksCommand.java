@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.edition.portlet.repository;
+package org.osivia.services.workspace.edition.portlet.repository.command;
 
 import java.util.ArrayList;
 import java.util.List;
