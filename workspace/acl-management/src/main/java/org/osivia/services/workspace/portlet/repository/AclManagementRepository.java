@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.portlet.repository;
 
 import java.util.List;
+import java.util.SortedSet;
 
 import javax.portlet.PortletException;
 
@@ -8,6 +9,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.AclEntries;
 import org.osivia.services.workspace.portlet.model.Record;
 import org.osivia.services.workspace.portlet.model.Role;
+import org.osivia.services.workspace.portlet.model.SynthesisNode;
 
 /**
  * Workspace ACL management repository interface.
@@ -80,16 +82,6 @@ public interface AclManagementRepository {
 
 
     /**
-     * Change inheritance.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param entries ACL entries
-     * @throws PortletException
-     */
-    void changeInheritance(PortalControllerContext portalControllerContext, AclEntries entries) throws PortletException;
-
-
-    /**
      * Update ACL entries.
      *
      * @param portalControllerContext portal controller context
@@ -98,6 +90,16 @@ public interface AclManagementRepository {
      * @throws PortletException
      */
     void update(PortalControllerContext portalControllerContext, AclEntries entries, List<Role> roles) throws PortletException;
+
+
+    /**
+     * Cancel update ACL entries.
+     *
+     * @param portalControllerContext portal controller context
+     * @param entries ACL entries
+     * @throws PortletException
+     */
+    void cancelUpdate(PortalControllerContext portalControllerContext, AclEntries entries) throws PortletException;
 
 
     /**
@@ -120,5 +122,16 @@ public interface AclManagementRepository {
      * @throws PortletException
      */
     void reset(PortalControllerContext portalControllerContext, AclEntries entries) throws PortletException;
+
+
+    /**
+     * Get synthesis nodes.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspaceId workspace identifier
+     * @return synthesis nodes
+     * @throws PortletException
+     */
+    SortedSet<SynthesisNode> getSynthesisNodes(PortalControllerContext portalControllerContext, String workspaceId) throws PortletException;
 
 }

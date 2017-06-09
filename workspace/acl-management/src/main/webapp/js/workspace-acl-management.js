@@ -149,6 +149,15 @@ $JQry(function() {
 	});
 	
 	
+	$JQry(".workspace-acl-management input[type=checkbox][name=publicEntry]").change(function(event) {
+		var $target = $JQry(event.target),
+			$formGroup = $target.closest(".form-group"),
+			$submit = $formGroup.find("input[type=submit]");
+		
+		$submit.click();
+	});
+	
+	
 	$JQry(".workspace-acl-management input[type=radio][name=inherited]").change(function(event) {
 		var $target = $JQry(event.target),
 			$formGroup = $target.closest(".form-group"),

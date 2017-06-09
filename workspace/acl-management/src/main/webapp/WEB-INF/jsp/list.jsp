@@ -15,6 +15,10 @@
     <portlet:param name="alt" value="${sort ne 'role' or not alt}"/>
 </portlet:renderURL>
 
+<portlet:renderURL var="synthesisUrl">
+    <portlet:param name="synthesis" value="true" />
+</portlet:renderURL>
+
 <portlet:actionURL name="update" var="updateUrl">
     <portlet:param name="sort" value="${sort}" />
     <portlet:param name="alt" value="${alt}" />
@@ -30,7 +34,7 @@
 
 
 <!-- Modified ACL information -->
-<c:if test="${not entries.inherited or not empty entries.entries}">
+<c:if test="${entries.publicEntry or not entries.inherited or not empty entries.entries}">
     <div class="alert alert-info" role="alert">
         <div class="media">
             <div class="media-left media-middle">
@@ -42,7 +46,34 @@
                 <span>&ndash;</span>
                 <span><op:translate key="MESSAGE_INFORMATION_MODIFIED_ACL" /></span>
                 <br>
-                <a href="${resetUrl}" class="alert-link"><op:translate key="ACL_RESET" /></a>
+                <a href="javascript:;" class="alert-link no-ajax-link" data-toggle="collapse" data-target="#${namespace}-confirm-reset"><op:translate key="ACL_RESET" /></a>
+            </div>
+        </div>
+        
+        <div id="${namespace}-confirm-reset" class="collapse">
+            <div class="row">
+                <div class="col-sm-offset-2 col-sm-8">
+                    <p>&nbsp;</p>
+                    <div class="panel panel-info">
+                        <div class="panel-body">
+                            <div class="text-center">
+                                <p>
+                                    <span><op:translate key="RESET_WARNING_MESSAGE" /></span>
+                                </p>
+                                
+                                <div>
+                                    <a href="${resetUrl}" class="btn btn-primary">
+                                        <span><op:translate key="CONFIRM" /></span>
+                                    </a>
+                                    
+                                    <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-confirm-reset">
+                                        <span><op:translate key="CANCEL" /></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -55,6 +86,41 @@
             <fieldset>
                 <legend><op:translate key="LIST_ACL_ENTRIES_LEGEND" /></legend>
         
+                <!-- Public -->
+                <div class="form-group">
+                    <input type="submit" name="change-public" class="hidden">
+                    
+                    <div class="row">
+                        <div class="col-xs-9">
+                            <div class="checkbox">
+                                <label>
+                                    <form:checkbox path="publicEntry" />
+                                    <span><op:translate key="PUBLIC_ACL_ENTRY" /></span>
+                                </label>
+                                <p class="help-block">
+                                    <span><op:translate key="PUBLIC_ACL_ENTRY_HELP" /></span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <c:if test="${entries.publicEntry or (entries.publicInheritance and entries.inherited)}">
+                            <div class="col-xs-3">
+                                <div class="form-control-static text-right">
+                                    <span class="label label-success">
+                                        <i class="glyphicons glyphicons-unlock"></i>
+                                        <span class="hidden-xs">
+                                            <c:choose>
+                                                <c:when test="${entries.publicEntry}"><op:translate key="PUBLIC_LABEL" /></c:when>
+                                                <c:otherwise><op:translate key="INHERITED_PUBLIC_LABEL" /></c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        </c:if>
+                    </div>
+                </div>
+        
                 <!-- Inheritance -->
                 <div class="form-group">
                     <input type="submit" name="change-inheritance" class="hidden">
@@ -64,6 +130,9 @@
                             <form:radiobutton path="inherited" value="true" />
                             <span><op:translate key="INHERITED_ACL_ENTRIES" /></span>
                         </label>
+                        <p class="help-block">
+                            <span><op:translate key="INHERITED_ACL_ENTRIES_HELP" /></span>
+                        </p>
                     </div>
                 
                     <div class="radio">
@@ -71,6 +140,9 @@
                             <form:radiobutton path="inherited" value="false" />
                             <span><op:translate key="LOCAL_ACL_ENTRIES" /></span>
                         </label>
+                        <p class="help-block">
+                            <span><op:translate key="LOCAL_ACL_ENTRIES_HELP" /></span>
+                        </p>
                     </div>
                 </div>
         
@@ -111,15 +183,11 @@
                     
                     <!-- Body -->
                     <c:forEach var="entry" items="${entries.entries}" varStatus="status">
-                        <c:if test="${entry.deleted}">
-                            <c:set var="collapseStatus" value="in" />
-                        </c:if>
-                    
                         <div class="table-row">
                             <form:hidden path="entries[${status.index}].updated" />
                             <form:hidden path="entries[${status.index}].deleted" />
 
-                            <fieldset>
+                            <fieldset ${entry.deleted ? 'disabled' : ''}>
                                 <div class="row">
                                     <!-- Entry -->
                                     <div class="col-xs-12 col-sm-8">
@@ -180,7 +248,7 @@
                     </c:if>
                 </div>
                 
-                <div id="${namespace}-buttons" class="form-group collapse ${collapseStatus}">
+                <div id="${namespace}-buttons" class="form-group collapse ${entries.displayControls ? 'in' : ''}">
                     <!-- Save -->
                     <button type="submit" name="save" class="btn btn-primary">
                         <i class="glyphicons glyphicons-floppy-disk"></i>
@@ -188,11 +256,19 @@
                     </button>
                     
                     <!-- Cancel -->
-                    <button type="reset" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-buttons">
+                    <button type="submit" name="cancel" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-buttons">
                         <span><op:translate key="CANCEL" /></span>
                     </button>
                 </div>
             </fieldset>
         </form:form>
+        
+        
+        <!-- Synthesis -->
+        <div>
+            <a href="${synthesisUrl}" class="btn btn-link">
+                <span><op:translate key="VIEW_SYNTHESIS" /></span>
+            </a>
+        </div>
     </div>
 </div>

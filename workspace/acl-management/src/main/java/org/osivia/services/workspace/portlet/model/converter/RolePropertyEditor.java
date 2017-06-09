@@ -4,6 +4,9 @@ import java.beans.PropertyEditorSupport;
 
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.services.workspace.portlet.model.Role;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,9 +14,14 @@ import org.springframework.stereotype.Component;
  * 
  * @author Cédric Krommenhoek
  * @see PropertyEditorSupport
+ * @see ApplicationContextAware
  */
 @Component
-public class RolePropertyEditor extends PropertyEditorSupport {
+public class RolePropertyEditor extends PropertyEditorSupport implements ApplicationContextAware {
+
+    /** Application context. */
+    private ApplicationContext applicationContext;
+
 
     /**
      * Constructor.
@@ -29,8 +37,17 @@ public class RolePropertyEditor extends PropertyEditorSupport {
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
         WorkspaceRole workspaceRole = WorkspaceRole.fromId(text);
-        Role role = new Role(workspaceRole);
+        Role role = this.applicationContext.getBean(Role.class, workspaceRole);
         this.setValue(role);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
 }

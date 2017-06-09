@@ -47,6 +47,16 @@ public interface AclManagementService {
 
 
     /**
+     * Display controls.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param entries ACL entries
+     * @throws PortletException
+     */
+    void displayControls(PortalControllerContext portalControllerContext, AclEntries entries) throws PortletException;
+
+
+    /**
      * Change inheritance.
      * 
      * @param portalControllerContext portal controller context
@@ -65,6 +75,16 @@ public interface AclManagementService {
      * @throws PortletException
      */
     void update(PortalControllerContext portalControllerContext, AclEntries entries, List<Role> roles) throws PortletException;
+
+
+    /**
+     * Cancel update ACL entries.
+     *
+     * @param portalControllerContext portal controller context
+     * @param entries ACL entries
+     * @throws PortletException
+     */
+    void cancelUpdate(PortalControllerContext portalControllerContext, AclEntries entries) throws PortletException;
 
 
     /**
@@ -98,5 +118,15 @@ public interface AclManagementService {
      * @throws PortletException
      */
     String getRedirectionUrl(PortalControllerContext portalControllerContext, AclEntries entries) throws PortletException;
+
+
+    /**
+     * Get synthesis JSON data.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return JSON data
+     * @throws PortletException
+     */
+    String getSynthesisData(PortalControllerContext portalControllerContext) throws PortletException;
 
 }

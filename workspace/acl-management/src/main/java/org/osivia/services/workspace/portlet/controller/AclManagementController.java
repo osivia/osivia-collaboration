@@ -27,7 +27,10 @@ import org.osivia.services.workspace.portlet.model.comparator.AclEntryComparator
 import org.osivia.services.workspace.portlet.model.converter.RolePropertyEditor;
 import org.osivia.services.workspace.portlet.model.validator.AddFormValidator;
 import org.osivia.services.workspace.portlet.service.AclManagementService;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -55,12 +58,7 @@ import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 @Controller
 @RequestMapping("VIEW")
 @SessionAttributes({"entries", "roles"})
-public class AclManagementController extends CMSPortlet implements PortletConfigAware, PortletContextAware {
-
-    /** Portlet config. */
-    private PortletConfig portletConfig;
-    /** Portlet context. */
-    private PortletContext portletContext;
+public class AclManagementController extends CMSPortlet implements ApplicationContextAware, PortletConfigAware, PortletContextAware {
 
     /** Workspace ACL management service. */
     @Autowired
@@ -73,6 +71,14 @@ public class AclManagementController extends CMSPortlet implements PortletConfig
     /** Add form validator. */
     @Autowired
     private AddFormValidator addFormValidator;
+
+
+    /** Application context. */
+    private ApplicationContext applicationContext;
+    /** Portlet config. */
+    private PortletConfig portletConfig;
+    /** Portlet context. */
+    private PortletContext portletContext;
 
 
     /**
@@ -114,12 +120,31 @@ public class AclManagementController extends CMSPortlet implements PortletConfig
         boolean alt = BooleanUtils.toBoolean(altParameter);
         request.setAttribute("alt", alt);
         if (CollectionUtils.isNotEmpty(entries.getEntries())) {
-            Comparator<AclEntry> comparator = new AclEntryComparator(sortParameter, alt);
+            Comparator<AclEntry> comparator = this.applicationContext.getBean(AclEntryComparator.class, sortParameter, alt);
             Collections.sort(entries.getEntries(), comparator);
         }
 
-
         return "view";
+    }
+
+
+    /**
+     * Change public value action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param entries ACL entries model attribute
+     * @throws PortletException
+     */
+    @ActionMapping(name = "update", params = "change-public")
+    public void changePublic(ActionRequest request, ActionResponse response, @ModelAttribute("entries") AclEntries entries) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        // Display controls
+        this.service.displayControls(portalControllerContext, entries);
+
+        this.copyRenderParameter(request, response);
     }
 
 
@@ -136,6 +161,10 @@ public class AclManagementController extends CMSPortlet implements PortletConfig
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
+        // Display controls
+        this.service.displayControls(portalControllerContext, entries);
+
+        // Change inheritance
         this.service.changeInheritance(portalControllerContext, entries);
 
         this.copyRenderParameter(request, response);
@@ -158,6 +187,25 @@ public class AclManagementController extends CMSPortlet implements PortletConfig
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         this.service.update(portalControllerContext, entries, roles);
+
+        this.copyRenderParameter(request, response);
+    }
+
+
+    /**
+     * Cancel update action mapping.
+     *
+     * @param request action request
+     * @param response action response
+     * @param entries ACL entries model attribute
+     * @throws PortletException
+     */
+    @ActionMapping(name = "update", params = "cancel")
+    public void cancelUpdate(ActionRequest request, ActionResponse response, @ModelAttribute("entries") AclEntries entries) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.cancelUpdate(portalControllerContext, entries);
 
         this.copyRenderParameter(request, response);
     }
@@ -260,7 +308,8 @@ public class AclManagementController extends CMSPortlet implements PortletConfig
      */
     @InitBinder("entries")
     protected void aclEntriesInitBinder(WebDataBinder binder) {
-        binder.setDisallowedFields("workspaceId", "document");
+        binder.setDisallowedFields("publicEntryOriginal", "inheritedOriginal", "publicInheritance", "savedUserEntry", "workspaceId", "document",
+                "displayControls");
         binder.registerCustomEditor(Role.class, this.rolePropertyEditor);
     }
 
@@ -330,6 +379,15 @@ public class AclManagementController extends CMSPortlet implements PortletConfig
         if (alt != null) {
             response.setRenderParameter("alt", alt);
         }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
 
