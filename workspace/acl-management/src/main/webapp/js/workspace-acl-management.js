@@ -3,6 +3,7 @@ $JQry(function() {
 	$JQry(".workspace-acl-management select.select2").each(function(index, element) {
 		var $element = $JQry(element),
 			options = {
+				closeOnSelect : false,
 				theme : "bootstrap"
 			};
 		
