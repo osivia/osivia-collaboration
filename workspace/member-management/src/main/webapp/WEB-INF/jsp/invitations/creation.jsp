@@ -23,7 +23,7 @@
     <div id="shadowbox-${namespace}" class="ajax-shadowbox">
         <div class="progress">
             <div class="progress-bar progress-bar-striped active" role="progressbar">
-                <span><op:translate key="AJAX_REFRESH" /></span>
+                <strong><op:translate key="AJAX_REFRESH" /></strong>
             </div>
         </div>
     </div>

@@ -145,7 +145,7 @@ $JQry(function() {
 		
 		
 		// Update fancybox
-		parent.$JQry.fancybox.update();
+		parent.jQuery.fancybox.getInstance().update();
 	});
 	
 	
