@@ -14,7 +14,7 @@
         <c:forEach var="document" items="${documents}" varStatus="status">
             <!-- Document properties -->
             <c:set var="imageUrl"><ttc:pictureLink document="${document}" property="annonce:image" /></c:set>
-            <c:set var="created"><fmt:formatDate value="${document.properties['dc:created']}" type="date" dateStyle="long" /></c:set>
+            <c:set var="publicationDate"><fmt:formatDate value="${document.properties['ttc:publicationDate']}" type="date" dateStyle="long" /></c:set>
             <c:set var="resume"><ttc:transform document="${document}" property="annonce:resume"/></c:set>
 
 
@@ -39,11 +39,13 @@
                                 <span><ttc:title document="${document}" /></span>
                             </h3>
                             
-                            <!-- Date -->
-                            <p class="text-muted">
-                                <span>${created}</span>
-
-                            </p>
+                            <c:if test="${not empty publicationDate}">
+	                            <!-- Date -->
+	                            <p class="text-muted">
+	                                <span>${publicationDate}</span>
+	
+	                            </p>
+                            </c:if>
                         
                             <!-- Resume -->
                             <div>${resume}</div>
