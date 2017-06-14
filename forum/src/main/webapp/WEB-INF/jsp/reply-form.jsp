@@ -33,7 +33,7 @@
             
             <button type="submit" class="btn btn-primary">
                 <i class="halflings halflings-comments"></i>
-                <span><op:translate key="REPLY" /></span>
+                <span><op:translate key="VALIDATE" /></span>
             </button>
             
             <button type="button" class="btn btn-default" onclick="cancelReply(this)"><op:translate key="CANCEL" /></button>
