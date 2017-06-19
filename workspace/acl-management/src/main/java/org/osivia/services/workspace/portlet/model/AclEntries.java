@@ -28,6 +28,8 @@ public class AclEntries {
     private boolean publicInheritance;
     /** ACL entries. */
     private List<AclEntry> entries;
+    /** Modified ACL entries indicator. */
+    private boolean modified;
     /** Saved user ACL entry. */
     private AclEntry savedUserEntry;
     /** Workspace identifier. */
@@ -153,6 +155,27 @@ public class AclEntries {
     public void setEntries(List<AclEntry> entries) {
         this.entries = entries;
     }
+
+
+    /**
+     * Getter for modified.
+     * 
+     * @return the modified
+     */
+    public boolean isModified() {
+        return modified;
+    }
+
+
+    /**
+     * Setter for modified.
+     * 
+     * @param modified the modified to set
+     */
+    public void setModified(boolean modified) {
+        this.modified = modified;
+    }
+
 
     /**
      * Getter for savedUserEntry.

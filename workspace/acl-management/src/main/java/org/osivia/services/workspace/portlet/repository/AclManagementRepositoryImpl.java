@@ -336,6 +336,8 @@ public class AclManagementRepositoryImpl implements AclManagementRepository, App
 
                     entries.getEntries().add(entry);
                 }
+
+                entries.setModified(publicEntry || !inherited || !entries.getEntries().isEmpty());
             }
         }
 

@@ -34,7 +34,7 @@
 
 
 <!-- Modified ACL information -->
-<c:if test="${entries.publicEntry or not entries.inherited or not empty entries.entries}">
+<c:if test="${entries.modified}">
     <div class="alert alert-info" role="alert">
         <div class="media">
             <div class="media-left media-middle">
@@ -103,14 +103,14 @@
                             </div>
                         </div>
                         
-                        <c:if test="${entries.publicEntry or (entries.publicInheritance and entries.inherited)}">
+                        <c:if test="${entries.publicEntryOriginal or (entries.publicInheritance and entries.inheritedOriginal)}">
                             <div class="col-xs-3">
                                 <div class="form-control-static text-right">
                                     <span class="label label-success">
                                         <i class="glyphicons glyphicons-unlock"></i>
                                         <span class="hidden-xs">
                                             <c:choose>
-                                                <c:when test="${entries.publicEntry}"><op:translate key="PUBLIC_LABEL" /></c:when>
+                                                <c:when test="${entries.publicEntryOriginal}"><op:translate key="PUBLIC_LABEL" /></c:when>
                                                 <c:otherwise><op:translate key="INHERITED_PUBLIC_LABEL" /></c:otherwise>
                                             </c:choose>
                                         </span>
