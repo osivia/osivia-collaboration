@@ -70,6 +70,7 @@
                     <c:set var="lastCommentAuthor" value="${thread.properties['ttcth:lastCommentAuthor']}" />
                     <c:set var="lastCommentDate" value="${thread.properties['ttcth:lastCommentDate']}" />
                     <c:set var="nbAnswers" value="${thread.properties['ttcth:nbComments']}" />
+                    <c:set var="closed" value="${thread.properties['ttc:commentsForbidden']}" />
                 
                     <li class="list-group-item">
                         <div class="media">
@@ -101,6 +102,15 @@
                                         <span><op:formatRelativeDate value="${lastCommentDate}" /></span>
                                         <span><op:translate key="BY" /></span>
                                         <span><ttc:user name="${lastCommentAuthor}" /></span>
+                                    </c:if>
+                                    
+                                    <c:if test="${not empty closed and (closed)}">
+	                                    <span class="label label-default">
+	                                        <i class="glyphicons glyphicons-lock"></i>
+	                                        <span class="hidden-xs">
+	                                        	<op:translate key="TOPIC_CLOSED" />
+	                                        </span>
+	                                    </span>
                                     </c:if>
                                 </p>
                             </div>
