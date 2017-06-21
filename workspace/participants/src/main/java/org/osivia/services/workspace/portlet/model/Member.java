@@ -6,6 +6,8 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+
 /**
  * Workspace member java-bean.
  * 
@@ -27,6 +29,8 @@ public class Member {
     private String email;
     /** Member joined date. */
     private Date joinedDate;
+    /** Nuxeo profile */
+    private DocumentDTO nxProfile;
 
 
     /**
@@ -146,4 +150,21 @@ public class Member {
         this.joinedDate = joinedDate;
     }
 
+
+	/**
+	 * @return the nxProfile
+	 */
+	public DocumentDTO getNxProfile() {
+		return nxProfile;
+	}
+
+
+	/**
+	 * @param nxProfile the nxProfile to set
+	 */
+	public void setNxProfile(DocumentDTO nxProfile) {
+		this.nxProfile = nxProfile;
+	}
+
+    
 }

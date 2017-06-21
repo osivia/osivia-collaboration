@@ -16,6 +16,9 @@ import javax.naming.Name;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -26,9 +29,12 @@ import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceMember;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.directory.v2.service.WorkspaceService;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
+import org.osivia.portal.api.directory.v2.service.PersonService;
+import org.osivia.portal.api.urls.Link;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -50,10 +56,8 @@ import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoServiceFactory;
-import fr.toutatice.portail.cms.nuxeo.api.services.tag.INuxeoTagService;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 /**
  * Participants portlet repository implementation.
@@ -77,6 +81,9 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
     @Autowired
     private WorkspaceService workspaceService;
 
+    /** Person service. */
+    @Autowired
+    private PersonService personService;
 
     /** Application context. */
     private ApplicationContext applicationContext;
@@ -526,12 +533,6 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
      * @throws PortletException
      */
     private Member getMember(PortalControllerContext portalControllerContext, Person person) throws PortletException {
-        // Tag service
-        INuxeoTagService tagService = NuxeoServiceFactory.getTagService();
-
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-
         // Identifier
         String id = person.getUid();
         // Display name
@@ -540,7 +541,18 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
             displayName = id;
         }
         // URL
-        String url = tagService.getUserProfileLink(nuxeoController, id, displayName).getUrl();
+        String url = "#";
+        Link l = null; 
+		try {
+			l = personService.getCardUrl(portalControllerContext, person);
+		} catch (PortalException e) {
+			// Do nothing
+		}
+		
+        if(l != null) {
+        	url = l.getUrl();
+        }
+        
         // Avatar URL
         String avatarUrl = person.getAvatar().getUrl();
         // Email
@@ -553,6 +565,13 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
         member.setAvatarUrl(avatarUrl);
         member.setDisplayName(displayName);
         member.setEmail(email);
+        try {
+        	DocumentDTO dto = DocumentDAO.getInstance().toDTO((Document) personService.getEcmProfile(portalControllerContext, person));
+        	
+			member.setNxProfile(dto);
+		} catch (PortalException e) {
+			// Do nothing
+		}
 
         return member;
     }
