@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.services.widgets.plugin.list.SliderTemplateModule;
@@ -73,16 +74,19 @@ public class SliderListEditableWindow extends CriteriaListEditableWindow {
         properties.put(SliderTemplateModule.SLIDER_TIMER, (String) displayCriteria.get("timer"));
         
         
-        //PropertyMap requestCriteria = (PropertyMap) schema.get("requestCriteria");
+        PropertyMap requestCriteria = (PropertyMap) schema.get("requestCriteria");
         //properties.put(SliderTemplateModule.SLIDER_DOC_TYPE, StringUtils.lowerCase(requestCriteria.getString("docType")));
         
-        String style = (String) displayCriteria.get("style");
+        StringBuilder style = new StringBuilder();
+        style.append("slider");
         // for specific types, show view-slider-picture, view-slider-annonce, ...
-//        if (!ALL_DOC_TYPES.equals(requestCriteria.getString("docType"))) {
-//        	style = style.concat("-").concat(requestCriteria.getString("docType"));
-//        }
+        String docType = requestCriteria.getString("docType");
+        if (!ALL_DOC_TYPES.equals(docType)) {
+            style.append("-");
+            style.append(StringUtils.lowerCase(docType));
+        }
         
-		properties.put(ViewList.TEMPLATE_WINDOW_PROPERTY, style);
+        properties.put(ViewList.TEMPLATE_WINDOW_PROPERTY, style.toString());
         
         return properties;
     }
