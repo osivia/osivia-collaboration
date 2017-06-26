@@ -112,9 +112,9 @@ public class ForumPlugin extends AbstractPluginPortlet {
         DocumentType forum = DocumentType.createNode("Forum");
         forum.addSubtypes(forum.getName(), thread.getName());
         forum.setIcon("glyphicons glyphicons-conversation");
-        thread.setForceContextualization(true);
-        thread.setEditable(true);
-        thread.setMovable(true);
+        forum.setForceContextualization(true);
+        forum.setEditable(true);
+        forum.setMovable(true);
         types.put(forum.getName(), forum);
     }
 
@@ -180,9 +180,5 @@ public class ForumPlugin extends AbstractPluginPortlet {
 	protected String getPluginName() {
 		return PLUGIN_NAME;
 	}
-
-
-
-
 
 }
