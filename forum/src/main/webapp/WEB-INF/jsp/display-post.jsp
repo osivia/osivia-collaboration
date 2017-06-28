@@ -79,14 +79,15 @@
                                 <i class="halflings halflings-comments"></i>
                                 <span>${replyTitle}</span>
                             </a>
+                            
+	                        <c:if test="${post.deletable}">
+	                            <a href="#${namespace}-delete-fancybox" onclick="selectDelete(this, '${post.id}')" class="btn btn-default fancybox_inline no-ajax-link">
+	                                <i class="halflings halflings-trash"></i>
+	                                <span>${deleteTitle}</span>
+	                            </a>
+	                        </c:if>                            
                         </c:if>
                         
-                        <c:if test="${post.deletable}">
-                            <a href="#${namespace}-delete-fancybox" onclick="selectDelete(this, '${post.id}')" class="btn btn-default fancybox_inline no-ajax-link">
-                                <i class="halflings halflings-trash"></i>
-                                <span>${deleteTitle}</span>
-                            </a>
-                        </c:if>
                     </div>
                 </div>
             </div>
