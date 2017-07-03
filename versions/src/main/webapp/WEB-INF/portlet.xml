@@ -30,7 +30,7 @@
     
     <portlet>
         <portlet-name>osivia-services-versions-plugin</portlet-name>
-        <portlet-class>org.osivia.services.plugin.VersionsPlugin</portlet-class>
+        <portlet-class>org.osivia.services.versions.plugin.VersionsPlugin</portlet-class>
         
         <expiration-cache>180</expiration-cache>
 
