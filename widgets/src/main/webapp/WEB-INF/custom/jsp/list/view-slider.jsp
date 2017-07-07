@@ -31,12 +31,12 @@
 					
 						<div class="media-body">
 							<!-- Title -->
-							<h3 class="media-heading">
+							<h3 class="h4 media-heading">
                                 <span><ttc:title document="${document}" /></span>
 							</h3>
 							
 					        <!-- Resume -->
-					    	<p class="lead">
+					    	<p>
                                 <span>${description}</span>
                             </p>		
 					

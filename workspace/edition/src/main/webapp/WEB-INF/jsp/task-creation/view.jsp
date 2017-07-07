@@ -49,7 +49,7 @@
                         <div class="radio">
                             <label>
                                 <form:radiobutton path="type" value="${type.value.name}" />
-                                <i class="${type.value.glyph}"></i>
+                                <i class="${type.value.icon}"></i>
                                 <span>${type.key}</span>
                             </label>
                         </div>
