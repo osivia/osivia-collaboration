@@ -1,5 +1,10 @@
 package org.osivia.services.editor.link.portlet.configuration;
 
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.web.IWebIdService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +55,40 @@ public class EditorLinkConfiguration {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("Resource");
         return messageSource;
+    }
+
+
+    /**
+     * Get internationalization bundle factory.
+     *
+     * @return internationalization bundle factory
+     */
+    @Bean
+    public IBundleFactory getBundleFactory() {
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class, IInternationalizationService.MBEAN_NAME);
+        return internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+    }
+
+
+    /**
+     * Get webId service.
+     *
+     * @return webId service
+     */
+    @Bean
+    public IWebIdService getWebIdService() {
+        return Locator.findMBean(IWebIdService.class, IWebIdService.MBEAN_NAME);
+    }
+
+
+    /**
+     * Get document DAO.
+     *
+     * @return DAO
+     */
+    @Bean
+    public DocumentDAO getDocumentDao() {
+        return DocumentDAO.getInstance();
     }
 
 }

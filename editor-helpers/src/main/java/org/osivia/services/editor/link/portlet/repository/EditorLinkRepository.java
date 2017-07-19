@@ -1,0 +1,83 @@
+package org.osivia.services.editor.link.portlet.repository;
+
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
+import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.editor.link.portlet.model.EditorLinkForm;
+
+import javax.portlet.PortletException;
+import javax.sound.sampled.Port;
+import java.util.Map;
+
+/**
+ * Editor link portlet repository interface.
+ *
+ * @author Cédric Krommenhoek
+ */
+public interface EditorLinkRepository {
+
+    /** Select2 results page size. */
+    int SELECT2_RESULTS_PAGE_SIZE = 10;
+
+
+    /**
+     * Get document URL from webId.
+     *
+     * @param portalControllerContext portal controller context
+     * @param webId                   webId
+     * @return URL
+     * @throws PortletException
+     */
+    String getDocumentUrl(PortalControllerContext portalControllerContext, String webId) throws PortletException;
+
+
+    /**
+     * Get document DTO from webId.
+     *
+     * @param portalControllerContext portal controller context
+     * @param webId                   webId
+     * @return document DTO
+     * @throws PortletException
+     */
+    DocumentDTO getDocumentDto(PortalControllerContext portalControllerContext, String webId) throws PortletException;
+
+
+    /**
+     * Search Nuxeo documents.
+     *
+     * @param portalControllerContext portal controller context
+     * @param basePath                search base path
+     * @param filter                  search filter
+     * @param page                    search pagination page number
+     * @return paginable Nuxeo documents
+     * @throws PortletException
+     */
+    PaginableDocuments searchDocuments(PortalControllerContext portalControllerContext, String basePath, String filter, int page) throws PortletException;
+
+
+    /**
+     * Get document properties.
+     *
+     * @param document Nuxeo document
+     * @return properties
+     * @throws PortletException
+     */
+    Map<String, String> getDocumentProperties(PortalControllerContext portalControllerContext, Document document) throws PortletException;
+
+
+    /**
+     * Create editor link form.
+     *
+     * @param portalControllerContext portal controller context
+     * @param url                     URL
+     * @param text                    text
+     * @param title                   title
+     * @param onlyText                only text indicator
+     * @return form
+     * @throws PortletException
+     */
+    EditorLinkForm createForm(PortalControllerContext portalControllerContext, String url, String text, String title, boolean onlyText) throws PortletException;
+
+}

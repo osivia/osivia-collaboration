@@ -13,4 +13,17 @@
 
     <name>OSIVIA Services - Editor helpers</name>
 
+
+    <build>
+        <plugins>
+
+            <!-- LESS -->
+            <plugin>
+                <groupId>org.lesscss</groupId>
+                <artifactId>lesscss-maven-plugin</artifactId>
+            </plugin>
+
+        </plugins>
+    </build>
+
 </project>
