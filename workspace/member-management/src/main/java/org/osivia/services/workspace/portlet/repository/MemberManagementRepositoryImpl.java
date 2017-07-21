@@ -27,11 +27,13 @@ import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.directory.v2.service.PersonUpdateService;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.batch.IBatchService;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.notifications.NotificationsType;
@@ -962,5 +964,21 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
+
+
+	@Override
+	public void checkIntegrity(PortalControllerContext portalControllerContext, String workspaceId) {
+		
+		IBatchService batchService = Locator.findMBean(IBatchService.class, IBatchService.MBEAN_NAME);
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("workspaceId", workspaceId);
+		try {
+			batchService.startBatchImmediatly("DirectoryIntegrity", parameters );
+		} catch (PortalException e) {
+			log.error("Unable to start integrity check");
+		}
+
+	}
+	
 
 }

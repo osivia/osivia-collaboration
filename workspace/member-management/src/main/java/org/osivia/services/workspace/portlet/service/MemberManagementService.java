@@ -219,4 +219,11 @@ public interface MemberManagementService {
      */
     String getInvitationRequestsHelp(PortalControllerContext portalControllerContext) throws PortletException;
 
+
+    /**
+     * Check current workspace integrity
+     */
+	void checkIntegrity(PortalControllerContext portalControllerContext,
+			String workspaceId);
+
 }

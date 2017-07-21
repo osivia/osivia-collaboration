@@ -250,4 +250,11 @@ public interface MemberManagementRepository {
      */
     void createInvitationRequest(PortalControllerContext portalControllerContext, String workspaceId, String uid) throws PortletException;
 
+
+    /**
+     * Check current workspace integrity
+     */
+	void checkIntegrity(PortalControllerContext portalControllerContext,
+			String workspaceId);
+
 }

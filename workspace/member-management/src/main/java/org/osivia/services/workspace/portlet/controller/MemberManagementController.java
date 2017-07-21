@@ -63,7 +63,7 @@ public class MemberManagementController implements PortletContextAware {
      * @throws PortletException
      */
     @RenderMapping
-    public String view(RenderRequest request, RenderResponse response, @ModelAttribute("members") MembersForm form,
+    public String view(RenderRequest request, RenderResponse response, @ModelAttribute("members") MembersForm form, @ModelAttribute("options") MemberManagementOptions options,
             @RequestParam(value = "sort", defaultValue = "date") String sort, @RequestParam(value = "alt", defaultValue = "true") String alt)
             throws PortletException {
         // Portal controller context
@@ -76,6 +76,9 @@ public class MemberManagementController implements PortletContextAware {
         this.service.sortMembers(portalControllerContext, form, sort, BooleanUtils.toBoolean(alt));
         request.setAttribute("sort", sort);
         request.setAttribute("alt", alt);
+        
+        
+        this.service.checkIntegrity(portalControllerContext, options.getWorkspaceId());
 
         return "members/view";
     }

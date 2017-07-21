@@ -667,4 +667,12 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         ApplicationContextProvider.setApplicationContext(applicationContext);
     }
 
+
+	@Override
+	public void checkIntegrity(PortalControllerContext portalControllerContext, String workspaceId) {
+		
+		this.repository.checkIntegrity(portalControllerContext, workspaceId);
+		
+	}
+
 }
