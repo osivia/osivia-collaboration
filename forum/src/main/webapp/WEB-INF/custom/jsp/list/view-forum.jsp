@@ -40,7 +40,7 @@
                                                         
                                 <!-- Description -->
                                 <c:if test="${not empty description}">
-                                    <p>${description}</p>
+                                    <p class="pre-wrap">${description}</p>
                                 </c:if>
                             </div>
                         </div>
@@ -79,13 +79,13 @@
                                 </div>
                             </c:if>
                             
-                            <div class="media-body">
+                            <div class="media-body media-middle">
                                 <h3 class="h4 media-heading">
                                     <a href="${url}" class="no-ajax-link">${thread.title}</a>
                                 </h3>
                             
                                 <c:if test="${not empty description}">
-                                    <p>${description}</p>
+                                    <p class="pre-wrap">${description}</p>
                                 </c:if>
                                 
                                 <p class="text-muted">
@@ -106,7 +106,7 @@
                             </div>
                             
                             <c:if test="${not empty nbAnswers}">
-                                <div class="media-right">
+                                <div class="media-right media-middle">
                                     <div class="text-center">
                                         <div class="h2 media-heading">${nbAnswers}</div>
                                         <div>

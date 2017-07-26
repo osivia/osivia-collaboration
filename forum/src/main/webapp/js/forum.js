@@ -1,4 +1,3 @@
-
 $JQry(document).ready(function() {
 	
 	$JQry(".forum > .collapse").on("shown.bs.collapse", function() {

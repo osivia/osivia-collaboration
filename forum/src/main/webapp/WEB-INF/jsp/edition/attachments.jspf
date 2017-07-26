@@ -1,0 +1,41 @@
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<div class="form-group">
+    <form:label path="attachments.upload" cssClass="col-sm-3 col-lg-2 control-label"><op:translate key="FORUM_ATTACHMENTS"/></form:label>
+    <div class="col-sm-9 col-lg-10">
+        <!-- Attachments -->
+        <form:hidden path="attachments.deletedIndex"/>
+        <input type="submit" name="delete-attachment" class="hidden">
+        <c:if test="${not empty form.attachments.files}">
+            <ul class="list-unstyled">
+                <c:forEach var="file" items="${form.attachments.files}" varStatus="status">
+                    <li class="form-control-static">
+                        <!-- Name -->
+                        <span>${file.fileName}</span>
+
+                        <!-- Delete -->
+                        <c:set var="title"><op:translate key="FORUM_ATTACHMENT_DELETE"/></c:set>
+                        <button type="button" name="delete-attachment" title="${title}" class="btn btn-xs btn-link" data-toggle="tooltip"
+                                data-placement="bottom" data-index="${status.index}">
+                            <i class="glyphicons glyphicons-bin"></i>
+                            <span class="sr-only">${title}</span>
+                        </button>
+                    </li>
+                </c:forEach>
+            </ul>
+        </c:if>
+
+        <!-- Upload -->
+        <label class="btn btn-default btn-file">
+            <i class="glyphicons glyphicons-plus"></i>
+            <span><op:translate key="FORUM_ATTACHMENT_UPLOAD"/></span>
+            <%--<form:input type="file" path="attachments.upload"/>--%>
+            <input type="file" name="attachments.upload" multiple>
+        </label>
+        <input type="submit" name="upload-attachment" class="hidden">
+    </div>
+</div>

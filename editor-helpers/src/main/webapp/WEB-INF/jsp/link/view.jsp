@@ -109,7 +109,7 @@
             <div class="col-sm-offset-3 col-sm-9 col-lg-offset-2 col-lg-10">
                 <!-- Submit -->
                 <button type="submit" class="btn btn-primary">
-                    <span><op:translate key="OK" /></span>
+                    <span><op:translate key="VALIDATE" /></span>
                 </button>
 
                 <!-- Remove -->

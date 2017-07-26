@@ -1,24 +1,24 @@
-<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
-<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc"%>
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
 
-<%@ page contentType="text/html" isELIgnored="false"%>
-
-
-<portlet:defineObjects />
-
-<portlet:actionURL name="delete" var="deleteActionURL" />
+<%@ page contentType="text/html" isELIgnored="false" %>
 
 
-<c:set var="namespace" scope="request"><portlet:namespace /></c:set>
+<portlet:defineObjects/>
 
-<c:set var="addTitle"><op:translate key="ADD_POST" /></c:set>
-<c:set var="replyTitle" scope="request"><op:translate key="REPLY" /></c:set>
-<c:set var="deleteTitle" scope="request"><op:translate key="DELETE" /></c:set>
+
+<portlet:actionURL name="delete" var="deleteUrl"/>
+
+<c:set var="namespace" scope="request"><portlet:namespace/></c:set>
+
+<c:set var="addTitle"><op:translate key="ADD_POST"/></c:set>
+<c:set var="replyTitle" scope="request"><op:translate key="REPLY"/></c:set>
+<c:set var="deleteTitle" scope="request"><op:translate key="DELETE"/></c:set>
 
 
 <div class="forum forum-thread">
@@ -80,14 +80,14 @@
                 <!-- Date -->
                 <span class="text-muted">
                     <span>&ndash;</span>
-                    <span><op:formatRelativeDate value="${thread.date}" /></span>
+                    <span><op:formatRelativeDate value="${thread.date}"/></span>
                 </span>
             </p>
 
             <div class="panel panel-default">
                 <!-- Message -->
                 <div class="panel-body no-ajax-link">
-                    <div><ttc:transform document="${thread.document}" property="ttcth:message" /></div>
+                    <div><ttc:transform document="${thread.document}" property="ttcth:message"/></div>
                 </div>
 
                 <!-- Attachements -->
@@ -121,8 +121,8 @@
 
 
     <c:forEach var="child" items="${posts}">
-        <c:set var="post" value="${child}" scope="request" />
-        <jsp:include page="display-post.jsp" />
+        <c:set var="post" value="${child}" scope="request"/>
+        <jsp:include page="display-post.jsp"/>
     </c:forEach>
 
 
@@ -141,30 +141,30 @@
 
     <!-- Add post form -->
     <div id="${namespace}-add-post-form" class="collapse">
-        <c:set var="root" value="true" scope="request" />
-        <c:remove var="parentId" scope="request" />
-        <jsp:include page="reply-form.jsp" />
+        <c:set var="root" value="true" scope="request"/>
+        <c:remove var="parentId" scope="request"/>
+        <jsp:include page="reply-form.jsp"/>
     </div>
 
 
     <!-- Delete confirmation fancybox -->
     <div class="hidden">
         <div id="${namespace}-delete-fancybox" class="delete-fancybox">
-            <form action="${deleteActionURL}" method="post" role="form">
+            <form action="${deleteUrl}" method="post" role="form">
                 <input type="hidden" name="id">
 
                 <p class="help-block">
-                    <span><op:translate key="COMMENT_SUPPRESSION_CONFIRM_MESSAGE" /></span>
+                    <span><op:translate key="COMMENT_SUPPRESSION_CONFIRM_MESSAGE"/></span>
                 </p>
 
                 <div class="text-center">
                     <button type="submit" class="btn btn-warning">
                         <i class="halflings halflings-alert"></i>
-                        <span><op:translate key="YES" /></span>
+                        <span><op:translate key="YES"/></span>
                     </button>
 
                     <button type="button" class="btn btn-default" onclick="closeFancybox()">
-                        <op:translate key="NO" />
+                        <op:translate key="NO"/>
                     </button>
                 </div>
             </form>

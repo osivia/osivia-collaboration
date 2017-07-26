@@ -28,10 +28,13 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.player.IPlayerModule;
 import org.osivia.portal.api.taskbar.TaskbarFactory;
 import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItems;
+import org.osivia.services.forum.edition.portlet.repository.ForumEditionRepository;
+import org.osivia.services.forum.plugin.menubar.ForumMenubarModule;
 import org.osivia.services.forum.plugin.player.ForumPlayer;
 import org.osivia.services.forum.plugin.portlet.ForumListTemplateModule;
 
@@ -89,6 +92,8 @@ public class ForumPlugin extends AbstractPluginPortlet {
         this.customizeListTemplates(context);
         // Taskbar items
         this.customizeTaskbarItems(context);
+        // Menubar modules
+        this.customizeMenubarModules(context);
     }
 
 
@@ -102,20 +107,20 @@ public class ForumPlugin extends AbstractPluginPortlet {
         Map<String, DocumentType> types = this.getDocTypes(context);
 
         // Forum thread
-        DocumentType thread = DocumentType.createLeaf("Thread");
+        DocumentType thread = DocumentType.createLeaf(ForumEditionRepository.DOCUMENT_TYPE_THREAD);
         thread.setIcon("glyphicons glyphicons-chat");
         thread.setForceContextualization(true);
         thread.setEditable(true);
-        types.put(thread.getName(), thread);
+        types.put(ForumEditionRepository.DOCUMENT_TYPE_THREAD, thread);
 
         // Forum
-        DocumentType forum = DocumentType.createNode("Forum");
-        forum.addSubtypes(forum.getName(), thread.getName());
+        DocumentType forum = DocumentType.createNode(ForumEditionRepository.DOCUMENT_TYPE_FORUM);
+        forum.addSubtypes(ForumEditionRepository.DOCUMENT_TYPE_FORUM, ForumEditionRepository.DOCUMENT_TYPE_THREAD);
         forum.setIcon("glyphicons glyphicons-conversation");
         forum.setForceContextualization(true);
         forum.setEditable(true);
         forum.setMovable(true);
-        types.put(forum.getName(), forum);
+        types.put(ForumEditionRepository.DOCUMENT_TYPE_FORUM, forum);
     }
 
 
@@ -168,8 +173,23 @@ public class ForumPlugin extends AbstractPluginPortlet {
         TaskbarFactory factory = this.getTaskbarService().getFactory();
 
         // Forum
-        TaskbarItem forum = factory.createCmsTaskbarItem("FORUM", "FORUM_TASK", "glyphicons glyphicons-conversation", "Forum");
+        TaskbarItem forum = factory.createCmsTaskbarItem("FORUM", "FORUM_TASK", "glyphicons glyphicons-conversation", ForumEditionRepository.DOCUMENT_TYPE_FORUM);
         items.add(forum);
+    }
+
+
+    /**
+     * Customize menubar modules.
+     *
+     * @param context customization context
+     */
+    private void customizeMenubarModules(CustomizationContext context) {
+        // Menubar modules
+        List<MenubarModule> modules = this.getMenubarModules(context);
+
+        // Forum menubar module
+        MenubarModule forum = new ForumMenubarModule();
+        modules.add(forum);
     }
 
 
