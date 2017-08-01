@@ -7,6 +7,8 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +28,9 @@ import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoServiceFactory;
 @ComponentScan(basePackages = "org.osivia.services.workspace.portlet")
 public class MemberManagementConfiguration {
 
+	@Autowired
+	private ApplicationContext context;
+	
     /**
      * Constructor.
      */
@@ -105,7 +110,7 @@ public class MemberManagementConfiguration {
     public IBundleFactory getBundleFactory() {
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
-        return internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        return internationalizationService.getBundleFactory(this.getClass().getClassLoader(), context);
     }
 
 

@@ -15,12 +15,16 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
@@ -29,14 +33,18 @@ import org.springframework.web.portlet.context.PortletContextAware;
  * Workspace member management portlet view controller.
  *
  * @author Cédric Krommenhoek
+ * @see ApplicationContextAware
  * @see PortletContextAware
  */
 @Controller
 @RequestMapping("VIEW")
-public class MemberManagementController implements PortletContextAware {
+public class MemberManagementController implements ApplicationContextAware, PortletContextAware {
 
+    /** Application context. */
+    private ApplicationContext applicationContext;
     /** Portlet context. */
     private PortletContext portletContext;
+
 
     /** Member management service. */
     @Autowired
@@ -184,8 +192,17 @@ public class MemberManagementController implements PortletContextAware {
      * {@inheritDoc}
      */
     @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setPortletContext(PortletContext portletContext) {
         this.portletContext = portletContext;
+        this.portletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
     }
 
 }
