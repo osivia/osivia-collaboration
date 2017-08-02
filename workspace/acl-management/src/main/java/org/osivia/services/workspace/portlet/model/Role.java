@@ -1,12 +1,17 @@
 package org.osivia.services.workspace.portlet.model;
 
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Role java-bean.
  *
  * @author Cédric Krommenhoek
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Role {
 
     /** Display name. */

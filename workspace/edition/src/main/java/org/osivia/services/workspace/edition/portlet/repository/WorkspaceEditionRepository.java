@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.edition.portlet.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletException;
 
@@ -28,6 +29,17 @@ public interface WorkspaceEditionRepository {
      * @throws PortletException
      */
     Document getWorkspace(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Get templates.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspace workspace or room Nuxeo document
+     * @return templates
+     * @throws PortletException
+     */
+    Map<String, String> getTemplates(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
 
 
     /**

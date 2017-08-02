@@ -22,6 +22,10 @@
                 <div class="col-lg-10">
                     <ul class="list-unstyled">
                         <c:forEach var="member" items="${group.members}" varStatus="status">
+                        	                        	
+                        	<c:set var="profession" value="${member.nxProfile.properties['ttc_userprofile:profession']}" />
+                        	<c:set var="institution" value="${member.nxProfile.properties['ttc_userprofile:institution']}" />
+                        
                             <li>
                                 <div class="panel panel-primary">
                                     <div class="panel-heading">
@@ -44,13 +48,33 @@
                                                 </a>
                                             </p>
                                         </c:if>
-                                            
-                                        <c:if test="${not empty member.joinedDate}">
-                                            <p class="small text-center text-muted">
-                                                <span><op:translate key="WORKSPACE_PARTICIPANTS_MEMBER_SINCE" /></span>
-                                                <span><fmt:formatDate value="${member.joinedDate}" type="date" dateStyle="long" /></span>
-                                            </p>
-                                        </c:if>
+                                        
+                                        <c:choose>
+                                        	<c:when test="${(not empty profession) or (not empty institution)}">
+                                        		<p class="small text-center text-muted">
+                                        			<c:if test="${not empty profession}">
+                                        				<span>${profession}</span>
+                                        			</c:if>
+                                        			<c:if test="${not empty profession and not empty institution}">
+                                        				-
+                                        			</c:if>
+                                        			<c:if test="${not empty institution}">
+                                        				<span>${institution}</span>
+                                        			</c:if>                        			
+                                        		
+                                        		</p>
+                                        	</c:when>
+                                        	<c:otherwise>
+		                                        <c:if test="${not empty member.joinedDate}">
+		                                            <p class="small text-center text-muted">
+		                                                <span><op:translate key="WORKSPACE_PARTICIPANTS_MEMBER_SINCE" /></span>
+		                                                <span><fmt:formatDate value="${member.joinedDate}" type="date" dateStyle="long" /></span>
+		                                            </p>
+		                                        </c:if>                                        	
+                                        	</c:otherwise>
+                                        </c:choose>
+                                        
+
                                     </div>
                                 </div>
                             </li>

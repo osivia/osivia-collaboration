@@ -3,6 +3,7 @@ $JQry(function() {
 	$JQry(".workspace-acl-management select.select2").each(function(index, element) {
 		var $element = $JQry(element),
 			options = {
+				closeOnSelect : false,
 				theme : "bootstrap"
 			};
 		
@@ -146,6 +147,15 @@ $JQry(function() {
 		
 		// Update fancybox
 		parent.jQuery.fancybox.getInstance().update();
+	});
+	
+	
+	$JQry(".workspace-acl-management input[type=checkbox][name=publicEntry]").change(function(event) {
+		var $target = $JQry(event.target),
+			$formGroup = $target.closest(".form-group"),
+			$submit = $formGroup.find("input[type=submit]");
+		
+		$submit.click();
 	});
 	
 	

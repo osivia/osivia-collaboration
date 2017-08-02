@@ -2,11 +2,17 @@ package org.osivia.services.workspace.portlet.model;
 
 import java.util.List;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  * Add form java-bean.
  *
  * @author Cédric Krommenhoek
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AddForm {
 
     /** Records. */

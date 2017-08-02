@@ -1,10 +1,13 @@
-package org.osivia.services.workspace.portlet.repository;
+package org.osivia.services.workspace.portlet.repository.command;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import net.sf.json.JSONObject;
@@ -15,6 +18,8 @@ import net.sf.json.JSONObject;
  * @author Cédric Krommenhoek
  * @see INuxeoCommand
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class GetPermissionsCommand implements INuxeoCommand {
 
     /** Document. */

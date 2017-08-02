@@ -2,7 +2,9 @@ package org.osivia.services.workspace.edition.portlet.repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
@@ -11,6 +13,7 @@ import javax.portlet.PortletRequest;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.PortalException;
@@ -27,6 +30,13 @@ import org.osivia.services.workspace.edition.portlet.model.Editorial;
 import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
+import org.osivia.services.workspace.edition.portlet.repository.command.CheckTitleAvailabilityCommand;
+import org.osivia.services.workspace.edition.portlet.repository.command.CheckWebIdAvailabilityCommand;
+import org.osivia.services.workspace.edition.portlet.repository.command.DeleteWorkspaceCommand;
+import org.osivia.services.workspace.edition.portlet.repository.command.GetTemplatesCommand;
+import org.osivia.services.workspace.edition.portlet.repository.command.UpdatePropertiesCommand;
+import org.osivia.services.workspace.edition.portlet.repository.command.UpdateTasksCommand;
+import org.osivia.services.workspace.edition.portlet.repository.command.UpdateWorkspaceTypeCommand;
 import org.osivia.services.workspace.edition.portlet.service.WorkspaceEditionService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,6 +135,39 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         }
 
         return workspace;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, String> getTemplates(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
+
+        // Domain path
+        String domainPath = "/" + StringUtils.substringBefore(StringUtils.removeStart(workspace.getPath(), "/"), "/");
+
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(GetTemplatesCommand.class, domainPath);
+        Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
+
+        // Templates
+        Map<String, String> templates = new HashMap<>(documents.size());
+
+        if (!documents.isEmpty()) {
+            for (Document document : documents.list()) {
+                String key = document.getString("wconf:code");
+                String value = document.getTitle();
+
+                templates.put(key, value);
+            }
+        }
+
+        return templates;
     }
 
 

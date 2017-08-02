@@ -1,11 +1,17 @@
 package org.osivia.services.workspace.portlet.model;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  * ACL entry java-bean.
  *
  * @author Cédric Krommenhoek
  * @see Record
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AclEntry extends Record {
 
     /** Role. */

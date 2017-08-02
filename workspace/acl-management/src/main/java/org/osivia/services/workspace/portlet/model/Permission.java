@@ -1,15 +1,24 @@
-package org.osivia.services.workspace.portlet.repository;
+package org.osivia.services.workspace.portlet.model;
 
-import java.util.Arrays;
 import java.util.List;
+
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Nuxeo document permission java-bean.
  *
  * @author Cédric Krommenhoek
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Permission {
     
+    /** Public permission name. */
+    public static final String PUBLIC_NAME = "Everyone";
+
+
     /** Permission name. */
     private String name;
     /** Permission values. */
@@ -17,38 +26,12 @@ public class Permission {
     /** Permission group indicator. */
     private boolean group;
 
-    /** Granted permission indicator. */
-    private final boolean granted;
-
 
     /**
      * Constructor.
      */
     public Permission() {
-        this(true);
-    }
-
-
-    /**
-     * Constructor.
-     *
-     * @param granted granted permission indicator.
-     */
-    private Permission(boolean granted) {
         super();
-        this.granted = granted;
-    }
-
-
-    /**
-     * Get inheritance blocking permission.
-     * @return permission
-     */
-    public static Permission getInheritanceBlocking() {
-        Permission permission = new Permission(false);
-        permission.setName("Everyone");
-        permission.setValues(Arrays.asList(new String[]{"Everything"}));
-        return permission;
     }
 
 
@@ -104,15 +87,6 @@ public class Permission {
      */
     public void setGroup(boolean group) {
         this.group = group;
-    }
-
-    /**
-     * Getter for granted.
-     *
-     * @return the granted
-     */
-    public boolean isGranted() {
-        return this.granted;
     }
 
 }

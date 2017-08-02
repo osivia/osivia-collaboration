@@ -4,6 +4,9 @@ import java.util.Comparator;
 
 import org.apache.commons.lang.StringUtils;
 import org.osivia.services.workspace.portlet.model.AclEntry;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Workspace ACL entry comparator.
@@ -12,6 +15,8 @@ import org.osivia.services.workspace.portlet.model.AclEntry;
  * @see Comparator
  * @see AclEntry
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AclEntryComparator implements Comparator<AclEntry> {
 
     /** Comparator sort field. */

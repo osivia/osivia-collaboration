@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletException;
 
@@ -94,6 +95,14 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         // Workspace root type indicator
         boolean root = "Workspace".equals(workspace.getType());
         form.setRoot(root);
+
+        // Templates
+        if (root) {
+            form.setTemplate(StringUtils.trimToEmpty(workspace.getString("ttc:pageTemplate")));
+
+            Map<String, String> templates = this.repository.getTemplates(portalControllerContext, workspace);
+            form.setTemplates(templates);
+        }
 
         // Workspace type
         if (root) {

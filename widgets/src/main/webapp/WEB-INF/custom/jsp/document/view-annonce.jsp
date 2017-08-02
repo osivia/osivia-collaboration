@@ -5,9 +5,9 @@
 
 <%@ page isELIgnored="false"%>
 
+<c:set var="publicationDate" value="${document.properties['ttc:publicationDate']}" />
+<c:set var="issued" value="${document.properties['dc:issued']}" /> 
 
-<c:set var="created"><fmt:formatDate value="${document.properties['dc:created']}" type="date" dateStyle="long" /></c:set>
-<c:set var="modified"><fmt:formatDate value="${document.properties['dc:modified']}" type="date" dateStyle="long" /></c:set>
 <c:set var="imageUrl"><ttc:pictureLink document="${document}" property="annonce:image" /></c:set>
 <c:set var="content"><ttc:transform document="${document}" property="note:note" /></c:set>
 
@@ -18,12 +18,22 @@
     
     <!-- Date -->
     <p class="text-muted">
-        <span>${created}</span>
-        
-        <c:if test="${created ne modified}">
-            <span>&ndash;</span>
-            <span><op:translate key="UPDATED_ON" args="${modified}" /></span>
-        </c:if>
+	    <c:choose>
+	    	<c:when test="${not empty issued}">
+	        	<span><op:translate key="DOCUMENT_METADATA_PUBLISHED_ON" /></span>
+		        <span>
+		        	<fmt:formatDate value="${issued}" type="date" dateStyle="long" />
+		        </span>
+	    	</c:when>
+	    	<c:otherwise>
+	    		<c:if test="${not empty publicationDate}">
+		        	<span><op:translate key="DOCUMENT_METADATA_PUBLISHED_ON" /></span>
+			        <span>
+			        	<fmt:formatDate value="${publicationDate}" type="date" dateStyle="long" />
+			        </span>    				
+	    		</c:if>
+	    	</c:otherwise>
+	    </c:choose>
     </p>
     
     <div class="row">
