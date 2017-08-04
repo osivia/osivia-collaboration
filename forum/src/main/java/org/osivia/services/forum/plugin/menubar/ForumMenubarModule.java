@@ -18,9 +18,7 @@ import org.osivia.services.forum.edition.portlet.repository.ForumEditionReposito
 import org.osivia.services.forum.edition.portlet.service.ForumEditionService;
 import org.osivia.services.forum.plugin.ForumPlugin;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Forum menubar module.
@@ -66,6 +64,18 @@ public class ForumMenubarModule implements MenubarModule {
             DocumentType documentType = documentContext.getDocumentType();
             // Document
             Document document = (Document) documentContext.getDocument();
+
+
+            // Removed menubar items
+            Set<MenubarItem> removedItems = new HashSet<>();
+            Set<String> removedIds = new HashSet<>(Arrays.asList(new String[]{"LOCK_URL"}));
+            for (MenubarItem menubarItem : menubar) {
+                if (removedIds.contains(menubarItem.getId())) {
+                    removedItems.add(menubarItem);
+                }
+            }
+            menubar.removeAll(removedItems);
+
 
             if (permissions.isManageable()) {
                 MenubarItem addForum = null;

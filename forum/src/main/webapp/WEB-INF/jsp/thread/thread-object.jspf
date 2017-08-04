@@ -1,0 +1,84 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
+
+
+<div id="${threadObject.id}" class="panel panel-default form-group">
+    <div class="panel-body">
+        <div class="media">
+            <div class="media-left hidden-xs">
+                <!-- Avatar -->
+                <div class="forum-thread-avatar">
+                    <span><ttc:user name="${threadObject.user}" linkable="false" hideDisplayName="true"></ttc:user></span>
+                </div>
+            </div>
+
+            <div class="media-body">
+                <div class="clearfix">
+                    <div class="pull-left">
+                        <!-- Display name -->
+                        <strong class="user-display-name"><ttc:user name="${threadObject.user}" hideAvatar="true"></ttc:user></strong>
+                        <!-- Date -->
+                        <span class="text-muted">
+                            <span>&ndash;</span>
+                            <span><op:formatRelativeDate value="${threadObject.date}"/></span>
+                        </span>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="pull-right">
+                        <c:if test="${form.commentable}">
+                            <!-- Quote -->
+                            <c:set var="title"><op:translate key="FORUM_THREAD_QUOTE"/></c:set>
+                            <button type="button" name="quote-post" title="${title}" data-toggle="tooltip" data-placement="bottom" class="btn btn-xs btn-link">
+                                <i class="halflings halflings-comments"></i>
+                                <span class="sr-only">${title}</span>
+                            </button>
+
+                            <c:if test="${threadObject.editable}">
+                                <!-- Edit -->
+                                <c:set var="title"><op:translate key="FORUM_THREAD_EDIT"/></c:set>
+                                <button type="button" name="edit-post" title="${title}" data-toggle="tooltip" data-placement="bottom"
+                                        data-input="#${namespace}-edited-post-input" data-submit="#${namespace}-edited-post-submit" class="btn btn-xs btn-link">
+                                    <i class="halflings halflings-pencil"></i>
+                                    <span class="sr-only">${title}</span>
+                                </button>
+
+                                <!-- Delete -->
+                                <c:set var="title"><op:translate key="FORUM_THREAD_DELETE"/></c:set>
+                                <button type="button" name="delete-post" title="${title}" data-toggle="tooltip" data-placement="bottom"
+                                        data-input="#${namespace}-delete-post-input" data-modal="#${namespace}-delete-post" class="btn btn-xs btn-link">
+                                    <i class="halflings halflings-trash"></i>
+                                    <span class="sr-only">${title}</span>
+                                </button>
+                            </c:if>
+                        </c:if>
+                    </div>
+                </div>
+
+                <!-- Message -->
+                <div class="forum-thread-message"><ttc:transformContent content="${threadObject.message}"/></div>
+
+                <!-- Modified date -->
+                <c:if test="${not empty threadObject.modified}">
+                    <div class="text-muted small">
+                        <span><op:translate key="FORUM_THREAD_MODIFIED"/></span>
+                        <span><op:formatRelativeDate value="${threadObject.modified}"/></span>
+                    </div>
+                </c:if>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attachments -->
+    <c:if test="${not empty threadObject.attachments}">
+        <div class="list-group">
+            <c:forEach var="file" items="${threadObject.attachments.files}" varStatus="status">
+                <a href="${file.url}" target="_blank" class="list-group-item no-ajax-link">
+                    <i class="glyphicons glyphicons-paperclip"></i>
+                    <span>${file.fileName}</span>
+                </a>
+            </c:forEach>
+        </div>
+    </c:if>
+</div>

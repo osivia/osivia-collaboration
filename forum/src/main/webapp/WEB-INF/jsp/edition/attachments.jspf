@@ -33,7 +33,6 @@
         <label class="btn btn-default btn-file">
             <i class="glyphicons glyphicons-plus"></i>
             <span><op:translate key="FORUM_ATTACHMENT_UPLOAD"/></span>
-            <%--<form:input type="file" path="attachments.upload"/>--%>
             <input type="file" name="attachments.upload" multiple>
         </label>
         <input type="submit" name="upload-attachment" class="hidden">

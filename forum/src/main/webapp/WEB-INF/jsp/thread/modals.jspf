@@ -1,0 +1,26 @@
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<div id="${namespace}-delete-post" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p class="text-center">
+                    <span><op:translate key="FORUM_THREAD_POST_DELETE_CONFIRMATION"/></span>
+                </p>
+
+                <div class="text-center">
+                    <!-- Yes -->
+                    <button type="submit" name="post-delete" class="btn btn-warning" data-dismiss="modal">
+                        <span><op:translate key="YES"/></span>
+                    </button>
+
+                    <!-- No -->
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <span><op:translate key="NO"/></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

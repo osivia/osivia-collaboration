@@ -70,6 +70,7 @@
                     <c:set var="lastCommentAuthor" value="${thread.properties['ttcth:lastCommentAuthor']}" />
                     <c:set var="lastCommentDate" value="${thread.properties['ttcth:lastCommentDate']}" />
                     <c:set var="nbAnswers" value="${thread.properties['ttcth:nbComments']}" />
+                    <c:set var="closed" value="${thread.properties['ttc:commentsForbidden']}" />
                 
                     <li class="list-group-item">
                         <div class="media">
@@ -87,19 +88,28 @@
                                 <c:if test="${not empty description}">
                                     <p class="pre-wrap">${description}</p>
                                 </c:if>
+
+                                <c:if test="${closed}">
+                                    <p>
+	                                    <span class="label label-default">
+	                                        <i class="halflings halflings-lock"></i>
+	                                        <span><op:translate key="FORUM_TOPIC_CLOSED" /></span>
+	                                    </span>
+                                    </p>
+                                </c:if>
                                 
                                 <p class="text-muted">
-                                    <span><op:translate key="TOPIC_STARTED" /></span>
+                                    <span><op:translate key="FORUM_TOPIC_STARTED" /></span>
                                     <span><op:formatRelativeDate value="${threadDate}" /></span>
-                                    <span><op:translate key="BY" /></span>
+                                    <span><op:translate key="FORUM_BY" /></span>
                                     <span><ttc:user name="${threadCreator}" /></span>
                                     
                                     <c:if test="${nbAnswers gt 0}">
                                         <br>
                                     
-                                        <span><op:translate key="LAST_ANSWER" /></span>
+                                        <span><op:translate key="FORUM_LAST_ANSWER" /></span>
                                         <span><op:formatRelativeDate value="${lastCommentDate}" /></span>
-                                        <span><op:translate key="BY" /></span>
+                                        <span><op:translate key="FORUM_BY" /></span>
                                         <span><ttc:user name="${lastCommentAuthor}" /></span>
                                     </c:if>
                                 </p>

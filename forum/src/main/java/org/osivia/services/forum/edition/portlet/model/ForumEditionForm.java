@@ -1,20 +1,19 @@
 package org.osivia.services.forum.edition.portlet.model;
 
+import org.osivia.services.forum.util.model.AbstractForumThreadForm;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Forum edition form java-bean.
  *
  * @author Cédric Krommenhoek
+ * @see AbstractForumThreadForm
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ForumEditionForm {
+public class ForumEditionForm extends AbstractForumThreadForm {
 
     /** Title. */
     private String title;
@@ -22,10 +21,6 @@ public class ForumEditionForm {
     private String description;
     /** Vignette. */
     private Vignette vignette;
-    /** Message. */
-    private String message;
-    /** Attachments. */
-    private Attachments attachments;
 
     /** Document type. */
     private String documentType;
@@ -91,42 +86,6 @@ public class ForumEditionForm {
      */
     public void setVignette(Vignette vignette) {
         this.vignette = vignette;
-    }
-
-    /**
-     * Getter for message.
-     *
-     * @return the message
-     */
-    public String getMessage() {
-        return message;
-    }
-
-    /**
-     * Setter for message.
-     *
-     * @param message the message to set
-     */
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    /**
-     * Getter for attachments.
-     *
-     * @return the attachments
-     */
-    public Attachments getAttachments() {
-        return attachments;
-    }
-
-    /**
-     * Setter for attachments.
-     *
-     * @param attachments the attachments to set
-     */
-    public void setAttachments(Attachments attachments) {
-        this.attachments = attachments;
     }
 
     /**

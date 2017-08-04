@@ -1,0 +1,27 @@
+@avatarSize: 60px;
+
+.forum-thread {
+    .forum-thread-avatar {
+        height: @avatarSize;
+        width: @avatarSize;
+
+        a {
+            display: block;
+
+            text-align: center;
+        }
+
+        img {
+            max-heigh: @avatarSize;
+            max-width: @avatarSize;
+        }
+    }
+
+    .forum-thread-message {
+        margin-top: 10px;
+
+        blockquote {
+            font-size: inherit;
+        }
+    }
+}

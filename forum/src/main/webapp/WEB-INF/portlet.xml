@@ -7,9 +7,7 @@
         version="2.0">
 
     <portlet>
-        <description>Forum portlet</description>
-        <portlet-name>osivia-services-forum</portlet-name>
-        <display-name>Osivia services forum portlet</display-name>
+        <portlet-name>osivia-services-forum-thread</portlet-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 
         <init-param>
@@ -18,7 +16,7 @@
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>
-            <value>org.osivia.services.forum.portlet.configuration.ForumPortletConfiguration</value>
+            <value>org.osivia.services.forum.thread.portlet.configuration.ForumThreadConfiguration</value>
         </init-param>
 
         <expiration-cache>180</expiration-cache>
@@ -29,9 +27,7 @@
         </supports>
 
         <portlet-info>
-            <title>Forum portlet</title>
-            <short-title>Forum portlet</short-title>
-            <keywords>portlet,service,forum</keywords>
+            <title>Forum thread player</title>
         </portlet-info>
     </portlet>
 

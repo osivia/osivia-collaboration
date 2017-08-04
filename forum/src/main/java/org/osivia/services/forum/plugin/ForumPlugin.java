@@ -111,6 +111,7 @@ public class ForumPlugin extends AbstractPluginPortlet {
         thread.setIcon("glyphicons glyphicons-chat");
         thread.setForceContextualization(true);
         thread.setEditable(true);
+        thread.setMovable(true);
         types.put(ForumEditionRepository.DOCUMENT_TYPE_THREAD, thread);
 
         // Forum
@@ -131,7 +132,6 @@ public class ForumPlugin extends AbstractPluginPortlet {
      */
     private void customizePlayers(CustomizationContext context) {
         // Players
-        @SuppressWarnings("rawtypes")
         List<IPlayerModule> players = this.getPlayers(context);
 
         // Forum player

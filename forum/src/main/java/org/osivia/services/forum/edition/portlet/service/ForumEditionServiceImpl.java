@@ -2,7 +2,6 @@ package org.osivia.services.forum.edition.portlet.service;
 
 import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCustomizer;
 import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
@@ -14,18 +13,25 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
-import org.osivia.services.forum.edition.portlet.model.*;
-import org.osivia.services.forum.edition.portlet.model.comparator.BlobIndexComparator;
+import org.osivia.services.forum.edition.portlet.model.ForumEditionForm;
+import org.osivia.services.forum.edition.portlet.model.ForumEditionMode;
+import org.osivia.services.forum.edition.portlet.model.ForumEditionOptions;
+import org.osivia.services.forum.edition.portlet.model.Vignette;
 import org.osivia.services.forum.edition.portlet.repository.ForumEditionRepository;
+import org.osivia.services.forum.util.model.ForumFile;
+import org.osivia.services.forum.util.model.ForumFiles;
+import org.osivia.services.forum.util.service.AbstractForumServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
-import javax.portlet.*;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.ResourceResponse;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,17 +39,14 @@ import java.util.Map;
  * Forum edition service implementation.
  *
  * @author Cédric Krommenhoek
+ * @see AbstractForumServiceImpl
  * @see ForumEditionService
  */
 @Service
-public class ForumEditionServiceImpl implements ForumEditionService {
+public class ForumEditionServiceImpl extends AbstractForumServiceImpl implements ForumEditionService {
 
     /** Vignette temporary file prefix. */
     private static final String VIGNETTE_TEMPORARY_FILE_PREFIX = "vignette-";
-    /** Attachment temporary file prefix. */
-    private static final String ATTACHMENT_TEMPORARY_FILE_PREFIX = "attachment-";
-    /** Temporary file suffix. */
-    private static final String TEMPORARY_FILE_SUFFIX = ".tmp";
 
 
     /** Application context. */
@@ -53,10 +56,6 @@ public class ForumEditionServiceImpl implements ForumEditionService {
     /** Portlet repository. */
     @Autowired
     private ForumEditionRepository repository;
-
-    /** Blob index comparator. */
-    @Autowired
-    private BlobIndexComparator blobIndexComparator;
 
     /** Portal URL factory. */
     @Autowired
@@ -88,7 +87,7 @@ public class ForumEditionServiceImpl implements ForumEditionService {
         // Upload
         MultipartFile upload = vignette.getUpload();
 
-        this.setUploadedObjectProperties(upload, vignette, VIGNETTE_TEMPORARY_FILE_PREFIX);
+        this.setAttachmentFileProperties(upload, vignette, VIGNETTE_TEMPORARY_FILE_PREFIX);
     }
 
 
@@ -98,22 +97,39 @@ public class ForumEditionServiceImpl implements ForumEditionService {
         Vignette vignette = form.getVignette();
         vignette.setDeleted(true);
 
-        this.setUploadedObjectProperties(null, vignette, VIGNETTE_TEMPORARY_FILE_PREFIX);
+        // Temporary file
+        File temporaryFile = vignette.getTemporaryFile();
+        if (temporaryFile != null) {
+            temporaryFile.delete();
+            vignette.setTemporaryFile(null);
+        }
+
+        // File name
+        vignette.setFileName(null);
+
+        // Mime type
+        vignette.setMimeType(null);
     }
 
 
     @Override
     public void uploadAttachment(PortalControllerContext portalControllerContext, ForumEditionForm form) throws PortletException, IOException {
         // Attachments
-        Attachments attachments = form.getAttachments();
+        ForumFiles attachments = form.getAttachments();
+        // Attachment files
+        List<ForumFile> files = attachments.getFiles();
+        if (files == null) {
+            files = new ArrayList<>();
+            attachments.setFiles(files);
+        }
 
         for (MultipartFile multipartFile : attachments.getUpload()) {
             // Attachment file
-            AttachmentFile file = this.applicationContext.getBean(AttachmentFile.class);
+            ForumFile file = this.applicationContext.getBean(ForumFile.class);
 
-            this.setUploadedObjectProperties(multipartFile, file, ATTACHMENT_TEMPORARY_FILE_PREFIX);
+            this.setAttachmentFileProperties(multipartFile, file, ATTACHMENT_TEMPORARY_FILE_PREFIX);
 
-            attachments.getFiles().add(file);
+            files.add(file);
         }
     }
 
@@ -121,35 +137,9 @@ public class ForumEditionServiceImpl implements ForumEditionService {
     @Override
     public void deleteAttachment(PortalControllerContext portalControllerContext, ForumEditionForm form) throws PortletException, IOException {
         // Attachments
-        Attachments attachments = form.getAttachments();
+        ForumFiles attachments = form.getAttachments();
 
-        // Deleted attachment index
-        Integer deletedIndex = attachments.getDeletedIndex();
-
-        if (deletedIndex != null) {
-            // Attachment files
-            List<AttachmentFile> files = attachments.getFiles();
-
-            // Attachment file
-            AttachmentFile file = files.get(deletedIndex);
-
-            // Blob index
-            Integer blobIndex = file.getBlobIndex();
-            if (blobIndex != null) {
-                attachments.getDeletedBlobIndexes().add(blobIndex);
-            }
-
-            // Temporary file
-            File temporaryFile = file.getTemporaryFile();
-            if (temporaryFile != null) {
-                // Delete temporary file
-                temporaryFile.delete();
-            }
-
-            files.remove(file);
-        }
-
-        attachments.setDeletedIndex(null);
+        this.deleteAttachment(attachments);
     }
 
 
@@ -229,7 +219,7 @@ public class ForumEditionServiceImpl implements ForumEditionService {
         form.setVignette(vignette);
 
         // Attachments
-        Attachments attachments = this.applicationContext.getBean(Attachments.class, this.blobIndexComparator);
+        ForumFiles attachments = this.applicationContext.getBean(ForumFiles.class);
         form.setAttachments(attachments);
 
         if (ForumEditionMode.EDITION.equals(mode)) {
@@ -305,55 +295,6 @@ public class ForumEditionServiceImpl implements ForumEditionService {
 
 
     /**
-     * Set uploaded object properties.
-     *
-     * @param upload multipart file upload
-     * @param object uploaded object
-     * @param prefix temporary file prefix
-     * @throws IOException
-     */
-    private void setUploadedObjectProperties(MultipartFile upload, UploadedObject object, String prefix) throws IOException {
-        if (upload == null) {
-            // Temporary file
-            File temporaryFile = object.getTemporaryFile();
-            if (temporaryFile != null) {
-                temporaryFile.delete();
-                object.setTemporaryFile(null);
-            }
-
-            // File name
-            object.setFileName(null);
-
-            // Mime type
-            object.setMimeType(null);
-        } else {
-            // Temporary file
-            File temporaryFile = object.getTemporaryFile();
-            if (temporaryFile != null) {
-                // Delete temporary file
-                temporaryFile.delete();
-            }
-            temporaryFile = File.createTempFile(prefix, TEMPORARY_FILE_SUFFIX);
-            temporaryFile.deleteOnExit();
-            upload.transferTo(temporaryFile);
-            object.setTemporaryFile(temporaryFile);
-
-            // File name
-            object.setFileName(upload.getOriginalFilename());
-
-            // Mime type
-            MimeType mimeType;
-            try {
-                mimeType = new MimeType(upload.getContentType());
-            } catch (MimeTypeParseException e) {
-                mimeType = null;
-            }
-            object.setMimeType(mimeType);
-        }
-    }
-
-
-    /**
      * Get redirection URL.
      *
      * @param portalControllerContext portal controller context
@@ -369,11 +310,7 @@ public class ForumEditionServiceImpl implements ForumEditionService {
         // Path
         String path;
         if (ForumEditionMode.CREATION.equals(options.getMode())) {
-            if (document == null) {
-                path = options.getParentPath();
-            } else {
-                path = document.getPath();
-            }
+            path = options.getParentPath();
         } else if (ForumEditionMode.EDITION.equals(options.getMode())) {
             path = document.getPath();
         } else {

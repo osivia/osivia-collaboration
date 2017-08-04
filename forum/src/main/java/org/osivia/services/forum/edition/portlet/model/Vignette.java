@@ -1,25 +1,21 @@
 package org.osivia.services.forum.edition.portlet.model;
 
+import org.osivia.services.forum.util.model.ForumFile;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.activation.MimeType;
-import java.io.File;
-
 /**
  * Vignette java-bean.
  *
  * @author Cédric Krommenhoek
- * @see UploadedObject
+ * @see ForumFile
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class Vignette extends UploadedObject {
+public class Vignette extends ForumFile {
 
-    /** Original URL. */
-    private String url;
     /** Uploaded multipart file. */
     private MultipartFile upload;
     /** Deleted indicator. */
@@ -31,25 +27,6 @@ public class Vignette extends UploadedObject {
      */
     public Vignette() {
         super();
-    }
-
-
-    /**
-     * Getter for url.
-     *
-     * @return the url
-     */
-    public String getUrl() {
-        return url;
-    }
-
-    /**
-     * Setter for url.
-     *
-     * @param url the url to set
-     */
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     /**

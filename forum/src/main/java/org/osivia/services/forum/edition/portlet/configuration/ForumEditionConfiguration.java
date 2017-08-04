@@ -7,6 +7,8 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +24,12 @@ import org.springframework.web.servlet.view.JstlView;
  * @author Cédric Krommenhoek
  */
 @Configuration
-@ComponentScan(basePackages = "org.osivia.services.forum.edition.portlet")
+@ComponentScan(basePackages = {"org.osivia.services.forum.edition.portlet", "org.osivia.services.forum.util"})
 public class ForumEditionConfiguration {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
 
     /**
      * Constructor.
@@ -96,7 +102,7 @@ public class ForumEditionConfiguration {
     public IBundleFactory getBundleFactory() {
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class, IInternationalizationService
                 .MBEAN_NAME);
-        return internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        return internationalizationService.getBundleFactory(this.getClass().getClassLoader(), this.applicationContext);
     }
 
 

@@ -7,7 +7,7 @@
 <portlet:actionURL name="save" var="saveUrl"/>
 
 
-<div class="forum-edition">
+<div class="forum forum-edition">
     <form:form action="${saveUrl}" method="post" enctype="multipart/form-data" modelAttribute="form" cssClass="form-horizontal" role="form">
         <div class="row">
             <div class="col-lg-8">

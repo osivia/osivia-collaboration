@@ -21,9 +21,15 @@ import java.util.Map;
 
 import javax.portlet.PortletContext;
 
+import org.apache.commons.lang.StringUtils;
+import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.player.Player;
+import org.osivia.portal.api.urls.Link;
+import org.osivia.portal.core.cms.BinaryDescription;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.services.forum.plugin.ForumPlugin;
 
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
@@ -38,6 +44,12 @@ import fr.toutatice.portail.cms.nuxeo.api.portlet.ViewList;
  * @see INuxeoPlayerModule
  */
 public class ForumPlayer implements INuxeoPlayerModule {
+
+    /** Forum portlet instance. */
+    private static final String FORUM_PORTLET_INSTANCE = "toutatice-portail-cms-nuxeo-viewListPortletInstance";
+    /** Forum thread portlet instance. */
+    private static final String FORUM_THREAD_PORTLET_INSTANCE = "osivia-services-forum-thread-instance";
+
 
     /**
      * Constructor.
@@ -69,49 +81,72 @@ public class ForumPlayer implements INuxeoPlayerModule {
     /**
      * Get forum player.
      *
-     * @param documentContext document context
-     * @return CMS forum player
+     * @param documentContext Nuxeo document context
+     * @return forum player
      */
     private Player getForumPlayer(NuxeoDocumentContext documentContext) {
         Document document = documentContext.getDocument();
 
-        Map<String, String> windowProperties = new HashMap<String, String>();
-        windowProperties.put("osivia.nuxeoRequest", this.createForumPlayerRequest(documentContext));
-        windowProperties.put("osivia.cms.style", ForumPlugin.FORUM_LIST_TEMPLATE);
-        windowProperties.put("osivia.hideDecorators", "1");
-        windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
-        windowProperties.put(Constants.WINDOW_PROP_SCOPE, documentContext.getScope());
-        windowProperties.put("osivia.ajaxLink", "1");
-        windowProperties.put(Constants.WINDOW_PROP_VERSION, documentContext.getDocumentState().toString());
-        windowProperties.put(ViewList.CREATION_PARENT_PATH_WINDOW_PROPERTY, document.getPath());
+        // Window properties
+        Map<String, String> properties = new HashMap<>();
+        properties.put(Constants.WINDOW_PROP_URI, document.getPath());
+        properties.put("osivia.hideDecorators", "1");
+        properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
+        properties.put("osivia.ajaxLink", "1");
+        properties.put(Constants.WINDOW_PROP_SCOPE, documentContext.getScope());
+        properties.put(Constants.WINDOW_PROP_VERSION, documentContext.getDocumentState().toString());
+        properties.put(ViewList.NUXEO_REQUEST_WINDOW_PROPERTY, this.createForumPlayerRequest(documentContext));
+        properties.put(ViewList.TEMPLATE_WINDOW_PROPERTY, ForumPlugin.FORUM_LIST_TEMPLATE);
+        properties.put(ViewList.CREATION_PARENT_PATH_WINDOW_PROPERTY, document.getPath());
+        properties.put(InternalConstants.PROP_WINDOW_TITLE, document.getTitle());
+        properties.put(InternalConstants.PROP_WINDOW_SUB_TITLE, document.getString("dc:description"));
 
-        Player linkProps = new Player();
-        linkProps.setWindowProperties(windowProperties);
-        linkProps.setPortletInstance("toutatice-portail-cms-nuxeo-viewListPortletInstance");
+        // Vignette
+        PropertyMap vignetteProperties = document.getProperties().getMap("ttc:vignette");
+        if ((vignetteProperties != null) && StringUtils.isNotEmpty(vignetteProperties.getString("data"))) {
+            properties.put(InternalConstants.PROP_WINDOW_VIGNETTE_DISPLAY, String.valueOf(true));
+        }
 
-        return linkProps;
+        // Player
+        Player player = new Player();
+        player.setWindowProperties(properties);
+        player.setPortletInstance(FORUM_PORTLET_INSTANCE);
+
+        return player;
     }
 
 
     /**
      * Get forum thread player.
      *
-     * @param documentContext document context
+     * @param documentContext Nuxeo document context
      * @return forum thread player
      */
     private Player getForumThreadPlayer(NuxeoDocumentContext documentContext) {
         Document document = documentContext.getDocument();
 
-        Map<String, String> windowProperties = new HashMap<String, String>();
-        windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
-        windowProperties.put("osivia.hideDecorators", "1");
-        windowProperties.put("osivia.ajaxLink", "1");
+        // Window properties
+        Map<String, String> properties = new HashMap<>();
+        properties.put(Constants.WINDOW_PROP_URI, document.getPath());
+        properties.put("osivia.hideDecorators", "1");
+        properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
+        properties.put("osivia.ajaxLink", "1");
+        properties.put(InternalConstants.PROP_WINDOW_TITLE, document.getTitle());
+        properties.put(InternalConstants.PROP_WINDOW_SUB_TITLE, document.getString("dc:description"));
 
-        Player linkProps = new Player();
-        linkProps.setWindowProperties(windowProperties);
-        linkProps.setPortletInstance("osivia-services-forum-portletInstance");
+        // Vignette
+        PropertyMap vignetteProperties = document.getProperties().getMap("ttc:vignette");
+        if ((vignetteProperties != null) && StringUtils.isNotEmpty(vignetteProperties.getString("data"))) {
+            properties.put(InternalConstants.PROP_WINDOW_VIGNETTE_DISPLAY, String.valueOf(true));
+        }
 
-        return linkProps;
+
+        // Player
+        Player player = new Player();
+        player.setWindowProperties(properties);
+        player.setPortletInstance(FORUM_THREAD_PORTLET_INSTANCE);
+
+        return player;
     }
 
 
@@ -124,9 +159,7 @@ public class ForumPlayer implements INuxeoPlayerModule {
 
         if ("Forum".equals(doc.getType())) {
             return this.getForumPlayer(documentContext);
-        }
-
-        if ("Thread".equals(doc.getType())) {
+        } else if ("Thread".equals(doc.getType())) {
             return this.getForumThreadPlayer(documentContext);
         }
 

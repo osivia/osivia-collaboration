@@ -7,10 +7,10 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.forum.edition.portlet.model.AttachmentFile;
 import org.osivia.services.forum.edition.portlet.model.ForumEditionForm;
 import org.osivia.services.forum.edition.portlet.model.ForumEditionOptions;
 import org.osivia.services.forum.edition.portlet.repository.command.ForumEditionCommand;
+import org.osivia.services.forum.util.model.ForumFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
@@ -19,6 +19,7 @@ import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -106,7 +107,12 @@ public class ForumEditionRepositoryImpl implements ForumEditionRepository {
             // Attachments
             PropertyList attachmentsList = document.getProperties().getList(ATTACHMENTS_PROPERTY);
             if ((attachmentsList != null) && !attachmentsList.isEmpty()) {
-                List<AttachmentFile> files = form.getAttachments().getFiles();
+                List<ForumFile> files = form.getAttachments().getFiles();
+                if (files == null) {
+                    files = new ArrayList<>();
+                    form.getAttachments().setFiles(files);
+                }
+
                 for (int i = 0; i < attachmentsList.size(); i++) {
                     // Attachment
                     PropertyMap attachmentMap = attachmentsList.getMap(i);
@@ -120,7 +126,7 @@ public class ForumEditionRepositoryImpl implements ForumEditionRepository {
                     }
 
 
-                    AttachmentFile file = this.applicationContext.getBean(AttachmentFile.class);
+                    ForumFile file = this.applicationContext.getBean(ForumFile.class);
                     file.setBlobIndex(i);
                     file.setFileName(fileName);
                     file.setMimeType(mimeType);

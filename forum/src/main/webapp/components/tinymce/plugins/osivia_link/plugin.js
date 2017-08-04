@@ -5,7 +5,7 @@ tinymce.create("tinymce.plugins.OsiviaLink", {
          * @param event event
          */
         function loadModal(event) {
-            var $textarea = $JQry("#" + editor.id),
+            var $textarea = $JQry("#" + $JQry.escapeSelector(editor.id)),
                 data = {},
                 selection = editor.selection, dom = editor.dom,
                 selectedElm, anchorElm, initialText, onlyText;

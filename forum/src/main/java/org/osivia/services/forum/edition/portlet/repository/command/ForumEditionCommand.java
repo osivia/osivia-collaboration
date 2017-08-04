@@ -1,30 +1,33 @@
 package org.osivia.services.forum.edition.portlet.repository.command;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.*;
 import org.osivia.portal.api.cms.DocumentType;
-import org.osivia.services.forum.edition.portlet.model.*;
+import org.osivia.services.forum.edition.portlet.model.ForumEditionForm;
+import org.osivia.services.forum.edition.portlet.model.ForumEditionMode;
+import org.osivia.services.forum.edition.portlet.model.ForumEditionOptions;
+import org.osivia.services.forum.edition.portlet.model.Vignette;
 import org.osivia.services.forum.edition.portlet.repository.ForumEditionRepository;
+import org.osivia.services.forum.util.model.ForumFiles;
+import org.osivia.services.forum.util.repository.command.AbstractForumCommand;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Forum edition Nuxeo command.
  *
  * @author Cédric Krommenhoek
- * @see INuxeoCommand
+ * @see AbstractForumCommand
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ForumEditionCommand implements INuxeoCommand {
+public class ForumEditionCommand extends AbstractForumCommand {
 
     /** Show in menu Nuxeo document property. */
     private static final String SHOW_IN_MENU_PROPERTY = "ttc:showInMenu";
@@ -128,7 +131,7 @@ public class ForumEditionCommand implements INuxeoCommand {
 
         // Attachments
         if (ForumEditionRepository.DOCUMENT_TYPE_THREAD.equals(type)) {
-            Attachments attachments = this.form.getAttachments();
+            ForumFiles attachments = this.form.getAttachments();
 
             // Set blobs
             this.setBlobs(documentService, document, attachments);
@@ -180,69 +183,13 @@ public class ForumEditionCommand implements INuxeoCommand {
 
         // Attachments
         if (ForumEditionRepository.DOCUMENT_TYPE_THREAD.equals(document.getType())) {
-            Attachments attachments = this.form.getAttachments();
-
-            // Remove blobs
-            for (Integer index : attachments.getDeletedBlobIndexes()) {
-                StringBuilder xpath = new StringBuilder();
-                xpath.append(ForumEditionRepository.ATTACHMENTS_PROPERTY);
-                xpath.append("/item[");
-                xpath.append(index);
-                xpath.append("]");
-
-                documentService.removeBlob(document, xpath.toString());
-            }
+            ForumFiles attachments = this.form.getAttachments();
 
             // Set blobs
             this.setBlobs(documentService, document, attachments);
         }
 
         return document;
-    }
-
-
-    /**
-     * Set blobs.
-     *
-     * @param documentService Nuxeo document service
-     * @param document        Nuxeo document
-     * @param attachments     attachments
-     * @throws Exception
-     */
-    private void setBlobs(DocumentService documentService, Document document, Attachments attachments) throws Exception {
-        // Attachment files
-        List<AttachmentFile> files = attachments.getFiles();
-
-        // Blobs
-        List<Blob> blobs = new ArrayList<>(files.size());
-
-        for (AttachmentFile file : files) {
-            // Temporary file
-            File temporaryFile = file.getTemporaryFile();
-
-            if (temporaryFile != null) {
-                // File name
-                String fileName = file.getFileName();
-                // Mime type
-                String mimeType = file.getMimeType().getBaseType();
-
-                // File blob
-                Blob blob = new FileBlob(temporaryFile, fileName, mimeType);
-
-                blobs.add(blob);
-            }
-        }
-
-        if (!blobs.isEmpty()) {
-            documentService.setBlobs(document, new Blobs(blobs), ForumEditionRepository.ATTACHMENTS_PROPERTY);
-
-            // Delete temporary files
-            for (AttachmentFile file : files) {
-                if (file.getTemporaryFile() != null) {
-                    file.getTemporaryFile().delete();
-                }
-            }
-        }
     }
 
 }

@@ -1,0 +1,88 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<div class="panel panel-default form-group">
+    <form:hidden id="${namespace}-post-attachment-input" path="posts.editedPost.attachments.deletedIndex"/>
+    <input id="${namespace}-post-attachment-delete" type="submit" name="post-delete-attachment" class="hidden">
+
+    <div class="panel-body">
+        <div class="media">
+            <div class="media-left">
+                <!-- Avatar -->
+                <div class="forum-thread-avatar">
+                    <span><ttc:user name="${form.posts.editedPost.user}" hideDisplayName="true"></ttc:user></span>
+                </div>
+            </div>
+
+            <div class="media-body">
+                <div>
+                    <!-- Display name -->
+                    <strong><ttc:user name="${form.posts.editedPost.user}" hideAvatar="true"></ttc:user></strong>
+                    <!-- Date -->
+                    <span class="text-muted">
+                        <span>&ndash;</span>
+                        <span><op:formatRelativeDate value="${form.posts.editedPost.date}"/></span>
+                    </span>
+                </div>
+
+                <!-- Message -->
+                <div class="forum-thread-message">
+                    <spring:bind path="posts.editedPost.message">
+                        <div class="form-group required ${status.error ? 'has-error' : ''}">
+                            <form:textarea path="posts.editedPost.message" cssClass="form-control" data-editor="message" data-editor-url="${editorUrl}"/>
+                            <form:errors path="posts.editedPost.message" cssClass="help-block"/>
+                        </div>
+                    </spring:bind>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Attachments -->
+    <ul class="list-group">
+        <c:forEach var="file" items="${form.posts.editedPost.attachments.files}" varStatus="status">
+            <li class="list-group-item">
+                <i class="glyphicons glyphicons-paperclip"></i>
+
+                <!-- Name -->
+                <span>${file.fileName}</span>
+
+                <!-- Delete -->
+                <c:set var="title"><op:translate key="FORUM_THREAD_ATTACHMENT_DELETE"/></c:set>
+                <button type="button" name="delete-attachment" title="${title}" class="btn btn-xs btn-link"
+                        data-input="#${namespace}-post-attachment-input" data-submit="#${namespace}-post-attachment-delete" data-toggle="tooltip"
+                        data-placement="bottom" data-index="${status.index}">
+                    <i class="glyphicons glyphicons-bin"></i>
+                    <span class="sr-only">${title}</span>
+                </button>
+            </li>
+        </c:forEach>
+
+        <!-- Add attachment -->
+        <li class="list-group-item">
+            <label class="btn btn-default btn-file">
+                <i class="glyphicons glyphicons-plus"></i>
+                <span><op:translate key="FORUM_THREAD_ATTACHMENT_UPLOAD"/></span>
+                <input type="file" name="posts.editedPost.attachments.upload" data-submit="#${namespace}-post-attachment-upload" multiple>
+            </label>
+            <input id="${namespace}-post-attachment-upload" type="submit" name="post-upload-attachment" class="hidden">
+        </li>
+    </ul>
+
+
+    <div class="panel-footer">
+        <!-- Save -->
+        <button type="submit" name="post-edition-save" class="btn btn-primary">
+            <span><op:translate key="FORUM_THREAD_EDIT"/></span>
+        </button>
+
+        <!-- Cancel -->
+        <button type="submit" name="post-edition-cancel" class="btn btn-default">
+            <span><op:translate key="CANCEL"/></span>
+        </button>
+    </div>
+</div>

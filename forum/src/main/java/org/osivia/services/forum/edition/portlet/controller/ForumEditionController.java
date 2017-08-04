@@ -12,6 +12,7 @@ import org.osivia.services.forum.edition.portlet.model.ForumEditionMode;
 import org.osivia.services.forum.edition.portlet.model.ForumEditionOptions;
 import org.osivia.services.forum.edition.portlet.model.validator.ForumEditionFormValidator;
 import org.osivia.services.forum.edition.portlet.service.ForumEditionService;
+import org.osivia.services.forum.util.controller.AbstractForumController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -34,16 +35,12 @@ import java.io.*;
  * Forum edition portlet controller.
  *
  * @author Cédric Krommenhoek
- * @see CMSPortlet
+ * @see AbstractForumController
  */
 @Controller
 @RequestMapping("VIEW")
 @SessionAttributes({"form", "options"})
-public class ForumEditionController extends CMSPortlet {
-
-    /** Portlet config. */
-    @Autowired
-    private PortletConfig portletConfig;
+public class ForumEditionController extends AbstractForumController {
 
     /** Portlet context. */
     @Autowired
@@ -63,17 +60,6 @@ public class ForumEditionController extends CMSPortlet {
      */
     public ForumEditionController() {
         super();
-    }
-
-
-    /**
-     * Post-construct.
-     *
-     * @throws PortletException
-     */
-    @PostConstruct
-    public void postConstruct() throws PortletException {
-        super.init(this.portletConfig);
     }
 
 
@@ -231,20 +217,6 @@ public class ForumEditionController extends CMSPortlet {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         this.service.vignettePreview(portalControllerContext, form);
-    }
-
-
-    /**
-     * Get editor properties resource mapping.
-     *
-     * @param request  resource request
-     * @param response resource response
-     * @param editorId editor identifier required request parameter
-     */
-    @ResourceMapping("editor")
-    public void getEditor(ResourceRequest request, ResourceResponse response, @RequestParam(name = "editorId") String editorId) throws PortletException,
-            IOException {
-        super.serveResourceEditor(request, response, editorId);
     }
 
 
