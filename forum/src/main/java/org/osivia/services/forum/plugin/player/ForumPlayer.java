@@ -16,26 +16,20 @@
  */
 package org.osivia.services.forum.plugin.player;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.portlet.PortletContext;
-
-import org.apache.commons.lang.StringUtils;
-import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
-import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.player.Player;
-import org.osivia.portal.api.urls.Link;
-import org.osivia.portal.core.cms.BinaryDescription;
-import org.osivia.portal.core.constants.InternalConstants;
-import org.osivia.services.forum.plugin.ForumPlugin;
-
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
 import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 import fr.toutatice.portail.cms.nuxeo.api.portlet.ViewList;
+import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.player.Player;
+import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.services.forum.plugin.ForumPlugin;
+
+import javax.portlet.PortletContext;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Forum player.
@@ -99,13 +93,7 @@ public class ForumPlayer implements INuxeoPlayerModule {
         properties.put(ViewList.TEMPLATE_WINDOW_PROPERTY, ForumPlugin.FORUM_LIST_TEMPLATE);
         properties.put(ViewList.CREATION_PARENT_PATH_WINDOW_PROPERTY, document.getPath());
         properties.put(InternalConstants.PROP_WINDOW_TITLE, document.getTitle());
-        properties.put(InternalConstants.PROP_WINDOW_SUB_TITLE, document.getString("dc:description"));
-
-        // Vignette
-        PropertyMap vignetteProperties = document.getProperties().getMap("ttc:vignette");
-        if ((vignetteProperties != null) && StringUtils.isNotEmpty(vignetteProperties.getString("data"))) {
-            properties.put(InternalConstants.PROP_WINDOW_VIGNETTE_DISPLAY, String.valueOf(true));
-        }
+        properties.put(InternalConstants.PROP_WINDOW_TITLE_METADATA, String.valueOf(true));
 
         // Player
         Player player = new Player();
@@ -132,14 +120,7 @@ public class ForumPlayer implements INuxeoPlayerModule {
         properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
         properties.put("osivia.ajaxLink", "1");
         properties.put(InternalConstants.PROP_WINDOW_TITLE, document.getTitle());
-        properties.put(InternalConstants.PROP_WINDOW_SUB_TITLE, document.getString("dc:description"));
-
-        // Vignette
-        PropertyMap vignetteProperties = document.getProperties().getMap("ttc:vignette");
-        if ((vignetteProperties != null) && StringUtils.isNotEmpty(vignetteProperties.getString("data"))) {
-            properties.put(InternalConstants.PROP_WINDOW_VIGNETTE_DISPLAY, String.valueOf(true));
-        }
-
+        properties.put(InternalConstants.PROP_WINDOW_TITLE_METADATA, String.valueOf(true));
 
         // Player
         Player player = new Player();

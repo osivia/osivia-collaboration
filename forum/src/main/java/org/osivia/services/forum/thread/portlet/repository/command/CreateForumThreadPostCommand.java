@@ -75,14 +75,7 @@ public class CreateForumThreadPostCommand extends AbstractForumCommand {
             }
         }
 
-
-        // Forum thread post document
-        Document post = (Document) request.execute();
-
-        // Set blobs
-        this.setBlobs(documentService, post, this.attachments);
-
-        return post;
+        return request.execute();
     }
 
 

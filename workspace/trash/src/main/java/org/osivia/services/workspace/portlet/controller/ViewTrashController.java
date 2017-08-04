@@ -246,7 +246,7 @@ public class ViewTrashController extends CMSPortlet implements PortletConfigAwar
         Element breadcrumb = this.service.getLocationBreadcrumb(portalControllerContext, path);
 
         // Content type
-        response.setContentType("application/json");
+        response.setContentType("text/html");
 
         // Content
         HTMLWriter htmlWriter = new HTMLWriter(response.getPortletOutputStream());
