@@ -16,6 +16,7 @@ import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.Member;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
@@ -26,9 +27,9 @@ import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 public interface MemberManagementRepository {
 
     /** Invitation model identifier. */
-    String INVITATION_MODEL_ID = "invitation";
+    String INVITATION_MODEL_ID = IFormsService.FORMS_WEB_ID_PREFIX + "invitation";
     /** Request model identifier. */
-    String REQUEST_MODEL_ID = "invitation-request";
+    String REQUEST_MODEL_ID = IFormsService.FORMS_WEB_ID_PREFIX + "invitation-request";
 
     /** Workspace identifier property. */
     String WORKSPACE_IDENTIFIER_PROPERTY = "workspaceId";
