@@ -307,32 +307,8 @@ public class ForumEditionServiceImpl extends AbstractForumServiceImpl implements
         // Document
         Document document = options.getDocument();
 
-        // Path
-        String path;
-        if (ForumEditionMode.CREATION.equals(options.getMode())) {
-            path = options.getParentPath();
-        } else if (ForumEditionMode.EDITION.equals(options.getMode())) {
-            path = document.getPath();
-        } else {
-            path = null;
-        }
-
         // Redirection URL
-        String url;
-        if (path == null) {
-            url = null;
-        } else {
-            String displayContext;
-            if (refresh) {
-                displayContext = IPortalUrlFactory.DISPLAYCTX_REFRESH;
-            } else {
-                displayContext = null;
-            }
-
-            url = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, path, null, null, displayContext, null, null, null, null);
-        }
-
-        return url;
+        return this.portalUrlFactory.getBackURL(portalControllerContext, false, refresh);
     }
 
 }
