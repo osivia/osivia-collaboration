@@ -38,28 +38,7 @@ $JQry(function () {
                     editor.editorContainer.scrollIntoView();
                 }
             });
-
-
-
-
-            // dom = editor.dom;
-            //
-            // // Blockquote header
-            // blockquoteHeaderLink = dom.createHTML("a", {
-            //     "href": "#" + id,
-            //     "class": "no-ajax-link"
-            // }, userDisplayName);
-            // blockquoteHeader = dom.createHTML("p", {
-            //     "class": "blockquote-header mceNonEditable"
-            // }, blockquoteHeaderLink);
-            //
-            // // Transform message
-            // $message.find("blockquote").replaceWith("<blockquote><p>[&hellip;]</p></blockquote>")
-
-            //blockquote = dom.createHTML("blockquote", {}, blockquoteHeader + $message.html());
-
-
-        })
+        });
 
 
         // Edit post

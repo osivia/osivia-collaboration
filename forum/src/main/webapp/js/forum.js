@@ -65,7 +65,6 @@ $JQry(function() {
             });
         }
 
-
         $textarea.data("loaded", true);
     });
 });
