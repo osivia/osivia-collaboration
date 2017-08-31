@@ -379,7 +379,8 @@
                     
                     <div class="pull-right">
                         <!-- Delete -->
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#${namespace}-delete-modal">
+                        <!-- <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#${namespace}-delete-modal"> -->
+                        <button type="button" class="btn btn-danger" disabled="disabled">
                             <i class="glyphicons glyphicons-bin"></i>
                             <span><op:translate key="DELETE" /></span>
                         </button>
@@ -391,7 +392,7 @@
     
     
     <!-- Delete confirmation modal -->
-    <div id="${namespace}-delete-modal" class="modal fade" role="dialog">
+    <%-- <div id="${namespace}-delete-modal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -425,5 +426,5 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --%>
 </div>
