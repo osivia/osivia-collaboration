@@ -1,7 +1,19 @@
 package org.osivia.services.forum.edition.portlet.service;
 
-import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCustomizer;
-import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.ResourceResponse;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
@@ -26,14 +38,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.portlet.ActionResponse;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.portlet.ResourceResponse;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCustomizer;
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
 
 /**
  * Forum edition service implementation.
@@ -304,9 +310,6 @@ public class ForumEditionServiceImpl extends AbstractForumServiceImpl implements
      * @throws PortletException
      */
     private String getRedirectionUrl(PortalControllerContext portalControllerContext, ForumEditionOptions options, boolean refresh) throws PortletException {
-        // Document
-        Document document = options.getDocument();
-
         // Redirection URL
         return this.portalUrlFactory.getBackURL(portalControllerContext, false, refresh);
     }

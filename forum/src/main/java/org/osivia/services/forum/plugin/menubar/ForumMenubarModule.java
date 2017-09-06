@@ -1,5 +1,12 @@
 package org.osivia.services.forum.plugin.menubar;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
@@ -12,13 +19,9 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.services.forum.edition.portlet.model.ForumEditionMode;
 import org.osivia.services.forum.edition.portlet.repository.ForumEditionRepository;
 import org.osivia.services.forum.edition.portlet.service.ForumEditionService;
-import org.osivia.services.forum.plugin.ForumPlugin;
-
-import java.util.*;
 
 /**
  * Forum menubar module.

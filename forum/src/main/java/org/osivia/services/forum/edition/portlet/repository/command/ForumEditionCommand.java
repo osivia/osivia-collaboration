@@ -1,10 +1,15 @@
 package org.osivia.services.forum.edition.portlet.repository.command;
 
-import org.apache.commons.collections.CollectionUtils;
+import java.io.File;
+
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
-import org.nuxeo.ecm.automation.client.model.*;
+import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.automation.client.model.DocRef;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.FileBlob;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.services.forum.edition.portlet.model.ForumEditionForm;
 import org.osivia.services.forum.edition.portlet.model.ForumEditionMode;
@@ -16,8 +21,6 @@ import org.osivia.services.forum.util.repository.command.AbstractForumCommand;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.io.File;
 
 /**
  * Forum edition Nuxeo command.
@@ -54,9 +57,6 @@ public class ForumEditionCommand extends AbstractForumCommand {
 
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
-        // Document service
-        DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
-
         // Edition mode
         ForumEditionMode mode = this.options.getMode();
 

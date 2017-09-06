@@ -14,7 +14,7 @@
 
             <div class="panel-body">
                 <div class="media">
-                    <div class="media-left">
+                    <div class="media-left hidden-xs">
                         <!-- Avatar -->
                         <div class="forum-thread-avatar">
                             <span><ttc:user name="${form.reply.user}" hideDisplayName="true"></ttc:user></span>

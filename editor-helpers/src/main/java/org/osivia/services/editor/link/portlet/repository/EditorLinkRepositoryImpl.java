@@ -1,32 +1,36 @@
 package org.osivia.services.editor.link.portlet.repository;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
-import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
-import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.portlet.PortletException;
+
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.portal.api.cms.DocumentType;
+import org.osivia.portal.api.cms.FileDocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.web.IWebIdService;
 import org.osivia.services.editor.link.portlet.model.EditorLinkForm;
 import org.osivia.services.editor.link.portlet.model.UrlType;
 import org.osivia.services.editor.link.portlet.repository.command.SearchDocumentsCommand;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
 
-import javax.portlet.PortletException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCustomizer;
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 /**
  * Editor link portlet repository implementation.
@@ -57,6 +61,10 @@ public class EditorLinkRepositoryImpl implements EditorLinkRepository {
     /** WebId service. */
     @Autowired
     private IWebIdService webIdService;
+
+    /** Nuxeo service. */
+    @Autowired
+    private INuxeoService nuxeoService;
 
     /** Document DAO. */
     @Autowired
@@ -219,6 +227,30 @@ public class EditorLinkRepositoryImpl implements EditorLinkRepository {
         NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
 
         return documentContext.getDocument();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<DocumentType> getDocumentTypes(PortalControllerContext portalControllerContext) throws PortletException {
+        // CMS customizer
+        INuxeoCustomizer cmsCustomizer = this.nuxeoService.getCMSCustomizer();
+
+        return cmsCustomizer.getDocumentTypes().values();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<FileDocumentType> getFileDocumentTypes(PortalControllerContext portalControllerContext) throws PortletException {
+        // CMS customizer
+        INuxeoCustomizer cmsCustomizer = this.nuxeoService.getCMSCustomizer();
+
+        return cmsCustomizer.getFileDocumentTypes();
     }
 
 }

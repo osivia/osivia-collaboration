@@ -1,35 +1,49 @@
 package org.osivia.services.forum.thread.portlet.repository;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
-import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
-import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.nuxeo.ecm.automation.client.model.*;
+import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.HasFile;
+import org.nuxeo.ecm.automation.client.model.PropertyList;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.forum.thread.portlet.model.*;
-import org.osivia.services.forum.thread.portlet.repository.command.*;
+import org.osivia.services.forum.thread.portlet.model.ForumThreadForm;
+import org.osivia.services.forum.thread.portlet.model.ForumThreadObject;
+import org.osivia.services.forum.thread.portlet.model.ForumThreadOptions;
+import org.osivia.services.forum.thread.portlet.model.ForumThreadParser;
+import org.osivia.services.forum.thread.portlet.model.ForumThreadParserAction;
+import org.osivia.services.forum.thread.portlet.model.ForumThreadPosts;
+import org.osivia.services.forum.thread.portlet.repository.command.CreateForumThreadPostCommand;
+import org.osivia.services.forum.thread.portlet.repository.command.DeleteForumThreadPostCommand;
+import org.osivia.services.forum.thread.portlet.repository.command.GetForumThreadPostsCommand;
+import org.osivia.services.forum.thread.portlet.repository.command.ToggleForumThreadClosure;
+import org.osivia.services.forum.thread.portlet.repository.command.UpdateForumThreadPostCommand;
 import org.osivia.services.forum.util.model.ForumFile;
 import org.osivia.services.forum.util.model.ForumFiles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
+import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Forum thread portlet repository implementation.
@@ -47,10 +61,6 @@ public class ForumThreadRepositoryImpl implements ForumThreadRepository {
     /** Forum thread parser. */
     @Autowired
     private ForumThreadParser parser;
-
-    /** Document DAO. */
-    @Autowired
-    private DocumentDAO documentDao;
 
 
     /**

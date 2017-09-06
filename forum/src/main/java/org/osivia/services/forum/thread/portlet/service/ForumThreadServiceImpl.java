@@ -1,17 +1,27 @@
 package org.osivia.services.forum.thread.portlet.service;
 
-import com.sun.org.apache.xalan.internal.xsltc.DOM;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.portlet.ActionRequest;
+import javax.portlet.MimeResponse;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
+import javax.portlet.PortletURL;
+import javax.portlet.RenderResponse;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-import org.dom4j.io.HTMLWriter;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.directory.v2.model.Person;
-import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -19,7 +29,12 @@ import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.menubar.MenubarDropdown;
 import org.osivia.portal.api.menubar.MenubarGroup;
 import org.osivia.portal.api.menubar.MenubarItem;
-import org.osivia.services.forum.thread.portlet.model.*;
+import org.osivia.services.forum.thread.portlet.model.ForumThreadForm;
+import org.osivia.services.forum.thread.portlet.model.ForumThreadObject;
+import org.osivia.services.forum.thread.portlet.model.ForumThreadOptions;
+import org.osivia.services.forum.thread.portlet.model.ForumThreadParser;
+import org.osivia.services.forum.thread.portlet.model.ForumThreadParserAction;
+import org.osivia.services.forum.thread.portlet.model.ForumThreadPosts;
 import org.osivia.services.forum.thread.portlet.repository.ForumThreadRepository;
 import org.osivia.services.forum.util.model.ForumFile;
 import org.osivia.services.forum.util.model.ForumFiles;
@@ -27,12 +42,6 @@ import org.osivia.services.forum.util.service.AbstractForumServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-
-import javax.portlet.*;
-import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Forum thread portlet service implementation.
@@ -67,10 +76,6 @@ public class ForumThreadServiceImpl extends AbstractForumServiceImpl implements 
     /** Internationalization bundle factory. */
     @Autowired
     private IBundleFactory bundleFactory;
-
-    /** Person service. */
-    @Autowired
-    private PersonService personService;
 
 
     /**
@@ -113,6 +118,7 @@ public class ForumThreadServiceImpl extends AbstractForumServiceImpl implements 
      * @param thread                  forum thread Nuxeo document
      * @throws PortletException
      */
+    @SuppressWarnings("unchecked")
     private void addMenubarItems(PortalControllerContext portalControllerContext, Document thread) throws PortletException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
@@ -364,13 +370,8 @@ public class ForumThreadServiceImpl extends AbstractForumServiceImpl implements 
 
     @Override
     public void quote(PortalControllerContext portalControllerContext, ForumThreadForm form, String id) throws PortletException, IOException {
-        // Portlet request
-        PortletRequest portletRequest = portalControllerContext.getRequest();
         // Portlet response
         PortletResponse portletResponse = portalControllerContext.getResponse();
-
-        // Internationalization bundle
-        Bundle bundle = this.bundleFactory.getBundle(portletRequest.getLocale());
 
         if (portletResponse instanceof MimeResponse) {
             // Mime response

@@ -130,6 +130,7 @@ public class ForumPlugin extends AbstractPluginPortlet {
      *
      * @param context customize players
      */
+    @SuppressWarnings("rawtypes")
     private void customizePlayers(CustomizationContext context) {
         // Players
         List<IPlayerModule> players = this.getPlayers(context);

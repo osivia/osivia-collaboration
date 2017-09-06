@@ -1,14 +1,15 @@
 package org.osivia.services.editor.link.portlet.service;
 
-import javax.portlet.PortletException;
-import javax.sound.sampled.Port;
+import java.util.List;
 
-import net.sf.json.JSONObject;
+import javax.portlet.PortletException;
+
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.editor.link.portlet.model.EditorLinkForm;
+import org.osivia.services.editor.link.portlet.model.FilterType;
 import org.osivia.services.editor.link.portlet.model.UrlType;
 
-import java.util.List;
+import net.sf.json.JSONObject;
 
 /**
  * Editor link portlet service interface.
@@ -33,7 +34,7 @@ public interface EditorLinkService {
      * Save editor link form.
      *
      * @param portalControllerContext portal controller context
-     * @param form                    editor link form
+     * @param form editor link form
      * @throws PortletException
      */
     void save(PortalControllerContext portalControllerContext, EditorLinkForm form) throws PortletException;
@@ -43,7 +44,7 @@ public interface EditorLinkService {
      * Unlink.
      *
      * @param portalControllerContext portal controller context
-     * @param form                    editor link form
+     * @param form editor link form
      * @throws PortletException
      */
     void unlink(PortalControllerContext portalControllerContext, EditorLinkForm form) throws PortletException;
@@ -53,8 +54,8 @@ public interface EditorLinkService {
      * Search documents.
      *
      * @param portalControllerContext portal controller context
-     * @param filter                  search filter
-     * @param page                    search pagination page number
+     * @param filter search filter
+     * @param page search pagination page number
      * @return search result JSON object
      * @throws PortletException
      */
@@ -79,5 +80,26 @@ public interface EditorLinkService {
      * @throws PortletException
      */
     List<UrlType> getUrlTypes(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Get filter types.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return filter types
+     * @throws PortletException
+     */
+    List<FilterType> getFilterTypes(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Resolve view path.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param name view name
+     * @return path
+     * @throws PortletException
+     */
+    String resolveViewPath(PortalControllerContext portalControllerContext, String name) throws PortletException;
 
 }

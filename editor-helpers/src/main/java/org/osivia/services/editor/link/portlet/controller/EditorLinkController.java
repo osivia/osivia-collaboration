@@ -1,11 +1,27 @@
 package org.osivia.services.editor.link.portlet.controller;
 
-import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
-import net.sf.json.JSONObject;
-import org.apache.commons.lang.BooleanUtils;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletRequestDispatcher;
+import javax.portlet.PortletResponse;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
+
 import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.editor.link.portlet.model.EditorLinkForm;
+import org.osivia.services.editor.link.portlet.model.FilterType;
 import org.osivia.services.editor.link.portlet.model.UrlType;
 import org.osivia.services.editor.link.portlet.model.validator.EditorLinkFormValidator;
 import org.osivia.services.editor.link.portlet.service.EditorLinkService;
@@ -18,17 +34,15 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import org.springframework.web.portlet.context.PortletConfigAware;
 import org.springframework.web.portlet.context.PortletContextAware;
 
-import javax.annotation.PostConstruct;
-import javax.portlet.*;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
+import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
+import net.sf.json.JSONObject;
 
 /**
  * Editor link portlet controller.
@@ -40,6 +54,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("VIEW")
+@SessionAttributes("filterTypes")
 public class EditorLinkController extends CMSPortlet implements PortletConfigAware, PortletContextAware {
 
     /** Portlet config. */
@@ -156,6 +171,29 @@ public class EditorLinkController extends CMSPortlet implements PortletConfigAwa
 
 
     /**
+     * Get filters HTML content resource mapping.
+     * 
+     * @param request resource request
+     * @param response resource response
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ResourceMapping("filters")
+    public void getFilters(ResourceRequest request, ResourceResponse response) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        // Content type
+        response.setContentType("text/html");
+
+        // Request dispatcher
+        String path = this.service.resolveViewPath(portalControllerContext, "filters");
+        PortletRequestDispatcher dispatcher = this.portletContext.getRequestDispatcher(path);
+        dispatcher.include(request, response);
+    }
+
+
+    /**
      * Get editor link form model attribute.
      *
      * @param request  portlet request
@@ -198,6 +236,23 @@ public class EditorLinkController extends CMSPortlet implements PortletConfigAwa
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 
         return this.service.getUrlTypes(portalControllerContext);
+    }
+
+
+    /**
+     * Get filter types.
+     * 
+     * @param request portlet request
+     * @param response portlet response
+     * @return filter types
+     * @throws PortletException
+     */
+    @ModelAttribute("filterTypes")
+    public List<FilterType> getFilterTypes(PortletRequest request, PortletResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
+
+        return this.service.getFilterTypes(portalControllerContext);
     }
 
 

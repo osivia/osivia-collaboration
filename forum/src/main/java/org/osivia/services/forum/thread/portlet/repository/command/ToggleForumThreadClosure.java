@@ -1,17 +1,15 @@
 package org.osivia.services.forum.thread.portlet.repository.command;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import org.nuxeo.ecm.automation.client.Constants;
-import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
-import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.services.forum.thread.portlet.repository.ForumThreadRepository;
 import org.osivia.services.forum.util.repository.command.AbstractForumCommand;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
 /**
  * Toggle forum thread closure Nuxeo command.

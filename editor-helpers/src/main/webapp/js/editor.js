@@ -1,12 +1,13 @@
 $JQry(function() {
-    var $radioButtons = $JQry(".editor-link input[type=radio][name=urlType]");
+    var $window = $JQry(window),
+    	$radioButtons = $JQry(".editor-link input[type=radio][name=urlType]");
 
     $radioButtons.change(function(event) {
         $radioButtons.each(function(index, element) {
             var $element = $JQry(element),
                 $input = $element.closest("input"),
-                $label = $input.closest("label"),
-                $collapse = $label.siblings(".collapse");
+                $radio = $input.closest(".radio"),
+                $collapse = $radio.find(".collapse");
 
             if ($input.is(":checked")) {
                 if (!$collapse.hasClass("in")) {
@@ -21,10 +22,9 @@ $JQry(function() {
     });
 
 
-    $JQry(".editor-link select.select2").each(function(index, element) {
+    $JQry(".editor-link select.select2[name=documentWebId]").each(function(index, element) {
         var $element = $JQry(element),
             url = $element.data("url"),
-            ajaxDataFunction = $element.data("ajax-data-function"),
             options = {
                 theme : "bootstrap"
             };
@@ -34,18 +34,10 @@ $JQry(function() {
             dataType : "json",
             delay : 1000,
             data : function(params) {
-                var result;
-
-                if (ajaxDataFunction) {
-                    result = window[ajaxDataFunction]($element, params);
-                } else {
-                    result = {
-                        filter: params.term,
-                        page: params.page
-                    };
-                }
-
-                return result;
+                return  {
+                    filter: params.term,
+                    page: params.page
+                };
             },
             processResults : function(data, params) {
                 params.page = params.page || 1;
@@ -188,30 +180,72 @@ $JQry(function() {
 
 
         $element.select2(options);
+    });
+    
+    
+    $JQry(".editor-link select.select2[name=filterType]").each(function(index, element) {
+        var $element = $JQry(element),
+            options = {
+                theme : "bootstrap",
+                width : "resolve"
+            };
 
-
-        if ($element.data("onchange") == "submit") {
-            $element.on("select2:unselecting", function(event) {
-                var $target = $JQry(event.target);
-
-                $element.data("unselecting", true);
-            });
-
-            $element.change(function(event) {
-                var $form = $element.closest("form"),
-                    $submit = $form.find("button[type=submit][name=save]");
-
-                $submit.click();
-            });
-
-            $element.on("select2:opening", function(event) {
-                var $target = $JQry(event.target);
-
-                if ($target.data("unselecting")) {
-                    event.preventDefault();
-                }
-            });
-        }
+        $element.select2(options);
+    });
+    
+    
+    $JQry(".editor-link button[data-filter]").popover({
+		container: ".editor-link",
+		content: function() {
+			var $this = $JQry(this),
+				result;
+			
+			jQuery.ajax({
+				url: $this.data("url"),
+				async: false,
+				cache: true,
+				headers: {
+					"Cache-Control": "max-age=86400, public"
+				},
+				dataType: "html",
+				success : function(data, status, xhr) {
+					result = data;
+				}
+			});
+			
+			return result;
+		},
+		html: true,
+		placement: function() {
+			var result;
+			
+			if ($window.width() < 768) {
+				result = "bottom";
+			} else {
+				result = "left";
+			}
+			
+			return result;
+		},
+		trigger: "manual"
+	});
+    
+    
+    $JQry(".editor-link button[data-filter]").click(function(event) {
+		var $target = $JQry(event.target),
+			$button = $target.closest("button");
+		
+		$button.popover("toggle");
+	});
+    
+    
+    $JQry(".editor-link button[data-filter]").on("show.bs.popover", function() {
+    	console.log("[popover] show"); // FIXME
+    });
+    
+    
+    $JQry(".editor-link button[data-filter]").on("hidden.bs.popover", function() {
+    	console.log("[popover] hidden"); // FIXME
     });
 
 });

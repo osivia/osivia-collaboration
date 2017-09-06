@@ -1,14 +1,20 @@
 package org.osivia.services.forum.edition.portlet.controller;
 
-import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.CharEncoding;
+import java.io.IOException;
+
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
+
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.internationalization.Bundle;
-import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.services.forum.edition.portlet.model.ForumEditionForm;
-import org.osivia.services.forum.edition.portlet.model.ForumEditionMode;
 import org.osivia.services.forum.edition.portlet.model.ForumEditionOptions;
 import org.osivia.services.forum.edition.portlet.model.validator.ForumEditionFormValidator;
 import org.osivia.services.forum.edition.portlet.service.ForumEditionService;
@@ -18,18 +24,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.portlet.bind.PortletRequestDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
-import org.springframework.web.portlet.context.PortletConfigAware;
-import org.springframework.web.portlet.context.PortletContextAware;
-
-import javax.annotation.PostConstruct;
-import javax.portlet.*;
-import java.io.*;
 
 /**
  * Forum edition portlet controller.

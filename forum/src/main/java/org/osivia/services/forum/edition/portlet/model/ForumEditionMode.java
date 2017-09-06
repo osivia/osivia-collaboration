@@ -1,7 +1,5 @@
 package org.osivia.services.forum.edition.portlet.model;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * Forum edition modes enumeration.
  *

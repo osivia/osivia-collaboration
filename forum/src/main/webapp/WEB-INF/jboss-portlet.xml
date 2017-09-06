@@ -17,7 +17,6 @@
             <!-- TinyMCE -->
             <script src="/components/tinymce/tinymce.min.js" type="text/javascript"/>
 
-            <script src="/js/forum.min.js" type="text/javascript"/>
             <script src="/js/thread/forum-thread.min.js" type="text/javascript"/>
         </header-content>
 
@@ -43,7 +42,6 @@
             <!-- TinyMCE -->
             <script src="/components/tinymce/tinymce.min.js" type="text/javascript"/>
 
-            <script src="/js/forum.min.js" type="text/javascript"/>
             <script src="/js/edition/forum-edition.min.js" type="text/javascript"/>
         </header-content>
     </portlet>

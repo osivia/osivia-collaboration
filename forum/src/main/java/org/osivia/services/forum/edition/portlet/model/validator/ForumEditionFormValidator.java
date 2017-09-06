@@ -1,6 +1,7 @@
 package org.osivia.services.forum.edition.portlet.model.validator;
 
-import org.apache.commons.lang.StringUtils;
+import javax.activation.MimeType;
+
 import org.osivia.services.forum.edition.portlet.model.ForumEditionForm;
 import org.osivia.services.forum.edition.portlet.model.Vignette;
 import org.osivia.services.forum.edition.portlet.repository.ForumEditionRepository;
@@ -8,10 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 
 /**
  * Forum edition form validator.

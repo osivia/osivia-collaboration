@@ -1,15 +1,18 @@
 package org.osivia.services.editor.link.portlet.repository;
 
-import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+import java.util.Collection;
+import java.util.Map;
+
+import javax.portlet.PortletException;
+
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
+import org.osivia.portal.api.cms.DocumentType;
+import org.osivia.portal.api.cms.FileDocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.editor.link.portlet.model.EditorLinkForm;
 
-import javax.portlet.PortletException;
-import javax.sound.sampled.Port;
-import java.util.Map;
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 
 /**
  * Editor link portlet repository interface.
@@ -79,5 +82,25 @@ public interface EditorLinkRepository {
      * @throws PortletException
      */
     EditorLinkForm createForm(PortalControllerContext portalControllerContext, String url, String text, String title, boolean onlyText) throws PortletException;
+
+
+    /**
+     * Get document types.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return document types
+     * @throws PortletException
+     */
+    Collection<DocumentType> getDocumentTypes(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Get file document types.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return file document types
+     * @throws PortletException
+     */
+    Collection<FileDocumentType> getFileDocumentTypes(PortalControllerContext portalControllerContext) throws PortletException;
 
 }

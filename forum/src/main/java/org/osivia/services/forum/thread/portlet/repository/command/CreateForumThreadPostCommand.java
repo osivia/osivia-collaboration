@@ -1,9 +1,10 @@
 package org.osivia.services.forum.thread.portlet.repository.command;
 
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Blobs;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -12,8 +13,6 @@ import org.osivia.services.forum.util.repository.command.AbstractForumCommand;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * Create forum thread post Nuxeo command.
@@ -58,9 +57,6 @@ public class CreateForumThreadPostCommand extends AbstractForumCommand {
 
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
-        // Document service
-        DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
-
         // Operation request
         OperationRequest request = nuxeoSession.newRequest(OPERATION_REQUEST_ID);
         request.set("document", this.document);

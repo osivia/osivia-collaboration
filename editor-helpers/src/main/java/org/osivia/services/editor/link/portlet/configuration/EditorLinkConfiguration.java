@@ -1,6 +1,5 @@
 package org.osivia.services.editor.link.portlet.configuration;
 
-import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -11,6 +10,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 /**
  * Editor link portlet configuration.
@@ -65,7 +67,8 @@ public class EditorLinkConfiguration {
      */
     @Bean
     public IBundleFactory getBundleFactory() {
-        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class, IInternationalizationService.MBEAN_NAME);
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
         return internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
@@ -78,6 +81,17 @@ public class EditorLinkConfiguration {
     @Bean
     public IWebIdService getWebIdService() {
         return Locator.findMBean(IWebIdService.class, IWebIdService.MBEAN_NAME);
+    }
+
+
+    /**
+     * Get Nuxeo service.
+     * 
+     * @return Nuxeo service
+     */
+    @Bean
+    public INuxeoService getNuxeoService() {
+        return Locator.findMBean(INuxeoService.class, INuxeoService.MBEAN_NAME);
     }
 
 

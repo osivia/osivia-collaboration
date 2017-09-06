@@ -1,31 +1,42 @@
 package org.osivia.services.editor.link.portlet.service;
 
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
+import org.osivia.portal.api.cms.DocumentType;
+import org.osivia.portal.api.cms.FileDocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.editor.link.portlet.model.EditorLinkForm;
+import org.osivia.services.editor.link.portlet.model.FilterType;
 import org.osivia.services.editor.link.portlet.model.UrlType;
+import org.osivia.services.editor.link.portlet.model.comparator.FilterTypeComparator;
 import org.osivia.services.editor.link.portlet.repository.EditorLinkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Editor link portlet service implementation.
@@ -36,9 +47,21 @@ import java.util.Map;
 @Service
 public class EditorLinkServiceImpl implements EditorLinkService {
 
+    /** Application context. */
+    @Autowired
+    private ApplicationContext applicationContext;
+    
     /** Portlet repository. */
     @Autowired
     private EditorLinkRepository repository;
+
+    /** Filter type comparator. */
+    @Autowired
+    private FilterTypeComparator filterTypeComparator;
+
+    /** View resolver. */
+    @Autowired
+    private InternalResourceViewResolver viewResolver;
 
     /** Internationalization bundle factory. */
     @Autowired
@@ -194,6 +217,79 @@ public class EditorLinkServiceImpl implements EditorLinkService {
     @Override
     public List<UrlType> getUrlTypes(PortalControllerContext portalControllerContext) throws PortletException {
         return Arrays.asList(UrlType.values());
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<FilterType> getFilterTypes(PortalControllerContext portalControllerContext) throws PortletException {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
+
+        // Document types
+        Collection<DocumentType> documentTypes = this.repository.getDocumentTypes(portalControllerContext);
+        // File document types
+        Collection<FileDocumentType> fileDocumentTypes = this.repository.getFileDocumentTypes(portalControllerContext);
+
+        // Filter types
+        List<FilterType> filterTypes = new ArrayList<>(documentTypes.size() + fileDocumentTypes.size());
+
+        // All types
+        FilterType all = this.applicationContext.getBean(FilterType.class);
+        all.setName(StringUtils.EMPTY);
+        all.setDisplayName(bundle.getString("FILTER_TYPE_ALL"));
+        all.setLevel(1);
+        filterTypes.add(all);
+
+        for (DocumentType documentType : documentTypes) {
+            if (!documentType.isFile() || StringUtils.equals("File", documentType.getName())) {
+                FilterType filterType = this.applicationContext.getBean(FilterType.class);
+                all.setName(documentType.getName());
+                all.setIcon(documentType.getIcon());
+                all.setDisplayName(bundle.getString("FILTER_TYPE_" + StringUtils.upperCase(documentType.getName())));
+                all.setLevel(1);
+                filterTypes.add(filterType);
+            }
+        }
+
+        for (FileDocumentType fileDocumentType : fileDocumentTypes) {
+            FilterType filterType = this.applicationContext.getBean(FilterType.class);
+            all.setName(fileDocumentType.getName());
+            all.setIcon(fileDocumentType.getIcon());
+            all.setDisplayName(bundle.getString("FILTER_TYPE_FILE_" + StringUtils.upperCase(fileDocumentType.getName())));
+            all.setLevel(2);
+            filterTypes.add(filterType);
+        }
+
+
+        // Sort filter types
+        Collections.sort(filterTypes, filterTypeComparator);
+
+        return filterTypes;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String resolveViewPath(PortalControllerContext portalControllerContext, String name) throws PortletException {
+        // Path
+        String path;
+
+        try {
+            View view = this.viewResolver.resolveViewName(name, null);
+            JstlView jstlView = (JstlView) view;
+            path = jstlView.getUrl();
+        } catch (Exception e) {
+            throw new PortletException(e);
+        }
+
+        return path;
     }
 
 }
