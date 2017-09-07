@@ -966,19 +966,19 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
 	@Override
 	public void checkIntegrity(PortalControllerContext portalControllerContext, String workspaceId) {
-		
 		IBatchService batchService = Locator.findMBean(IBatchService.class, IBatchService.MBEAN_NAME);
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("workspaceId", workspaceId);
 		try {
 			batchService.startBatchImmediatly("DirectoryIntegrity", parameters );
 		} catch (PortalException e) {
-			log.error("Unable to start integrity check");
+            // log.error("Unable to start integrity check"); FIXME
 		}
-
 	}
-	
 
 }

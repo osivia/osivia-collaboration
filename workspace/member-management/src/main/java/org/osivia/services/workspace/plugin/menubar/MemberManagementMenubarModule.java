@@ -31,6 +31,10 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
  */
 public class MemberManagementMenubarModule implements MenubarModule {
 
+    /** Menubar item identifier. */
+    public static final String MENUBAR_ITEM_ID = "WORKSPACE_MEMBER_MANAGEMENT";
+
+
     /** Menubar service. */
     private final IMenubarService menubarService;
     /** Portal URL factory. */
@@ -86,7 +90,6 @@ public class MemberManagementMenubarModule implements MenubarModule {
                         properties.put("osivia.navigation.reset", String.valueOf(true));
 
                         // Menubar item
-                        String id = "WORKSPACE_MEMBER_MANAGEMENT";
                         String title = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MENUBAR_ITEM");
                         String icon = "glyphicons glyphicons-parents";
                         MenubarContainer parent = this.menubarService.getDropdown(portalControllerContext, MenubarDropdown.CONFIGURATION_DROPDOWN_MENU_ID);
@@ -97,7 +100,7 @@ public class MemberManagementMenubarModule implements MenubarModule {
                         String onclick = null;
                         String htmlClasses = null;
 
-                        MenubarItem menubarItem = new MenubarItem(id, title, icon, parent, order, url, target, onclick, htmlClasses);
+                        MenubarItem menubarItem = new MenubarItem(MENUBAR_ITEM_ID, title, icon, parent, order, url, target, onclick, htmlClasses);
                         menubar.add(menubarItem);
                     }
                 }

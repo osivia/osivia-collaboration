@@ -6,6 +6,7 @@ $JQry(function() {
 			minimumInputLength = $element.data("minimum-input-length"),
 			ajaxDataFunction = $element.data("ajax-data-function"),
  			options = {
+				closeOnSelect: false,
 				minimumInputLength: (minimumInputLength ? minimumInputLength : 3),
 				theme: "bootstrap"
 			};
@@ -75,6 +76,7 @@ $JQry(function() {
 			if (params.loading) {
 				$result.text(params.text);
 			} else if (params.message) {
+				$result.addClass("text-muted");
 				$result.text(params.message);
 			} else {
 				$result.addClass("person");

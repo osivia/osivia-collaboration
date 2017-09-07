@@ -276,32 +276,35 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Total results
         int total = 0;
 
-        if (StringUtils.isNotBlank(filter)) {
-            String[] parts = StringUtils.split(filter, ",;");
-            for (String part : parts) {
-                // Persons
-                List<Person> persons = this.repository.searchPersons(portalControllerContext, part, tokenizer);
-                for (Person person : persons) {
-                    // Already member indicator
-                    boolean alreadyMember = memberIdentifiers.contains(person.getUid());
-                    
-                    // Already invited
-                    boolean alreadyInvited = invitationIndentifiers.contains(person.getUid());
-                    
-                    // Existing request indicator
-                    boolean existingRequest = !invitationOnly && requestIdentifiers.contains(person.getUid());
+        String[] parts;
+        if (StringUtils.isBlank(filter)) {
+            parts = new String[]{StringUtils.EMPTY};
+        } else {
+            parts = StringUtils.split(filter, ",;");
+        }
+        for (String part : parts) {
+            // Persons
+            List<Person> persons = this.repository.searchPersons(portalControllerContext, part, tokenizer);
+            for (Person person : persons) {
+                // Already member indicator
+                boolean alreadyMember = memberIdentifiers.contains(person.getUid());
 
-                    // Search result
-                    JSONObject object = getSearchResult(person, alreadyMember, alreadyInvited, existingRequest, bundle);
+                // Already invited
+                boolean alreadyInvited = invitationIndentifiers.contains(person.getUid());
 
-                    objects.add(object);
-                    total++;
-                }
+                // Existing request indicator
+                boolean existingRequest = !invitationOnly && requestIdentifiers.contains(person.getUid());
 
-                // Add person creation
-                if (this.enablePersonCreation() && !(tokenizer && !persons.isEmpty())) {
-                    this.addPersonCreationSearchResult(persons, objects, part, bundle);
-                }
+                // Search result
+                JSONObject object = this.getSearchResult(person, alreadyMember, alreadyInvited, existingRequest, bundle);
+
+                objects.add(object);
+                total++;
+            }
+
+            // Add person creation
+            if (this.enablePersonCreation() && !(tokenizer && !persons.isEmpty())) {
+                this.addPersonCreationSearchResult(persons, objects, part, bundle);
             }
         }
 
@@ -315,17 +318,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             items.addAll(objects);
         } else {
             // Message
-            if ((page == 1) && CollectionUtils.isNotEmpty(objects)) {
-                String message;
-                if (total == 0) {
-                    message = bundle.getString("SELECT2_NO_RESULT");
-                } else if (total == 1) {
-                    message = bundle.getString("SELECT2_ONE_RESULT");
-                } else if (total > SELECT2_MAX_RESULTS) {
-                    message = bundle.getString("SELECT2_TOO_MANY_RESULTS", SELECT2_MAX_RESULTS);
-                } else {
-                    message = bundle.getString("SELECT2_MULTIPLE_RESULTS", total);
-                }
+            if (page == 1) {
+                String message = this.getSearchResultsMessage(portalControllerContext, total, bundle);
                 JSONObject object = new JSONObject();
                 object.put("message", message);
                 items.add(object);
@@ -453,6 +447,32 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
             objects.add(object);
         }
+    }
+
+
+    /**
+     * Get search results message.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param total search results total
+     * @param bundle internationalization bundle
+     * @return message
+     * @throws PortletException
+     */
+    protected String getSearchResultsMessage(PortalControllerContext portalControllerContext, int total, Bundle bundle) throws PortletException {
+        String message;
+
+        if (total == 0) {
+            message = bundle.getString("SELECT2_NO_RESULTS");
+        } else if (total == 1) {
+            message = bundle.getString("SELECT2_ONE_RESULT");
+        } else if (total > SELECT2_MAX_RESULTS) {
+            message = bundle.getString("SELECT2_TOO_MANY_RESULTS", SELECT2_MAX_RESULTS);
+        } else {
+            message = bundle.getString("SELECT2_MULTIPLE_RESULTS", total);
+        }
+
+        return message;
     }
 
 
