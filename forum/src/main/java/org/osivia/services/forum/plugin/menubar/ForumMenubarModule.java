@@ -1,6 +1,5 @@
 package org.osivia.services.forum.plugin.menubar;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.DocumentType;
-import org.osivia.portal.api.cms.Permissions;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.MenubarItem;
@@ -51,63 +49,71 @@ public class ForumMenubarModule implements MenubarModule {
 
 
     @Override
-    public void customizeSpace(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext spaceDocumentContext) throws
-            PortalException {
+    public void customizeSpace(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext spaceDocumentContext)
+            throws PortalException {
         // Do nothing
     }
 
 
     @Override
-    public void customizeDocument(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext documentContext) throws
-            PortalException {
+    public void customizeDocument(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext documentContext)
+            throws PortalException {
         if (documentContext != null) {
-            // Permissions
-            Permissions permissions = documentContext.getPermissions();
             // Document type
             DocumentType documentType = documentContext.getDocumentType();
             // Document
             Document document = (Document) documentContext.getDocument();
 
 
-            // Removed menubar items
-            Set<MenubarItem> removedItems = new HashSet<>();
-            Set<String> removedIds = new HashSet<>(Arrays.asList(new String[]{"LOCK_URL"}));
+            // Removed lock menubar item
+            this.removeLock(menubar, documentType);
+
+
+            MenubarItem addForum = null;
+            MenubarItem addThread = null;
+            MenubarItem edit = null;
+
             for (MenubarItem menubarItem : menubar) {
-                if (removedIds.contains(menubarItem.getId())) {
+                if ("ADD_FORUM".equals(menubarItem.getId())) {
+                    addForum = menubarItem;
+                } else if ("ADD_THREAD".equals(menubarItem.getId())) {
+                    addThread = menubarItem;
+                } else if ("EDIT".equals(menubarItem.getId())) {
+                    edit = menubarItem;
+                }
+            }
+
+            if (addForum != null) {
+                this.customizeAdd(portalControllerContext, document, ForumEditionRepository.DOCUMENT_TYPE_FORUM, addForum);
+            }
+
+            if (addThread != null) {
+                this.customizeAdd(portalControllerContext, document, ForumEditionRepository.DOCUMENT_TYPE_THREAD, addThread);
+            }
+
+            if ((edit != null) && (documentType != null) && (ForumEditionRepository.DOCUMENT_TYPE_FORUM.equals(documentType.getName())
+                    || ForumEditionRepository.DOCUMENT_TYPE_THREAD.equals(documentType.getName()))) {
+                this.customizeEdit(portalControllerContext, document, documentType.getName(), edit);
+            }
+        }
+    }
+
+
+    /**
+     * Remove lock menubar item.
+     * 
+     * @param menubar menubar
+     * @param documentType document type
+     */
+    private void removeLock(List<MenubarItem> menubar, DocumentType documentType) {
+        if ((documentType != null) && "Thread".equals(documentType.getName())) {
+            Set<MenubarItem> removedItems = new HashSet<>();
+            for (MenubarItem menubarItem : menubar) {
+                if ("LOCK_URL".equals(menubarItem.getId())) {
                     removedItems.add(menubarItem);
                 }
             }
             menubar.removeAll(removedItems);
-
-
-            if (permissions.isManageable()) {
-                MenubarItem addForum = null;
-                MenubarItem addThread = null;
-                MenubarItem edit = null;
-
-                for (MenubarItem menubarItem : menubar) {
-                    if ("ADD_FORUM".equals(menubarItem.getId())) {
-                        addForum = menubarItem;
-                    } else if ("ADD_THREAD".equals(menubarItem.getId())) {
-                        addThread = menubarItem;
-                    } else if ("EDIT".equals(menubarItem.getId())) {
-                        edit = menubarItem;
-                    }
-                }
-
-                if (addForum != null) {
-                    this.customizeAdd(portalControllerContext, document, ForumEditionRepository.DOCUMENT_TYPE_FORUM, addForum);
-                }
-
-                if (addThread != null) {
-                    this.customizeAdd(portalControllerContext, document, ForumEditionRepository.DOCUMENT_TYPE_THREAD, addThread);
-                }
-
-                if ((edit != null) && (documentType != null) && (ForumEditionRepository.DOCUMENT_TYPE_FORUM.equals(documentType.getName()) ||
-                        ForumEditionRepository.DOCUMENT_TYPE_THREAD.equals(documentType.getName()))) {
-                    this.customizeEdit(portalControllerContext, document, documentType.getName(), edit);
-                }
-            }
         }
     }
 
@@ -116,13 +122,13 @@ public class ForumMenubarModule implements MenubarModule {
      * Customize add menubar item.
      *
      * @param portalControllerContext portal controller context
-     * @param document                Nuxeo document
-     * @param documentType            document type
-     * @param menubarItem             add menubar item
+     * @param document Nuxeo document
+     * @param documentType document type
+     * @param menubarItem add menubar item
      * @throws PortalException
      */
-    private void customizeAdd(PortalControllerContext portalControllerContext, Document document, String documentType, MenubarItem menubarItem) throws
-            PortalException {
+    private void customizeAdd(PortalControllerContext portalControllerContext, Document document, String documentType, MenubarItem menubarItem)
+            throws PortalException {
         // URL
         String url = this.getUrl(portalControllerContext, document.getPath(), documentType, ForumEditionMode.CREATION);
 
@@ -136,13 +142,13 @@ public class ForumMenubarModule implements MenubarModule {
      * Customize edit menubar item.
      *
      * @param portalControllerContext portal controller context
-     * @param document                Nuxeo document
-     * @param documentType            document type
-     * @param menubarItem             edit menubar item
+     * @param document Nuxeo document
+     * @param documentType document type
+     * @param menubarItem edit menubar item
      * @throws PortalException
      */
-    private void customizeEdit(PortalControllerContext portalControllerContext, Document document, String documentType, MenubarItem menubarItem) throws
-            PortalException {
+    private void customizeEdit(PortalControllerContext portalControllerContext, Document document, String documentType, MenubarItem menubarItem)
+            throws PortalException {
         // URL
         String url = this.getUrl(portalControllerContext, document.getPath(), documentType, ForumEditionMode.EDITION);
 
@@ -156,9 +162,9 @@ public class ForumMenubarModule implements MenubarModule {
      * Get menubar item URL.
      *
      * @param portalControllerContext portal controller context
-     * @param path                    document path
-     * @param documentType            document type
-     * @param mode                    edition mode
+     * @param path document path
+     * @param documentType document type
+     * @param mode edition mode
      * @return URL
      * @throws PortalException
      */
