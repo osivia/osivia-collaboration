@@ -164,7 +164,6 @@ public class CalendarServiceImpl implements ICalendarService, ApplicationContext
         return generator.generateEventsData(portalControllerContext, calendarData);
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -228,7 +227,7 @@ public class CalendarServiceImpl implements ICalendarService, ApplicationContext
         // Update calendar data
         generator.updateCalendarData(portalControllerContext, calendarData, selectedDate);
         // Update events data
-        generator.generateEventsData(portalControllerContext, calendarData);
+        //generator.generateEventsData(portalControllerContext, calendarData);
 
         return StringEscapeUtils.escapeHtml(SELECTED_DATE_FORMAT.format(selectedDate));
     }

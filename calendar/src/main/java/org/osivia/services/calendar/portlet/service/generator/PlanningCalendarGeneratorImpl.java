@@ -67,14 +67,14 @@ public class PlanningCalendarGeneratorImpl extends CalendarGeneratorImpl {
         return new CalendarData();
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void updateSpecializedCalendarData(PortalControllerContext portalControllerContext, CalendarData calendarData) {
-        // Do nothing
-    }
+//
+//    /**
+//     * {@inheritDoc}
+//     */
+//    @Override
+//    protected void updateSpecializedCalendarData(PortalControllerContext portalControllerContext, CalendarData calendarData) {
+//        // Do nothing
+//    }
 
 
     /**

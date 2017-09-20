@@ -12,6 +12,12 @@
 
         <header-content>
             <link rel="stylesheet" type="text/css" href="/css/calendar.min.css" />
+            <script type="text/javascript" src="/js/scheduler/sources/dhtmlxscheduler.js" />
+            <script type="text/javascript" src="/js/scheduler/ext/dhtmlxscheduler_limit.js" />
+            <!-- <script type="text/javascript" src="/js/scheduler/ext/dhtmlxscheduler_key_nav.js" /> -->
+            <link rel="stylesheet" type="text/css" href="/js/scheduler/dhtmlxscheduler.css" />
+            <script type="text/javascript" src="/js/scheduler/locale/locale_fr.js"/>
+            <script type="text/javascript" src="/js/agenda.js" />
         </header-content>
 
         <portlet-info>

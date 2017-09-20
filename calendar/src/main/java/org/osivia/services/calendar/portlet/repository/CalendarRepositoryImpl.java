@@ -20,7 +20,6 @@ import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.services.calendar.portlet.model.CalendarConfiguration;
-import org.osivia.services.calendar.portlet.model.calendar.CalendarData;
 import org.osivia.services.calendar.portlet.model.events.Event;
 import org.springframework.stereotype.Repository;
 
@@ -112,7 +111,7 @@ public class CalendarRepositoryImpl implements ICalendarRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Event> getEvents(PortalControllerContext portalControllerContext, CalendarData calendarData) throws PortletException {
+    public List<Event> getEvents(PortalControllerContext portalControllerContext, Date start, Date end) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext.getRequest(), portalControllerContext.getResponse(),
                 portalControllerContext.getPortletCtx());
@@ -126,7 +125,7 @@ public class CalendarRepositoryImpl implements ICalendarRepository {
         } else {
 
             // Nuxeo command
-            INuxeoCommand nuxeoCommand = new ListEventsCommand(NuxeoQueryFilterContext.CONTEXT_LIVE_N_PUBLISHED, cmsPath, calendarData.getStartDate(), calendarData.getEndDate());
+            INuxeoCommand nuxeoCommand = new ListEventsCommand(NuxeoQueryFilterContext.CONTEXT_LIVE_N_PUBLISHED, cmsPath, start, end);
             Documents documents = (Documents) nuxeoController.executeNuxeoCommand(nuxeoCommand);
 
             // Events

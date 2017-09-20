@@ -2,12 +2,14 @@ package org.osivia.services.calendar.portlet.service;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.calendar.portlet.model.calendar.CalendarData;
 import org.osivia.services.calendar.portlet.model.events.EventsData;
+import org.osivia.services.calendar.portlet.service.generator.ICalendarGenerator;
 
 /**
  * Calendar service interface.
@@ -66,7 +68,6 @@ public interface ICalendarService {
      * @throws PortletException
      */
     EventsData getEventsData(PortalControllerContext portalControllerContext, CalendarData calendarData) throws PortletException;
-
 
     /**
      * Get view path.

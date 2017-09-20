@@ -1,8 +1,13 @@
 package org.osivia.services.calendar.portlet.controller;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
@@ -10,10 +15,15 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.calendar.portlet.model.calendar.CalendarData;
+import org.osivia.services.calendar.portlet.model.events.DailyCalendarEventsData;
+import org.osivia.services.calendar.portlet.model.events.DailyEvent;
+import org.osivia.services.calendar.portlet.model.events.EventsData;
 import org.osivia.services.calendar.portlet.service.ICalendarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,12 +31,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import org.springframework.web.portlet.context.PortletConfigAware;
 import org.springframework.web.portlet.context.PortletContextAware;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * View calendar controller.
@@ -93,11 +105,15 @@ public class ViewCalendarController extends CMSPortlet implements PortletContext
      */
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response,
-            @RequestParam(value = ICalendarService.SELECTED_DATE_PARAMETER, required = false) String selectedDate, @ModelAttribute CalendarData calendarData)
+            @RequestParam(value = ICalendarService.SELECTED_DATE_PARAMETER, required = false) String selectedDate,
+            @RequestParam(value = ICalendarService.PERIOD_TYPE_PARAMETER, required = false) String periodType,
+            @ModelAttribute CalendarData calendarData)
             throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
+        
+        //if (null != periodType) calendarData.setPeriodType(PeriodTypes.fromName(periodType));
+        
         // Selected date
         request.setAttribute(SELECTED_DATE_ATTRIBUTE, selectedDate);
 
@@ -133,61 +149,93 @@ public class ViewCalendarController extends CMSPortlet implements PortletContext
         return ERROR_PATH;
     }
 
-
+    
     /**
-     * Select today action mapping.
+     * Chargement des données du scheduler
      *
-     * @param request action request
-     * @param response action response
+     * @param request resource request
+     * @param response resource response
+     * @param path parent path, may be null for root node
      * @throws PortletException
+     * @throws IOException
      */
-    @ActionMapping(value = "today")
-    public void selectToday(ActionRequest request, ActionResponse response) throws PortletException {
-        // Reset selected date : default date is today
-        response.setRenderParameter(ICalendarService.SELECTED_DATE_PARAMETER, StringUtils.EMPTY);
-    }
-
-
-    /**
-     * Select previous period action mapping.
-     *
-     * @param request action request
-     * @param response action response
-     * @param calendarData calendar data
-     * @throws PortletException
-     */
-    @ActionMapping(value = "previous")
-    public void selectPreviousPeriod(ActionRequest request, ActionResponse response, @ModelAttribute(value = CALENDAR_DATA_ATTRIBUTE) CalendarData calendarData)
-            throws PortletException {
+    @ResourceMapping(value = "initSchedulerData")
+    public void initSchedulerData(ResourceRequest request, ResourceResponse response, @ModelAttribute(value = CALENDAR_DATA_ATTRIBUTE) CalendarData calendarData,
+    		@RequestParam(value = ICalendarService.PERIOD_TYPE_PARAMETER, required = false) String periodTypeName,
+    		@RequestParam(value = ICalendarService.SELECTED_DATE_PARAMETER, required = false) Date selectedDate)
+            throws PortletException, IOException{
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        
+        dataLoading(response, portalControllerContext, calendarData);
 
-        // Selected date
-        String selectedDate = this.calendarService.selectPreviousPeriod(portalControllerContext, calendarData);
-        response.setRenderParameter(ICalendarService.SELECTED_DATE_PARAMETER, selectedDate);
     }
-
-
+    
     /**
-     * Select next period action mapping.
+     * Chargement des données de la période précédente
      *
-     * @param request action request
-     * @param response action response
-     * @param calendarData calendar data
+     * @param request resource request
+     * @param response resource response
+     * @param path parent path, may be null for root node
      * @throws PortletException
+     * @throws IOException
      */
-    @ActionMapping(value = "next")
-    public void selectNextPeriod(ActionRequest request, ActionResponse response, @ModelAttribute(value = CALENDAR_DATA_ATTRIBUTE) CalendarData calendarData)
-            throws PortletException {
+    @ResourceMapping(value = "loadData")
+    public void loadData(ResourceRequest request, ResourceResponse response, @ModelAttribute(value = CALENDAR_DATA_ATTRIBUTE) CalendarData calendarData,
+    		@RequestParam("start") Date startDate,
+    		@RequestParam("end") Date endDate)
+            throws PortletException, IOException{
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        // Selected date
-        String selectedDate = this.calendarService.selectNextPeriod(portalControllerContext, calendarData);
-        response.setRenderParameter(ICalendarService.SELECTED_DATE_PARAMETER, selectedDate);
+        //@TODO Changer la période "week". Il ne faut plus que 2 calendarData: un pour la vue calendrier et un pour la vue planning
+        //CalendarData calendarData = this.calendarService.getCalendarData(portalControllerContext, "week");
+        calendarData.setStartDate(startDate);
+        calendarData.setEndDate(endDate);
+        
+        //this.calendarService.selectPreviousPeriod(portalControllerContext, calendarData);
+        
+        dataLoading(response, portalControllerContext, calendarData);
     }
+    
+    /**
+     * Chargement des données par rapport aux date de début et de fin du calendarData
+     * @param response
+     * @param portalControllerContext
+     * @param calendarData
+     * @throws PortletException
+     * @throws IOException
+     */
+    private void dataLoading(ResourceResponse response, PortalControllerContext portalControllerContext, CalendarData calendarData) 
+    		throws PortletException, IOException
+    {
+      	EventsData eventsData = this.calendarService.getEventsData(portalControllerContext, calendarData);
+        List<DailyEvent> listEvent = ((DailyCalendarEventsData) eventsData).getEvents();
+        
+    	JSONArray array = new JSONArray();
+        JSONObject object = null;
+        Iterator<DailyEvent> iterator = listEvent.iterator();
+        DailyEvent event = null;
+        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        while (iterator.hasNext())
+        {
+        	event = iterator.next();
+        	object = new JSONObject();
+            object.put("text", event.getTitle());
+            object.put("start_date", formater.format(event.getStartDate()));
+            object.put("end_date", formater.format(event.getEndDate()));
+            array.add(object);
+        }
+        
 
+        // Content type
+        response.setContentType("application/json");
 
+        // Content
+        PrintWriter printWriter = new PrintWriter(response.getPortletOutputStream());
+        printWriter.write(array.toString());
+        printWriter.close();
+    }
+    
     /**
      * Get calendar data.
      *

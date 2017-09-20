@@ -98,17 +98,17 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
         // Dates
         this.fillCalendarDates(portalControllerContext, calendarData, selectedDate);
 
-        this.updateSpecializedCalendarData(portalControllerContext, calendarData);
+//        this.updateSpecializedCalendarData(portalControllerContext, calendarData);
     }
 
 
-    /**
-     * Update specialized calendar data.
-     *
-     * @param portalControllerContext portal controller context
-     * @param calendarData calendar data
-     */
-    protected abstract void updateSpecializedCalendarData(PortalControllerContext portalControllerContext, CalendarData calendarData);
+//    /**
+//     * Update specialized calendar data.
+//     *
+//     * @param portalControllerContext portal controller context
+//     * @param calendarData calendar data
+//     */
+//    protected abstract void updateSpecializedCalendarData(PortalControllerContext portalControllerContext, CalendarData calendarData);
 
 
     /**
@@ -185,17 +185,9 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
     protected Date getStartDate(PortalControllerContext portalControllerContext, PeriodTypes periodType, Date selectedDate) {
         Calendar calendar = GregorianCalendar.getInstance(portalControllerContext.getRequest().getLocale());
         calendar.setTime(selectedDate);
-        if (PeriodTypes.MONTH.equals(periodType)) {
-            // Set first day of month
-            calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
-            // Flush calendar between 2 "set" calls
-            calendar.getTimeInMillis();
-            // Set first day of week
-            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-        } else if (PeriodTypes.WEEK.equals(periodType)) {
-            // Set first day of week
-            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-        }
+        // Set first day of week
+        //@TODO Julien: voir si ce .set sert à quelque chose maintenant
+        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
         return calendar.getTime();
     }
 
@@ -217,20 +209,8 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
             endDate = null;
         } else {
             Calendar calendar = GregorianCalendar.getInstance(portalControllerContext.getRequest().getLocale());
-            if (PeriodTypes.MONTH.equals(periodType)) {
-                calendar.setTime(selectedDate);
-                // Set last day of month
-                calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-                // Flush calendar between 2 "set" calls
-                calendar.getTimeInMillis();
-                // Set first day of last week
-                calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-                // Add a week
-                calendar.add(Calendar.WEEK_OF_YEAR, 1);
-            } else {
-                calendar.setTime(startDate);
-                calendar.add(periodType.getField(), 1);
-            }
+            calendar.setTime(startDate);
+            calendar.add(periodType.getField(), 1);
             calendar.add(Calendar.MILLISECOND, -1);
             endDate = calendar.getTime();
         }
@@ -256,7 +236,7 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
     @Override
     public EventsData generateEventsData(PortalControllerContext portalControllerContext, CalendarData calendarData) throws PortletException {
         // Events
-        List<Event> events = this.calendarRepository.getEvents(portalControllerContext, calendarData);
+        List<Event> events = this.calendarRepository.getEvents(portalControllerContext, calendarData.getStartDate(), calendarData.getEndDate());
 
         // Events data
         EventsData eventsData;
@@ -268,6 +248,7 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
 
         return eventsData;
     }
+    
 
 
     /**

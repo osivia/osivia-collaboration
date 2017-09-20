@@ -1,15 +1,11 @@
 package org.osivia.services.calendar.portlet.service.generator;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import javax.portlet.PortletException;
 
@@ -17,16 +13,12 @@ import org.apache.commons.lang.time.DateUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.services.calendar.portlet.model.calendar.CalendarData;
-import org.osivia.services.calendar.portlet.model.calendar.WeeklyCalendarData;
-import org.osivia.services.calendar.portlet.model.calendar.WeeklyCalendarHeader;
 import org.osivia.services.calendar.portlet.model.events.DailyCalendarEventsData;
 import org.osivia.services.calendar.portlet.model.events.DailyEvent;
 import org.osivia.services.calendar.portlet.model.events.Event;
 import org.osivia.services.calendar.portlet.model.events.EventsData;
 import org.osivia.services.calendar.portlet.model.events.TimeSlotEvent;
-import org.osivia.services.calendar.portlet.service.ICalendarCollisionManager;
 import org.osivia.services.calendar.portlet.utils.PeriodTypes;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -38,9 +30,9 @@ import org.springframework.stereotype.Service;
 @Service(value = "weeklyCalendarGenerator")
 public class WeeklyCalendarGeneratorImpl extends CalendarGeneratorImpl {
 
-    /** Collision manager. */
-    @Autowired
-    private ICalendarCollisionManager collisionManager;
+//    /** Collision manager. */
+//    @Autowired
+//    private ICalendarCollisionManager collisionManager;
 
 
     /**
@@ -68,15 +60,15 @@ public class WeeklyCalendarGeneratorImpl extends CalendarGeneratorImpl {
         // Locale
         Locale locale = portalControllerContext.getRequest().getLocale();
 
-        WeeklyCalendarData calendarData = new WeeklyCalendarData();
+        CalendarData calendarData = new CalendarData();
 
         // Selected date
         Date selectedDate = this.getSelectedDate(portalControllerContext, this.getPeriodType());
         // Start date
         Date startDate = this.getStartDate(portalControllerContext, this.getPeriodType(), selectedDate);
-
-        // Headers
-        calendarData.setHeaders(this.getHeaders(portalControllerContext, startDate));
+//
+//        // Headers
+//        calendarData.setHeaders(this.getHeaders(portalControllerContext, startDate));
 
         // Today week day
         Calendar todayCalendar = GregorianCalendar.getInstance(locale);
@@ -91,67 +83,67 @@ public class WeeklyCalendarGeneratorImpl extends CalendarGeneratorImpl {
                 dayOfWeek = DAYS_IN_WEEK;
             }
 
-            calendarData.setToday(dayOfWeek);
+//            calendarData.setToday(dayOfWeek);
         }
 
-        // Auto-scroll
-        int position = DEFAULT_SCROLL_TOP_HOUR * HOUR_DISPLAY_HEIGHT;
-        calendarData.setAutoScroll(String.valueOf(position));
+//        // Auto-scroll
+//        int position = DEFAULT_SCROLL_TOP_HOUR * HOUR_DISPLAY_HEIGHT;
+//        calendarData.setAutoScroll(String.valueOf(position));
 
         return calendarData;
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void updateSpecializedCalendarData(PortalControllerContext portalControllerContext, CalendarData calendarData) {
-        WeeklyCalendarData weeklyCalendarData = (WeeklyCalendarData) calendarData;
-        Date startDate = calendarData.getStartDate();
+//    /**
+//     * {@inheritDoc}
+//     */
+//    @Override
+//    protected void updateSpecializedCalendarData(PortalControllerContext portalControllerContext, CalendarData calendarData) {
+//        WeeklyCalendarData weeklyCalendarData = (WeeklyCalendarData) calendarData;
+//        Date startDate = calendarData.getStartDate();
+//
+////        // Headers
+////        weeklyCalendarData.setHeaders(this.getHeaders(portalControllerContext, startDate));
+//    }
 
-        // Headers
-        weeklyCalendarData.setHeaders(this.getHeaders(portalControllerContext, startDate));
-    }
 
-
-    /**
-     * Get calendar headers.
-     *
-     * @param portalControllerContext portal controller context
-     * @param startDate start date
-     * @return calendar headers
-     */
-    private List<WeeklyCalendarHeader> getHeaders(PortalControllerContext portalControllerContext, Date startDate) {
-        // User locale
-        Locale locale = portalControllerContext.getRequest().getLocale();
-        // Calendar
-        Calendar calendar = GregorianCalendar.getInstance(locale);
-        calendar.setTime(startDate);
-        // Date format
-        DateFormat weekDayFormat = new SimpleDateFormat("EEE", locale);
-        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, locale);
-
-        // Headers
-        List<WeeklyCalendarHeader> headers = new ArrayList<WeeklyCalendarHeader>(DAYS_IN_WEEK);
-        for (int i = 0; i < DAYS_IN_WEEK; i++) {
-            Date date = calendar.getTime();
-
-            // Header
-            WeeklyCalendarHeader header = new WeeklyCalendarHeader(date);
-
-            StringBuilder builder = new StringBuilder();
-            builder.append(weekDayFormat.format(date));
-            builder.append(" ");
-            builder.append(dateFormat.format(date));
-            header.setName(builder.toString());
-
-            headers.add(header);
-
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
-        }
-        return headers;
-    }
+//    /**
+//     * Get calendar headers.
+//     *
+//     * @param portalControllerContext portal controller context
+//     * @param startDate start date
+//     * @return calendar headers
+//     */
+//    private List<WeeklyCalendarHeader> getHeaders(PortalControllerContext portalControllerContext, Date startDate) {
+//        // User locale
+//        Locale locale = portalControllerContext.getRequest().getLocale();
+//        // Calendar
+//        Calendar calendar = GregorianCalendar.getInstance(locale);
+//        calendar.setTime(startDate);
+//        // Date format
+//        DateFormat weekDayFormat = new SimpleDateFormat("EEE", locale);
+//        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, locale);
+//
+//        // Headers
+//        List<WeeklyCalendarHeader> headers = new ArrayList<WeeklyCalendarHeader>(DAYS_IN_WEEK);
+//        for (int i = 0; i < DAYS_IN_WEEK; i++) {
+//            Date date = calendar.getTime();
+//
+//            // Header
+//            WeeklyCalendarHeader header = new WeeklyCalendarHeader(date);
+//
+//            StringBuilder builder = new StringBuilder();
+//            builder.append(weekDayFormat.format(date));
+//            builder.append(" ");
+//            builder.append(dateFormat.format(date));
+//            header.setName(builder.toString());
+//
+//            headers.add(header);
+//
+//            calendar.add(Calendar.DAY_OF_MONTH, 1);
+//        }
+//        return headers;
+//    }
 
 
     /**
@@ -177,6 +169,31 @@ public class WeeklyCalendarGeneratorImpl extends CalendarGeneratorImpl {
      */
     @Override
     protected EventsData generateSpecializedEventsData(PortalControllerContext portalControllerContext, CalendarData calendarData, List<Event> events)
+            throws PortletException {
+        // User locale
+        Locale locale = portalControllerContext.getRequest().getLocale();
+        // Start calendar
+        Calendar startCalendar = GregorianCalendar.getInstance(locale);
+
+        // Events
+        List<DailyEvent> dailyEvents = new ArrayList<DailyEvent>(events.size());
+        for (Event event : events) {
+            // Current date
+            Date currentDate = DateUtils.truncate(startCalendar.getTime(), Calendar.DAY_OF_MONTH);
+
+            // Time slot event
+            TimeSlotEvent timeSlotEvent = new TimeSlotEvent(event, currentDate);
+            
+            // Add to events list
+            dailyEvents.add(timeSlotEvent);
+        }
+
+        // Events data
+        DailyCalendarEventsData eventsData = new DailyCalendarEventsData();
+        eventsData.setEvents(dailyEvents);
+        return eventsData;
+    }
+    /**protected EventsData generateSpecializedEventsData(PortalControllerContext portalControllerContext, CalendarData calendarData, List<Event> events)
             throws PortletException {
         // User locale
         Locale locale = portalControllerContext.getRequest().getLocale();
@@ -294,6 +311,6 @@ public class WeeklyCalendarGeneratorImpl extends CalendarGeneratorImpl {
         eventsData.setEvents(dailyEvents);
         eventsData.setMappedEvents(fullDayEvents);
         return eventsData;
-    }
+    }**/
 
 }
