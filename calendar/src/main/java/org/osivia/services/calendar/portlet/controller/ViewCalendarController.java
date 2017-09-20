@@ -25,6 +25,7 @@ import org.osivia.services.calendar.portlet.model.events.DailyCalendarEventsData
 import org.osivia.services.calendar.portlet.model.events.DailyEvent;
 import org.osivia.services.calendar.portlet.model.events.EventsData;
 import org.osivia.services.calendar.portlet.service.ICalendarService;
+import org.osivia.services.calendar.portlet.utils.PeriodTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -112,7 +113,7 @@ public class ViewCalendarController extends CMSPortlet implements PortletContext
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         
-        //if (null != periodType) calendarData.setPeriodType(PeriodTypes.fromName(periodType));
+        if (null != periodType) calendarData.setPeriodType(PeriodTypes.fromName(periodType));
         
         // Selected date
         request.setAttribute(SELECTED_DATE_ATTRIBUTE, selectedDate);

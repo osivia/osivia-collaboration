@@ -49,6 +49,7 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
     /** Bundle factory. */
     private final IBundleFactory bundleFactory;
 
+    protected PeriodTypes periodType;
 
     /**
      * Constructor.
@@ -62,15 +63,28 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
         this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public CalendarData generateCalendarData(PortalControllerContext portalControllerContext) throws PortletException {
+    public PeriodTypes getPeriodType() throws PortletException {
+        return periodType;
+    }
+
+    @Override
+    public void setPeriodType(PeriodTypes period) throws PortletException {
+    	periodType = period;
+    	
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CalendarData generateCalendarData(PortalControllerContext portalControllerContext, PeriodTypes periodType) throws PortletException {
         CalendarData calendarData = this.generateSpecializedCalendarData(portalControllerContext);
         // Period type
-        calendarData.setPeriodType(this.getPeriodType());
+        calendarData.setPeriodType(periodType);
         // Generator
         calendarData.setGenerator(this);
         // Dates

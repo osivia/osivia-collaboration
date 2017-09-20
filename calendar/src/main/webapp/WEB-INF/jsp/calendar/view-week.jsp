@@ -13,6 +13,8 @@
 </portlet:resourceURL >
 <portlet:resourceURL id="loadData" var="loadData" >
 </portlet:resourceURL >
+<portlet:resourceURL id="dragndrop" var="dragndrop" >
+</portlet:resourceURL >
 <portlet:renderURL var="viewPlanning">
     <portlet:param name="period" value="planning" />
     <portlet:param name="date" value="${date}" />
@@ -26,24 +28,32 @@
 %>
  
 <!-- Vue semaine -->
-<div id="scheduler_here" class="dhx_cal_container" data-url="${initData}" 
+<div id="scheduler_here" class="dhx_cal_container" style="font-family:inherit;"data-url="${initData}" 
 	data-selecteddate="${calendardata.selectedDate}"
 	data-period="${calendarData.periodType.name}" 
-    data-startdate="<%=formater.format(calendarData.getStartDate())%>">
-    <div class="dhx_cal_navline">
-        <button type="button" class="dhx_cal_prev_button" data-url="${previousUrl}" >&nbsp;</button>
-        <button type="button" class="dhx_cal_next_button" data-url="${nextUrl}">&nbsp;</button>
-        <button type="button" class="dhx_cal_today_button" data-url="${todayUrl}">
+    data-startdate="<%=formater.format(calendarData.getStartDate())%>"
+    data-url="${loadData}"
+    data-url-dragndrop="${dragndrop}">
+    <div class="dhx_cal_navline btn-toolbar" role="toolbar"">
+    	<!-- Previous period -->
+    	<button type="button" class="dhx_cal_prev_button btn btn-default halflings halflings-chevron-left" style="position:initial;height:initial;text-align:center;"></button>
+        <!-- Next period -->
+        <button type="button" class="dhx_cal_next_button btn btn-default halflings halflings-chevron-right" style="position:initial;height:initial;text-align:center;"></button>
+        <!-- Today -->
+        <button type="button" class="dhx_cal_today_button btn btn-default" style="font-family:inherit;width:initial;height:initial;">
         	<op:translate key="CALENDAR_TODAY" />
         </button>
-        <div class="dhx_cal_date"></div>
-        <button type="button" class="dhx_cal_tab" id="day_tab" style="right:204px;" data-url="${loadData}"><op:translate key="CALENDAR_DAY" /></button>
-        <button type="button" class="dhx_cal_tab" id="week_tab" style="right:140px;" ><op:translate key="CALENDAR_WEEK" /></button>
-        <button type ="button" class="dhx_cal_tab" id="month_tab" style="right:76px;" ><op:translate key="CALENDAR_MONTH" /></button>
-        <a href="${viewPlanning}" class="btn btn-default">
-                    <span><op:translate key="CALENDAR_PLANNING" /></span>
-        </a>
+        
+        <div class="dhx_cal_date" style="top:0px;font-family:inherit;"></div>
+        <div id="btn-period" class="btn-group pull-right" style="top: 0px;position:relative;">
+	        <button type="button" class="btn btn-default" id="day_tab"><op:translate key="CALENDAR_DAY" /></button>
+	        <button type="button" class="btn btn-default" id="week_tab" ><op:translate key="CALENDAR_WEEK" /></button>
+	        <button type ="button" class="btn btn-default" id="month_tab" ><op:translate key="CALENDAR_MONTH" /></button>
+	        <a href="${viewPlanning}" class="btn btn-default">
+	                    <span><op:translate key="CALENDAR_PLANNING" /></span>
+	        </a>
+    	</div>
     </div>
     <div class="dhx_cal_header"></div>
-    <div class="dhx_cal_data portlet-filler"></div><!-- Ajout de la classe portlet-filler pour que la hauteur soit définie automatiquement avec la place restante -->       
+    <div class="dhx_cal_data portlet-filler" style="font-family:inherit;"></div><!-- Ajout de la classe portlet-filler pour que la hauteur soit définie automatiquement avec la place restante -->       
 </div>

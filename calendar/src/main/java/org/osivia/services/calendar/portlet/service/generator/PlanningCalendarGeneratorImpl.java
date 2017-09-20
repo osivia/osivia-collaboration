@@ -47,17 +47,8 @@ public class PlanningCalendarGeneratorImpl extends CalendarGeneratorImpl {
      */
     public PlanningCalendarGeneratorImpl() {
         super();
+        periodType = PeriodTypes.PLANNING;
     }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PeriodTypes getPeriodType() {
-        return PeriodTypes.PLANNING;
-    }
-
 
     /**
      * {@inheritDoc}

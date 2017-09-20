@@ -80,7 +80,7 @@ public class CalendarServiceImpl implements ICalendarService, ApplicationContext
 
         // Generator
         ICalendarGenerator generator = this.getGenerator(portalControllerContext, periodType);
-        return generator.generateCalendarData(portalControllerContext);
+        return generator.generateCalendarData(portalControllerContext, periodType);
     }
 
 
@@ -126,12 +126,13 @@ public class CalendarServiceImpl implements ICalendarService, ApplicationContext
      */
     private ICalendarGenerator getGenerator(PortalControllerContext portalControllerContext, PeriodTypes periodType) throws PortletException {
         ICalendarGenerator result = null;
-
+        
         // Search generator into application context
         Map<String, ICalendarGenerator> generators = this.applicationContext.getBeansOfType(ICalendarGenerator.class);
         for (ICalendarGenerator generator : generators.values()) {
-            if (generator.getPeriodType().equals(periodType)) {
+            if (generator.getPeriodType().getViewPath().equals(periodType.getViewPath())) {
                 result = generator;
+                generator.setPeriodType(periodType);
                 break;
             }
         }

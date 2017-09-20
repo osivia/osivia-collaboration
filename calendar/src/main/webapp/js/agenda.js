@@ -2,11 +2,10 @@ function dataLoading()
 {
 	scheduler.clearAll();
 	
-	var buttonDay = $JQry("button#day_tab");
-	var urlDay = buttonDay.data("url");
-	scheduler.clearAll();
+	var divScheduler = $JQry("div#scheduler_here");
+	var urLoad = divScheduler.data("url");
 	jQuery.ajax({
-		url: urlDay,
+		url: urLoad,
 		data: {
 			start: scheduler.getState().min_date,
 			end: scheduler.getState().max_date
@@ -16,6 +15,7 @@ function dataLoading()
 		success : function(data, status, xhr) {
 			console.log("Succes : "+data );
 			scheduler.parse(data, "json");
+			scheduler.setCurrentView();
 		},
 		error : function(data, status, xhr) {
 			console.log( "Erreur lors de l'appel Ajax, status: "+status+ ", data: "+data);
@@ -29,8 +29,7 @@ function initScheduler(backFromPlanning)
 	{
 		//Faire le scheduler.clearAll() permet d'avoir un calcul de la hauteur du div.dhx_cal_data correct, sinon, le composant définit la hauteur à zéro pour ce div
 		scheduler.clearAll();
-	} else
-	{
+	}
 	//scheduler.xy.nav_height = 0;//Hauteur à zéro de la barre de navigation (dhx_cal_navline) du scheduler. Pour que la ligne ne soit pas affichée, il faut ajouter un display:none en css 
 	scheduler.config.xml_date="%Y-%m-%d %H:%i";
 	scheduler.config.mark_now = true;//affiche un liseret rouge à l'endroit de l'heure et du jour actuel
@@ -41,7 +40,6 @@ function initScheduler(backFromPlanning)
 	scheduler.config.scroll_hour = new Date().getHours();//Pour positionner l'ascenseur à la position de l'heure actuelle
 	scheduler.config.preserve_scroll = false;//Pour conserver la position de l'ascenseur en navigant avec précédent ou suivant ou en passant de la vue Planning à une vue Jour/Semaine ou Mois
 	scheduler.config.wai_aria_attributes = true;//pour pouvoir être reconnu par les lecteurs d'écran (accessibilité)
-	}
 	
 	var divScheduler = $JQry("div#scheduler_here");
 	
@@ -116,20 +114,44 @@ function initScheduler(backFromPlanning)
 		scheduler.setCurrentView(scheduler.getState().date,"month");
 		dataLoading();
 	});
+	
+	scheduler.attachEvent("onBeforeEventChanged", function (ev, e, is_new, original) {
+		
+		jQuery.ajax({
+			url: urLoad,
+			data: {
+				evtid: ev.id,
+				sectionid: ev.section_id,
+				start:ev.start_date,
+				end: ev.end_date
+			},
+			cache: false,
+			dataType: "json",
+			success : function(data, status, xhr) {
+				console.log("Succes de l'enregistrement lors du drag-and-drop");
+			},
+			error : function(data, status, xhr) {
+				console.log( "Erreur lors de l'appel Ajax, status: "+status+ ", data: "+data);
+			}
+		});
+		return true;
+	});
 }
 
 /**
  * Chargement du calendrier au chargement de la portlet
  */
 $JQry(window).load(function() {
-	if (document.getElementById("scheduler_here") != null)
+	var divScheduler = $JQry("div#scheduler_here");
+	if (divScheduler!= null && null != divScheduler.data("period"))
 	{
 		initScheduler(false);
 	}
 });
 
 $JQry(function() {
-	if (document.getElementById("scheduler_here") != null)
+	var divScheduler = $JQry("div#scheduler_here");
+	if (divScheduler != null && null != divScheduler.data("period"))
 	{
 		if (document.readyState === "complete") {
 			initScheduler(true);
