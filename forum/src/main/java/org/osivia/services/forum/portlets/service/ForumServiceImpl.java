@@ -258,7 +258,11 @@ public class ForumServiceImpl implements IForumService, ApplicationContextAware 
         try {
             Thread vo = this.applicationContext.getBean(Thread.class);
             vo.setAuthor(document.getString("dc:creator"));
-            vo.setMessage(document.getString("ttcth:message"));
+
+            // Parse message
+            nuxeoController.setCurrentDoc(document);
+            String transformedMessage = nuxeoController.transformHTMLContent(document.getString("ttcth:message"));
+            vo.setMessage(transformedMessage);
 
             // Date
             Date date = document.getDate("dc:created");
