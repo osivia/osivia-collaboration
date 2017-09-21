@@ -49,7 +49,6 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
     /** Bundle factory. */
     private final IBundleFactory bundleFactory;
 
-    protected PeriodTypes periodType;
 
     /**
      * Constructor.
@@ -63,28 +62,15 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
         this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PeriodTypes getPeriodType() throws PortletException {
-        return periodType;
-    }
 
-    @Override
-    public void setPeriodType(PeriodTypes period) throws PortletException {
-    	periodType = period;
-    	
-    }
-    
     /**
      * {@inheritDoc}
      */
     @Override
-    public CalendarData generateCalendarData(PortalControllerContext portalControllerContext, PeriodTypes periodType) throws PortletException {
+    public CalendarData generateCalendarData(PortalControllerContext portalControllerContext) throws PortletException {
         CalendarData calendarData = this.generateSpecializedCalendarData(portalControllerContext);
         // Period type
-        calendarData.setPeriodType(periodType);
+        calendarData.setPeriodType(this.getPeriodType());
         // Generator
         calendarData.setGenerator(this);
         // Dates
@@ -112,17 +98,17 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
         // Dates
         this.fillCalendarDates(portalControllerContext, calendarData, selectedDate);
 
-//        this.updateSpecializedCalendarData(portalControllerContext, calendarData);
+        this.updateSpecializedCalendarData(portalControllerContext, calendarData);
     }
 
 
-//    /**
-//     * Update specialized calendar data.
-//     *
-//     * @param portalControllerContext portal controller context
-//     * @param calendarData calendar data
-//     */
-//    protected abstract void updateSpecializedCalendarData(PortalControllerContext portalControllerContext, CalendarData calendarData);
+    /**
+     * Update specialized calendar data.
+     *
+     * @param portalControllerContext portal controller context
+     * @param calendarData calendar data
+     */
+    protected abstract void updateSpecializedCalendarData(PortalControllerContext portalControllerContext, CalendarData calendarData);
 
 
     /**
@@ -199,9 +185,17 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
     protected Date getStartDate(PortalControllerContext portalControllerContext, PeriodTypes periodType, Date selectedDate) {
         Calendar calendar = GregorianCalendar.getInstance(portalControllerContext.getRequest().getLocale());
         calendar.setTime(selectedDate);
-        // Set first day of week
-        //@TODO Julien: voir si ce .set sert à quelque chose maintenant
-        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+        if (PeriodTypes.MONTH.equals(periodType)) {
+            // Set first day of month
+            calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+            // Flush calendar between 2 "set" calls
+            calendar.getTimeInMillis();
+            // Set first day of week
+            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+        } else if (PeriodTypes.WEEK.equals(periodType)) {
+            // Set first day of week
+            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+        }
         return calendar.getTime();
     }
 
@@ -223,8 +217,20 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
             endDate = null;
         } else {
             Calendar calendar = GregorianCalendar.getInstance(portalControllerContext.getRequest().getLocale());
-            calendar.setTime(startDate);
-            calendar.add(periodType.getField(), 1);
+            if (PeriodTypes.MONTH.equals(periodType)) {
+                calendar.setTime(selectedDate);
+                // Set last day of month
+                calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+                // Flush calendar between 2 "set" calls
+                calendar.getTimeInMillis();
+                // Set first day of last week
+                calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+                // Add a week
+                calendar.add(Calendar.WEEK_OF_YEAR, 1);
+            } else {
+                calendar.setTime(startDate);
+                calendar.add(periodType.getField(), 1);
+            }
             calendar.add(Calendar.MILLISECOND, -1);
             endDate = calendar.getTime();
         }
@@ -250,7 +256,7 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
     @Override
     public EventsData generateEventsData(PortalControllerContext portalControllerContext, CalendarData calendarData) throws PortletException {
         // Events
-        List<Event> events = this.calendarRepository.getEvents(portalControllerContext, calendarData.getStartDate(), calendarData.getEndDate());
+        List<Event> events = this.calendarRepository.getEvents(portalControllerContext, calendarData);
 
         // Events data
         EventsData eventsData;
@@ -262,7 +268,6 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
 
         return eventsData;
     }
-    
 
 
     /**

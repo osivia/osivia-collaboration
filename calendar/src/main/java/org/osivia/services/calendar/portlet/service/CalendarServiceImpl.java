@@ -80,7 +80,7 @@ public class CalendarServiceImpl implements ICalendarService, ApplicationContext
 
         // Generator
         ICalendarGenerator generator = this.getGenerator(portalControllerContext, periodType);
-        return generator.generateCalendarData(portalControllerContext, periodType);
+        return generator.generateCalendarData(portalControllerContext);
     }
 
 
@@ -126,13 +126,12 @@ public class CalendarServiceImpl implements ICalendarService, ApplicationContext
      */
     private ICalendarGenerator getGenerator(PortalControllerContext portalControllerContext, PeriodTypes periodType) throws PortletException {
         ICalendarGenerator result = null;
-        
+
         // Search generator into application context
         Map<String, ICalendarGenerator> generators = this.applicationContext.getBeansOfType(ICalendarGenerator.class);
         for (ICalendarGenerator generator : generators.values()) {
-            if (generator.getPeriodType().getViewPath().equals(periodType.getViewPath())) {
+            if (generator.getPeriodType().equals(periodType)) {
                 result = generator;
-                generator.setPeriodType(periodType);
                 break;
             }
         }
@@ -164,6 +163,7 @@ public class CalendarServiceImpl implements ICalendarService, ApplicationContext
         ICalendarGenerator generator = calendarData.getGenerator();
         return generator.generateEventsData(portalControllerContext, calendarData);
     }
+
 
     /**
      * {@inheritDoc}
@@ -228,7 +228,7 @@ public class CalendarServiceImpl implements ICalendarService, ApplicationContext
         // Update calendar data
         generator.updateCalendarData(portalControllerContext, calendarData, selectedDate);
         // Update events data
-        //generator.generateEventsData(portalControllerContext, calendarData);
+        generator.generateEventsData(portalControllerContext, calendarData);
 
         return StringEscapeUtils.escapeHtml(SELECTED_DATE_FORMAT.format(selectedDate));
     }

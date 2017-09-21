@@ -27,13 +27,6 @@ public interface ICalendarGenerator {
      * @throws PortletException
      */
     PeriodTypes getPeriodType() throws PortletException;
-    
-    /**
-     * Set generator period type.
-     *
-     * @throws PortletException
-     */
-    void setPeriodType(PeriodTypes periodType) throws PortletException;
 
 
     /**
@@ -43,7 +36,7 @@ public interface ICalendarGenerator {
      * @return calendar data
      * @throws PortletException
      */
-    CalendarData generateCalendarData(PortalControllerContext portalControllerContext, PeriodTypes periodType) throws PortletException;
+    CalendarData generateCalendarData(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**

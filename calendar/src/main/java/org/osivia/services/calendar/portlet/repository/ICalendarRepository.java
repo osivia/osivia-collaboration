@@ -1,6 +1,5 @@
 package org.osivia.services.calendar.portlet.repository;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.portlet.PortletException;
@@ -63,7 +62,7 @@ public interface ICalendarRepository {
      * @return calendar events
      * @throws PortletException
      */
-    List<Event> getEvents(PortalControllerContext portalControllerContext, Date startDate, Date endDate) throws PortletException;
+    List<Event> getEvents(PortalControllerContext portalControllerContext, CalendarData calendarData) throws PortletException;
 
 
     /**

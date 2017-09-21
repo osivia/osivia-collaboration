@@ -47,8 +47,17 @@ public class PlanningCalendarGeneratorImpl extends CalendarGeneratorImpl {
      */
     public PlanningCalendarGeneratorImpl() {
         super();
-        periodType = PeriodTypes.PLANNING;
     }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PeriodTypes getPeriodType() {
+        return PeriodTypes.PLANNING;
+    }
+
 
     /**
      * {@inheritDoc}
@@ -58,14 +67,14 @@ public class PlanningCalendarGeneratorImpl extends CalendarGeneratorImpl {
         return new CalendarData();
     }
 
-//
-//    /**
-//     * {@inheritDoc}
-//     */
-//    @Override
-//    protected void updateSpecializedCalendarData(PortalControllerContext portalControllerContext, CalendarData calendarData) {
-//        // Do nothing
-//    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void updateSpecializedCalendarData(PortalControllerContext portalControllerContext, CalendarData calendarData) {
+        // Do nothing
+    }
 
 
     /**

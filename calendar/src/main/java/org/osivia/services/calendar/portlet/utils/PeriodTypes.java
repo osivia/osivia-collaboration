@@ -13,11 +13,11 @@ import org.apache.commons.lang.StringUtils;
 public enum PeriodTypes {
 
     /** Day. */
-    DAY("day", Calendar.DAY_OF_MONTH, "calendar/view-week", false),
+    DAY("day", Calendar.DAY_OF_MONTH, "calendar/view-day", false),
     /** Week. */
     WEEK("week", Calendar.WEEK_OF_YEAR, "calendar/view-week", false),
     /** Month. */
-    MONTH("month", Calendar.MONTH, "calendar/view-week", false),
+    MONTH("month", Calendar.MONTH, "calendar/view-month", false),
     /** Planning. */
     PLANNING("planning", -1, "calendar/view-planning", true);
 
@@ -67,7 +67,7 @@ public enum PeriodTypes {
         }
         if (period == null) {
             // Default value
-            period = PeriodTypes.WEEK;
+            period = PeriodTypes.PLANNING;
         }
         return period;
     }
