@@ -578,7 +578,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     }
 
                     // Start
-                    this.formsService.start(portalControllerContext, INVITATION_MODEL_ID, variables);
+                    String modelWebId = IFormsService.FORMS_WEB_ID_PREFIX + INVITATION_MODEL_ID;
+                    this.formsService.start(portalControllerContext, modelWebId, variables);
 
                     // Update ACL
                     this.updateInvitationAcl(portalControllerContext, workspaceId, false, uid);
