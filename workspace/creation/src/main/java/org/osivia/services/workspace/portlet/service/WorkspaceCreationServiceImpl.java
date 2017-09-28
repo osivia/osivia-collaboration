@@ -1,9 +1,14 @@
 package org.osivia.services.workspace.portlet.service;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Locale;
+import java.util.Properties;
 
 import javax.portlet.PortletException;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
@@ -31,6 +36,15 @@ import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 @Service
 public class WorkspaceCreationServiceImpl implements WorkspaceCreationService, ApplicationContextAware {
 
+    /** Default properties file name. */
+    private static final String PROPERTIES_FILE_NAME = "workspace-creation.properties";
+
+    /** Workspace type default property. */
+    private static final String WORKSPACE_TYPE_PROPERTY = "workspace.workspaceType";
+    /** Workspace creation path default property. */
+    private static final String CREATION_PATH_PROPERTY = "workspace.creationPath";
+
+
     /** Application context. */
     private ApplicationContext applicationContext;
 
@@ -47,11 +61,26 @@ public class WorkspaceCreationServiceImpl implements WorkspaceCreationService, A
     private INotificationsService notificationsService;
 
 
+    /** Default properties. */
+    private final Properties properties;
+
+
     /**
      * Constructor.
+     * 
+     * @throws IOException
      */
-    public WorkspaceCreationServiceImpl() {
+    public WorkspaceCreationServiceImpl() throws IOException {
         super();
+
+        // Workspace creation default properties
+        this.properties = new Properties();
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(PROPERTIES_FILE_NAME);
+        if (inputStream != null) {
+            this.properties.load(inputStream);
+        } else {
+            throw new FileNotFoundException(PROPERTIES_FILE_NAME);
+        }
     }
 
 
@@ -84,9 +113,14 @@ public class WorkspaceCreationServiceImpl implements WorkspaceCreationService, A
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(locale);
 
-        // Set invitation only workspace type if empty
         if (form.getType() == null) {
-            form.setType(WorkspaceType.INVITATION);
+            // Default workspace type
+            form.setType(WorkspaceType.valueOf(this.properties.getProperty(WORKSPACE_TYPE_PROPERTY, WorkspaceType.INVITATION.getId())));
+        }
+
+        if (StringUtils.isEmpty(form.getCreationPath())) {
+            // Default creation path
+            form.setCreationPath(this.properties.getProperty(CREATION_PATH_PROPERTY, "/default-domain/workspaces"));
         }
 
         // Create workspace Nuxeo document

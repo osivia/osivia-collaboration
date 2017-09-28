@@ -6,12 +6,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.Permissions;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.directory.v2.DirServiceFactory;
+import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
@@ -22,6 +25,8 @@ import org.osivia.portal.api.menubar.MenubarDropdown;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
  * Workspace member management menubar module.
@@ -41,6 +46,8 @@ public class MemberManagementMenubarModule implements MenubarModule {
     private final IPortalUrlFactory portalUrlFactory;
     /** Bundle factory. */
     private final IBundleFactory bundleFactory;
+    /** Person service. */
+    private final PersonService personService;
 
 
     /**
@@ -57,6 +64,8 @@ public class MemberManagementMenubarModule implements MenubarModule {
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
         this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        // Person service
+        this.personService = DirServiceFactory.getService(PersonService.class);
     }
 
 
@@ -68,14 +77,30 @@ public class MemberManagementMenubarModule implements MenubarModule {
             throws PortalException {
         if (spaceDocumentContext != null) {
             // Space document
-            Document space = (Document) spaceDocumentContext.getDocument();
-            if (space != null) {
-                // Check type
-                String type = space.getType();
-                if ("Workspace".equals(type)) {
+            Document document = (Document) spaceDocumentContext.getDocument();
+            if (document != null) {
+                // Check document type
+                String documentType = document.getType();
+                if ("Workspace".equals(documentType)) {
+                    // Workspace type
+                    String visibility = document.getString("ttcs:visibility");
+                    WorkspaceType workspaceType;
+                    if (StringUtils.isEmpty(visibility)) {
+                        workspaceType = null;
+                    } else {
+                        workspaceType = WorkspaceType.valueOf(visibility);
+                    }
+
                     // Check permissions
-                    Permissions permissions = spaceDocumentContext.getPermissions();
-                    if (permissions.isManageable()) {
+                    boolean granted;
+                    if ((workspaceType != null) && workspaceType.isPortalAdministratorRestriction()) {
+                        granted = this.personService.isPortalAdministrator(portalControllerContext);
+                    } else {
+                        Permissions permissions = spaceDocumentContext.getPermissions();
+                        granted = permissions.isManageable();
+                    }
+                    
+                    if (granted) {
                         // HTTP servlet request
                         HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
                         // Bundle

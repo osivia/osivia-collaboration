@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
@@ -66,6 +67,10 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
     @Autowired
     private INotificationsService notificationsService;
 
+    /** Person service. */
+    @Autowired
+    private PersonService personService;
+
 
     /** Application context. */
     private ApplicationContext applicationContext;
@@ -86,9 +91,16 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
     public WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
         // Workspace document
         Document workspace = this.repository.getWorkspace(portalControllerContext);
+        // Portal administrator indicator
+        boolean admin;
+        try {
+            admin = this.personService.isPortalAdministrator(portalControllerContext);
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
 
         // Form
-        WorkspaceEditionForm form = this.applicationContext.getBean(WorkspaceEditionForm.class, workspace);
+        WorkspaceEditionForm form = this.applicationContext.getBean(WorkspaceEditionForm.class, workspace, admin);
         form.setTitle(workspace.getTitle());
         form.setDescription(workspace.getString("dc:description"));
 
@@ -258,7 +270,7 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
                 WorkspaceType workspaceType = form.getWorkspaceType();
                 WorkspaceType initialWorkspaceType = form.getInitialWorkspaceType();
 
-                if (!workspaceType.equals(initialWorkspaceType)) {
+                if (!workspaceType.equals(initialWorkspaceType) && (form.isAdmin() || !initialWorkspaceType.isPortalAdministratorRestriction())) {
                     this.repository.updateWorkspaceType(portalControllerContext, workspace, workspaceType);
                 }
             }
@@ -331,6 +343,12 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
     public String delete(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Permission check
+        if (!form.isAdmin()) {
+            throw new PortletException("Current user is not a global portal administrator.");
+        }
+
 
         // Delete
         this.repository.delete(portalControllerContext, form);

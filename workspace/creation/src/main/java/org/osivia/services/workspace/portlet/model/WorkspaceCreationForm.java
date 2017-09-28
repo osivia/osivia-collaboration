@@ -26,6 +26,8 @@ public class WorkspaceCreationForm {
     private String description;
     /** Workspace type. */
     private WorkspaceType type;
+    /** Workspace creation path. */
+    private String creationPath;
     /** Workspace owner identifier. */
     private String owner;
 
@@ -95,6 +97,25 @@ public class WorkspaceCreationForm {
     public void setType(WorkspaceType type) {
         this.type = type;
     }
+
+    /**
+     * Getter for creationPath.
+     * 
+     * @return the creationPath
+     */
+    public String getCreationPath() {
+        return creationPath;
+    }
+
+    /**
+     * Setter for creationPath.
+     * 
+     * @param creationPath the creationPath to set
+     */
+    public void setCreationPath(String creationPath) {
+        this.creationPath = creationPath;
+    }
+
 
     /**
      * Getter for owner.

@@ -77,24 +77,42 @@
                 <!-- Workspace type -->
                 <c:if test="${editionForm.root}">
                     <spring:bind path="workspaceType">
-                        <div class="form-group required ${status.error ? 'has-error' : ''}">
+                        <div class="form-group ${editionForm.admin or not editionForm.initialWorkspaceType.portalAdministratorRestriction ? 'required' : ''} ${status.error ? 'has-error' : ''}">
                             <form:label path="workspaceType" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_TYPE" /></form:label>
                             <div class="col-sm-9">
-                                <c:forEach var="type" items="${editionForm.workspaceTypes}">
-                                    <div class="radio">
-                                        <label>
-                                            <form:radiobutton path="workspaceType" value="${type.id}" />
-                                            <span class="label label-${type.color}">
-                                                <i class="${type.icon}"></i>
-                                                <span><op:translate key="${type.key}" /></span>
+                                <c:choose>
+                                    <c:when test="${editionForm.admin or not editionForm.initialWorkspaceType.portalAdministratorRestriction}">
+                                        <!-- Editable workspace type -->
+                                        <c:forEach var="type" items="${editionForm.workspaceTypes}">
+                                            <div class="radio">
+                                                <label>
+                                                    <form:radiobutton path="workspaceType" value="${type.id}" />
+                                                    <span class="label label-${type.color}">
+                                                        <i class="${type.icon}"></i>
+                                                        <span><op:translate key="${type.key}" /></span>
+                                                    </span>
+                                                </label>
+                                                <p class="text-muted">
+                                                    <span><op:translate key="${type.key}_HELP" /></span>
+                                                </p>
+                                            </div>
+                                        </c:forEach>
+                                        <form:errors path="workspaceType" cssClass="help-block" />
+                                    </c:when>
+                                    
+                                    <c:otherwise>
+                                        <!-- Fixed workspace type -->
+                                        <p class="form-control-static">
+                                            <span class="label label-${editionForm.initialWorkspaceType.color}">
+                                                <i class="${editionForm.initialWorkspaceType.icon}"></i>
+                                                <span><op:translate key="${editionForm.initialWorkspaceType.key}" /></span>
                                             </span>
-                                        </label>
-                                        <p class="text-muted">
-                                            <span><op:translate key="${type.key}_HELP" /></span>
                                         </p>
-                                    </div>
-                                </c:forEach>
-                                <form:errors path="workspaceType" cssClass="help-block" />
+                                        <p class="text-muted">
+                                            <span><op:translate key="${editionForm.initialWorkspaceType.key}_HELP" /></span>
+                                        </p>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
                         </div>
                     </spring:bind>
@@ -379,7 +397,7 @@
                     
                     <div class="pull-right">
                         <!-- Delete -->
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#${namespace}-delete-modal">
+                        <button type="button" class="btn btn-danger" ${editionForm.admin ? 'data-toggle="modal" data-target="#${namespace}-delete-modal"' : 'disabled'}>
                             <i class="glyphicons glyphicons-bin"></i>
                             <span><op:translate key="DELETE" /></span>
                         </button>
@@ -390,40 +408,42 @@
     </form:form>
     
     
-    <!-- Delete confirmation modal -->
-    <div id="${namespace}-delete-modal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">
-                        <i class="glyphicons glyphicons-remove"></i>
-                        <span class="sr-only"><op:translate key="CLOSE" /></span>
-                    </button>
-                    
-                    <h4 class="modal-title"><op:translate key="WORKSPACE_DELETE_MODAL_TITLE" args="${fragment}" /></h4>
-                </div>
-                
-                <div class="modal-body">
-                    <p class="text-danger">
-                        <span><op:translate key="WORKSPACE_DELETE_MODAL_MESSAGE" args="${fragment}" /></span>
-                    </p>
-                    
-                    <div class="alert alert-danger">
-                        <i class="glyphicons glyphicons-exclamation-sign"></i>
-                        <strong><op:translate key="WORKSPACE_DELETE_MODAL_ALERT_MESSAGE" /></strong>
+    <c:if test="${editionForm.admin}">
+        <!-- Delete confirmation modal -->
+        <div id="${namespace}-delete-modal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <i class="glyphicons glyphicons-remove"></i>
+                            <span class="sr-only"><op:translate key="CLOSE" /></span>
+                        </button>
+                        
+                        <h4 class="modal-title"><op:translate key="WORKSPACE_DELETE_MODAL_TITLE" args="${fragment}" /></h4>
                     </div>
-                </div>
-                
-                <div class="modal-footer">
-                    <a href="${deleteUrl}" class="btn btn-danger" data-dismiss="modal">
-                        <span><op:translate key="CONFIRM" /></span>
-                    </a>
                     
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        <span><op:translate key="CANCEL" /></span>
-                    </button>
+                    <div class="modal-body">
+                        <p class="text-danger">
+                            <span><op:translate key="WORKSPACE_DELETE_MODAL_MESSAGE" args="${fragment}" /></span>
+                        </p>
+                        
+                        <div class="alert alert-danger">
+                            <i class="glyphicons glyphicons-exclamation-sign"></i>
+                            <strong><op:translate key="WORKSPACE_DELETE_MODAL_ALERT_MESSAGE" /></strong>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <a href="${deleteUrl}" class="btn btn-danger" data-dismiss="modal">
+                            <span><op:translate key="CONFIRM" /></span>
+                        </a>
+                        
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            <span><op:translate key="CANCEL" /></span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </c:if>
 </div>

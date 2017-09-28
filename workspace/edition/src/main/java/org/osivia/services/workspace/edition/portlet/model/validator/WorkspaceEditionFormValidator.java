@@ -51,7 +51,10 @@ public class WorkspaceEditionFormValidator implements Validator {
 
         if (form.isRoot()) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "NotEmpty");
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "workspaceType", "NotEmpty");
+
+            if (form.isAdmin() || !form.getInitialWorkspaceType().isPortalAdministratorRestriction()) {
+                ValidationUtils.rejectIfEmptyOrWhitespace(errors, "workspaceType", "NotEmpty");
+            }
         }
 
         this.service.validate(errors, form);

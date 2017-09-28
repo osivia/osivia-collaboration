@@ -54,6 +54,8 @@ public class CreateWorkspaceFormFilter implements FormFilter {
     private static final String WORKSPACE_TYPE_VARIABLE_NAME = "workspaceTypeVariableName";
     /** Stop workflow if granted indicator parameter. */
     private static final String STOP_WORKFLOW_IF_GRANTED = "stopWorkflowIfGranted";
+    /** Creation path variable name parameter. */
+    private static final String CREATION_PATH_VARIABLE_NAME = "creationPathVariableName";
 
 
     /** Workspace creation service. */
@@ -121,6 +123,7 @@ public class CreateWorkspaceFormFilter implements FormFilter {
         parameters.put(DESCRIPTION_VARIABLE_NAME, FormFilterParameterType.TEXT);
         parameters.put(WORKSPACE_TYPE_VARIABLE_NAME, FormFilterParameterType.TEXT);
         parameters.put(STOP_WORKFLOW_IF_GRANTED, FormFilterParameterType.BOOLEAN);
+        parameters.put(CREATION_PATH_VARIABLE_NAME, FormFilterParameterType.TEXT);
         return parameters;
     }
 
@@ -184,9 +187,22 @@ public class CreateWorkspaceFormFilter implements FormFilter {
             if (StringUtils.isEmpty(workspaceTypeVariableName)) {
                 type = null;
             } else {
-                type = WorkspaceType.valueOf(variables.get(workspaceTypeVariableName));
+                String value = variables.get(workspaceTypeVariableName);
+                if (StringUtils.isEmpty(value)) {
+                    type = null;
+                } else {
+                    type = WorkspaceType.valueOf(value);
+                }
             }
 
+            // Creation path
+            String creationPathVariableName = context.getParamValue(executor, CREATION_PATH_VARIABLE_NAME);
+            String creationPath;
+            if (StringUtils.isEmpty(creationPathVariableName)) {
+                creationPath = null;
+            } else {
+                creationPath = variables.get(creationPathVariableName);
+            }
 
             // Owner identifier
             String owner = context.getProcedureInitiator();
@@ -197,6 +213,7 @@ public class CreateWorkspaceFormFilter implements FormFilter {
             form.setTitle(title);
             form.setDescription(description);
             form.setType(type);
+            form.setCreationPath(creationPath);
             form.setOwner(owner);
 
             try {

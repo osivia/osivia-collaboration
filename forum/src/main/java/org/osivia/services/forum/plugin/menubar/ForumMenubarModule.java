@@ -48,6 +48,9 @@ public class ForumMenubarModule implements MenubarModule {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void customizeSpace(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext spaceDocumentContext)
             throws PortalException {
@@ -55,6 +58,9 @@ public class ForumMenubarModule implements MenubarModule {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void customizeDocument(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext documentContext)
             throws PortalException {

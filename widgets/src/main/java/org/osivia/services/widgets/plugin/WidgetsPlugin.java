@@ -376,7 +376,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
 
         // Gallery
         TaskbarItem gallery = factory.createCmsTaskbarItem("GALLERY", "GALLERY_TASK", "glyphicons glyphicons-pictures", "PictureBook");
-        gallery.setToDefault(2);
+        factory.preset(gallery, true, 2);
         items.add(gallery);
 
         // News

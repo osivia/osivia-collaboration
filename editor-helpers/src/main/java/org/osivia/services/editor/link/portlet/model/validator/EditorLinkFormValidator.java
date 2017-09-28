@@ -24,12 +24,18 @@ public class EditorLinkFormValidator implements Validator {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean supports(Class<?> clazz) {
         return EditorLinkForm.class.isAssignableFrom(clazz);
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void validate(Object target, Errors errors) {
         EditorLinkForm form = (EditorLinkForm) target;

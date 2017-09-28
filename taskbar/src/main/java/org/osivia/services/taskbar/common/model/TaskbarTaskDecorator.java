@@ -149,15 +149,6 @@ public abstract class TaskbarTaskDecorator implements TaskbarTask {
      * {@inheritDoc}
      */
     @Override
-    public void setToDefault(int order) {
-        // Do nothing
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public TaskbarItemRestriction getRestriction() {
         return this.task.getRestriction();
     }

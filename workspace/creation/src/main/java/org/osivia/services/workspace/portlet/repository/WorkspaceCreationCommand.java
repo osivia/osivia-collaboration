@@ -34,8 +34,6 @@ public class WorkspaceCreationCommand implements INuxeoCommand {
 
     /** Workspace creation form. */
     private final WorkspaceCreationForm form;
-    /** Workspace parent path. */
-    private final String parentPath;
     /** Workspace default taskbar items. */
     private final SortedSet<TaskbarItem> items;
     /** Internationalization bundle. */
@@ -46,14 +44,12 @@ public class WorkspaceCreationCommand implements INuxeoCommand {
      * Constructor.
      *
      * @param form workspace creation form
-     * @param parentPath workspace parent path
      * @param items workspace default taskbar items
      * @param bundle internationalization bundle
      */
-    public WorkspaceCreationCommand(WorkspaceCreationForm form, String parentPath, SortedSet<TaskbarItem> items, Bundle bundle) {
+    public WorkspaceCreationCommand(WorkspaceCreationForm form, SortedSet<TaskbarItem> items, Bundle bundle) {
         super();
         this.form = form;
-        this.parentPath = parentPath;
         this.items = items;
         this.bundle = bundle;
     }
@@ -87,7 +83,7 @@ public class WorkspaceCreationCommand implements INuxeoCommand {
      */
     private Document createWorkspace(Session nuxeoSession, DocumentService documentService) throws Exception {
         // Workspaces container
-        DocRef container = new DocRef(this.parentPath);
+        DocRef container = new DocRef(this.form.getCreationPath());
 
         // Properties
         PropertyMap properties = new PropertyMap();

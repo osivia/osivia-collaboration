@@ -1,6 +1,5 @@
 package org.osivia.services.workspace.edition.portlet.model;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +47,8 @@ public class WorkspaceEditionForm {
 
     /** Workspace Nuxeo document. */
     private final Document document;
+    /** Portal administrator indicator. */
+    private final boolean admin;
     /** Workspace types. */
     private final List<WorkspaceType> workspaceTypes;
 
@@ -56,11 +57,13 @@ public class WorkspaceEditionForm {
      * Constructor.
      * 
      * @param document workspace Nuxeo document
+     * @param admin portal administrator indicator
      */
-    public WorkspaceEditionForm(Document document) {
+    public WorkspaceEditionForm(Document document, boolean admin) {
         super();
         this.document = document;
-        this.workspaceTypes = Arrays.asList(WorkspaceType.values());
+        this.admin = admin;
+        this.workspaceTypes = WorkspaceType.list(admin);
     }
 
 
@@ -269,6 +272,15 @@ public class WorkspaceEditionForm {
      */
     public Document getDocument() {
         return document;
+    }
+
+    /**
+     * Getter for admin.
+     * 
+     * @return the admin
+     */
+    public boolean isAdmin() {
+        return admin;
     }
 
     /**

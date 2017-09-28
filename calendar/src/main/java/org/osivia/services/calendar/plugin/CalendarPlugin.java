@@ -126,7 +126,7 @@ public class CalendarPlugin extends AbstractPluginPortlet  {
 
         // Agenda
         TaskbarItem agenda = factory.createCmsTaskbarItem("CALENDAR", "CALENDAR_TASK", "glyphicons glyphicons-calendar", "Agenda");
-        agenda.setToDefault(3);
+        factory.preset(agenda, true, 3);
         items.add(agenda);
     }
 

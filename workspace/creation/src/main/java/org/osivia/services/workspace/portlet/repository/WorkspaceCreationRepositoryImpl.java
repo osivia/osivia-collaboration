@@ -1,13 +1,9 @@
 package org.osivia.services.workspace.portlet.repository;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.SortedSet;
 
 import javax.portlet.PortletContext;
@@ -53,13 +49,6 @@ import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 @Repository
 public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationRepository, ApplicationContextAware, PortletContextAware {
 
-    /** Properties file name. */
-    private static final String PROPERTIES_FILE_NAME = "workspace-creation.properties";
-
-    /** Workspace parent path property. */
-    private static final String PARENT_PATH_PROPERTY = "workspace.parentPath";
-
-
     /** Person service. */
     @Autowired
     private PersonService personService;
@@ -83,26 +72,11 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
     private PortletContext portletContext;
 
 
-    /** Properties. */
-    private final Properties properties;
-
-
     /**
      * Constructor.
-     *
-     * @throws IOException
      */
-    public WorkspaceCreationRepositoryImpl() throws IOException {
+    public WorkspaceCreationRepositoryImpl() {
         super();
-
-        // Generator properties
-        this.properties = new Properties();
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(PROPERTIES_FILE_NAME);
-        if (inputStream != null) {
-            this.properties.load(inputStream);
-        } else {
-            throw new FileNotFoundException(PROPERTIES_FILE_NAME);
-        }
     }
 
 
@@ -124,9 +98,6 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(locale);
 
-        // Workspace parent path
-        String parentPath = this.properties.getProperty(PARENT_PATH_PROPERTY);
-
 
         // Default taskbar items
         SortedSet<TaskbarItem> items;
@@ -137,7 +108,7 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
         }
 
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(WorkspaceCreationCommand.class, form, parentPath, items, bundle);
+        INuxeoCommand command = this.applicationContext.getBean(WorkspaceCreationCommand.class, form, items, bundle);
         return (Document) nuxeoController.executeNuxeoCommand(command);
     }
 
