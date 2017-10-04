@@ -75,8 +75,9 @@ public class WorkspaceEditionPlugin extends AbstractPluginPortlet {
         TaskbarFactory factory = this.getTaskbarService().getFactory();
 
         // Workspace editorial
-        TaskbarItem editorial = factory.createHiddenCmsTaskbarItem(WorkspaceEditionService.WORKSPACE_EDITORIAL_TASK_ID,
-                "WORKSPACE_EDITION_WORKSPACE_EDITORIAL_TASK", "Note");
+        TaskbarItem editorial = factory.createCmsTaskbarItem(WorkspaceEditionService.WORKSPACE_EDITORIAL_TASK_ID, "WORKSPACE_EDITION_WORKSPACE_EDITORIAL_TASK",
+                null, "Note");
+        factory.hide(editorial, true);
         items.add(editorial);
     }
 
