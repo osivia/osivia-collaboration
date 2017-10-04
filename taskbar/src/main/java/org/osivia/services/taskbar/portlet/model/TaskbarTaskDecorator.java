@@ -1,5 +1,6 @@
-package org.osivia.services.taskbar.common.model;
+package org.osivia.services.taskbar.portlet.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.taskbar.TaskbarItemRestriction;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
@@ -15,6 +16,10 @@ public abstract class TaskbarTaskDecorator implements TaskbarTask {
 
     /** Taskbar task. */
     private final TaskbarTask task;
+
+
+    /** Path. */
+    private String path;
 
 
     /**
@@ -132,7 +137,7 @@ public abstract class TaskbarTaskDecorator implements TaskbarTask {
      */
     @Override
     public String getPath() {
-        return this.task.getPath();
+        return StringUtils.defaultIfEmpty(this.path, this.task.getPath());
     }
 
 
@@ -160,6 +165,16 @@ public abstract class TaskbarTaskDecorator implements TaskbarTask {
     @Override
     public boolean isHidden() {
         return this.task.isHidden();
+    }
+
+
+    /**
+     * Setter for path.
+     * 
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
     }
 
 }

@@ -1,4 +1,4 @@
-package org.osivia.services.taskbar.common.service;
+package org.osivia.services.taskbar.portlet.service;
 
 import java.util.List;
 
@@ -6,24 +6,25 @@ import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.taskbar.TaskbarItem;
-import org.osivia.services.taskbar.common.model.Task;
-import org.osivia.services.taskbar.common.model.TaskbarConfiguration;
+import org.osivia.services.taskbar.portlet.model.Task;
+import org.osivia.services.taskbar.portlet.model.TaskbarSettings;
 
 /**
  * Taskbar portlet service interface.
  *
  * @author Cédric Krommenhoek
  */
-public interface ITaskbarPortletService {
+public interface TaskbarPortletService {
 
     /**
      * Get tasks.
      *
      * @param portalControllerContext portal controller context
+     * @param settings taskbar settings
      * @return tasks
      * @throws PortletException
      */
-    List<Task> getTasks(PortalControllerContext portalControllerContext) throws PortletException;
+    List<Task> getTasks(PortalControllerContext portalControllerContext, TaskbarSettings settings) throws PortletException;
 
 
     /**
@@ -40,11 +41,12 @@ public interface ITaskbarPortletService {
      * Start task.
      *
      * @param portalControllerContext portal controller context
+     * @param settings taskbar settings
      * @param id task identifier
      * @return task
      * @throws PortletException
      */
-    Task start(PortalControllerContext portalControllerContext, String id) throws PortletException;
+    Task start(PortalControllerContext portalControllerContext, TaskbarSettings settings, String id) throws PortletException;
 
 
     /**
@@ -68,22 +70,22 @@ public interface ITaskbarPortletService {
 
 
     /**
-     * Get taskbar configuration.
+     * Get taskbar settings.
      *
      * @param portalControllerContext portlet controller context
-     * @return taskbar configuration
+     * @return taskbar settings
      * @throws PortletException
      */
-    TaskbarConfiguration getConfiguration(PortalControllerContext portalControllerContext) throws PortletException;
+    TaskbarSettings getSettings(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**
-     * Save taskbar configuration.
+     * Save taskbar settings.
      *
      * @param portalControllerContext portal controller context
-     * @param configuration taskbar configuration
+     * @param configuration taskbar settings
      * @throws PortletException
      */
-    void saveConfiguration(PortalControllerContext portalControllerContext, TaskbarConfiguration configuration) throws PortletException;
+    void saveSettings(PortalControllerContext portalControllerContext, TaskbarSettings configuration) throws PortletException;
 
 }

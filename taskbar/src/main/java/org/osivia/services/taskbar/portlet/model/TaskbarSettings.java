@@ -1,13 +1,19 @@
-package org.osivia.services.taskbar.common.model;
+package org.osivia.services.taskbar.portlet.model;
 
 import java.util.List;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
- * Taskbar configuration java-bean.
+ * Taskbar settings java-bean.
  *
  * @author Cédric Krommenhoek
  */
-public class TaskbarConfiguration {
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class TaskbarSettings {
 
     /** Tasks order. */
     private List<String> order;
@@ -18,7 +24,7 @@ public class TaskbarConfiguration {
     /**
      * Constructor.
      */
-    public TaskbarConfiguration() {
+    public TaskbarSettings() {
         super();
     }
 

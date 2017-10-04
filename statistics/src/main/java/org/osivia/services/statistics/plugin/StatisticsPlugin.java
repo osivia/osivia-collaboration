@@ -50,7 +50,7 @@ public class StatisticsPlugin extends AbstractPluginPortlet {
 
         // Statistics
         TaskbarItem statistics = factory.createStapledTaskbarItem("STATISTICS", "STATISTICS_TASK", "glyphicons glyphicons-charts",
-                "/default/templates/statistics");
+                "/default/templates/workspace/statistics");
         items.add(statistics);
     }
 

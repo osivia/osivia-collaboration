@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.Name;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.directory.v2.service.RoleService;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.Permissions;
@@ -48,6 +50,8 @@ public class MemberManagementMenubarModule implements MenubarModule {
     private final IBundleFactory bundleFactory;
     /** Person service. */
     private final PersonService personService;
+    /** Role service. */
+    private final RoleService roleService;
 
 
     /**
@@ -66,6 +70,8 @@ public class MemberManagementMenubarModule implements MenubarModule {
         this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
         // Person service
         this.personService = DirServiceFactory.getService(PersonService.class);
+        // Role service
+        this.roleService = DirServiceFactory.getService(RoleService.class);
     }
 
 
@@ -94,7 +100,13 @@ public class MemberManagementMenubarModule implements MenubarModule {
                     // Check permissions
                     boolean granted;
                     if ((workspaceType != null) && workspaceType.isPortalAdministratorRestriction()) {
-                        granted = this.personService.isPortalAdministrator(portalControllerContext);
+                        // User
+                        String user = portalControllerContext.getRequest().getRemoteUser();
+                        // User DN
+                        Name dn = this.personService.getEmptyPerson().buildDn(user);
+
+                        // Administrator indicator
+                        granted = this.roleService.hasRole(dn, "role_workspace-management");
                     } else {
                         Permissions permissions = spaceDocumentContext.getPermissions();
                         granted = permissions.isManageable();

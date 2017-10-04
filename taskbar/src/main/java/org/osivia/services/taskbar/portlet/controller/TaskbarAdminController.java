@@ -16,11 +16,10 @@ import javax.portlet.WindowState;
 
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.portlet.PortalGenericPortlet;
 import org.osivia.portal.api.taskbar.TaskbarItem;
-import org.osivia.services.taskbar.common.model.TaskbarConfiguration;
-import org.osivia.services.taskbar.common.model.TaskbarView;
-import org.osivia.services.taskbar.common.service.ITaskbarPortletService;
+import org.osivia.services.taskbar.portlet.model.TaskbarSettings;
+import org.osivia.services.taskbar.portlet.model.TaskbarView;
+import org.osivia.services.taskbar.portlet.service.TaskbarPortletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -28,24 +27,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
-import org.springframework.web.portlet.context.PortletContextAware;
 
 /**
  * Taskbar admin controller.
  *
  * @author Cédric Krommenhoek
- * @see PortalGenericPortlet
  */
 @Controller
-@RequestMapping(value = "ADMIN")
-public class TaskbarAdminController extends PortalGenericPortlet implements PortletContextAware {
+@RequestMapping("ADMIN")
+public class TaskbarAdminController {
 
     /** Portlet context. */
+    @Autowired
     private PortletContext portletContext;
 
-    /** Taskbar portlet service. */
+    /** Portlet service. */
     @Autowired
-    private ITaskbarPortletService taskbarService;
+    private TaskbarPortletService service;
 
 
     /**
@@ -57,24 +55,29 @@ public class TaskbarAdminController extends PortalGenericPortlet implements Port
 
 
     /**
-     * Render mapping.
+     * View render mapping.
      *
      * @param request render request
      * @param response render response
-     * @return admin path
+     * @param settings taskbar settings model attribute
+     * @return view path
      * @throws PortletException
      */
     @RenderMapping
-    public String view(RenderRequest request, RenderResponse response) throws PortletException {
+    public String view(RenderRequest request, RenderResponse response, @ModelAttribute("settings") TaskbarSettings settings) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
+        // Order
+        String order = StringUtils.join(settings.getOrder(), "|");
+        request.setAttribute("order", order);
+
         // Ordered tasks
-        List<TaskbarItem> orderedTasks = this.taskbarService.getOrderedItems(portalControllerContext);
+        List<TaskbarItem> orderedTasks = this.service.getOrderedItems(portalControllerContext);
         request.setAttribute("orderedItems", orderedTasks);
 
         // Available tasks
-        List<TaskbarItem> availableTasks = this.taskbarService.getAvailableItems(portalControllerContext);
+        List<TaskbarItem> availableTasks = this.service.getAvailableItems(portalControllerContext);
         request.setAttribute("availableItems", availableTasks);
 
         return "admin";
@@ -86,20 +89,20 @@ public class TaskbarAdminController extends PortalGenericPortlet implements Port
      *
      * @param request action request
      * @param response action response
-     * @param configuration taskbar configuration model attribute
      * @param order tasks order request parameter
+     * @param settings taskbar settings model attribute
      * @throws PortletException
      */
-    @ActionMapping(value = "save")
-    public void save(ActionRequest request, ActionResponse response, @ModelAttribute(value = "configuration") TaskbarConfiguration configuration,
-            @RequestParam(value = "order") String order) throws PortletException {
+    @ActionMapping("save")
+    public void save(ActionRequest request, ActionResponse response, @RequestParam("order") String order, @ModelAttribute("settings") TaskbarSettings settings)
+            throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         // Tasks order
-        configuration.setOrder(Arrays.asList(StringUtils.split(order, "|")));
+        settings.setOrder(Arrays.asList(StringUtils.split(order, "|")));
 
-        this.taskbarService.saveConfiguration(portalControllerContext, configuration);
+        this.service.saveSettings(portalControllerContext, settings);
 
         response.setWindowState(WindowState.NORMAL);
         response.setPortletMode(PortletMode.VIEW);
@@ -107,33 +110,19 @@ public class TaskbarAdminController extends PortalGenericPortlet implements Port
 
 
     /**
-     * Get taskbar configuration model attribute.
+     * Get taskbar settings model attribute.
      *
      * @param request portlet request
      * @param response portlet response
-     * @return taskbar configuration
+     * @return taskbar settings
      * @throws PortletException
      */
-    @ModelAttribute(value = "configuration")
-    public TaskbarConfiguration getConfiguration(PortletRequest request, PortletResponse response) throws PortletException {
+    @ModelAttribute("settings")
+    public TaskbarSettings getConfiguration(PortletRequest request, PortletResponse response) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        return this.taskbarService.getConfiguration(portalControllerContext);
-    }
-
-
-    /**
-     * Get tasks order model attribute.
-     *
-     * @param request portlet request
-     * @param response portlet response
-     * @param configuration taskbar configuration model attribute
-     * @return task order
-     */
-    @ModelAttribute(value = "order")
-    public String getOrder(PortletRequest request, PortletResponse response, @ModelAttribute(value = "configuration") TaskbarConfiguration configuration) {
-        return StringUtils.join(configuration.getOrder(), "|");
+        return this.service.getSettings(portalControllerContext);
     }
 
 
@@ -145,18 +134,9 @@ public class TaskbarAdminController extends PortalGenericPortlet implements Port
      * @return taskbar views
      * @throws PortletException
      */
-    @ModelAttribute(value = "views")
+    @ModelAttribute("views")
     public List<TaskbarView> getViews(PortletRequest request, PortletResponse response) throws PortletException {
         return Arrays.asList(TaskbarView.values());
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletContext(PortletContext portletContext) {
-        this.portletContext = portletContext;
     }
 
 }

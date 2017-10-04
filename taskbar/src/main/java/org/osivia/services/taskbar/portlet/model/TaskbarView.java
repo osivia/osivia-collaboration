@@ -1,4 +1,4 @@
-package org.osivia.services.taskbar.common.model;
+package org.osivia.services.taskbar.portlet.model;
 
 /**
  * Taskbar views enumeration.

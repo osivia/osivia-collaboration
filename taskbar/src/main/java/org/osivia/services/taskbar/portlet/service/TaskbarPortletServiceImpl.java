@@ -1,4 +1,4 @@
-package org.osivia.services.taskbar.common.service;
+package org.osivia.services.taskbar.portlet.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,33 +7,39 @@ import javax.portlet.PortletException;
 
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.panels.IPanelsService;
+import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
-import org.osivia.services.taskbar.common.model.Task;
-import org.osivia.services.taskbar.common.model.TaskbarConfiguration;
-import org.osivia.services.taskbar.common.repository.ITaskbarRepository;
+import org.osivia.services.taskbar.portlet.model.Task;
+import org.osivia.services.taskbar.portlet.model.TaskbarSettings;
+import org.osivia.services.taskbar.portlet.repository.TaskbarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 /**
  * Taskbar portlet service implementation.
  *
  * @author Cédric Krommenhoek
- * @see ITaskbarPortletService
+ * @see TaskbarPortletService
  */
 @Service
-public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
+public class TaskbarPortletServiceImpl implements TaskbarPortletService {
 
-    /** Taskbar repository. */
+    /** Application context. */
     @Autowired
-    private ITaskbarRepository taskbarRepository;
+    private ApplicationContext applicationContext;
+
+    /** Portlet repository. */
+    @Autowired
+    private TaskbarRepository repository;
 
     /** Panels service. */
-    private final IPanelsService panelsService;
+    @Autowired
+    private IPanelsService panelsService;
 
 
     /**
@@ -41,9 +47,6 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
      */
     public TaskbarPortletServiceImpl() {
         super();
-
-        // Panels service
-        this.panelsService = Locator.findMBean(IPanelsService.class, IPanelsService.MBEAN_NAME);
     }
 
 
@@ -51,18 +54,17 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
      * {@inheritDoc}
      */
     @Override
-    public List<Task> getTasks(PortalControllerContext portalControllerContext) throws PortletException {
-        // Configuration
-        TaskbarConfiguration configuration = this.taskbarRepository.getConfiguration(portalControllerContext);
+    public List<Task> getTasks(PortalControllerContext portalControllerContext, TaskbarSettings settings) throws PortletException {
         // Order
-        List<String> order = configuration.getOrder();
+        List<String> order = settings.getOrder();
         // Identifiers of remaining tasks
         List<String> remainingIds = new ArrayList<String>(order);
-        remainingIds.remove(ITaskbarRepository.CMS_NAVIGATION_TASK_ID);
+        remainingIds.remove(TaskbarRepository.CMS_NAVIGATION_TASK_ID);
 
         // Navigation tasks
-        List<TaskbarTask> navigationTasks = this.taskbarRepository.getNavigationTasks(portalControllerContext);
+        List<TaskbarTask> navigationTasks = this.repository.getNavigationTasks(portalControllerContext);
         List<TaskbarTask> displayedTasks = new ArrayList<TaskbarTask>(navigationTasks.size());
+        TaskbarTask searchTask = null;
         for (TaskbarTask navigationTask : navigationTasks) {
             if (TaskbarItemType.TRANSVERSAL.equals(navigationTask.getType())) {
                 remainingIds.remove(navigationTask.getId());
@@ -71,23 +73,30 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
             if (!navigationTask.isDisabled() && !navigationTask.isHidden()) {
                 displayedTasks.add(navigationTask);
             }
+
+            if (ITaskbarService.SEARCH_TASK_ID.equals(navigationTask.getId())) {
+                searchTask = navigationTask;
+            }
         }
 
 
         // Remaining tasks
         if (!remainingIds.isEmpty()) {
-            TaskbarItems items = this.taskbarRepository.getTaskbarItems(portalControllerContext);
+            TaskbarItems items = this.repository.getTaskbarItems(portalControllerContext);
             List<TaskbarTask> remainingTasks = new ArrayList<TaskbarTask>(remainingIds.size());
             boolean before = true;
             for (String id : order) {
-                if (ITaskbarRepository.CMS_NAVIGATION_TASK_ID.equals(id)) {
+                if (TaskbarRepository.CMS_NAVIGATION_TASK_ID.equals(id)) {
                     displayedTasks.addAll(0, remainingTasks);
                     remainingTasks.clear();
                     before = false;
                 } else if (remainingIds.contains(id)) {
                     TaskbarItem item = items.get(id);
-                    if (item != null) {
-                        TaskbarTask remainingTask = this.taskbarRepository.createRemainingTask(portalControllerContext, item);
+                    if (ITaskbarService.SEARCH_TASK_ID.equals(id) && (searchTask != null)) {
+                        // Search task
+                        remainingTasks.add(searchTask);
+                    } else if (item != null) {
+                        TaskbarTask remainingTask = this.repository.createRemainingTask(portalControllerContext, item);
                         remainingTasks.add(remainingTask);
                     }
                 }
@@ -103,7 +112,7 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
         // Tasks
         List<Task> tasks = new ArrayList<Task>(displayedTasks.size());
         for (TaskbarTask displayedTask : displayedTasks) {
-            Task task = new Task(displayedTask);
+            Task task = this.applicationContext.getBean(Task.class, displayedTask);
             tasks.add(task);
         }
 
@@ -116,7 +125,7 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
      */
     @Override
     public void updateTasks(PortalControllerContext portalControllerContext, List<Task> tasks) throws PortletException {
-        this.taskbarRepository.updateTasks(portalControllerContext, tasks);
+        this.repository.updateTasks(portalControllerContext, tasks);
     }
 
 
@@ -124,10 +133,10 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
      * {@inheritDoc}
      */
     @Override
-    public Task start(PortalControllerContext portalControllerContext, String id) throws PortletException {
+    public Task start(PortalControllerContext portalControllerContext, TaskbarSettings settings, String id) throws PortletException {
         Task result = null;
 
-        List<Task> tasks = this.getTasks(portalControllerContext);
+        List<Task> tasks = this.getTasks(portalControllerContext, settings);
         for (Task task : tasks) {
             if (id.equals(task.getId())) {
                 result = task;
@@ -139,7 +148,7 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
             // Update task
             List<Task> results = new ArrayList<Task>(1);
             results.add(result);
-            this.taskbarRepository.updateTasks(portalControllerContext, results);
+            this.repository.updateTasks(portalControllerContext, results);
         }
 
         // Reset task dependent panels
@@ -158,23 +167,23 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
      */
     @Override
     public List<TaskbarItem> getOrderedItems(PortalControllerContext portalControllerContext) throws PortletException {
-        // Configuration
-        TaskbarConfiguration configuration = this.taskbarRepository.getConfiguration(portalControllerContext);
+        // Settings
+        TaskbarSettings settings = this.repository.getSettings(portalControllerContext);
         // Order
-        List<String> order = configuration.getOrder();
+        List<String> order = settings.getOrder();
 
         // Taskbar items
-        TaskbarItems items = this.taskbarRepository.getTaskbarItems(portalControllerContext);
+        TaskbarItems items = this.repository.getTaskbarItems(portalControllerContext);
 
         // Ordered taskbar items
         List<TaskbarItem> orderedItems = new ArrayList<TaskbarItem>();
         for (String id : order) {
             TaskbarItem item;
-            if (ITaskbarRepository.CMS_NAVIGATION_TASK_ID.equals(id)) {
-                item = this.taskbarRepository.createVirtualItem(portalControllerContext);
+            if (TaskbarRepository.CMS_NAVIGATION_TASK_ID.equals(id)) {
+                item = this.repository.createVirtualItem(portalControllerContext);
             } else {
                 item = items.get(id);
-                if ((item != null) && !TaskbarItemType.TRANSVERSAL.equals(item.getType())) {
+                if ((item != null) && !TaskbarItemType.TRANSVERSAL.equals(item.getType()) && !ITaskbarService.SEARCH_TASK_ID.equals(id)) {
                     item = null;
                 }
             }
@@ -193,22 +202,22 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
      */
     @Override
     public List<TaskbarItem> getAvailableItems(PortalControllerContext portalControllerContext) throws PortletException {
-        // Configuration
-        TaskbarConfiguration configuration = this.taskbarRepository.getConfiguration(portalControllerContext);
+        // Settings
+        TaskbarSettings settings = this.repository.getSettings(portalControllerContext);
         // Order
-        List<String> order = configuration.getOrder();
+        List<String> order = settings.getOrder();
 
         // Taskbar items
-        TaskbarItems items = this.taskbarRepository.getTaskbarItems(portalControllerContext);
+        TaskbarItems items = this.repository.getTaskbarItems(portalControllerContext);
 
         // Available taskbar items
         List<TaskbarItem> availableItems = new ArrayList<TaskbarItem>();
-        if (!order.contains(ITaskbarRepository.CMS_NAVIGATION_TASK_ID)) {
-            TaskbarItem item = this.taskbarRepository.createVirtualItem(portalControllerContext);
+        if (!order.contains(TaskbarRepository.CMS_NAVIGATION_TASK_ID)) {
+            TaskbarItem item = this.repository.createVirtualItem(portalControllerContext);
             availableItems.add(item);
         }
         for (TaskbarItem item : items.getAll()) {
-            if (TaskbarItemType.TRANSVERSAL.equals(item.getType()) && !order.contains(item.getId())) {
+            if ((TaskbarItemType.TRANSVERSAL.equals(item.getType()) || ITaskbarService.SEARCH_TASK_ID.equals(item.getId())) && !order.contains(item.getId())) {
                 availableItems.add(item);
             }
         }
@@ -221,8 +230,8 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
      * {@inheritDoc}
      */
     @Override
-    public TaskbarConfiguration getConfiguration(PortalControllerContext portalControllerContext) throws PortletException {
-        return this.taskbarRepository.getConfiguration(portalControllerContext);
+    public TaskbarSettings getSettings(PortalControllerContext portalControllerContext) throws PortletException {
+        return this.repository.getSettings(portalControllerContext);
     }
 
 
@@ -230,8 +239,8 @@ public class TaskbarPortletServiceImpl implements ITaskbarPortletService {
      * {@inheritDoc}
      */
     @Override
-    public void saveConfiguration(PortalControllerContext portalControllerContext, TaskbarConfiguration configuration) throws PortletException {
-        this.taskbarRepository.saveConfiguration(portalControllerContext, configuration);
+    public void saveSettings(PortalControllerContext portalControllerContext, TaskbarSettings settings) throws PortletException {
+        this.repository.saveSettings(portalControllerContext, settings);
     }
 
 }

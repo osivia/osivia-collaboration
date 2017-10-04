@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
@@ -8,10 +9,10 @@
 
 <portlet:defineObjects />
 
-<portlet:actionURL name="save" var="saveURL" />
+<portlet:actionURL name="save" var="saveUrl" />
 
 
-<form:form modelAttribute="configuration" action="${saveURL}" method="post" cssClass="form-horizontal" role="form">
+<form:form modelAttribute="settings" action="${saveUrl}" method="post" cssClass="form-horizontal" role="form">
     <!-- Order -->
     <input type="hidden" name="order" value="${order}">
     

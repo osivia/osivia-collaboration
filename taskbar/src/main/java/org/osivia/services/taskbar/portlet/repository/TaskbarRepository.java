@@ -1,4 +1,4 @@
-package org.osivia.services.taskbar.common.repository;
+package org.osivia.services.taskbar.portlet.repository;
 
 import java.util.List;
 
@@ -8,38 +8,38 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
-import org.osivia.services.taskbar.common.model.Task;
-import org.osivia.services.taskbar.common.model.TaskbarConfiguration;
+import org.osivia.services.taskbar.portlet.model.Task;
+import org.osivia.services.taskbar.portlet.model.TaskbarSettings;
 
 /**
- * Taskbar repository interface.
+ * Taskbar portlet repository interface.
  *
  * @author Cédric Krommenhoek
  */
-public interface ITaskbarRepository {
+public interface TaskbarRepository {
 
     /** CMS navigation virtual task identifier. */
     String CMS_NAVIGATION_TASK_ID = "CMS_NAVIGATION";
 
 
     /**
-     * Get taskbar configuration.
+     * Get taskbar settings.
      *
      * @param portalControllerContext portal controller context
-     * @return taskbar configuration
+     * @return taskbar settings
      * @throws PortletException
      */
-    TaskbarConfiguration getConfiguration(PortalControllerContext portalControllerContext) throws PortletException;
+    TaskbarSettings getSettings(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**
-     * Save taskbar configuration.
+     * Save taskbar settings.
      *
      * @param portalControllerContext portal controller context
-     * @param configuration taskbar configuration
+     * @param settings taskbar settings
      * @throws PortletException
      */
-    void saveConfiguration(PortalControllerContext portalControllerContext, TaskbarConfiguration configuration) throws PortletException;
+    void saveSettings(PortalControllerContext portalControllerContext, TaskbarSettings settings) throws PortletException;
 
 
     /**

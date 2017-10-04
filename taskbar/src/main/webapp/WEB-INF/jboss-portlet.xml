@@ -24,9 +24,4 @@
         </portlet-info>
     </portlet>
     
-    
-    <portlet>
-        <portlet-name>osivia-services-taskbar-empty</portlet-name>
-    </portlet>
-
 </portlet-app>
