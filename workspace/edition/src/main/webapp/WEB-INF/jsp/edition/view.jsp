@@ -397,7 +397,13 @@
                     
                     <div class="pull-right">
                         <!-- Delete -->
-                        <button type="button" class="btn btn-danger" ${editionForm.admin ? 'data-toggle="modal" data-target="#${namespace}-delete-modal"' : 'disabled'}>
+                        <c:set var="buttonAttributes">
+                            <c:choose>
+                                <c:when test="${editionForm.admin}">data-toggle="modal" data-target="#${namespace}-delete-modal"</c:when>
+                                <c:otherwise>disabled</c:otherwise>
+                            </c:choose>
+                        </c:set>
+                        <button type="button" class="btn btn-danger" ${buttonAttributes}>
                             <i class="glyphicons glyphicons-bin"></i>
                             <span><op:translate key="DELETE" /></span>
                         </button>

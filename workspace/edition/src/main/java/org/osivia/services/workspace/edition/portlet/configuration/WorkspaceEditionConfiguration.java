@@ -2,6 +2,7 @@ package org.osivia.services.workspace.edition.portlet.configuration;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
+import org.osivia.directory.v2.service.RoleService;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.service.PersonService;
@@ -158,6 +159,17 @@ public class WorkspaceEditionConfiguration {
     @Bean
     public PersonService getPersonService() {
         return DirServiceFactory.getService(PersonService.class);
+    }
+
+
+    /**
+     * Get role service.
+     * 
+     * @return role service
+     */
+    @Bean
+    public RoleService getRoleService() {
+        return DirServiceFactory.getService(RoleService.class);
     }
 
 }

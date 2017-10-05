@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.portlet.bind.PortletRequestDataBinder;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
@@ -130,6 +131,22 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
     public String handlePortletException(PortletRequest request, PortletResponse response, PortletException exception) {
         request.setAttribute("exception", exception);
         request.setAttribute("back", StringUtils.isNotEmpty(request.getParameter(ActionRequest.ACTION_NAME)));
+        return "error";
+    }
+
+
+    @ExceptionHandler(MultipartException.class)
+    public String handleMultipartException(PortletRequest request, PortletResponse response, MultipartException exception) {
+        request.setAttribute("exception", exception);
+        // TODO
+        return "error";
+    }
+
+
+    @ExceptionHandler(Exception.class)
+    public String handleException(PortletRequest request, PortletResponse response, Exception exception) {
+        request.setAttribute("exception", exception);
+        // TODO
         return "error";
     }
 

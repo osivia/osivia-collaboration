@@ -6,10 +6,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.Name;
 import javax.portlet.PortletException;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.directory.v2.service.RoleService;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.service.PersonService;
@@ -71,6 +73,10 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
     @Autowired
     private PersonService personService;
 
+    /** Role service. */
+    @Autowired
+    private RoleService roleService;
+
 
     /** Application context. */
     private ApplicationContext applicationContext;
@@ -91,13 +97,14 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
     public WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
         // Workspace document
         Document workspace = this.repository.getWorkspace(portalControllerContext);
-        // Portal administrator indicator
-        boolean admin;
-        try {
-            admin = this.personService.isPortalAdministrator(portalControllerContext);
-        } catch (PortalException e) {
-            throw new PortletException(e);
-        }
+        
+        // User
+        String user = portalControllerContext.getRequest().getRemoteUser();
+        // User DN
+        Name dn = this.personService.getEmptyPerson().buildDn(user);
+        
+        // Administrator indicator
+        boolean admin = this.roleService.hasRole(dn, "role_workspace-management");
 
         // Form
         WorkspaceEditionForm form = this.applicationContext.getBean(WorkspaceEditionForm.class, workspace, admin);
