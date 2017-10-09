@@ -839,6 +839,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             // Workspace Nuxeo document
             Document workspace = this.getWorkspace(portalControllerContext, workspaceId);
 
+            // WebId
+            String webId = IFormsService.FORMS_WEB_ID_PREFIX + REQUEST_MODEL_ID;
+
             // Variables
             Map<String, String> variables = new HashMap<>();
             variables.put("documentId", workspace.getId());
@@ -848,7 +851,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             variables.put(PERSON_UID_PROPERTY, uid);
             variables.put(INVITATION_STATE_PROPERTY, InvitationState.SENT.name());
 
-            this.formsService.start(portalControllerContext, REQUEST_MODEL_ID, variables);
+            this.formsService.start(portalControllerContext, webId, variables);
 
             // Update ACL
             this.updateInvitationAcl(portalControllerContext, workspaceId, true, uid);
