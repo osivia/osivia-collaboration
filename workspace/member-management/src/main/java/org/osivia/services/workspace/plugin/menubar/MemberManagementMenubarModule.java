@@ -101,7 +101,7 @@ public class MemberManagementMenubarModule implements MenubarModule {
                     boolean granted;
                     if ((workspaceType != null) && workspaceType.isPortalAdministratorRestriction()) {
                         // User
-                        String user = portalControllerContext.getRequest().getRemoteUser();
+                        String user = portalControllerContext.getHttpServletRequest().getRemoteUser();
                         // User DN
                         Name dn = this.personService.getEmptyPerson().buildDn(user);
 

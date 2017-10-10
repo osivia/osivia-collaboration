@@ -41,7 +41,7 @@
                 </a>
             </li>
             
-            <c:if test="${options.workspaceType ne 'INVITATION'}">
+            <c:if test="${(options.workspaceType eq 'PUBLIC') or (options.workspaceType eq 'PRIVATE')}">
                 <li role="presentation" class="${tab eq 'requests' ? 'active' : ''}">
                     <a href="${requestsUrl}">
                         <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_TAB_REQUESTS" /></span>
