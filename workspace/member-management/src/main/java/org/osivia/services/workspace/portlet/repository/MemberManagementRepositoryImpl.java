@@ -559,8 +559,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
                     // Variables
                     Map<String, String> variables = new HashMap<>();
-                    variables.put("documentId", workspace.getId());
-                    variables.put("documentPath", workspace.getPath());
+                    variables.put(WORKSPACE_PATH_PROPERTY, workspace.getPath());
                     variables.put(WORKSPACE_IDENTIFIER_PROPERTY, workspaceId);
                     variables.put(WORKSPACE_TITLE_PROPERTY, workspace.getTitle());
                     variables.put(PERSON_UID_PROPERTY, uid);
@@ -844,8 +843,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
             // Variables
             Map<String, String> variables = new HashMap<>();
-            variables.put("documentId", workspace.getId());
-            variables.put("documentPath", workspace.getPath());
+            variables.put(WORKSPACE_PATH_PROPERTY, workspace.getPath());
             variables.put(WORKSPACE_IDENTIFIER_PROPERTY, workspaceId);
             variables.put(WORKSPACE_TITLE_PROPERTY, workspace.getTitle());
             variables.put(PERSON_UID_PROPERTY, uid);

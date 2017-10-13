@@ -32,6 +32,8 @@ public interface MemberManagementRepository {
 
     /** Workspace identifier property. */
     String WORKSPACE_IDENTIFIER_PROPERTY = "workspaceId";
+    /** Workspace path property. */
+    String WORKSPACE_PATH_PROPERTY = "workspacePath";
     /** Workspace title property. */
     String WORKSPACE_TITLE_PROPERTY = "workspaceTitle";
     /** Person UID property. */
