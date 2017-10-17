@@ -62,36 +62,22 @@ public class UpdatePropertiesCommand implements INuxeoCommand {
         }
         documentService.update(workspace, properties, this.form.isRoot());
 
-        // Vignette
-        Image vignette = this.form.getVignette();
-        if (vignette.isUpdated()) {
+        // Visual
+        Image visual = this.form.getVisual();
+        if (visual.isUpdated()) {
             // Temporary file
-            File temporaryFile = vignette.getTemporaryFile();
+            File temporaryFile = visual.getTemporaryFile();
             // File blob
             Blob blob = new FileBlob(temporaryFile);
 
             documentService.setBlob(workspace, blob, "ttc:vignette");
+            documentService.setBlob(workspace, blob, "ttcn:picture");
 
             // Delete temporary file
             temporaryFile.delete();
-        } else if (vignette.isDeleted()) {
+        } else if (visual.isDeleted()) {
             documentService.removeBlob(workspace, "ttc:vignette");
-        }
-
-        // Banner
-        Image banner = this.form.getBanner();
-        if (banner.isUpdated()) {
-            // Temporary file
-            File temporaryFile = banner.getTemporaryFile();
-            // File blob
-            Blob blob = new FileBlob(temporaryFile);
-
-            documentService.setBlob(workspace, blob, "ttcs:headImage");
-
-            // Delete temporary file
-            temporaryFile.delete();
-        } else if (banner.isDeleted()) {
-            documentService.removeBlob(workspace, "ttcs:headImage");
+            documentService.removeBlob(workspace, "ttcn:picture");
         }
 
         return null;

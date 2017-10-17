@@ -47,21 +47,11 @@ $JQry(function() {
 	$JQry(".workspace-edition-sortable").disableSelection();
 	
 	
-	// Auto upload vignette for preview generation
-	$JQry(".workspace-edition input[type=file][name='vignette.upload']").change(function(event) {
+	// Auto upload visual for preview generation
+	$JQry(".workspace-edition input[type=file][name='visual.upload']").change(function(event) {
 		var $target = $JQry(event.target),
 			$formGroup = $target.closest(".form-group"),
-			$submit = $formGroup.find("input[type=submit][name='upload-vignette']");
-		
-		$submit.click();
-	});
-	
-	
-	// Auto upload banner for preview generation
-	$JQry(".workspace-edition input[type=file][name='banner.upload']").change(function(event) {
-		var $target = $JQry(event.target),
-			$formGroup = $target.closest(".form-group"),
-			$submit = $formGroup.find("input[type=submit][name='upload-banner']");
+			$submit = $formGroup.find("input[type=submit][name='upload-visual']");
 		
 		$submit.click();
 	});

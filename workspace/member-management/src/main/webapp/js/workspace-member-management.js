@@ -6,7 +6,7 @@ $JQry(function() {
 			minimumInputLength = $element.data("minimum-input-length"),
 			ajaxDataFunction = $element.data("ajax-data-function"),
  			options = {
-				closeOnSelect: false,
+				closeOnSelect: true,
 				minimumInputLength: (minimumInputLength ? minimumInputLength : 3),
 				theme: "bootstrap"
 			};

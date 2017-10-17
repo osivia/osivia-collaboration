@@ -43,25 +43,14 @@ public interface WorkspaceEditionRepository {
 
 
     /**
-     * Get workspace vignette.
+     * Get workspace visual.
      * 
      * @param portalControllerContext portal controller context
      * @param workspace workspace or room Nuxeo document
-     * @return vignette
+     * @return visual
      * @throws PortletException
      */
-    Image getVignette(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
-
-
-    /**
-     * Get workspace banner.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param workspace workspace or room Nuxeo document
-     * @return banner
-     * @throws PortletException
-     */
-    Image getBanner(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
+    Image getVisual(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
 
 
     /**

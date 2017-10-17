@@ -133,14 +133,10 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
             }
         }
 
-        // Vignette
-        Image vignette = this.repository.getVignette(portalControllerContext, workspace);
-        form.setVignette(vignette);
+        // Visual
+        Image visual = this.repository.getVisual(portalControllerContext, workspace);
+        form.setVisual(visual);
         
-        // Banner
-        Image banner = this.repository.getBanner(portalControllerContext, workspace);
-        form.setBanner(banner);
-
         // Tasks
         List<Task> tasks = this.repository.getTasks(portalControllerContext, workspace);
         Collections.sort(tasks, this.tasksComparator);
@@ -171,18 +167,18 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
      * {@inheritDoc}
      */
     @Override
-    public void uploadVignette(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException, IOException {
-        // Vignette
-        Image vignette = form.getVignette();
-        vignette.setUpdated(true);
-        vignette.setDeleted(false);
+    public void uploadVisual(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException, IOException {
+        // Visual
+        Image visual = form.getVisual();
+        visual.setUpdated(true);
+        visual.setDeleted(false);
 
         // Temporary file
-        MultipartFile upload = form.getVignette().getUpload();
-        File temporaryFile = File.createTempFile("vignette-", ".tmp");
+        MultipartFile upload = visual.getUpload();
+        File temporaryFile = File.createTempFile("visual-", ".tmp");
         temporaryFile.deleteOnExit();
         upload.transferTo(temporaryFile);
-        vignette.setTemporaryFile(temporaryFile);
+        visual.setTemporaryFile(temporaryFile);
     }
 
 
@@ -190,42 +186,11 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
      * {@inheritDoc}
      */
     @Override
-    public void deleteVignette(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
-        // Vignette
-        Image vignette = form.getVignette();
-        vignette.setUpdated(false);
-        vignette.setDeleted(true);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void uploadBanner(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException, IOException {
-        // Banner
-        Image banner = form.getBanner();
-        banner.setUpdated(true);
-        banner.setDeleted(false);
-
-        // Temporary file
-        MultipartFile upload = form.getBanner().getUpload();
-        File temporaryFile = File.createTempFile("banner-", ".tmp");
-        temporaryFile.deleteOnExit();
-        upload.transferTo(temporaryFile);
-        banner.setTemporaryFile(temporaryFile);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void deleteBanner(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
-        // Banner
-        Image banner = form.getBanner();
-        banner.setUpdated(false);
-        banner.setDeleted(true);
+    public void deleteVisual(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+        // Visual
+        Image visual = form.getVisual();
+        visual.setUpdated(false);
+        visual.setDeleted(true);
     }
 
 

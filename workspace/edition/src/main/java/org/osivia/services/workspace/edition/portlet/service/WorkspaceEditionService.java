@@ -41,45 +41,24 @@ public interface WorkspaceEditionService {
 
 
     /**
-     * Upload vignette.
+     * Upload visual.
      * 
      * @param portalControllerContext portal controller context
      * @param form workspace edition form
      * @throws PortletException
      * @throws IOException
      */
-    void uploadVignette(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException, IOException;
+    void uploadVisual(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException, IOException;
 
 
     /**
-     * Delete vignette.
+     * Delete visual.
      * 
      * @param portalControllerContext portal controller context
      * @param form workspace edition form
      * @throws PortletException
      */
-    void deleteVignette(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
-
-
-    /**
-     * Upload banner.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param form workspace edition form
-     * @throws PortletException
-     * @throws IOException
-     */
-    void uploadBanner(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException, IOException;
-
-
-    /**
-     * Delete banner.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param form workspace edition form
-     * @throws PortletException
-     */
-    void deleteBanner(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
+    void deleteVisual(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
 
 
     /**

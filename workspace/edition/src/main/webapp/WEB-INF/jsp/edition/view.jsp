@@ -120,15 +120,15 @@
             </div>
             
             <div class="col-lg-4">
-                <!-- Vignette -->
+                <!-- Visual -->
                 <div class="form-group">
-                    <form:label path="vignette.upload" cssClass="col-sm-3 col-lg-6 control-label"><op:translate key="WORKSPACE_VIGNETTE" /></form:label>
-                    <div class="col-sm-9 col-lg-6">
+                    <form:label path="visual.upload" cssClass="col-sm-3 col-lg-5 control-label"><op:translate key="WORKSPACE_VISUAL" /></form:label>
+                    <div class="col-sm-9 col-lg-7">
                         <!-- Preview -->
                         <c:choose>
-                            <c:when test="${editionForm.vignette.updated}">
+                            <c:when test="${editionForm.visual.updated}">
                                 <!-- Preview -->
-                                <portlet:resourceURL id="vignettePreview" var="previewUrl">
+                                <portlet:resourceURL id="visualPreview" var="previewUrl">
                                     <portlet:param name="ts" value="${currentDate.time}" />
                                 </portlet:resourceURL>
                                 <p class="form-control-static">
@@ -136,24 +136,24 @@
                                 </p>
                             </c:when>
                             
-                            <c:when test="${editionForm.vignette.deleted}">
-                                <!-- Deleted vignette -->
+                            <c:when test="${editionForm.visual.deleted}">
+                                <!-- Deleted visual -->
                                 <p class="form-control-static text-muted">
-                                    <span><op:translate key="WORKSPACE_DELETED_VIGNETTE" /></span>
+                                    <span><op:translate key="WORKSPACE_DELETED_VISUAL" /></span>
                                 </p>
                             </c:when>
                         
-                            <c:when test="${empty editionForm.vignette.url}">
-                                <!-- No vignette -->
+                            <c:when test="${empty editionForm.visual.url}">
+                                <!-- No visual -->
                                 <p class="form-control-static text-muted">
-                                    <span><op:translate key="WORKSPACE_NO_VIGNETTE" /></span>
+                                    <span><op:translate key="WORKSPACE_NO_VISUAL" /></span>
                                 </p>
                             </c:when>
                             
                             <c:otherwise>
-                                <!-- Vignette -->
+                                <!-- Visual -->
                                 <p class="form-control-static">
-                                    <img src="${editionForm.vignette.url}" alt="" class="img-responsive">
+                                    <img src="${editionForm.visual.url}" alt="" class="img-responsive">
                                 </p>
                             </c:otherwise>
                         </c:choose>
@@ -163,68 +163,12 @@
                             <label class="btn btn-sm btn-default btn-file">
                                 <i class="halflings halflings-folder-open"></i>
                                 <span><op:translate key="WORKSPACE_IMAGE_UPLOAD" /></span>
-                                <form:input type="file" path="vignette.upload" />
+                                <form:input type="file" path="visual.upload" />
                             </label>
-                            <input type="submit" name="upload-vignette" class="hidden">
+                            <input type="submit" name="upload-visual" class="hidden">
                             
                             <!-- Delete -->
-                            <button type="submit" name="delete-vignette" class="btn btn-sm btn-default">
-                                <i class="halflings halflings-trash"></i>
-                                <span class="sr-only"><op:translate key="WORKSPACE_IMAGE_DELETE" /></span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Banner -->
-                <div class="form-group">
-                    <form:label path="banner.upload" cssClass="col-sm-3 col-lg-6 control-label"><op:translate key="WORKSPACE_BANNER" /></form:label>
-                    <div class="col-sm-9 col-lg-6">
-                        <!-- Preview -->
-                        <c:choose>
-                            <c:when test="${editionForm.banner.updated}">
-                                <!-- Preview -->
-                                <portlet:resourceURL id="bannerPreview" var="previewUrl">
-                                    <portlet:param name="ts" value="${currentDate.time}" />
-                                </portlet:resourceURL>
-                                <p class="form-control-static">
-                                    <img src="${previewUrl}" alt="" class="img-responsive">
-                                </p>
-                            </c:when>
-                            
-                            <c:when test="${editionForm.banner.deleted}">
-                                <!-- Deleted banner -->
-                                <p class="form-control-static text-muted">
-                                    <span><op:translate key="WORKSPACE_DELETED_BANNER" /></span>
-                                </p>
-                            </c:when>
-                        
-                            <c:when test="${empty editionForm.banner.url}">
-                                <!-- No banner -->
-                                <p class="form-control-static text-muted">
-                                    <span><op:translate key="WORKSPACE_NO_BANNER" /></span>
-                                </p>
-                            </c:when>
-                            
-                            <c:otherwise>
-                                <!-- Banner -->
-                                <p class="form-control-static">
-                                    <img src="${editionForm.banner.url}" alt="" class="img-responsive">
-                                </p>
-                            </c:otherwise>
-                        </c:choose>
-                    
-                        <div>
-                            <!-- Upload -->
-                            <label class="btn btn-sm btn-default btn-file">
-                                <i class="halflings halflings-folder-open"></i>
-                                <span><op:translate key="WORKSPACE_IMAGE_UPLOAD" /></span>
-                                <form:input type="file" path="banner.upload" />
-                            </label>
-                            <input type="submit" name="upload-banner" class="hidden">
-                            
-                            <!-- Delete -->
-                            <button type="submit" name="delete-banner" class="btn btn-sm btn-default">
+                            <button type="submit" name="delete-visual" class="btn btn-sm btn-default">
                                 <i class="halflings halflings-trash"></i>
                                 <span class="sr-only"><op:translate key="WORKSPACE_IMAGE_DELETE" /></span>
                             </button>

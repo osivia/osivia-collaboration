@@ -169,75 +169,39 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
 
 
     /**
-     * Upload vignette action mapping.
+     * Upload visual action mapping.
      * 
      * @param request action request
      * @param response action response
-     * @param form
+     * @param form workspace edition form model attribute
      * @throws PortletException
      * @throws IOException
      */
-    @ActionMapping(name = "save", params = "upload-vignette")
-    public void uploadVignette(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form)
+    @ActionMapping(name = "save", params = "upload-visual")
+    public void uploadVisual(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form)
             throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.uploadVignette(portalControllerContext, form);
+        this.service.uploadVisual(portalControllerContext, form);
     }
 
 
     /**
-     * Delete vignette action mapping.
-     * 
-     * @param request action request
-     * @param response action response
-     * @param form
-     * @throws PortletException
-     */
-    @ActionMapping(name = "save", params = "delete-vignette")
-    public void deleteVignette(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form)
-            throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        this.service.deleteVignette(portalControllerContext, form);
-    }
-
-
-    /**
-     * Upload banner action mapping.
-     * 
-     * @param request action request
-     * @param response action response
-     * @param form
-     * @throws PortletException
-     * @throws IOException
-     */
-    @ActionMapping(name = "save", params = "upload-banner")
-    public void uploadBanner(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form)
-            throws PortletException, IOException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        this.service.uploadBanner(portalControllerContext, form);
-    }
-
-
-    /**
-     * Delete banner action mapping.
+     * Delete visual action mapping.
      * 
      * @param request action request
      * @param response action response
      * @param form workspace edition form model attribute
      * @throws PortletException
      */
-    @ActionMapping(name = "save", params = "delete-banner")
-    public void deleteBanner(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form) throws PortletException {
+    @ActionMapping(name = "save", params = "delete-visual")
+    public void deleteVisual(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form)
+            throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.deleteBanner(portalControllerContext, form);
+        this.service.deleteVisual(portalControllerContext, form);
     }
 
 
@@ -374,56 +338,18 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
 
 
     /**
-     * Vignette preview resource mapping.
+     * Visual preview resource mapping.
      * 
      * @param request resource request
      * @param response resource response
-     * @param form workspace edition form
+     * @param form workspace edition form model attribute
      * @throws IOException
      */
-    @ResourceMapping("vignettePreview")
-    public void vignettePreview(ResourceRequest request, ResourceResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form)
+    @ResourceMapping("visualPreview")
+    public void visualPreview(ResourceRequest request, ResourceResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form)
             throws IOException {
         // Temporary file
-        File temporaryFile = form.getVignette().getTemporaryFile();
-
-        // Upload size
-        Long size = new Long(temporaryFile.length());
-        response.setContentLength(size.intValue());
-
-        // Content type
-        String contentType = response.getContentType();
-        response.setContentType(contentType);
-
-        // Character encoding
-        response.setCharacterEncoding(CharEncoding.UTF_8);
-
-        // No cache
-        response.getCacheControl().setExpirationTime(0);
-
-
-        // Input steam
-        InputStream inputSteam = new FileInputStream(temporaryFile);
-        // Output stream
-        OutputStream outputStream = response.getPortletOutputStream();
-        // Copy
-        IOUtils.copy(inputSteam, outputStream);
-        outputStream.close();
-    }
-
-
-    /**
-     * Banner preview resource mapping.
-     * 
-     * @param request resource request
-     * @param response resource response
-     * @param form workspace edition form
-     * @throws IOException
-     */
-    @ResourceMapping("bannerPreview")
-    public void bannerPreview(ResourceRequest request, ResourceResponse response, @ModelAttribute("editionForm") WorkspaceEditionForm form) throws IOException {
-        // Temporary file
-        File temporaryFile = form.getBanner().getTemporaryFile();
+        File temporaryFile = form.getVisual().getTemporaryFile();
 
         // Upload size
         Long size = new Long(temporaryFile.length());
@@ -455,7 +381,7 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
      *
      * @param request portlet request
      * @param response portlet response
-     * @return form
+     * @return edition form
      * @throws PortletException
      */
     @ModelAttribute("editionForm")

@@ -175,53 +175,26 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
-    public Image getVignette(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
+    public Image getVisual(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         
-        // Vignette properties
-        PropertyMap properties = workspace.getProperties().getMap("ttc:vignette");
+        // Visual properties
+        PropertyMap properties = workspace.getProperties().getMap("ttcn:picture");
         
-        // Vignette URL
+        // Visual URL
         String url;
         if ((properties == null) || StringUtils.isEmpty(properties.getString("data"))) {
             url = null;
         } else {
-            url = nuxeoController.createFileLink(workspace, "ttc:vignette");
+            url = nuxeoController.createFileLink(workspace, "ttcn:picture");
         }
 
-        // Vignette
-        Image vignette = this.applicationContext.getBean(Image.class);
-        vignette.setUrl(url);
+        // Visual
+        Image visual = this.applicationContext.getBean(Image.class);
+        visual.setUrl(url);
 
-        return vignette;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Image getBanner(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-
-        // Banner properties
-        PropertyMap properties = workspace.getProperties().getMap("ttcs:headImage");
-
-        // Banner URL
-        String url;
-        if ((properties == null) || StringUtils.isEmpty(properties.getString("data"))) {
-            url = null;
-        } else {
-            url = nuxeoController.createFileLink(workspace, "ttcs:headImage");
-        }
-
-        // Banner
-        Image banner = this.applicationContext.getBean(Image.class);
-        banner.setUrl(url);
-
-        return banner;
+        return visual;
     }
 
 
