@@ -160,10 +160,15 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
 
         if (!documents.isEmpty()) {
             for (Document document : documents.list()) {
-                String key = document.getString("wconf:code");
-                String value = document.getTitle();
+                // Template type
+                String type = document.getString("wconf:code2");
 
-                templates.put(key, value);
+                if ("workspace".equals(type)) {
+                    String key = document.getString("wconf:code");
+                    String value = document.getTitle();
+
+                    templates.put(key, value);
+                }
             }
         }
 

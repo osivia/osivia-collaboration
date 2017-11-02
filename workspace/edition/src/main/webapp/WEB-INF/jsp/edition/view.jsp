@@ -60,7 +60,7 @@
                 </spring:bind>
                 
                 <!-- Template -->
-                <c:if test="${editionForm.root}">
+                <c:if test="${editionForm.root and not empty editionForm.templates}">
                     <div class="form-group">
                         <form:label path="template" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_TEMPLATE" /></form:label>
                         <div class="col-sm-9">
