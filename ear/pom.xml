@@ -200,6 +200,13 @@
                             <contextRoot>/osivia-services-taskbar</contextRoot>
                         </webModule>
                         
+                        <!-- Versions -->
+                        <dependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-versions</artifactId>
+                            <version>/osivia-services-versions</version>
+                        </dependency>
+                        
                         <!-- Widgets -->
                         <webModule>
                             <groupId>${project.groupId}</groupId>
