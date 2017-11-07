@@ -201,11 +201,11 @@
                         </webModule>
                         
                         <!-- Versions -->
-                        <dependency>
+                        <webModule>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>osivia-services-versions</artifactId>
-                            <version>/osivia-services-versions</version>
-                        </dependency>
+                            <contextRoot>/osivia-services-versions</contextRoot>
+                        </webModule>
                         
                         <!-- Widgets -->
                         <webModule>
