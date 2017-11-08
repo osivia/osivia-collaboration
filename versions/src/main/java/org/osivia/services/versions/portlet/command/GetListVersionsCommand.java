@@ -22,6 +22,8 @@ public class GetListVersionsCommand implements INuxeoCommand {
     private final static String NX_QUERY_OP_ID = "Document.Query";
     /** Documt's data. */
     private static final String SCHEMAS = "dublincore, common, file, toutatice";
+    
+    private static final String QUERYING_VCS_FORCE_FLAG = "nx_querying_vcs_force";
 
     /** Default page size (pagination). */
     private static final int DEFAULT_PAGE_SIZE = -1;
@@ -81,6 +83,9 @@ public class GetListVersionsCommand implements INuxeoCommand {
 
         OperationRequest request = nuxeoSession.newRequest(NX_QUERY_OP_ID).setHeader(Constants.HEADER_NX_SCHEMAS, SCHEMAS).setInput(this.document)
                 .set("query", query.toString()).set("pageSize", this.pageSize).set("currentPageIndex", this.currentPageIndex);
+        
+        request.setHeader(QUERYING_VCS_FORCE_FLAG, "true");
+        
         return (Documents) request.execute();
     }
 
