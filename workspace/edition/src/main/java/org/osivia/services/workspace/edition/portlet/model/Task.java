@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.edition.portlet.model;
 
 import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class Task extends TaskbarItemDecorator {
+public class Task extends TaskbarItemDecorator implements TaskbarTask {
 
     /** Path. */
     private String path;
@@ -47,6 +48,33 @@ public class Task extends TaskbarItemDecorator {
      * {@inheritDoc}
      */
     @Override
+    public String getTitle() {
+        return this.displayName;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPath() {
+        return this.path;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isDisabled() {
+        return !this.active;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Task [displayName=");
@@ -59,15 +87,6 @@ public class Task extends TaskbarItemDecorator {
         return builder.toString();
     }
 
-
-    /**
-     * Getter for path.
-     *
-     * @return the path
-     */
-    public String getPath() {
-        return this.path;
-    }
 
     /**
      * Setter for path.

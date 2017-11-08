@@ -380,7 +380,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(UpdateTasksCommand.class, workspace, tasks);
+        INuxeoCommand command = this.applicationContext.getBean(UpdateTasksCommand.class, portalControllerContext, workspace, tasks);
         nuxeoController.executeNuxeoCommand(command);
     }
 

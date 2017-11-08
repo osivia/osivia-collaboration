@@ -10,7 +10,9 @@ import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.taskbar.TaskbarItemExecutor;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -29,6 +31,8 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class UpdateTasksCommand implements INuxeoCommand {
 
+    /** Portal controller context. */
+    private final PortalControllerContext portalControllerContext;
     /** Nuxeo document. */
     private final Document workspace;
     /** Tasks. */
@@ -38,11 +42,13 @@ public class UpdateTasksCommand implements INuxeoCommand {
     /**
      * Constructor.
      *
+     * @param portalControllerContext portal controller context
      * @param workspace workspace or room Nuxeo document
      * @param tasks tasks
      */
-    public UpdateTasksCommand(Document workspace, List<Task> tasks) {
+    public UpdateTasksCommand(PortalControllerContext portalControllerContext, Document workspace, List<Task> tasks) {
         super();
+        this.portalControllerContext = portalControllerContext;
         this.workspace = workspace;
         this.tasks = tasks;
     }
@@ -130,9 +136,15 @@ public class UpdateTasksCommand implements INuxeoCommand {
                 // Update task
                 task.setPath(document.getPath());
                 task.setActive(true);
+
+
+                // Invoke taskbar item executor
+                TaskbarItemExecutor executor = task.getExecutor();
+                if (executor != null) {
+                    executor.invoke(this.portalControllerContext, task);
+                }
             }
         }
-
 
         return activeTasks;
     }
