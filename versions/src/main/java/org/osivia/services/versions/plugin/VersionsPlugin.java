@@ -16,7 +16,7 @@ import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 public class VersionsPlugin extends AbstractPluginPortlet {
 
     /** Plugin name. */
-    private static final String PLUGIN_NAME = "workspace-acl-management.plugin";
+    private static final String PLUGIN_NAME = "versions.plugin";
 
 
     /**
