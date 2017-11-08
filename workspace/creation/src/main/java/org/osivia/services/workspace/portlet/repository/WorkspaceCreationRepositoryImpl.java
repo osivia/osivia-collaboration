@@ -10,6 +10,7 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -25,6 +26,8 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItemExecutor;
+import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.services.workspace.portlet.model.WorkspaceCreationForm;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,6 +178,36 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(WorkspacePermissionsCommand.class, workspace, permissions);
         nuxeoController.executeNuxeoCommand(command);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void invokeTaskbarItemExecutors(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
+        // Taskbar tasks
+        List<TaskbarTask> tasks;
+        try {
+            tasks = this.taskbarService.getTasks(portalControllerContext, workspace.getPath(), true);
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+
+        if (CollectionUtils.isNotEmpty(tasks)) {
+            for (TaskbarTask task : tasks) {
+                // Taskbar item executor
+                TaskbarItemExecutor executor = task.getExecutor();
+
+                if (executor != null) {
+                    try {
+                        executor.invoke(portalControllerContext, task);
+                    } catch (PortalException e) {
+                        throw new PortletException(e);
+                    }
+                }
+            }
+        }
     }
 
 

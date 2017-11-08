@@ -2,6 +2,7 @@ package org.osivia.services.workspace.edition.portlet.model;
 
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItemExecutor;
 import org.osivia.portal.api.taskbar.TaskbarItemRestriction;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 
@@ -133,6 +134,15 @@ public abstract class TaskbarItemDecorator implements TaskbarItem {
     @Override
     public boolean isHidden() {
         return this.item.isHidden();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TaskbarItemExecutor getExecutor() {
+        return this.item.getExecutor();
     }
 
 }

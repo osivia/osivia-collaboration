@@ -129,6 +129,9 @@ public class WorkspaceCreationServiceImpl implements WorkspaceCreationService, A
         this.repository.createGroups(portalControllerContext, form, workspace);
         // Update permissions
         this.repository.updatePermissions(portalControllerContext, form, workspace);
+        // Invoke taskbar item executors
+        this.repository.invokeTaskbarItemExecutors(portalControllerContext, workspace);
+
 
         // Update form
         form.setTitle(null);

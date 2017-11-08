@@ -47,6 +47,16 @@ public interface WorkspaceCreationRepository {
 
 
     /**
+     * Invoke taskbar item executors.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspace workspace Nuxeo document
+     * @throws PortletException
+     */
+    void invokeTaskbarItemExecutors(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
+
+
+    /**
      * Check workspace title availability.
      * 
      * @param portalControllerContext portal controller context
