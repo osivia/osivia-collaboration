@@ -21,7 +21,9 @@ import java.util.Map;
 
 import javax.portlet.PortletContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.player.Player;
 import org.osivia.services.pad.portlet.service.PadService;
 
@@ -54,29 +56,32 @@ public class PadPlayer extends PluginModule implements INuxeoPlayerModule {
      */
 	@Override
 	public Player getCMSPlayer(NuxeoDocumentContext documentContext) {
-				
-        // Document
-        Document document = documentContext.getDocument();
+        // Document type
+        DocumentType documentType = documentContext.getDocumentType();
 
-        if (documentContext.getDocumentType().getName().equals(PadPlugin.TOUTATICE_PAD)) {
-            
+        // Player
+        Player player;
+
+        if ((documentType != null) && StringUtils.equals(documentType.getName(), PadPlugin.TOUTATICE_PAD)) {
+            // Document
+            Document document = documentContext.getDocument();
+
+            // Permissions
+            NuxeoPermissions permissions = documentContext.getPermissions();
+
             Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put(PadService.PAD_REF, document.getPath());
-            
-            NuxeoPermissions permissions = documentContext.getPermissions();
             windowProperties.put(PadService.PAD_CAN_EDIT, Boolean.toString(permissions.isEditable()));
-            
             windowProperties.put("osivia.title", document.getTitle());
             
-            Player player = new Player();
+            player = new Player();
             player.setWindowProperties(windowProperties);
-            
             player.setPortletInstance("osivia-services-pad-instance");
-
-            return player;
+        } else {
+            player = null;
         }
 
-		return null;
+        return player;
 	}
 
 }
