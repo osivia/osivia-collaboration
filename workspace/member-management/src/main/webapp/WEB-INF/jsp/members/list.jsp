@@ -30,131 +30,133 @@
 
 
 <form:form action="${updateUrl}" method="post" modelAttribute="members" role="form">
-    <div class="table table-hover">
-        <!-- Header -->
-        <div class="table-row table-header">
-            <div class="row">
-                <!-- Member -->
-                <div class="col-xs-12 col-sm-4 col-md-5 col-lg-6">
-                    <a href="${sortNameUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_MEMBER"/></a>
+    <div>
+        <div class="table table-hover">
+            <!-- Header -->
+            <div class="table-row table-header">
+                <div class="row">
+                    <!-- Member -->
+                    <div class="col-xs-12 col-sm-4 col-md-5 col-lg-6">
+                        <a href="${sortNameUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_MEMBER"/></a>
+                        
+                        <c:if test="${sort eq 'name'}">
+                            <small class="text-muted">
+                                <c:choose>
+                                    <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
+                                    <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
+                                </c:choose>
+                            </small>
+                        </c:if>
+                    </div>
                     
-                    <c:if test="${sort eq 'name'}">
-                        <small class="text-muted">
-                            <c:choose>
-                                <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
-                                <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
-                            </c:choose>
-                        </small>
-                    </c:if>
-                </div>
-                
-                <!-- Column reset -->
-                <div class="clearfix visible-xs-block"></div>
-                
-                <!-- Acknowledgment date -->
-                <div class="col-xs-6 col-sm-3 col-md-2">
-                    <a href="${sortDateUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_MEMBER_ACKNOWLEDGMENT_DATE" /></a>
+                    <!-- Column reset -->
+                    <div class="clearfix visible-xs-block"></div>
                     
-                    <c:if test="${sort eq 'date'}">
-                        <small class="text-muted">
-                            <c:choose>
-                                <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
-                                <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
-                            </c:choose>
-                        </small>
-                    </c:if>
+                    <!-- Acknowledgment date -->
+                    <div class="col-xs-6 col-sm-3 col-md-2">
+                        <a href="${sortDateUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_MEMBER_ACKNOWLEDGMENT_DATE" /></a>
+                        
+                        <c:if test="${sort eq 'date'}">
+                            <small class="text-muted">
+                                <c:choose>
+                                    <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
+                                    <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
+                                </c:choose>
+                            </small>
+                        </c:if>
+                        
+                        <!-- Help -->
+                        <c:set var="help"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_MEMBER_ACKNOWLEDGMENT_DATE_HELP" /></c:set>
+                        <button type="button" title="${help}" data-toggle="tooltip" data-placement="top" class="btn btn-link btn-xs">
+                            <i class="glyphicons glyphicons-question-sign"></i>
+                            <span class="sr-only"><op:translate key="CONTEXTUAL_HELP" /></span>
+                        </button>
+                    </div>
                     
-                    <!-- Help -->
-                    <c:set var="help"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_MEMBER_ACKNOWLEDGMENT_DATE_HELP" /></c:set>
-                    <button type="button" title="${help}" data-toggle="tooltip" data-placement="top" class="btn btn-link btn-xs">
-                        <i class="glyphicons glyphicons-question-sign"></i>
-                        <span class="sr-only"><op:translate key="CONTEXTUAL_HELP" /></span>
-                    </button>
-                </div>
-                
-                <!-- Role -->
-                <div class="col-xs-6 col-sm-3 col-lg-2">
-                    <a href="${sortRoleUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></a>
-                    
-                    <c:if test="${sort eq 'role'}">
-                        <small class="text-muted">
-                            <c:choose>
-                                <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
-                                <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
-                            </c:choose>
-                        </small>
-                    </c:if>
+                    <!-- Role -->
+                    <div class="col-xs-6 col-sm-3 col-lg-2">
+                        <a href="${sortRoleUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></a>
+                        
+                        <c:if test="${sort eq 'role'}">
+                            <small class="text-muted">
+                                <c:choose>
+                                    <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
+                                    <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
+                                </c:choose>
+                            </small>
+                        </c:if>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Body -->
-        <div class="portlet-filler">
-            <c:forEach var="member" items="${members.members}" varStatus="status">                  
-                <div class="table-row">
-                    <form:hidden path="members[${status.index}].edited" />
-                    <form:hidden path="members[${status.index}].deleted" />
-                
-                    <fieldset>
-                        <div class="row">
-                            <!-- Member -->
-                            <div class="col-xs-12 col-sm-4 col-md-5 col-lg-6">
-                                <c:set var="person" scope="request" value="${member}" />
-                                <jsp:include page="../commons/person.jsp" />
-                            </div>
-                            
-                            <!-- Column reset -->
-                            <div class="clearfix visible-xs-block"></div>
-                            
-                            <!-- Acknowledgment date -->
-                            <div class="col-xs-6 col-sm-3 col-md-2">
-                                <div class="form-control-static">
-                                    <span><fmt:formatDate value="${member.date}" type="date" dateStyle="medium" /></span>
+            
+            <!-- Body -->
+            <div class="portlet-filler">
+                <c:forEach var="member" items="${members.members}" varStatus="status">                  
+                    <div class="table-row">
+                        <form:hidden path="members[${status.index}].edited" />
+                        <form:hidden path="members[${status.index}].deleted" />
+                    
+                        <fieldset>
+                            <div class="row">
+                                <!-- Member -->
+                                <div class="col-xs-12 col-sm-4 col-md-5 col-lg-6">
+                                    <c:set var="person" scope="request" value="${member}" />
+                                    <jsp:include page="../commons/person.jsp" />
                                 </div>
-                            </div>
-                            
-                            <!-- Role -->
-                            <div class="col-xs-6 col-sm-3 col-lg-2">
-                                <c:choose>
-                                    <c:when test="${member.editable}">
-                                        <form:label path="members[${status.index}].role" cssClass="sr-only"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></form:label>
-                                        <form:select path="members[${status.index}].role" cssClass="form-control">
-                                            <c:forEach var="role" items="${options.roles}">
-                                                <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}" /></form:option>
-                                            </c:forEach>
-                                        </form:select>
-                                    </c:when>
-                                    
-                                    <c:otherwise>
-                                        <div class="form-control-static">
-                                            <span><op:translate key="${member.role.key}" classLoader="${member.role.classLoader}" /></span>
-                                        </div>
-                                    </c:otherwise>
-                                </c:choose>
-                            </div>
-                            
-                            <c:if test="${member.editable}">
+                                
                                 <!-- Column reset -->
                                 <div class="clearfix visible-xs-block"></div>
-                            
-                                <!-- Deletion -->
-                                <div class="col-xs-12 col-sm-2">
-                                    <button type="button" class="btn btn-default delete">
-                                        <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_REMOVE_MEMBER" /></span>
-                                    </button>
+                                
+                                <!-- Acknowledgment date -->
+                                <div class="col-xs-6 col-sm-3 col-md-2">
+                                    <div class="form-control-static">
+                                        <span><fmt:formatDate value="${member.date}" type="date" dateStyle="medium" /></span>
+                                    </div>
                                 </div>
-                            </c:if>
-                        </div>
-                    </fieldset>
-                </div>
-            </c:forEach>
-            
-            <!-- No results -->
-            <c:if test="${empty members.members}">
-                <div class="table-row">
-                    <div class="text-center text-muted"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_NO_MEMBER" /></div>
-                </div>
-            </c:if>
+                                
+                                <!-- Role -->
+                                <div class="col-xs-6 col-sm-3 col-lg-2">
+                                    <c:choose>
+                                        <c:when test="${member.editable}">
+                                            <form:label path="members[${status.index}].role" cssClass="sr-only"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></form:label>
+                                            <form:select path="members[${status.index}].role" cssClass="form-control">
+                                                <c:forEach var="role" items="${options.roles}">
+                                                    <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}" /></form:option>
+                                                </c:forEach>
+                                            </form:select>
+                                        </c:when>
+                                        
+                                        <c:otherwise>
+                                            <div class="form-control-static">
+                                                <span><op:translate key="${member.role.key}" classLoader="${member.role.classLoader}" /></span>
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+                                
+                                <c:if test="${member.editable}">
+                                    <!-- Column reset -->
+                                    <div class="clearfix visible-xs-block"></div>
+                                
+                                    <!-- Deletion -->
+                                    <div class="col-xs-12 col-sm-2">
+                                        <button type="button" class="btn btn-default delete">
+                                            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_REMOVE_MEMBER" /></span>
+                                        </button>
+                                    </div>
+                                </c:if>
+                            </div>
+                        </fieldset>
+                    </div>
+                </c:forEach>
+                
+                <!-- No results -->
+                <c:if test="${empty members.members}">
+                    <div class="table-row">
+                        <div class="text-center text-muted"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_NO_MEMBER" /></div>
+                    </div>
+                </c:if>
+            </div>
         </div>
     </div>
     

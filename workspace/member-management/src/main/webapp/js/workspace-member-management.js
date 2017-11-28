@@ -204,7 +204,7 @@ $JQry(function() {
 		// Display collapsed buttons
 		$element.on("select2:opening", function(event) {
 			var $form = $element.closest("form"),
-				$collapse = $form.find(".collapse");
+				$collapse = $form.find(".collapse").not(".invitations-other-options");
 			
 			if (!$collapse.hasClass("in")) {
 				$collapse.collapse("show");
@@ -217,8 +217,8 @@ $JQry(function() {
 		var $target = $JQry(event.target),
 			$row = $target.closest(".table-row"),
 			$edited = $row.find("input[type=hidden][id$='.edited']"),
-			$form = $row.closest("form"),
-			$collapse = $form.find(".collapse");
+			$form = $target.closest("form"),
+			$collapse = $form.find(".collapse").not(".invitations-other-options");
 		
 		$edited.val(true);
 		
@@ -235,7 +235,7 @@ $JQry(function() {
 			$deleted = $row.find("input[type=hidden][id$='.deleted']"),
 			$buttons = $row.find("button"),
 			$form = $fieldset.closest("form"),
-			$collapse = $form.find(".collapse");
+			$collapse = $form.find(".collapse").not(".invitations-other-options");
 		
 		$deleted.val(true);
 		$buttons.hide();
@@ -254,7 +254,7 @@ $JQry(function() {
 			$buttons = $row.find("button"),
 			$acceptedMessage = $row.find(".accepted-message"),
 			$form = $row.closest("form"),
-			$collapse = $form.find(".collapse");
+			$collapse = $form.find(".collapse").not(".invitations-other-options");
 		
 		$accepted.val(true);
 		

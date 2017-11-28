@@ -78,6 +78,22 @@
             </div>
             
             
+            <!-- Other options -->
+            <div class="form-group">
+                <p>                
+                    <a href="#${namespace}-other-options" class="no-ajax-link" data-toggle="collapse">
+                        <op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_OTHER_OPTIONS" />
+                    </a>
+                </p>
+                
+                <div id="${namespace}-other-options" class="collapse invitations-other-options">
+                    <c:set var="placeholder"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_MESSAGE_PLACEHOLDER" /></c:set>
+                    <form:label path="message" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_MESSAGE" /></form:label>
+                    <form:textarea path="message" cssClass="form-control" placeholder="${placeholder}" />
+                </div>
+            </div>
+            
+            
             <!-- Buttons -->
             <spring:bind path="*">
                 <div id="${namespace}-creation-buttons" class="collapse ${(status.error or creation.warning) ? 'in' : ''}">

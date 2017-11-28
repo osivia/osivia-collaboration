@@ -20,6 +20,8 @@ public class InvitationsCreationForm {
     private List<Invitation> pendingInvitations;
     /** Role. */
     private WorkspaceRole role;
+    /** Message. */
+    private String message;
     /** Warning indicator. */
     private boolean warning;
 
@@ -66,6 +68,24 @@ public class InvitationsCreationForm {
      */
     public void setRole(WorkspaceRole role) {
         this.role = role;
+    }
+
+    /**
+     * Getter for message.
+     * 
+     * @return the message
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * Setter for message.
+     * 
+     * @param message the message to set
+     */
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     /**

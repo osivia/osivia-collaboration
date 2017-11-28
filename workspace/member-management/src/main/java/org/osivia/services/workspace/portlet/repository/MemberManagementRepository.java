@@ -42,6 +42,8 @@ public interface MemberManagementRepository {
     String INVITATION_STATE_PROPERTY = "invitationState";
     /** Role property. */
     String ROLE_PROPERTY = "role";
+    /** Invitation message property. */
+    String INVITATION_MESSAGE_PROPERTY = "invitationMessage";
     /** Acknowledgment date property. */
     String ACKNOWLEDGMENT_DATE_PROPERTY = "acknowledgmentDate";
     /** New user indicator property. */

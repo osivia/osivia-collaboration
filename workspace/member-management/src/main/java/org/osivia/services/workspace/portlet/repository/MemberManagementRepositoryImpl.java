@@ -540,7 +540,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             if (pendingInvitation.getPerson() == null) {
                 displayName = uid;
             } else {
-                displayName = pendingInvitation.getPerson().getDisplayName();
+                displayName = StringUtils.defaultIfBlank(pendingInvitation.getPerson().getDisplayName(), uid);
             }
 
             if (existingInvitations.containsKey(uid)) {
@@ -565,6 +565,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     variables.put(PERSON_UID_PROPERTY, uid);
                     variables.put(INVITATION_STATE_PROPERTY, InvitationState.SENT.name());
                     variables.put(ROLE_PROPERTY, form.getRole().getId());
+                    variables.put(INVITATION_MESSAGE_PROPERTY, form.getMessage());
                     variables.put(NEW_USER_PROPERTY, String.valueOf(unknownUser));
 
                     if (unknownUser) {
