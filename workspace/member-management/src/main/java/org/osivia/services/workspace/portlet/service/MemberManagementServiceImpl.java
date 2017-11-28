@@ -566,6 +566,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 // Update model
                 options.setInvitationsCount(this.repository.getInvitationsCount(portalControllerContext, options.getWorkspaceId()));
                 invitationsForm.setLoaded(false);
+                creationForm.setMessage(null);
                 this.getInvitationsForm(portalControllerContext);
 
                 // Notification
