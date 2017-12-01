@@ -1,0 +1,15 @@
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<div>
+    <!-- Save -->
+    <button type="submit" class="btn btn-primary">
+        <i class="glyphicons glyphicons-floppy-disk"></i>
+        <span><op:translate key="SAVE"/></span>
+    </button>
+    
+    <!-- Cancel -->
+    <button type="button" class="btn btn-default" data-dismiss="modal">
+        <span><op:translate key="CANCEL" /></span>
+    </button>
+</div>

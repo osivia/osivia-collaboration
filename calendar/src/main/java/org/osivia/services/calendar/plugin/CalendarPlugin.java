@@ -24,10 +24,12 @@ import javax.portlet.PortletContext;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.customization.Plugin;
+import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.player.IPlayerModule;
 import org.osivia.portal.api.taskbar.TaskbarFactory;
 import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItems;
+import org.osivia.services.calendar.plugin.menubar.CalendarMenubarModule;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
 
@@ -64,6 +66,8 @@ public class CalendarPlugin extends AbstractPluginPortlet  {
         this.customizePlayers(context);
         // Taskbar items
         this.customizeTaskbarItems(context);
+        // Menubar modules
+        this.customizeMenubarModules(context);
     }
 
 
@@ -124,10 +128,25 @@ public class CalendarPlugin extends AbstractPluginPortlet  {
         // Factory
         TaskbarFactory factory = this.getTaskbarService().getFactory();
 
-        // Agenda
-        TaskbarItem agenda = factory.createCmsTaskbarItem("CALENDAR", "CALENDAR_TASK", "glyphicons glyphicons-calendar", "Agenda");
-        factory.preset(agenda, true, 3);
-        items.add(agenda);
+        // Calendar
+        TaskbarItem calendar = factory.createCmsTaskbarItem("CALENDAR", "CALENDAR_TASK", "glyphicons glyphicons-calendar", "Agenda");
+        factory.preset(calendar, true, 3);
+        items.add(calendar);
+    }
+
+
+    /**
+     * Customize menubar modules.
+     *
+     * @param context customization context
+     */
+    private void customizeMenubarModules(CustomizationContext context) {
+        // Menubar modules
+        List<MenubarModule> modules = this.getMenubarModules(context);
+
+        // Calendar menubar module
+        MenubarModule calendar = new CalendarMenubarModule();
+        modules.add(calendar);
     }
 
 

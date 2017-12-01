@@ -73,12 +73,11 @@ public class CalendarPlayer implements INuxeoPlayerModule {
         } else if ("VEVENT".equals(document.getType())) {
             // Window properties
             Map<String, String> windowProperties = new HashMap<String, String>();
-            windowProperties.put("osivia.document.dispatch.jsp", "calendar-event");
             windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
 
             Player props = new Player();
             props.setWindowProperties(windowProperties);
-            props.setPortletInstance("toutatice-portail-cms-nuxeo-viewDocumentPortletInstance");
+            props.setPortletInstance("osivia-services-calendar-event-view-instance");
 
             return props;
         } else {

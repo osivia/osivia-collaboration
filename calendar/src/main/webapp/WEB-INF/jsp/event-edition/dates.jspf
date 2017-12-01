@@ -1,0 +1,52 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<c:set var="datePlaceholder"><op:translate key="CALENDAR_EVENT_DATE_PLACEHOLDER" /></c:set>
+<c:set var="timePlaceholder"><op:translate key="CALENDAR_EVENT_TIME_PLACEHOLDER" /></c:set>
+
+
+<spring:bind path="dates.*">
+    <div class="form-group required ${status.error ? 'has-error' : ''}">
+        <label class="col-sm-3 col-lg-2 control-label"><op:translate key="CALENDAR_EVENT_DATES"/></label>
+        <div class="col-sm-9 col-lg-10">
+            <div class="calendar-event-dates">
+                <!-- Start date -->
+                <div class="">
+                    <form:input path="dates.startDate" size="10" cssClass="form-control date start datepicker" placeholder="${datePlaceholder}" />
+                </div>
+                
+                <!-- Start time -->
+                <div class="${form.allDay ? 'hidden' : ''}">
+                    <form:input path="dates.startTime" size="6" cssClass="form-control time start timepicker" placeholder="${timePlaceholder}" />
+                </div>
+                
+                <!-- Dates separator -->
+                <div class="">
+                    <p class="form-control-static"><op:translate key="CALENDAR_EVENT_DATES_SEPARATOR" /></p>
+                </div>
+                
+                <!-- End date -->
+                <div class="">
+                    <form:input path="dates.endDate" size="10" cssClass="form-control date end datepicker" placeholder="${datePlaceholder}" />
+                </div>
+                
+                <!-- End time -->
+                <div class="${form.allDay ? 'hidden' : ''}">
+                    <form:input path="dates.endTime" size="6" cssClass="form-control time end timepicker" placeholder="${timePlaceholder}" />
+                </div>
+            </div>
+            
+            <form:errors path="dates.*" cssClass="help-block"/>
+            
+            <div class="checkbox">
+                <label>
+                    <form:checkbox path="allDay" />
+                    <span><op:translate key="CALENDAR_EVENT_ALL_DAY" /></span>
+                </label>
+            </div>
+        </div>
+    </div>
+</spring:bind>

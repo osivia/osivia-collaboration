@@ -1,0 +1,26 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<form:hidden path="color"/>
+        
+<div class="color-picker dropdown">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        <span class="calendar-color-container ${empty form.color.backgroundClass ? 'bg-primary' : form.color.backgroundClass}">
+            <span class="sr-only"><op:translate key="${form.color.key}" /></span>
+        </span>
+        <span class="caret"></span>
+    </button>
+    
+    <div class="dropdown-menu">
+        <c:forEach var="color" items="${options.colors}" varStatus="status">
+            <c:set var="title"><op:translate key="${color.key}" /></c:set>
+        
+            <a href="javascript:;" title="${title}" class="calendar-color-container ${empty color.backgroundClass ? 'bg-primary' : color.backgroundClass} ${color.id eq form.color.id ? 'active' : ''}" data-color="${color.id}" data-toggle="tooltip" data-placement="bottom">
+                <i class="glyphicons glyphicons-tick"></i>
+                <span class="sr-only">${title}</span>
+            </a>
+        </c:forEach>
+    </div>
+</div>
