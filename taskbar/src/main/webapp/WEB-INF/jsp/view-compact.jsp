@@ -11,7 +11,7 @@
 
 
 <div class="taskbar taskbar-compact no-ajax-link">
-    <div class="portlet-filler">
+    <div class="portlet-filler hidden-scrollbar">
         <ul class="clearfix">
             <c:forEach items="${tasks}" var="task">
                 <portlet:actionURL name="start" var="startURL">
