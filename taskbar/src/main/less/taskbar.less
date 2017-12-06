@@ -46,14 +46,13 @@
     .box-shadow(@shadow: 0 1px 1px fade(#000, 5%));
     
     .portlet-filler {
-        background: linear-gradient(@bg-color 10%, fade(@bg-color, 0%)),
-            linear-gradient(fade(@bg-color, 0%), @bg-color 90%) 0 100%,
-            linear-gradient(fade(#000, 5%), fade(#000, 0%)),
-            linear-gradient(fade(#000, 0), fade(#000, 5%)) 0 100%;
-        background-color: @bg-color;
-        background-repeat: no-repeat;
-        background-size: 100% 50px, 100% 50px, 100% 5px, 100% 5px;
-        background-attachment: local, local, scroll, scroll;
+        &, body.fixed-layout &.hidden-scrollbar {
+            background-color: @bg-color;
+            background-image: linear-gradient(@bg-color 10%, fade(@bg-color, 0%)),
+                linear-gradient(fade(@bg-color, 0%), @bg-color 90%),
+                linear-gradient(fade(#000, 5%), fade(#000, 0%)),
+                linear-gradient(fade(#000, 0), fade(#000, 5%));
+        }
     }
     
     ul {
