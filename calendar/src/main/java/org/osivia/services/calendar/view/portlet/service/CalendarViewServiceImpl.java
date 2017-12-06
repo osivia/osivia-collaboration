@@ -345,10 +345,13 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
     @Override
     public void synchronize(PortalControllerContext portalControllerContext) throws PortletException {
-
-        // Bundle
+        // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
         List<CalendarSynchronizationSource> listUrlSource = this.repository.getSynchronizationSources(portalControllerContext);

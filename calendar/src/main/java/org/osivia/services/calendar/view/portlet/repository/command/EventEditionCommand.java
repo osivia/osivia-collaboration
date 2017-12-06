@@ -1,14 +1,9 @@
 package org.osivia.services.calendar.view.portlet.repository.command;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import javax.portlet.PortletException;
-
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.DocRef;
@@ -22,7 +17,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 
 /**
  * Agenda edition Nuxeo command.
@@ -45,7 +39,7 @@ public class EventEditionCommand implements INuxeoCommand {
     /**
      * Constructor.
      *
-     * @param form    calendar edition form
+     * @param form calendar edition form
      */
     public EventEditionCommand(CalendarViewForm form, TimeZone clientTimezone) {
         super();

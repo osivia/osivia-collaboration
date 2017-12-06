@@ -1,7 +1,5 @@
 package org.osivia.services.calendar.event.edition.portlet.model;
 
-import java.util.Date;
-
 import org.osivia.services.calendar.common.model.AbstractCalendarEditionForm;
 import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.model.CalendarCommonEventForm;

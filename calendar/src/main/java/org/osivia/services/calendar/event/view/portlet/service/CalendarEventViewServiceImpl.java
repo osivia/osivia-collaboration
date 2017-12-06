@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.activation.MimeType;
@@ -19,8 +18,6 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.internationalization.Bundle;
-import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.services.calendar.common.model.Attachment;
 import org.osivia.services.calendar.common.model.Attachments;
 import org.osivia.services.calendar.common.model.CalendarColor;
@@ -38,7 +35,7 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 /**
  * Calendar event view portlet service implementation.
- * 
+ *
  * @author Julien Barberet
  */
 @Service
@@ -53,11 +50,7 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
     @Autowired
     @Qualifier("common-repository")
     private CalendarRepository repository;
-    
-    /** Internationalization bundle factory. */
-    @Autowired
-    private IBundleFactory bundleFactory;
-    
+
     /** Document DAO. */
     @Autowired
     private DocumentDAO dao;
@@ -78,14 +71,15 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
         this.dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void insertContentMenubarItems(PortalControllerContext portalControllerContext) throws PortletException {
-    	
         this.repository.insertContentMenubarItems(portalControllerContext);
     }
+
 
     /**
      * {@inheritDoc}
@@ -94,46 +88,39 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
     public CalendarEventViewForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
 
         // Calendar event edition form
-    	CalendarEventViewForm form = this.applicationContext.getBean(CalendarEventViewForm.class);
+        CalendarEventViewForm form = this.applicationContext.getBean(CalendarEventViewForm.class);
 
         Document document = this.repository.getCurrentDocument(portalControllerContext);
 
-        form.setDocument(dao.toDTO(document));
+        form.setDocument(this.dao.toDTO(document));
         form.setTitle(document.getString(TITLE_PROPERTY));
-        
+
         // All day indicator
-        boolean allDay = isAllDay(portalControllerContext, document);
+        boolean allDay = this.isAllDay(portalControllerContext, document);
         form.setAllDay(allDay);
 
         form.setStartDate(document.getDate(START_DATE_PROPERTY));
         form.setEndDate(document.getDate(END_DATE_PROPERTY));
-        
-        form.setSameDay(isSameDay(form));
-        form.setEndDateAllDay(getEndDateAllDay(form));
+
+        form.setSameDay(this.isSameDay(form));
+        form.setEndDateAllDay(this.getEndDateAllDay(form));
 
         // Location
-        String location = getLocation(portalControllerContext, document);
+        String location = this.getLocation(portalControllerContext, document);
         form.setLocation(location);
 
         // Calendar color
-        CalendarColor calendarColor = getCalendarColor(portalControllerContext, document);
+        CalendarColor calendarColor = this.getCalendarColor(portalControllerContext, document);
         // Color
-        CalendarColor color = getColor(portalControllerContext, document, calendarColor);
+        CalendarColor color = this.getColor(portalControllerContext, document, calendarColor);
         form.setColor(color);
 
         // Attachments
-        setAttachments(portalControllerContext, document, form);
-        
+        this.setAttachments(portalControllerContext, document, form);
+
         return form;
     }
-    
-    public String getTitle(PortalControllerContext portalControllerContext) throws PortletException
-    {
-    	// Locale
-        Locale locale = portalControllerContext.getRequest().getLocale();
-    	Bundle bundle = bundleFactory.getBundle(locale);
-    	return bundle.getString("CALENDAR_EVENT_PORTLET_TITLE_VIEW");
-    }
+
 
     private CalendarColor getCalendarColor(PortalControllerContext portalControllerContext, Document document) throws PortletException {
         // Nuxeo controller
@@ -151,44 +138,38 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
         // Calendar Nuxeo document
         NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
         Document calendar = documentContext.getDocument();
-        
+
         // Color identifier
         String colorId = null;
         if (calendar != null) {
-        	String sourceId = document.getString(ID_PARENT_SOURCE_PROPERTY);
-        	if (sourceId == null || sourceId.isEmpty())
-        	{
-        		colorId = calendar.getString(CALENDAR_COLOR_PROPERTY);
-        	} else
-        	{
-	        	PropertyList propertyList = (PropertyList) calendar.getProperties().get(LIST_SOURCE_SYNCHRO);
-		        if (propertyList != null)
-		        {
-		        	for(int i=0; i< propertyList.size(); i++)
-		        	{
-		        		PropertyMap map = propertyList.getMap(i);
-		        		if (sourceId.equals(map.get(SOURCEID_SYNCHRONIZATION)))
-		        		{
-		        			colorId = map.getString(COLOR_SYNCHRONIZATION);
-		        			break;
-		        		}
-		        	}
-		        }
-        	}
+            String sourceId = document.getString(ID_PARENT_SOURCE_PROPERTY);
+            if ((sourceId == null) || sourceId.isEmpty()) {
+                colorId = calendar.getString(CALENDAR_COLOR_PROPERTY);
+            } else {
+                PropertyList propertyList = (PropertyList) calendar.getProperties().get(LIST_SOURCE_SYNCHRO);
+                if (propertyList != null) {
+                    for (int i = 0; i < propertyList.size(); i++) {
+                        PropertyMap map = propertyList.getMap(i);
+                        if (sourceId.equals(map.get(SOURCEID_SYNCHRONIZATION))) {
+                            colorId = map.getString(COLOR_SYNCHRONIZATION);
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         return CalendarColor.fromId(colorId);
-
     }
 
-    private void setAttachments(PortalControllerContext portalControllerContext, Document document, CalendarEventViewForm form)
-    {
-    	// Nuxeo controller
+
+    private void setAttachments(PortalControllerContext portalControllerContext, Document document, CalendarEventViewForm form) {
+        // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         // Attachments
         Attachments attachments = this.applicationContext.getBean(Attachments.class);
         form.setAttachments(attachments);
-        
+
         // Attachment files
         PropertyList attachmentsList = document.getProperties().getList("files:files");
         if (attachmentsList != null) {
@@ -213,7 +194,7 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
                     mimeType = null;
                 }
                 file.setIcon(this.dao.getIcon(mimeType));
-                
+
                 // URL
                 String url = nuxeoController.createAttachedFileLink(document.getPath(), String.valueOf(i));
                 file.setUrl(url);
@@ -224,34 +205,35 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
             attachments.setFiles(files);
         }
     }
-    
-    private Date getEndDateAllDay(CalendarEventViewForm form)
-    {
-    	if (form.getEndDate() != null)
-    	{
-    		Calendar cal = Calendar.getInstance();
-    		cal.setTime(form.getEndDate());
-    		cal.add(Calendar.DAY_OF_MONTH, -1);
-    		return cal.getTime();
-    	}
-    	return null;
-    }
-    
-    private boolean isSameDay(CalendarEventViewForm form)
-    {
-    	boolean sameDay = false;
-    	if (form.isAllDay())
-        {
-        	Calendar calStart = Calendar.getInstance();
-        	Calendar calEnd = Calendar.getInstance();
-        	int diff = 0;
-			calStart.setTime(form.getStartDate());
-			calEnd.setTime(form.getEndDate());
-			diff = Math.round((calEnd.getTime().getTime() - calStart.getTime().getTime()) / 86400000);
-        	sameDay = diff != 1;
+
+
+    private Date getEndDateAllDay(CalendarEventViewForm form) {
+        if (form.getEndDate() != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(form.getEndDate());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            return cal.getTime();
         }
-    	return sameDay;
+
+        return null;
     }
+
+
+    private boolean isSameDay(CalendarEventViewForm form) {
+        boolean sameDay = false;
+        if (form.isAllDay()) {
+            Calendar calStart = Calendar.getInstance();
+            Calendar calEnd = Calendar.getInstance();
+            int diff = 0;
+            calStart.setTime(form.getStartDate());
+            calEnd.setTime(form.getEndDate());
+            diff = Math.round((calEnd.getTime().getTime() - calStart.getTime().getTime()) / 86400000);
+            sameDay = diff != 1;
+        }
+
+        return sameDay;
+    }
+
 
     private boolean isAllDay(PortalControllerContext portalControllerContext, Document document) throws PortletException {
         boolean allDay;
@@ -279,7 +261,6 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
     }
 
 
-
     private CalendarColor getColor(PortalControllerContext portalControllerContext, Document document, CalendarColor calendarColor) throws PortletException {
         // Color identifier
         String colorId;
@@ -294,21 +275,6 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
         }
 
         return CalendarColor.fromId(colorId);
-    }
-
-
-
-    
-    private String getDescription(PortalControllerContext portalControllerContext, Document document) throws PortletException {
-        String description;
-
-        if (document == null) {
-            description = null;
-        } else {
-            description = document.getString(DESCRIPTION_PROPERTY);
-        }
-
-        return description;
     }
 
 }

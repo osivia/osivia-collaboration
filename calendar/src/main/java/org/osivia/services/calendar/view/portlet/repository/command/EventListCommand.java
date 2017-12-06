@@ -1,6 +1,5 @@
 package org.osivia.services.calendar.view.portlet.repository.command;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 

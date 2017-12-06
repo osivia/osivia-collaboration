@@ -10,7 +10,6 @@ import org.apache.commons.lang.CharEncoding;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -100,7 +99,7 @@ public class CalendarEventViewConfiguration extends CMSPortlet implements Portle
     @Bean(name = "messageSource")
     public ResourceBundleMessageSource getMessageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames("calendar-event-view", "calendar-common");
+        messageSource.setBasenames("calendar-common");
         return messageSource;
     }
 

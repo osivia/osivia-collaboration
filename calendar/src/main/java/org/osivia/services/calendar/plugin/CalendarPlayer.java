@@ -74,6 +74,8 @@ public class CalendarPlayer implements INuxeoPlayerModule {
             // Window properties
             Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
+            windowProperties.put("osivia.title", document.getTitle());
+            windowProperties.put("osivia.ajaxLink", "1");
 
             Player props = new Player();
             props.setWindowProperties(windowProperties);

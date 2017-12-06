@@ -64,10 +64,4 @@ public interface CalendarEventViewService extends CalendarService {
      */
     void insertContentMenubarItems(PortalControllerContext portalControllerContext) throws PortletException;
     
-    /**
-     * Get title 
-     * @param portalControllerContext
-     * @return
-     */
-    public String getTitle(PortalControllerContext portalControllerContext) throws PortletException;
 }

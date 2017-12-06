@@ -1,7 +1,5 @@
 package org.osivia.services.calendar.event.view.portlet.controller;
 
-import java.util.Locale;
-
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -10,8 +8,6 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.internationalization.Bundle;
-import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.services.calendar.event.view.portlet.model.CalendarEventViewForm;
 import org.osivia.services.calendar.event.view.portlet.service.CalendarEventViewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,9 +54,9 @@ public class CalendarEventViewController {
     public String view(RenderRequest request, RenderResponse response) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-        response.setTitle(this.service.getTitle(portalControllerContext));
         
         this.service.insertContentMenubarItems(portalControllerContext);
+
         return "view";
     }
     
