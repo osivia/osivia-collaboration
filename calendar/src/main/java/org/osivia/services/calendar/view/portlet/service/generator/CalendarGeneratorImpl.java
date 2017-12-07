@@ -162,8 +162,10 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
     protected Date getStartDate(PortalControllerContext portalControllerContext, PeriodTypes periodType, Date selectedDate) {
         Calendar calendar = GregorianCalendar.getInstance(portalControllerContext.getRequest().getLocale());
         calendar.setTime(selectedDate);
-        // Set first day of week
-        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+        if (!PeriodTypes.PLANNING.equals(periodType)) {
+            // Set first day of week
+            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+        }
         return calendar.getTime();
     }
 

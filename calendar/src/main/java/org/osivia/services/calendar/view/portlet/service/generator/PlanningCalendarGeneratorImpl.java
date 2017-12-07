@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import javax.portlet.PortletException;
@@ -64,10 +65,14 @@ public class PlanningCalendarGeneratorImpl extends CalendarGeneratorImpl {
         Bundle bundle = this.getBundleFactory().getBundle(locale);
         // Time format
         DateFormat timeFormat = SimpleDateFormat.getTimeInstance(DateFormat.SHORT, locale);
+        // Time zone;
+        TimeZone timeZone = TimeZone.getTimeZone("UTC");
         // Start calendar
         Calendar startCalendar = GregorianCalendar.getInstance(locale);
+        startCalendar.setTimeZone(timeZone);
         // End calendar
         Calendar endCalendar = GregorianCalendar.getInstance(locale);
+        endCalendar.setTimeZone(timeZone);
         // String builder
         StringBuilder builder;
 
