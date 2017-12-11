@@ -12,7 +12,10 @@ $JQry(function() {
             tinymce.init({
                 selector: ".calendar.calendar-event-edition textarea[name=description]",
                 language: "fr_FR",
-                plugins: "autosave link lists noneditable paste osivia_link",
+                plugins: "autosave link lists noneditable paste",
+                external_plugins: {
+                	"osivia_link": "/osivia-services-editor-helpers/js/link/plugin.min.js"
+                },
 
                 branding: false,
                 menubar: false,
@@ -51,8 +54,7 @@ $JQry(function() {
                     }
                 },
 
-                content_css: ["/osivia-portal-custom-web-assets/css/bootstrap/bootstrap.min.css", "/osivia-services-calendar/css/calendar-edition.min.css"],
-                body_class: "mce-content-body",
+                content_css: ["/osivia-portal-custom-web-assets/css/bootstrap/bootstrap.min.css"],
                 height: 200,
 
                 // Prevent relative URL conversion

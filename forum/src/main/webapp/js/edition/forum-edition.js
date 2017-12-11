@@ -15,7 +15,10 @@ $JQry(function() {
             tinymce.init({
                 selector: ".forum textarea[data-editor=message]",
                 language: "fr_FR",
-                plugins: "autosave link lists noneditable paste osivia_link",
+                plugins: "autosave link lists noneditable paste",
+                external_plugins: {
+                	"osivia_link": "/osivia-services-editor-helpers/js/link/plugin.min.js"
+                },
 
                 branding: false,
                 menubar: false,
@@ -55,7 +58,6 @@ $JQry(function() {
                 },
 
                 content_css: ["/osivia-portal-custom-web-assets/css/bootstrap/bootstrap.min.css", "/osivia-services-forum/css/forum-tinymce.min.css"],
-                body_class: "forum-mce-content-body",
                 height: 200,
 
                 // Prevent relative URL conversion

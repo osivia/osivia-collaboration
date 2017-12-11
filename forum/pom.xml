@@ -55,7 +55,6 @@
                 <configuration>
                     <includes>
                         <include>**/js/**/*</include>
-                        <include>**/components/tinymce/plugins/osivia_link/*</include>
                     </includes>
                     <excludes>
                         <exclude>**/*.min.css</exclude>

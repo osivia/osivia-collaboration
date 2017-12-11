@@ -14,9 +14,6 @@
             <link rel="stylesheet" href="/css/forum.min.css"/>
             <link rel="stylesheet" href="/css/thread/forum-thread.min.css"/>
 
-            <!-- TinyMCE -->
-            <script src="/components/tinymce/tinymce.min.js" type="text/javascript"/>
-
             <script src="/js/thread/forum-thread.min.js" type="text/javascript"/>
         </header-content>
 
@@ -38,9 +35,6 @@
 
         <header-content>
             <link rel="stylesheet" href="/css/forum.min.css"/>
-
-            <!-- TinyMCE -->
-            <script src="/components/tinymce/tinymce.min.js" type="text/javascript"/>
 
             <script src="/js/edition/forum-edition.min.js" type="text/javascript"/>
         </header-content>

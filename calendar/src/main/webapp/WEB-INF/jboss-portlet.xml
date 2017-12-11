@@ -68,8 +68,6 @@
             <script type="text/javascript" src="/js/calendar-common.js" />
             <script type="text/javascript" src="/js/calendar-event-edition.js" />
             
-            <!-- TinyMCE -->
-            <script src="/components/tinymce/tinymce.min.js" type="text/javascript"/>
             <!-- Date picker -->
             <script type="text/javascript" src="/js/datepicker/datepicker-fr.js" />
             <!-- Time picker -->

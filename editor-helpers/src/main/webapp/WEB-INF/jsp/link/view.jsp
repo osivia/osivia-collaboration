@@ -21,7 +21,7 @@
 
 
 <link rel="stylesheet" href="${contextPath}/css/editor.min.css">
-<script type="text/javascript" src="${contextPath}/js/editor.js"></script>
+<script type="text/javascript" src="${contextPath}/js/editor.min.js"></script>
 
 
 <div class="editor-link" data-close-modal="${form.done}">
