@@ -318,7 +318,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             if ((page == 1) && CollectionUtils.isNotEmpty(objects)) {
                 String message;
                 if (total == 0) {
-                    message = bundle.getString("SELECT2_NO_RESULT");
+                    message = bundle.getString("SELECT2_NO_RESULTS");
                 } else if (total == 1) {
                     message = bundle.getString("SELECT2_ONE_RESULT");
                 } else if (total > SELECT2_MAX_RESULTS) {
