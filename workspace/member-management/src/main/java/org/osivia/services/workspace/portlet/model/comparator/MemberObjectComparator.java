@@ -4,6 +4,8 @@ import java.util.Comparator;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osivia.services.workspace.portlet.model.MemberObject;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -25,6 +27,8 @@ public class MemberObjectComparator implements Comparator<MemberObject> {
     /** Comparator alternative sort indicator. */
     private final boolean alt;
 
+    /** Log. */
+    private final Log log;
 
     /**
      * Constructor.
@@ -36,6 +40,8 @@ public class MemberObjectComparator implements Comparator<MemberObject> {
         super();
         this.sort = sort;
         this.alt = alt;
+        
+        this.log = LogFactory.getLog(this.getClass());        
     }
 
 
@@ -54,10 +60,25 @@ public class MemberObjectComparator implements Comparator<MemberObject> {
             // Date
             result = compareDates(memberObject1, memberObject2);
         } else if ("role".equals(this.sort)) {
-            // Role
-            Integer role1 = memberObject1.getRole().getWeight();
-            Integer role2 = memberObject2.getRole().getWeight();
 
+        	// #1718 - catch errors during sort        	
+        	
+        	Integer role1 = 0;
+        	if(memberObject1.getRole() != null) {
+        		role1 = memberObject1.getRole().getWeight();
+        	}
+        	else {
+        		log.error(memberObject1.getId() +" has no role !");
+        	}
+            // Role
+        	Integer role2 = 0;
+        	if(memberObject2.getRole() != null) {
+        		role2 = memberObject2.getRole().getWeight();
+        	}
+        	else {
+        		log.error(memberObject2.getId() +" has no role !");
+        	}
+        	
             result = role1.compareTo(role2);
         } else {
             // Name

@@ -10,8 +10,13 @@ import java.util.regex.Pattern;
 
 import javax.portlet.PortletException;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
@@ -40,8 +45,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Workspace member management service implementation.
@@ -76,7 +79,9 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     /** Mail pattern. */
     private final Pattern mailPattern;
 
-
+    /** Log. */
+    private final Log log;
+    
     /**
      * Constructor.
      */
@@ -85,6 +90,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         // Mail pattern
         this.mailPattern = Pattern.compile(MAIL_REGEX);
+        
+        this.log = LogFactory.getLog(this.getClass());
     }
 
 
@@ -160,7 +167,14 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     @Override
     public void sortMembers(PortalControllerContext portalControllerContext, MembersForm form, String sort, boolean alt) throws PortletException {
         MemberObjectComparator comparator = this.applicationContext.getBean(MemberObjectComparator.class, sort, alt);
-        Collections.sort(form.getMembers(), comparator);
+        try {
+        	Collections.sort(form.getMembers(), comparator);
+        }
+        catch(IllegalArgumentException e) {
+        	// #1718 - catch errors during sort
+        	log.error("Impossible de trier les membres ",e);
+        	
+        }
     }
 
 
