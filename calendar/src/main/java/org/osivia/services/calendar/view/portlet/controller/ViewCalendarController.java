@@ -132,7 +132,6 @@ public class ViewCalendarController {
             @RequestParam(value = SCROLL_DAY_WEEK_PARAMETER, required = false) String scrollViewDayWeek,
             @RequestParam(value = SCROLL_MONTH_PARAMETER, required = false) String scrollViewMonth, @ModelAttribute CalendarData calendarData)
             throws PortletException {
-        log.info("View, startDate=" + startDate + ", period=" + periodType);
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         if (null != periodType)
@@ -269,7 +268,6 @@ public class ViewCalendarController {
             @ModelAttribute(value = CALENDAR_DATA_ATTRIBUTE) CalendarData calendarData,
             @RequestParam(value = PERIOD_TYPE_PARAMETER, required = false) String periodTypeName,
             @RequestParam(value = DATE_PARAMETER, required = false) Date selectedDate) throws PortletException, IOException {
-        log.info("initSchedulerData, start=" + selectedDate + ", period=" + periodTypeName);
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
@@ -290,7 +288,6 @@ public class ViewCalendarController {
     @ResourceMapping(value = "loadData")
     public void loadData(ResourceRequest request, ResourceResponse response, @ModelAttribute(value = CALENDAR_DATA_ATTRIBUTE) CalendarData calendarData,
             @RequestParam("start") Date startDate, @RequestParam("end") Date endDate) throws PortletException, IOException {
-        log.info("LoadData, start=" + startDate + ", end=" + endDate);
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         calendarData.setStartDate(startDate);
@@ -304,7 +301,6 @@ public class ViewCalendarController {
     @ResourceMapping(value = "isEventEditable")
     public void isEventEditable(ResourceRequest request, ResourceResponse response, @RequestParam(value = "id", required = true) String id)
             throws PortletException, IOException {
-        log.info("isEventEditable, id=" + id);
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
@@ -332,7 +328,6 @@ public class ViewCalendarController {
     public void viewEvent(ActionRequest request, ActionResponse response, PortletSession session, @RequestParam("doc_id") String docid,
             @RequestParam(value = SCROLL_DAY_WEEK_PARAMETER, required = false) String scrollViewDayWeek,
             @RequestParam(value = SCROLL_MONTH_PARAMETER, required = false) String scrollViewMonth) throws PortletException, IOException {
-        log.info("viewEvent, =" + docid);
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
@@ -462,8 +457,6 @@ public class ViewCalendarController {
      */
     @ActionMapping(value = "synchronize")
     public void synchronize(ActionRequest request, ActionResponse response, PortletSession session) throws PortletException, IOException {
-
-        log.info("synchronization");
 
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
