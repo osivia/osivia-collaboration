@@ -13,15 +13,22 @@
 	     		<op:translate key="CALENDAR_EVENT_ALL_DAY_FROM" />
 	     		<c:choose>
 	   				<c:when test="${form.sameDay}">
-	   					<fmt:formatDate value="${form.startDate}" type="date" dateStyle="short" /> <op:translate key="CALENDAR_EVENT_ALL_DAY_TO" /> <fmt:formatDate value="${form.endDateAllDay}" type="date" dateStyle="short" />
+	   					<fmt:formatDate value="${form.startDate}" type="date" pattern="EEEEEEEE dd/MM/yyyy" />
 	   				</c:when>
 	   				<c:otherwise>
-	   					<fmt:formatDate value="${form.startDate}" type="date" dateStyle="short" />
+                        <fmt:formatDate value="${form.startDate}" pattern="EEEEEEEE dd/MM/yyyy" /> <op:translate key="CALENDAR_EVENT_ALL_DAY_TO" /> <fmt:formatDate value="${form.endDateAllDay}" pattern="EEEEEEEE dd/MM/yyyy" />
 	   				</c:otherwise>
 				</c:choose>
     		</c:when>
     		<c:otherwise>
-    			<fmt:formatDate value="${form.startDate}" type = "both" dateStyle = "short" timeStyle = "short" /> <op:translate key="CALENDAR_EVENT_DATES_SEPARATOR" /> <fmt:formatDate value="${form.endDate}" type = "both" dateStyle = "short" timeStyle = "short" />
+                <c:choose>
+                    <c:when test="${form.sameDay}">
+                        <fmt:formatDate value="${form.startDate}" pattern="EEEEEEEE dd/MM/yyyy" /> <op:translate key="CALENDAR_EVENT_SAME_DAY_FROM" /> <fmt:formatDate value="${form.startDate}" pattern="HH:mm" /> <op:translate key="CALENDAR_EVENT_SAME_DAY_TO" /> <fmt:formatDate value="${form.endDate}" pattern="HH:mm" />
+                    </c:when>
+                    <c:otherwise>
+                        <op:translate key="CALENDAR_EVENT_DAY_FROM" /> <fmt:formatDate value="${form.startDate}" pattern="EEEEEEEE dd/MM/yyyy HH:mm" /> <op:translate key="CALENDAR_EVENT_DAY_TO" /> <fmt:formatDate value="${form.endDate}" pattern="EEEEEEEE dd/MM/yyyy HH:mm" />
+                    </c:otherwise>
+                </c:choose>
     		</c:otherwise>
     	</c:choose>
     </div>

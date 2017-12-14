@@ -221,16 +221,31 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
 
     private boolean isSameDay(CalendarEventViewForm form) {
         boolean sameDay = false;
-        if (form.isAllDay()) {
-            Calendar calStart = Calendar.getInstance();
-            Calendar calEnd = Calendar.getInstance();
-            int diff = 0;
-            calStart.setTime(form.getStartDate());
-            calEnd.setTime(form.getEndDate());
-            diff = Math.round((calEnd.getTime().getTime() - calStart.getTime().getTime()) / 86400000);
-            sameDay = diff != 1;
+        Calendar calStart = Calendar.getInstance();
+        Calendar calEnd = Calendar.getInstance();
+        
+        calStart.setTime(form.getStartDate());
+        calEnd.setTime(form.getEndDate());
+        
+        if (form.isAllDay())
+        {
+            long diff = 0;
+            diff = Math.round((calEnd.getTime().getTime() - calStart.getTime().getTime())/86400000);
+            sameDay = diff <= 1;
+        } else
+        {
+            calStart.set(Calendar.HOUR_OF_DAY, 0);
+            calStart.set(Calendar.MINUTE, 0);
+            calStart.set(Calendar.SECOND,0);
+            calStart.set(Calendar.MILLISECOND, 0);
+            
+            calEnd.set(Calendar.HOUR_OF_DAY, 0);
+            calEnd.set(Calendar.MINUTE, 0);
+            calEnd.set(Calendar.SECOND,0);
+            calEnd.set(Calendar.MILLISECOND, 0);
+            
+            sameDay = dateFormat.format(calStart.getTime()).equals(dateFormat.format(calEnd.getTime()));
         }
-
         return sameDay;
     }
 
