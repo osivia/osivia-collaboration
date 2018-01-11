@@ -179,7 +179,7 @@
 
 
     <scm>
-        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-services/collaboration/tags/4.6.2</developerConnection>
+        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-services/collaboration/branches/4.6-maintenance</developerConnection>
     </scm>
 
 
