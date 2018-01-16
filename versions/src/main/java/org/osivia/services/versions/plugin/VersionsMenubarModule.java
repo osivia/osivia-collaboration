@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.DocumentType;
@@ -90,7 +91,7 @@ public class VersionsMenubarModule implements MenubarModule {
 
                 // Window properties
                 Map<String, String> properties = new HashMap<>();
-                properties.put("osivia.cms.contentPath", document.getId());
+                properties.put(Constants.WINDOW_PROP_URI, document.getPath());
 
                 // Menubar item properties
                 String id = "VERSIONS";

@@ -10,6 +10,7 @@ import javax.portlet.PortletResponse;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.versions.portlet.command.CreateExplicitVersion;
@@ -86,9 +87,12 @@ public class VersionsServiceImpl implements VersionsService {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
 
+        // Window
         PortalWindow window = WindowFactory.getWindow(request);
-        String contentPath = window.getProperty("osivia.cms.contentPath");
-        NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(contentPath);
+        // Path
+        String path = window.getProperty(Constants.WINDOW_PROP_URI);
+
+        NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
 
         return documentContext.getDocument();
     }
