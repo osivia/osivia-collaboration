@@ -62,7 +62,7 @@ public class SearchDocumentsCommand implements INuxeoCommand {
         clause.append("AND dc:title IS NOT NULL ");
         clause.append("AND ttc:webid IS NOT NULL ");
         if (StringUtils.isNotBlank(this.filter)) {
-            clause.append("AND ecm:fulltext = '").append(this.filter).append("' ");
+            clause.append("AND (dc:title ILIKE '").append(this.filter).append("%' or ecm:fulltext = '").append(this.filter).append("' ) ");
         }
         clause.append("ORDER BY dc:title ASC");
 
