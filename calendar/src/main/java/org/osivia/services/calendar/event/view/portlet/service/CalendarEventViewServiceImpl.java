@@ -114,6 +114,10 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
         // Color
         CalendarColor color = this.getColor(portalControllerContext, document, calendarColor);
         form.setColor(color);
+        
+        // Description
+        String description = this.getDescription(portalControllerContext, document);
+        form.setDescription(description);
 
         // Attachments
         this.setAttachments(portalControllerContext, document, form);
@@ -290,6 +294,19 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
         }
 
         return CalendarColor.fromId(colorId);
+    }
+
+
+    private String getDescription(PortalControllerContext portalControllerContext, Document document) throws PortletException {
+        String description;
+
+        if (document == null) {
+            description = null;
+        } else {
+            description = document.getString(DESCRIPTION_PROPERTY);
+        }
+
+        return description;
     }
 
 }
