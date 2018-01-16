@@ -57,7 +57,7 @@ $JQry(function () {
                     }
                 },
 
-                content_css: ["/osivia-portal-custom-web-assets/css/bootstrap/bootstrap.min.css", "/osivia-services-forum/css/forum-tinymce.min.css"],
+                content_css: ["/osivia-portal-custom-web-assets/css/bootstrap.min.css", "/osivia-services-forum/css/forum-tinymce.min.css"],
                 height: 200,
 
                 // Prevent relative URL conversion
