@@ -109,21 +109,6 @@ $JQry(function() {
         });
 
 
-        // Image error message
-        $JQry(".forum-edition img").on("error", function (event) {
-            var $target = $JQry(event.target),
-                message = $target.data("error-message"),
-                $message;
-
-            if (message) {
-                $message = $JQry(document.createElement("span"));
-                $message.text(message);
-
-                $target.replaceWith($message);
-            }
-        });
-
-
         $form.data("loaded", true);
     }
 });

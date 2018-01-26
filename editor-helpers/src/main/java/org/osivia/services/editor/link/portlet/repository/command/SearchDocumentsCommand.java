@@ -1,8 +1,5 @@
 package org.osivia.services.editor.link.portlet.repository.command;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
@@ -11,6 +8,10 @@ import org.osivia.services.editor.link.portlet.repository.EditorLinkRepository;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 
 /**
  * Search documents Nuxeo command.
@@ -62,7 +63,7 @@ public class SearchDocumentsCommand implements INuxeoCommand {
         clause.append("AND dc:title IS NOT NULL ");
         clause.append("AND ttc:webid IS NOT NULL ");
         if (StringUtils.isNotBlank(this.filter)) {
-            clause.append("AND (dc:title ILIKE '").append(this.filter).append("%' or ecm:fulltext = '").append(this.filter).append("' ) ");
+            clause.append("AND (ecm:fulltext = '").append(this.filter).append("' OR dc:title ILIKE '").append("%') ");
         }
         clause.append("ORDER BY dc:title ASC");
 

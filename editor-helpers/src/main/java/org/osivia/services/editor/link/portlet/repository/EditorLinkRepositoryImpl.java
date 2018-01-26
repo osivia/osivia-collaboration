@@ -101,7 +101,7 @@ public class EditorLinkRepositoryImpl implements EditorLinkRepository {
         // Nuxeo document
         Document document = this.getDocument(portalControllerContext, webId);
 
-        return this.documentDAO.toDTO(document);
+        return this.documentDAO.toDTO(portalControllerContext, document);
     }
 
 
@@ -128,7 +128,7 @@ public class EditorLinkRepositoryImpl implements EditorLinkRepository {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         // Document DTO
-        DocumentDTO dto = this.documentDAO.toDTO(document);
+        DocumentDTO dto = this.documentDAO.toDTO(portalControllerContext, document);
 
         // Vignette property map
         PropertyMap vignettePropertyMap = document.getProperties().getMap(VIGNETTE_PROPERTY);
@@ -199,7 +199,7 @@ public class EditorLinkRepositoryImpl implements EditorLinkRepository {
             form.setDocumentWebId(document.getString(WEB_ID_PROPERTY));
 
             // Document DTO
-            DocumentDTO dto = this.documentDAO.toDTO(document);
+            DocumentDTO dto = this.documentDAO.toDTO(portalControllerContext, document);
             form.setDocument(dto);
         }
         form.setUrlType(urlType);

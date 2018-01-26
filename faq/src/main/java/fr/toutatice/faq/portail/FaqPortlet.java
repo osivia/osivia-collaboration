@@ -36,8 +36,6 @@ import javax.portlet.WindowState;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
-import org.nuxeo.ecm.automation.client.model.PropertyList;
-import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.path.PortletPathItem;
@@ -51,7 +49,6 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 import fr.toutatice.portail.cms.nuxeo.api.PortletErrorHandler;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
-import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentAttachmentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
@@ -200,8 +197,7 @@ public class FaqPortlet extends CMSPortlet {
                     request.setAttribute("osivia.portletPath", portletPath);
 
                     // DTO
-                    DocumentDTO questionDto = this.documentDao.toDTO(question);
-                    generateAttachments(portalControllerContext, question, questionDto);
+                    DocumentDTO questionDto = this.documentDao.toDTO(portalControllerContext, question);
 
                     request.setAttribute("question", questionDto);
                 } else if ("FaqFolder".equals(type)) {
@@ -232,14 +228,13 @@ public class FaqPortlet extends CMSPortlet {
                     nuxeoController.insertContentMenuBarItems();
 
                     // DTO
-                    DocumentDTO faqDto = this.documentDao.toDTO(faq);
+                    DocumentDTO faqDto = this.documentDao.toDTO(portalControllerContext, faq);
                     request.setAttribute("faq", faqDto);
 
                     List<DocumentDTO> questionsDto = new ArrayList<DocumentDTO>(questions.size());
                     for (Document question : questions.list()) {
-                        DocumentDTO questionDto = this.documentDao.toDTO(question);
+                        DocumentDTO questionDto = this.documentDao.toDTO(portalControllerContext, question);
                         questionDto.getProperties().put("url", nuxeoController.getLink(question).getUrl());
-                        generateAttachments(portalControllerContext, question, questionDto);
                         questionsDto.add(questionDto);
                     }
                     request.setAttribute("questions", questionsDto);
@@ -282,40 +277,6 @@ public class FaqPortlet extends CMSPortlet {
         PortletPathItem pathItem = new PortletPathItem(renderParams, document.getTitle());
 
         portletPath.add(0, pathItem);
-    }
-
-
-    /**
-     * Generate document attachments.
-     *
-     * @param nuxeoController Nuxeo controller
-     * @param document Nuxeo document
-     * @param documentDto document DTO
-     */
-    private void generateAttachments(PortalControllerContext portalControllerContext, Document document, DocumentDTO documentDto) {
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-        nuxeoController.setCurrentDoc(document);
-
-        List<DocumentAttachmentDTO> attachments = documentDto.getAttachments();
-        PropertyList files = document.getProperties().getList("files:files");
-        if (files != null) {
-            for (int i = 0; i < files.size(); i++) {
-                PropertyMap map = files.getMap(i);
-
-                DocumentAttachmentDTO attachment = new DocumentAttachmentDTO();
-
-                // Attachment name
-                String name = map.getString("filename");
-                attachment.setName(name);
-
-                // Attachement URL
-                String url = nuxeoController.createAttachedFileLink(document.getPath(), String.valueOf(i));
-                attachment.setUrl(url);
-
-                attachments.add(attachment);
-            }
-        }
     }
 
 }

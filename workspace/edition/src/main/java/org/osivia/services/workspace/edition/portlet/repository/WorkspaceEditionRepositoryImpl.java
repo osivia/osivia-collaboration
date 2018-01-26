@@ -311,7 +311,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
             editorial.setInitialDisplayed(displayed);
 
             // Document DTO
-            DocumentDTO documentDto = this.documentDao.toDTO(document);
+            DocumentDTO documentDto = this.documentDao.toDTO(portalControllerContext, document);
             editorial.setDocument(documentDto);
         }
 

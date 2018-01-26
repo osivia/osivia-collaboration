@@ -92,7 +92,7 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
 
         Document document = this.repository.getCurrentDocument(portalControllerContext);
 
-        form.setDocument(this.dao.toDTO(document));
+        form.setDocument(this.dao.toDTO(portalControllerContext, document));
         form.setTitle(document.getString(TITLE_PROPERTY));
 
         // All day indicator
