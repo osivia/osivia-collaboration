@@ -1,7 +1,5 @@
 package org.osivia.services.workspace.portlet.controller;
 
-import java.util.List;
-
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
@@ -39,7 +37,7 @@ import org.springframework.web.portlet.context.PortletContextAware;
  */
 @Controller
 @RequestMapping(value = "VIEW", params = "view=edit")
-@SessionAttributes(value = {"editionForm", "members"})
+@SessionAttributes("editionForm")
 public class EditLocalGroupManagementController implements PortletContextAware {
 
     /** Portlet context. */
@@ -107,20 +105,36 @@ public class EditLocalGroupManagementController implements PortletContextAware {
 
 
     /**
-     * Add members to local group action mapping.
+     * Add member to local group action mapping.
      *
      * @param request action request
      * @param response action response
      * @param form local group edition form model attribute
      * @throws PortletException
      */
-    @ActionMapping(value = "edit", params = "add")
-    public void add(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") LocalGroupEditionForm form) throws PortletException {
+    @ActionMapping(value = "edit", params = "add-member")
+    public void addMember(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") LocalGroupEditionForm form) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.addMembersToLocalGroup(portalControllerContext, form);
+        this.service.addMember(portalControllerContext, form);
 
+        response.setRenderParameter("view", "edit");
+        response.setRenderParameter("id", form.getId());
+    }
+
+
+    /**
+     * Update local group member action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param form local group edition form model attribute
+     * @throws PortletException
+     */
+    @ActionMapping(value = "edit", params = "update-member")
+    public void updateMember(ActionRequest request, ActionResponse response, @ModelAttribute("editionForm") LocalGroupEditionForm form)
+            throws PortletException {
         response.setRenderParameter("view", "edit");
         response.setRenderParameter("id", form.getId());
     }
@@ -188,25 +202,6 @@ public class EditLocalGroupManagementController implements PortletContextAware {
         binder.setDisallowedFields("id", "workspaceId", "members", "addedMembers");
         binder.addValidators(this.localGroupValidator);
         binder.registerCustomEditor(Member.class, this.memberPropertyEditor);
-    }
-
-
-    /**
-     * Get members model attribute.
-     *
-     * @param request portlet request
-     * @param response portlet response
-     * @param form local group edition form model attribute
-     * @return members
-     * @throws PortletException
-     */
-    @ModelAttribute(value = "members")
-    public List<Member> getMembers(PortletRequest request, PortletResponse response, @ModelAttribute("editionForm") LocalGroupEditionForm form)
-            throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        return this.service.getMembers(portalControllerContext, form);
     }
 
 

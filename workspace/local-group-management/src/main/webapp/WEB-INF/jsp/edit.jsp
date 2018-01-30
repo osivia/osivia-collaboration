@@ -65,24 +65,32 @@
                         <ul class="list-unstyled">
                             <c:forEach var="member" items="${editionForm.members}" varStatus="status">
                                 <li>
-                                    <fieldset
-                                        <c:if test="${member.deleted}">disabled="disabled"</c:if>
-                                    >                                        
-                                        <form:hidden path="members[${status.index}].deleted" />
-                                    
-                                        <p class="form-control-static">
+                                    <form:hidden path="members[${status.index}].deleted" />
+                                    <p class="form-control-static">
+                                        <span class="${member.deleted ? 'deleted-member' : ''}">
                                             <c:if test="${not empty member.avatar}">
                                                 <img src="${member.avatar}" alt="" class="avatar">
                                             </c:if>
                                             
                                             <span>${member.displayName}</span>
+                                        </span>
+                                        
+                                        <c:choose>
+                                            <c:when test="${member.deleted}">
+                                                <button type="button" data-type="restore-member" class="btn btn-link btn-xs">
+                                                    <i class="glyphicons glyphicons-undo"></i>
+                                                    <span class="sr-only"><op:translate key="RESTORE" /></span>
+                                                </button>
+                                            </c:when>
                                             
-                                            <button type="button" class="btn btn-link btn-xs" data-type="delete-member">
-                                                <i class="glyphicons glyphicons-remove"></i>
-                                                <span class="sr-only"><op:translate key="DELETE" /></span>
-                                            </button>
-                                        </p>
-                                    </fieldset>
+                                            <c:otherwise>
+                                                <button type="button" data-type="remove-member" class="btn btn-link btn-xs">
+                                                    <i class="glyphicons glyphicons-remove"></i>
+                                                    <span class="sr-only"><op:translate key="DELETE" /></span>
+                                                </button>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </p>
                                 </li>
                             </c:forEach>
                         </ul>
@@ -98,12 +106,12 @@
                     <form:label path="addedMember" cssClass="sr-only">${placeholder}</form:label>
                     <form:select path="addedMember" cssClass="form-control select2" data-placeholder="${placeholder}" data-no-results="${noResults}">
                         <option value=""></option>
-                        <c:forEach var="member" items="${members}">
+                        <c:forEach var="member" items="${editionForm.otherMembers}">
                             <option value="${member.id}" data-displayname="${member.displayName}" data-avatar="${member.avatar}" data-mail="${member.mail}">${member.displayName} - ${member.id} - ${member.mail}</option>
                         </c:forEach>
                     </form:select>
                     <div class="hidden-script">
-                        <button type="submit" name="add" class="btn btn-default">
+                        <button type="submit" name="add-member" class="btn btn-default">
                             <op:translate key="ADD"/>
                         </button>
                     </div>
@@ -113,6 +121,9 @@
             <!-- Buttons -->
             <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-9 col-lg-offset-2 col-lg-10">
+                    <!-- Update member -->
+                    <input type="submit" name="update-member" class="hidden">
+                
                     <!-- Save -->
                     <button type="submit" name="save" class="btn btn-primary">
                         <i class="glyphicons glyphicons-floppy-disk"></i>

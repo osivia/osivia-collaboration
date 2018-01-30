@@ -8,7 +8,6 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.LocalGroup;
 import org.osivia.services.workspace.portlet.model.LocalGroupEditionForm;
 import org.osivia.services.workspace.portlet.model.LocalGroups;
-import org.osivia.services.workspace.portlet.model.Member;
 
 /**
  * Workspace local group management repository interface.
@@ -90,16 +89,5 @@ public interface LocalGroupManagementRepository {
      * @throws PortletException
      */
     LocalGroup createLocalGroup(PortalControllerContext portalControllerContext, LocalGroups localGroups, LocalGroup form) throws PortletException;
-
-
-    /**
-     * Get all members.
-     *
-     * @param portalControllerContext portal controller context
-     * @param workspaceId workspace identifier
-     * @return members
-     * @throws PortletException
-     */
-    List<Member> getAllMembers(PortalControllerContext portalControllerContext, String workspaceId) throws PortletException;
 
 }

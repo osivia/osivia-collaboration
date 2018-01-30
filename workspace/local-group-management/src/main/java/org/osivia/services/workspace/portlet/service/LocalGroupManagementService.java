@@ -1,14 +1,11 @@
 package org.osivia.services.workspace.portlet.service;
 
-import java.util.List;
-
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.LocalGroup;
 import org.osivia.services.workspace.portlet.model.LocalGroupEditionForm;
 import org.osivia.services.workspace.portlet.model.LocalGroups;
-import org.osivia.services.workspace.portlet.model.Member;
 
 /**
  * Workspace local group management service interface.
@@ -70,24 +67,13 @@ public interface LocalGroupManagementService {
 
 
     /**
-     * Get members.
-     *
-     * @param portalControllerContext portal controller context
-     * @param form local group edition form
-     * @return members
-     * @throws PortletException
-     */
-    List<Member> getMembers(PortalControllerContext portalControllerContext, LocalGroupEditionForm form) throws PortletException;
-
-
-    /**
-     * Add members to local group.
+     * Add member to local group.
      *
      * @param portalControllerContext portal controller context
      * @param form local group edition form
      * @throws PortletException
      */
-    void addMembersToLocalGroup(PortalControllerContext portalControllerContext, LocalGroupEditionForm form) throws PortletException;
+    void addMember(PortalControllerContext portalControllerContext, LocalGroupEditionForm form) throws PortletException;
 
 
     /**
