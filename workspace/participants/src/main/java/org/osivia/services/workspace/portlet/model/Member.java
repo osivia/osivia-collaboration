@@ -25,6 +25,8 @@ public class Member {
     private String avatarUrl;
     /** Member display name. */
     private String displayName;
+    /** Member last name. */
+    private String lastName;
     /** Member email. */
     private String email;
     /** Member joined date. */
@@ -115,6 +117,24 @@ public class Member {
     }
 
     /**
+     * Getter for lastName.
+     * 
+     * @return the lastName
+     */
+    public String getLastName() {
+        return lastName;
+    }
+
+    /**
+     * Setter for lastName.
+     * 
+     * @param lastName the lastName to set
+     */
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    /**
      * Getter for email.
      * 
      * @return the email
@@ -150,21 +170,22 @@ public class Member {
         this.joinedDate = joinedDate;
     }
 
+    /**
+     * Getter for nxProfile.
+     * 
+     * @return the nxProfile
+     */
+    public DocumentDTO getNxProfile() {
+        return nxProfile;
+    }
 
-	/**
-	 * @return the nxProfile
-	 */
-	public DocumentDTO getNxProfile() {
-		return nxProfile;
-	}
-
-
-	/**
-	 * @param nxProfile the nxProfile to set
-	 */
-	public void setNxProfile(DocumentDTO nxProfile) {
-		this.nxProfile = nxProfile;
-	}
-
+    /**
+     * Setter for nxProfile.
+     * 
+     * @param nxProfile the nxProfile to set
+     */
+    public void setNxProfile(DocumentDTO nxProfile) {
+        this.nxProfile = nxProfile;
+    }
     
 }

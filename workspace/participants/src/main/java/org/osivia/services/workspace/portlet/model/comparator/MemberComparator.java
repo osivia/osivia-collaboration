@@ -2,6 +2,7 @@ package org.osivia.services.workspace.portlet.model.comparator;
 
 import java.util.Comparator;
 
+import org.apache.commons.lang.StringUtils;
 import org.osivia.services.workspace.portlet.model.Member;
 import org.springframework.stereotype.Component;
 
@@ -30,26 +31,22 @@ public class MemberComparator implements Comparator<Member> {
     public int compare(Member member1, Member member2) {
         int result;
 
-        String displayName1;
         if (member1 == null) {
-            displayName1 = null;
-        } else {
-            displayName1 = member1.getDisplayName();
-        }
-
-        String displayName2;
-        if (member2 == null) {
-            displayName2 = null;
-        } else {
-            displayName2 = member2.getDisplayName();
-        }
-
-        if (displayName1 == null) {
             result = -1;
-        } else if (displayName2 == null) {
+        } else if (member2 == null) {
             result = 1;
         } else {
-            result = displayName1.compareToIgnoreCase(displayName2);
+            String lastName1 = StringUtils.trimToEmpty(member1.getLastName());
+            String lastName2 = StringUtils.trimToEmpty(member2.getLastName());
+
+            if (StringUtils.equalsIgnoreCase(lastName1, lastName2)) {
+                String displayName1 = StringUtils.trimToEmpty(member1.getDisplayName());
+                String displayName2 = StringUtils.trimToEmpty(member2.getDisplayName());
+
+                result = displayName1.compareToIgnoreCase(displayName2);
+            } else {
+                result = lastName1.compareToIgnoreCase(lastName2);
+            }
         }
 
         return result;

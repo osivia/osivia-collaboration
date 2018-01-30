@@ -16,9 +16,6 @@ import javax.naming.Name;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -58,6 +55,8 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Participants portlet repository implementation.
@@ -540,6 +539,8 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
         if (StringUtils.isBlank(displayName)) {
             displayName = id;
         }
+        // Last name
+        String lastName = person.getSn();
         // URL
         String url = "#";
         Link l = null; 
@@ -564,6 +565,7 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
         member.setUrl(url);
         member.setAvatarUrl(avatarUrl);
         member.setDisplayName(displayName);
+        member.setLastName(lastName);
         member.setEmail(email);
         try {
         	DocumentDTO dto = DocumentDAO.getInstance().toDTO((Document) personService.getEcmProfile(portalControllerContext, person));
