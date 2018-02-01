@@ -87,9 +87,8 @@
             <div id="${namespace}-other-options" class="collapse invitations-other-options">
                 <!-- Local groups -->
                 <div class="form-group">
-                    <c:set var="placeholder"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_LOCAL_GROUPS_PLACEHOLDER" /></c:set>
                     <form:label path="localGroups" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_LOCAL_GROUPS" /></form:label>
-                    <form:select path="localGroups" cssClass="form-control select2 select2-default" data-placeholder="${placeholder}">
+                    <form:select path="localGroups" cssClass="form-control select2 select2-default">
                         <c:forEach var="group" items="${options.workspaceLocalGroups}">
                             <form:option value="${group.cn}">${group.displayName}</form:option>
                         </c:forEach>
