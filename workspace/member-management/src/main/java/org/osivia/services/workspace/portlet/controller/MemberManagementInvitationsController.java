@@ -19,12 +19,14 @@ import javax.portlet.ResourceResponse;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.converter.InvitationPropertyEditor;
+import org.osivia.services.workspace.portlet.model.converter.LocalGroupPropertyEditor;
 import org.osivia.services.workspace.portlet.model.validator.InvitationsCreationFormValidator;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +78,10 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
     /** Invitation property editor. */
     @Autowired
     private InvitationPropertyEditor invitationPropertyEditor;
+
+    /** Local group property editor. */
+    @Autowired
+    private LocalGroupPropertyEditor localGroupPropertyEditor;
 
 
     /**
@@ -292,6 +298,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
     public void invitationsCreationFormInitBinder(PortletRequestDataBinder binder) {
         binder.addValidators(this.creationFormValidator);
         binder.registerCustomEditor(Invitation.class, this.invitationPropertyEditor);
+        binder.registerCustomEditor(CollabProfile.class, this.localGroupPropertyEditor);
     }
 
 

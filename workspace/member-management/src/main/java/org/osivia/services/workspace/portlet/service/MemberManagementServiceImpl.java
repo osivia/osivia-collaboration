@@ -10,13 +10,11 @@ import java.util.regex.Pattern;
 
 import javax.portlet.PortletException;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
@@ -45,6 +43,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Workspace member management service implementation.
@@ -125,6 +125,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             // Roles
             List<WorkspaceRole> roles = this.repository.getRoles(portalControllerContext, workspaceId);
             options.setRoles(roles);
+
+            // Local groups
+            List<CollabProfile> localGroups = this.repository.getLocalGroups(portalControllerContext, workspaceId);
+            options.setWorkspaceLocalGroups(localGroups);
         }
 
         return options;
@@ -290,32 +294,35 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Total results
         int total = 0;
 
-        if (StringUtils.isNotBlank(filter)) {
-            String[] parts = StringUtils.split(filter, ",;");
-            for (String part : parts) {
-                // Persons
-                List<Person> persons = this.repository.searchPersons(portalControllerContext, part, tokenizer);
-                for (Person person : persons) {
-                    // Already member indicator
-                    boolean alreadyMember = memberIdentifiers.contains(person.getUid());
-                    
-                    // Already invited
-                    boolean alreadyInvited = invitationIndentifiers.contains(person.getUid());
-                    
-                    // Existing request indicator
-                    boolean existingRequest = !invitationOnly && requestIdentifiers.contains(person.getUid());
+        String[] parts;
+        if (StringUtils.isBlank(filter)) {
+            parts = new String[]{StringUtils.EMPTY};
+        } else {
+            parts = StringUtils.split(filter, ",;");
+        }
+        for (String part : parts) {
+            // Persons
+            List<Person> persons = this.repository.searchPersons(portalControllerContext, part, tokenizer);
+            for (Person person : persons) {
+                // Already member indicator
+                boolean alreadyMember = memberIdentifiers.contains(person.getUid());
 
-                    // Search result
-                    JSONObject object = getSearchResult(person, alreadyMember, alreadyInvited, existingRequest, bundle);
+                // Already invited
+                boolean alreadyInvited = invitationIndentifiers.contains(person.getUid());
 
-                    objects.add(object);
-                    total++;
-                }
+                // Existing request indicator
+                boolean existingRequest = !invitationOnly && requestIdentifiers.contains(person.getUid());
 
-                // Add person creation
-                if (this.enablePersonCreation() && !(tokenizer && !persons.isEmpty())) {
-                    this.addPersonCreationSearchResult(persons, objects, part, bundle);
-                }
+                // Search result
+                JSONObject object = this.getSearchResult(person, alreadyMember, alreadyInvited, existingRequest, bundle);
+
+                objects.add(object);
+                total++;
+            }
+
+            // Add person creation
+            if (this.enablePersonCreation() && !(tokenizer && !persons.isEmpty())) {
+                this.addPersonCreationSearchResult(persons, objects, part, bundle);
             }
         }
 
@@ -329,17 +336,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             items.addAll(objects);
         } else {
             // Message
-            if ((page == 1) && CollectionUtils.isNotEmpty(objects)) {
-                String message;
-                if (total == 0) {
-                    message = bundle.getString("SELECT2_NO_RESULTS");
-                } else if (total == 1) {
-                    message = bundle.getString("SELECT2_ONE_RESULT");
-                } else if (total > SELECT2_MAX_RESULTS) {
-                    message = bundle.getString("SELECT2_TOO_MANY_RESULTS", SELECT2_MAX_RESULTS);
-                } else {
-                    message = bundle.getString("SELECT2_MULTIPLE_RESULTS", total);
-                }
+            if (page == 1) {
+                String message = this.getSearchResultsMessage(portalControllerContext, total, bundle);
                 JSONObject object = new JSONObject();
                 object.put("message", message);
                 items.add(object);
@@ -471,6 +469,32 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
 
     /**
+     * Get search results message.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param total search results total
+     * @param bundle internationalization bundle
+     * @return message
+     * @throws PortletException
+     */
+    protected String getSearchResultsMessage(PortalControllerContext portalControllerContext, int total, Bundle bundle) throws PortletException {
+        String message;
+
+        if (total == 0) {
+            message = bundle.getString("SELECT2_NO_RESULTS");
+        } else if (total == 1) {
+            message = bundle.getString("SELECT2_ONE_RESULT");
+        } else if (total > SELECT2_MAX_RESULTS) {
+            message = bundle.getString("SELECT2_TOO_MANY_RESULTS", SELECT2_MAX_RESULTS);
+        } else {
+            message = bundle.getString("SELECT2_MULTIPLE_RESULTS", total);
+        }
+
+        return message;
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -560,6 +584,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 // Update model
                 options.setInvitationsCount(this.repository.getInvitationsCount(portalControllerContext, options.getWorkspaceId()));
                 invitationsForm.setLoaded(false);
+                creationForm.setLocalGroups(null);
+                creationForm.setMessage(null);
                 this.getInvitationsForm(portalControllerContext);
 
                 // Notification

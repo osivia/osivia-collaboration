@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.portlet.repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import javax.naming.Name;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -208,6 +210,21 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         }
 
         return roles;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CollabProfile> getLocalGroups(PortalControllerContext portalControllerContext, String workspaceId) throws PortletException {
+        // Criteria
+        CollabProfile criteria = this.workspaceService.getEmptyProfile();
+        criteria.setWorkspaceId(workspaceId);
+        criteria.setType(WorkspaceGroupType.local_group);
+
+        // Search
+        return this.workspaceService.findByCriteria(criteria);
     }
 
 
@@ -538,7 +555,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             if (pendingInvitation.getPerson() == null) {
                 displayName = uid;
             } else {
-                displayName = pendingInvitation.getPerson().getDisplayName();
+                displayName = StringUtils.defaultIfBlank(pendingInvitation.getPerson().getDisplayName(), uid);
             }
 
             if (existingInvitations.containsKey(uid)) {
@@ -552,18 +569,30 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_MEMBER_ALREADY_EXISTS", displayName);
                 warnings.addMessage(message);
             } else {
+                // Local group identifiers
+                List<String> localGroupIds;
+                if (CollectionUtils.isEmpty(form.getLocalGroups())) {
+                    localGroupIds = new ArrayList<>(0);
+                } else {
+                    localGroupIds = new ArrayList<>(form.getLocalGroups().size());
+                    for (CollabProfile localGroup : form.getLocalGroups()) {
+                        localGroupIds.add(localGroup.getCn());
+                    }
+                }
+                
                 try {
                     boolean unknownUser = pendingInvitation.isUnknownUser();
 
                     // Variables
                     Map<String, String> variables = new HashMap<>();
-                    variables.put("documentId", workspace.getId());
-                    variables.put("documentPath", workspace.getPath());
+                    variables.put(WORKSPACE_PATH_PROPERTY, workspace.getPath());
                     variables.put(WORKSPACE_IDENTIFIER_PROPERTY, workspaceId);
                     variables.put(WORKSPACE_TITLE_PROPERTY, workspace.getTitle());
                     variables.put(PERSON_UID_PROPERTY, uid);
                     variables.put(INVITATION_STATE_PROPERTY, InvitationState.SENT.name());
                     variables.put(ROLE_PROPERTY, form.getRole().getId());
+                    variables.put(INVITATION_LOCAL_GROUPS_PROPERTY, StringUtils.join(localGroupIds, "|"));
+                    variables.put(INVITATION_MESSAGE_PROPERTY, form.getMessage());
                     variables.put(NEW_USER_PROPERTY, String.valueOf(unknownUser));
 
                     if (unknownUser) {
@@ -785,15 +814,25 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
     public void acceptInvitation(NuxeoController nuxeoController, Map<String, String> variables) {
         // Variables
         String workspaceId = variables.get(WORKSPACE_IDENTIFIER_PROPERTY);
-        String uid = variables.get(PERSON_UID_PROPERTY);
+        String memberId = variables.get(PERSON_UID_PROPERTY);
         WorkspaceRole role = WorkspaceRole.fromId(variables.get(ROLE_PROPERTY));
         if (role == null) {
             role = WorkspaceRole.READER;
         }
+        List<String> localGroupIds = Arrays.asList(StringUtils.split(StringUtils.trimToEmpty(variables.get(INVITATION_LOCAL_GROUPS_PROPERTY)), "|"));
 
         // Add member to workspace
-        Name memberDn = this.personService.getEmptyPerson().buildDn(uid);
+        Name memberDn = this.personService.getEmptyPerson().buildDn(memberId);
         this.workspaceService.addOrModifyMember(workspaceId, memberDn, role);
+
+        // Add member to local groups
+        for (String localGroupId : localGroupIds) {
+            try {
+                this.workspaceService.addMemberToLocalGroup(workspaceId, localGroupId, memberId);
+            } catch (Exception e) {
+                // Do nothing, maybe the local group no longer exists
+            }
+        }
 
         // Reload Nuxeo session
         INuxeoCommand command = this.applicationContext.getBean(ReloadNuxeoSessionCommand.class);
@@ -838,8 +877,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
             // Variables
             Map<String, String> variables = new HashMap<>();
-            variables.put("documentId", workspace.getId());
-            variables.put("documentPath", workspace.getPath());
+            variables.put(WORKSPACE_PATH_PROPERTY, workspace.getPath());
             variables.put(WORKSPACE_IDENTIFIER_PROPERTY, workspaceId);
             variables.put(WORKSPACE_TITLE_PROPERTY, workspace.getTitle());
             variables.put(PERSON_UID_PROPERTY, uid);

@@ -34,150 +34,152 @@
 
 
 <form:form action="${updateUrl}" method="post" modelAttribute="invitationRequests" role="form">
-    <div class="table table-hover">
-        <!-- Header -->
-        <div class="table-row table-header">
-            <div class="row">
-                <!-- Invitation request -->
-                <div class="col-sm-6 col-md-4 col-lg-5">
-                    <a href="${sortNameUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_REQUEST"/></a>
+    <div>
+        <div class="table table-hover">
+            <!-- Header -->
+            <div class="table-row table-header">
+                <div class="row">
+                    <!-- Invitation request -->
+                    <div class="col-sm-6 col-md-4 col-lg-5">
+                        <a href="${sortNameUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_REQUEST"/></a>
+                        
+                        <c:if test="${sort eq 'name'}">
+                            <small class="text-muted">
+                                <c:choose>
+                                    <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
+                                    <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
+                                </c:choose>
+                            </small>
+                        </c:if>
+                    </div>
                     
-                    <c:if test="${sort eq 'name'}">
-                        <small class="text-muted">
-                            <c:choose>
-                                <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
-                                <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
-                            </c:choose>
-                        </small>
-                    </c:if>
-                </div>
-                
-                <!-- Column reset -->
-                <div class="clearfix visible-xs-block"></div>
-                
-                <!-- Date -->
-                <div class="col-xs-6 col-sm-3 col-md-2">
-                    <a href="${sortDateUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_REQUEST_DATE"/></a>
+                    <!-- Column reset -->
+                    <div class="clearfix visible-xs-block"></div>
                     
-                    <c:if test="${sort eq 'date'}">
-                        <small class="text-muted">
-                            <c:choose>
-                                <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
-                                <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
-                            </c:choose>
-                        </small>
-                    </c:if>
-                </div>
-                
-                <!-- Role -->
-                <div class="col-xs-6 col-sm-3 col-md-2">
-                    <a href="${sortRoleUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE"/></a>
+                    <!-- Date -->
+                    <div class="col-xs-6 col-sm-3 col-md-2">
+                        <a href="${sortDateUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_REQUEST_DATE"/></a>
+                        
+                        <c:if test="${sort eq 'date'}">
+                            <small class="text-muted">
+                                <c:choose>
+                                    <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
+                                    <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
+                                </c:choose>
+                            </small>
+                        </c:if>
+                    </div>
                     
-                    <c:if test="${sort eq 'role'}">
-                        <small class="text-muted">
-                            <c:choose>
-                                <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
-                                <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
-                            </c:choose>
-                        </small>
-                    </c:if>
+                    <!-- Role -->
+                    <div class="col-xs-6 col-sm-3 col-md-2">
+                        <a href="${sortRoleUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE"/></a>
+                        
+                        <c:if test="${sort eq 'role'}">
+                            <small class="text-muted">
+                                <c:choose>
+                                    <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
+                                    <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
+                                </c:choose>
+                            </small>
+                        </c:if>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Body -->
-        <div class="portlet-filler">
-            <c:forEach var="invitationRequest" items="${invitationRequests.requests}" varStatus="status">                  
-                <div class="table-row">
-                    <form:hidden path="requests[${status.index}].edited" />
-                    <form:hidden path="requests[${status.index}].deleted" />
-                    <form:hidden path="requests[${status.index}].accepted" />
-                
-                    <fieldset>
-                        <div class="row">
-                            <!-- Invitation request -->
-                            <div class="col-sm-6 col-md-4 col-lg-5">
-                                <c:set var="person" scope="request" value="${invitationRequest}" />
-                                <jsp:include page="../commons/person.jsp" />
-                            </div>
-                            
-                            <!-- Column reset -->
-                            <div class="clearfix visible-xs-block"></div>
-                            
-                            <!-- Date -->
-                            <div class="col-xs-6 col-sm-3 col-md-2">
-                                <div class="form-control-static">
-                                    <span><fmt:formatDate value="${invitationRequest.date}" type="date" dateStyle="medium" /></span>
+            
+            <!-- Body -->
+            <div class="portlet-filler">
+                <c:forEach var="invitationRequest" items="${invitationRequests.requests}" varStatus="status">                  
+                    <div class="table-row">
+                        <form:hidden path="requests[${status.index}].edited" />
+                        <form:hidden path="requests[${status.index}].deleted" />
+                        <form:hidden path="requests[${status.index}].accepted" />
+                    
+                        <fieldset>
+                            <div class="row">
+                                <!-- Invitation request -->
+                                <div class="col-sm-6 col-md-4 col-lg-5">
+                                    <c:set var="person" scope="request" value="${invitationRequest}" />
+                                    <jsp:include page="../commons/person.jsp" />
+                                </div>
+                                
+                                <!-- Column reset -->
+                                <div class="clearfix visible-xs-block"></div>
+                                
+                                <!-- Date -->
+                                <div class="col-xs-6 col-sm-3 col-md-2">
+                                    <div class="form-control-static">
+                                        <span><fmt:formatDate value="${invitationRequest.date}" type="date" dateStyle="medium" /></span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Role -->
+                                <div class="col-xs-6 col-sm-3 col-md-2">
+                                    <c:choose>
+                                        <c:when test="${invitationRequest.state.editable}">
+                                            <form:label path="requests[${status.index}].role" cssClass="sr-only"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></form:label>
+                                            <form:select path="requests[${status.index}].role" cssClass="form-control">
+                                                <c:forEach var="role" items="${options.roles}">
+                                                    <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}" /></form:option>
+                                                </c:forEach>
+                                            </form:select>
+                                        </c:when>
+                                        
+                                        <c:otherwise>
+                                            <div class="form-control-static">
+                                                <span><op:translate key="${invitationRequest.role.key}" classLoader="${invitationRequest.role.classLoader}" /></span>
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    
+                                </div>
+                                
+                                <!-- Column reset -->
+                                <div class="clearfix visible-xs-block visible-sm-block"></div>
+                                
+                                <!-- Action -->
+                                <div class="col-sm-offset-7 col-sm-5 col-md-offset-0 col-md-4 col-lg-3">
+                                    <c:choose>
+                                        <c:when test="${invitationRequest.state.editable}">
+                                            <button type="button" class="btn btn-success accept">
+                                                <i class="glyphicons glyphicons-ok"></i>
+                                                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ACCEPT_INVITATION_REQUEST" /></span>
+                                            </button>
+                                            
+                                            <button type="button" class="btn btn-danger delete">
+                                                <i class="glyphicons glyphicons-remove"></i>
+                                                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_DECLINE_INVITATION_REQUEST" /></span>
+                                            </button>
+                                            
+                                            <div class="accepted-message hidden">
+                                                <div class="form-control-static text-success">
+                                                    <i class="glyphicons glyphicons-ok"></i>
+                                                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ACCEPTED_INVITATION_REQUEST_MESSAGE" /></span>
+                                                </div>
+                                            </div>
+                                        </c:when>
+                                        
+                                        <c:otherwise>
+                                            <div class="form-control-static">
+                                                <span class="${invitationRequest.state.htmlClasses}">
+                                                    <i class="${invitationRequest.state.icon}"></i>
+                                                    <span><op:translate key="${invitationRequest.state.key}" /></span>
+                                                </span>
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                             </div>
-                            
-                            <!-- Role -->
-                            <div class="col-xs-6 col-sm-3 col-md-2">
-                                <c:choose>
-                                    <c:when test="${invitationRequest.state.editable}">
-                                        <form:label path="requests[${status.index}].role" cssClass="sr-only"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></form:label>
-                                        <form:select path="requests[${status.index}].role" cssClass="form-control">
-                                            <c:forEach var="role" items="${options.roles}">
-                                                <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}" /></form:option>
-                                            </c:forEach>
-                                        </form:select>
-                                    </c:when>
-                                    
-                                    <c:otherwise>
-                                        <div class="form-control-static">
-                                            <span><op:translate key="${invitationRequest.role.key}" classLoader="${invitationRequest.role.classLoader}" /></span>
-                                        </div>
-                                    </c:otherwise>
-                                </c:choose>
-                                
-                            </div>
-                            
-                            <!-- Column reset -->
-                            <div class="clearfix visible-xs-block visible-sm-block"></div>
-                            
-                            <!-- Action -->
-                            <div class="col-sm-offset-7 col-sm-5 col-md-offset-0 col-md-4 col-lg-3">
-                                <c:choose>
-                                    <c:when test="${invitationRequest.state.editable}">
-                                        <button type="button" class="btn btn-success accept">
-                                            <i class="glyphicons glyphicons-ok"></i>
-                                            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ACCEPT_INVITATION_REQUEST" /></span>
-                                        </button>
-                                        
-                                        <button type="button" class="btn btn-danger delete">
-                                            <i class="glyphicons glyphicons-remove"></i>
-                                            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_DECLINE_INVITATION_REQUEST" /></span>
-                                        </button>
-                                        
-                                        <div class="accepted-message hidden">
-                                            <div class="form-control-static text-success">
-                                                <i class="glyphicons glyphicons-ok"></i>
-                                                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ACCEPTED_INVITATION_REQUEST_MESSAGE" /></span>
-                                            </div>
-                                        </div>
-                                    </c:when>
-                                    
-                                    <c:otherwise>
-                                        <div class="form-control-static">
-                                            <span class="${invitationRequest.state.htmlClasses}">
-                                                <i class="${invitationRequest.state.icon}"></i>
-                                                <span><op:translate key="${invitationRequest.state.key}" /></span>
-                                            </span>
-                                        </div>
-                                    </c:otherwise>
-                                </c:choose>
-                            </div>
-                        </div>
-                    </fieldset>
-                </div>
-            </c:forEach>
-            
-            <!-- No results -->
-            <c:if test="${empty invitationRequests.requests}">
-                <div class="table-row">
-                    <div class="text-center text-muted"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_NO_MEMBER" /></div>
-                </div>
-            </c:if>
+                        </fieldset>
+                    </div>
+                </c:forEach>
+                
+                <!-- No results -->
+                <c:if test="${empty invitationRequests.requests}">
+                    <div class="table-row">
+                        <div class="text-center text-muted"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_NO_MEMBER" /></div>
+                    </div>
+                </c:if>
+            </div>
         </div>
     </div>
     

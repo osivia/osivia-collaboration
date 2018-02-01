@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
@@ -32,6 +33,8 @@ public interface MemberManagementRepository {
 
     /** Workspace identifier property. */
     String WORKSPACE_IDENTIFIER_PROPERTY = "workspaceId";
+    /** Workspace path property. */
+    String WORKSPACE_PATH_PROPERTY = "documentPath";
     /** Workspace title property. */
     String WORKSPACE_TITLE_PROPERTY = "workspaceTitle";
     /** Person UID property. */
@@ -40,6 +43,10 @@ public interface MemberManagementRepository {
     String INVITATION_STATE_PROPERTY = "invitationState";
     /** Role property. */
     String ROLE_PROPERTY = "role";
+    /** Invitation local groups property. */
+    String INVITATION_LOCAL_GROUPS_PROPERTY = "invitationLocalGroups";
+    /** Invitation message property. */
+    String INVITATION_MESSAGE_PROPERTY = "invitationMessage";
     /** Acknowledgment date property. */
     String ACKNOWLEDGMENT_DATE_PROPERTY = "acknowledgmentDate";
     /** New user indicator property. */
@@ -99,6 +106,17 @@ public interface MemberManagementRepository {
      * @throws PortletException
      */
     List<WorkspaceRole> getRoles(PortalControllerContext portalControllerContext, String workspaceId) throws PortletException;
+
+
+    /**
+     * Get workspace local groups.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspaceId workspace identifier
+     * @return groups
+     * @throws PortletException
+     */
+    List<CollabProfile> getLocalGroups(PortalControllerContext portalControllerContext, String workspaceId) throws PortletException;
 
 
     /**

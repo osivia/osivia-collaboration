@@ -1,11 +1,12 @@
 $JQry(function() {
 	
-	$JQry(".workspace-member-management select.select2").each(function(index, element) {
+	$JQry(".workspace-member-management select.select2.select2-invitation").each(function(index, element) {
 		var $element = $JQry(element),
 			url = $element.data("url"),
 			minimumInputLength = $element.data("minimum-input-length"),
 			ajaxDataFunction = $element.data("ajax-data-function"),
  			options = {
+				closeOnSelect: true,
 				minimumInputLength: (minimumInputLength ? minimumInputLength : 3),
 				theme: "bootstrap"
 			};
@@ -75,6 +76,7 @@ $JQry(function() {
 			if (params.loading) {
 				$result.text(params.text);
 			} else if (params.message) {
+				$result.addClass("text-muted");
 				$result.text(params.message);
 			} else {
 				$result.addClass("person");
@@ -202,7 +204,7 @@ $JQry(function() {
 		// Display collapsed buttons
 		$element.on("select2:opening", function(event) {
 			var $form = $element.closest("form"),
-				$collapse = $form.find(".collapse");
+				$collapse = $form.find(".collapse").not(".invitations-other-options");
 			
 			if (!$collapse.hasClass("in")) {
 				$collapse.collapse("show");
@@ -211,12 +213,12 @@ $JQry(function() {
 	});
 	
 	
-	$JQry(".workspace-member-management select").change(function(event) {
+	$JQry(".workspace-member-management select.select2-invitation").change(function(event) {
 		var $target = $JQry(event.target),
 			$row = $target.closest(".table-row"),
 			$edited = $row.find("input[type=hidden][id$='.edited']"),
-			$form = $row.closest("form"),
-			$collapse = $form.find(".collapse");
+			$form = $target.closest("form"),
+			$collapse = $form.find(".collapse").not(".invitations-other-options");
 		
 		$edited.val(true);
 		
@@ -233,7 +235,7 @@ $JQry(function() {
 			$deleted = $row.find("input[type=hidden][id$='.deleted']"),
 			$buttons = $row.find("button"),
 			$form = $fieldset.closest("form"),
-			$collapse = $form.find(".collapse");
+			$collapse = $form.find(".collapse").not(".invitations-other-options");
 		
 		$deleted.val(true);
 		$buttons.hide();
@@ -252,7 +254,7 @@ $JQry(function() {
 			$buttons = $row.find("button"),
 			$acceptedMessage = $row.find(".accepted-message"),
 			$form = $row.closest("form"),
-			$collapse = $form.find(".collapse");
+			$collapse = $form.find(".collapse").not(".invitations-other-options");
 		
 		$accepted.val(true);
 		

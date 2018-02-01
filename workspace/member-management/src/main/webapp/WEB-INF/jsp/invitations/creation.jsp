@@ -23,7 +23,7 @@
     <div id="shadowbox-${namespace}" class="ajax-shadowbox">
         <div class="progress">
             <div class="progress-bar progress-bar-striped active" role="progressbar">
-                <span><op:translate key="AJAX_REFRESH" /></span>
+                <strong><op:translate key="AJAX_REFRESH" /></strong>
             </div>
         </div>
     </div>
@@ -54,7 +54,7 @@
                     <spring:bind path="pendingInvitations">
                         <div class="form-group ${status.error ? 'has-error' : (creation.warning ? 'has-warning' : '')}">
                             <form:label path="pendingInvitations" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CREATE_INVITATIONS_ADD_PERSONS_LABEL" /></form:label>
-                            <form:select path="pendingInvitations" cssClass="form-control select2" data-placeholder="${placeholder}" data-url="${searchUrl}" data-input-too-short="${inputTooShort}" data-no-results="${noResults}" data-searching="${searching}" data-loading-more="${loadingMore}">
+                            <form:select path="pendingInvitations" cssClass="form-control select2 select2-invitation" data-placeholder="${placeholder}" data-url="${searchUrl}" data-input-too-short="${inputTooShort}" data-no-results="${noResults}" data-searching="${searching}" data-loading-more="${loadingMore}">
                                 <c:forEach var="invitation" items="${creation.pendingInvitations}">
                                     <form:option value="${invitation.id}" data-avatar="${invitation.person.avatar.url}">${invitation.displayName}</form:option>
                                 </c:forEach>
@@ -74,6 +74,34 @@
                             </c:forEach>
                         </form:select>
                     </div>
+                </div>
+            </div>
+            
+            
+            <!-- Other options -->
+            <p>                
+                <a href="#${namespace}-other-options" class="no-ajax-link" data-toggle="collapse">
+                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_OTHER_OPTIONS" /></span>
+                </a>
+            </p>
+            <div id="${namespace}-other-options" class="collapse invitations-other-options">
+                <!-- Local groups -->
+                <div class="form-group">
+                    <c:set var="placeholder"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_LOCAL_GROUPS_PLACEHOLDER" /></c:set>
+                    <form:label path="localGroups" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_LOCAL_GROUPS" /></form:label>
+                    <form:select path="localGroups" cssClass="form-control select2 select2-default" data-placeholder="${placeholder}">
+                        <c:forEach var="group" items="${options.workspaceLocalGroups}">
+                            <form:option value="${group.cn}">${group.displayName}</form:option>
+                        </c:forEach>
+                    </form:select>
+                    <p class="help-block"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_LOCAL_GROUPS_HELP" /></p>
+                </div>
+            
+                <!-- Message -->
+                <div class="form-group">
+                    <c:set var="placeholder"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_MESSAGE_PLACEHOLDER" /></c:set>
+                    <form:label path="message" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_MESSAGE" /></form:label>
+                    <form:textarea path="message" cssClass="form-control" placeholder="${placeholder}" />
                 </div>
             </div>
             
