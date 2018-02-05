@@ -78,7 +78,7 @@ public class CheckTitleAvailabilityCommand implements INuxeoCommand {
         StringBuilder clause = new StringBuilder();
         clause.append("ecm:primaryType = 'Workspace' ");
         clause.append("AND ecm:path <> '").append(this.path).append("' ");
-        clause.append("AND dc:title = '").append(StringUtils.replace(this.title, "'", "\\'")).append("' ");
+        clause.append("AND dc:title ILIKE '").append(StringUtils.replace(this.title, "'", "\\'")).append("' ");
 
         // Filtered clause
         String filteredClause = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE, clause.toString());
