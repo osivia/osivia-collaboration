@@ -3,10 +3,8 @@ package org.osivia.services.workspace.portlet.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.annotation.PostConstruct;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -42,30 +40,22 @@ import org.springframework.web.portlet.bind.PortletRequestDataBinder;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
-import org.springframework.web.portlet.context.PortletConfigAware;
-import org.springframework.web.portlet.context.PortletContextAware;
 
-import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import net.sf.json.JSONObject;
 
 /**
  * Member management portlet view invitations controller.
  *
  * @author Cédric Krommenhoek
- * @see CMSPortlet
- * @see PortletConfigAware
- * @see PortletContextAware
  */
 @Controller
 @RequestMapping(path = "VIEW", params = "tab=invitations")
 @SessionAttributes("creation")
-public class MemberManagementInvitationsController extends CMSPortlet implements PortletConfigAware, PortletContextAware {
+public class MemberManagementInvitationsController {
 
-    /** Portlet config. */
-    private PortletConfig portletConfig;
     /** Portlet context. */
+    @Autowired
     private PortletContext portletContext;
-
 
     /** Member management service. */
     @Autowired
@@ -89,17 +79,6 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
      */
     public MemberManagementInvitationsController() {
         super();
-    }
-
-
-    /**
-     * Post-construct.
-     *
-     * @throws PortletException
-     */
-    @PostConstruct
-    public void postConstruct() throws PortletException {
-        super.init(this.portletConfig);
     }
 
 
@@ -316,24 +295,6 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         return this.service.getInvitationsHelp(portalControllerContext);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletConfig(PortletConfig portletConfig) {
-        this.portletConfig = portletConfig;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletContext(PortletContext portletContext) {
-        this.portletContext = portletContext;
     }
 
 }

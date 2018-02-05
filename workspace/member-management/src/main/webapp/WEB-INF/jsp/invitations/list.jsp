@@ -45,7 +45,7 @@
             <div class="table-row table-header">
                 <div class="row">
                     <!-- Invitation -->
-                    <div class="col-xs-7 col-sm-3 col-md-4">
+                    <div class="col-xs-7 col-sm-4 col-md-5 col-lg-6">
                         <a href="${sortNameUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION"/></a>
                         
                         <c:if test="${sort eq 'name'}">
@@ -58,8 +58,8 @@
                         </c:if>
                     </div>
                     
-                    <!-- Date -->
-                    <div class="col-xs-5 col-sm-3 col-md-2">
+                    <!-- Dates -->
+                    <div class="col-xs-5 col-sm-3 col-lg-2">
                         <a href="${sortDateUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_DATE"/></a>
                         
                         <c:if test="${sort eq 'date'}">
@@ -76,24 +76,10 @@
                     <div class="clearfix visible-xs-block"></div>
                     
                     <!-- State -->
-                    <div class="col-xs-5 col-sm-2">
+                    <div class="col-sm-5 col-md-4">
                         <a href="${sortStateUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_STATE"/></a>
                         
                         <c:if test="${sort eq 'state'}">
-                            <small class="text-muted">
-                                <c:choose>
-                                    <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
-                                    <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
-                                </c:choose>
-                            </small>
-                        </c:if>
-                    </div>
-    
-                    <!-- Role -->
-                    <div class="col-xs-7 col-sm-2">
-                        <a href="${sortRoleUrl}"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE"/></a>
-                        
-                        <c:if test="${sort eq 'role'}">
                             <small class="text-muted">
                                 <c:choose>
                                     <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
@@ -108,30 +94,34 @@
             <!-- Body -->
             <div class="portlet-filler">
                 <c:forEach var="invitation" items="${invitations.invitations}" varStatus="status">
-                    <div class="table-row ${invitation.state.editable ? '' : 'muted'}">
-                        <form:hidden path="invitations[${status.index}].edited" />
-                        <form:hidden path="invitations[${status.index}].deleted" />
-                    
-                        <fieldset>
-                            <div class="row">
-                                <!-- Invitation -->
-                                <div class="col-xs-7 col-sm-3 col-md-4">
-                                    <c:set var="person" scope="request" value="${invitation}" />
-                                    <jsp:include page="../commons/person.jsp" />
+                    <div class="table-row">
+                        <div class="row">
+                            <!-- Invitation -->
+                            <div class="col-xs-7 col-sm-4 col-md-5 col-lg-6">
+                                <c:set var="person" scope="request" value="${invitation}" />
+                                <jsp:include page="../commons/person.jsp" />
+                            </div>
+                            
+                            <!-- Dates -->
+                            <div class="col-xs-5 col-sm-3 col-lg-2">
+                                <div class="${empty invitation.resendingDate ? 'form-control-static' : ''}">
+                                    <span><fmt:formatDate value="${invitation.date}" type="date" dateStyle="medium" /></span>
+                                    <c:if test="${not empty invitation.resendingDate}">
+                                        <br>
+                                        <small>
+                                            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_RESENDING_DATE" /></span>
+                                            <span><fmt:formatDate value="${invitation.resendingDate}" type="date" dateStyle="medium" /></span>
+                                        </small>
+                                    </c:if>
                                 </div>
-                                
-                                <!-- Invitation date -->
-                                <div class="col-xs-5 col-sm-3 col-md-2">
-                                    <div class="form-control-static">
-                                        <span><fmt:formatDate value="${invitation.date}" type="date" dateStyle="medium" /></span>
-                                    </div>
-                                </div>
-                                
-                                <!-- Column reset -->
-                                <div class="clearfix visible-xs-block"></div>
-                                
-                                <!-- State -->
-                                <div class="col-xs-5 col-sm-2">
+                            </div>
+                            
+                            <!-- Column reset -->
+                            <div class="clearfix visible-xs-block"></div>
+                            
+                            <div class="col-sm-5 col-md-4">
+                                <div class="media-body">
+                                    <!-- State -->
                                     <div class="form-control-static">
                                         <span class="${invitation.state.htmlClasses}">
                                             <i class="${invitation.state.icon}"></i>
@@ -140,39 +130,20 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Role -->
-                                <div class="col-xs-7 col-sm-2">
-                                    <c:choose>
-                                        <c:when test="${invitation.state.editable}">
-                                            <form:label path="invitations[${status.index}].role" cssClass="sr-only"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></form:label>
-                                            <form:select path="invitations[${status.index}].role" cssClass="form-control">
-                                                <c:forEach var="role" items="${options.roles}">
-                                                    <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}" /></form:option>
-                                                </c:forEach>
-                                            </form:select>
-                                        </c:when>
-                                        
-                                        <c:otherwise>
-                                            <div class="form-control-static">
-                                                <span><op:translate key="${invitation.role.key}" classLoader="${invitation.role.classLoader}" /></span>
-                                            </div>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </div>
-                                
-                                <!-- Deletion -->
                                 <c:if test="${invitation.state.editable}">
-                                    <!-- Column reset -->
-                                    <div class="clearfix visible-xs-block"></div>
+                                    <portlet:renderURL var="url">
+                                        <portlet:param name="view" value="invitation-edition"/>
+                                        <portlet:param name="invitationPath" value="${invitation.document.path}"/>
+                                    </portlet:renderURL>
                                 
-                                    <div class="col-xs-12 col-sm-2">
-                                        <button type="button" class="btn btn-default delete">
-                                            <span><op:translate key="CANCEL" /></span>
-                                        </button>
+                                    <div class="media-right media-middle">
+                                        <a href="${url}" class="btn btn-link btn-sm">
+                                            <span><op:translate key="EDIT" /></span>
+                                        </a>
                                     </div>
                                 </c:if>
                             </div>
-                        </fieldset>
+                        </div>
                     </div>
                 </c:forEach>
                 
@@ -183,27 +154,6 @@
                     </div>
                 </c:if>
             </div>
-        </div>
-    </div>
-    
-    
-    <div id="${namespace}-invitations-buttons" class="panel panel-warning collapse margin-bottom-0">
-        <div class="panel-heading">
-            <i class="glyphicons glyphicons-alert"></i>
-            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_MEMBERS_MESSAGE" /></span>
-        </div>
-    
-        <div class="panel-body">
-            <!-- Save -->
-            <button type="submit" class="btn btn-primary">
-    			<i class="glyphicons glyphicons-floppy-disk"></i>
-                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_SAVE_INVITATIONS" /></span>
-            </button>
-            
-            <!-- Cancel -->
-            <button type="reset" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-invitations-buttons">
-                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CANCEL_INVITATIONS" /></span>
-            </button>
         </div>
     </div>
 </form:form>

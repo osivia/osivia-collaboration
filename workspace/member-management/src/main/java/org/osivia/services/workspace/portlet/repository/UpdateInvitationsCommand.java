@@ -1,12 +1,16 @@
 package org.osivia.services.workspace.portlet.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -57,9 +61,22 @@ public class UpdateInvitationsCommand implements INuxeoCommand {
             if (invitation.isDeleted()) {
                 documentService.remove(document);
             } else if (invitation.isEdited() && InvitationState.SENT.equals(invitation.getState())) {
+                // Local group identifiers
+                List<String> localGroupIds;
+                if (CollectionUtils.isEmpty(invitation.getLocalGroups())) {
+                    localGroupIds = new ArrayList<>(0);
+                } else {
+                    localGroupIds = new ArrayList<>(invitation.getLocalGroups().size());
+                    for (CollabProfile localGroup : invitation.getLocalGroups()) {
+                        localGroupIds.add(localGroup.getCn());
+                    }
+                }
+
                 // Variables
                 PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
                 variables.set(MemberManagementRepository.ROLE_PROPERTY, invitation.getRole().getId());
+                variables.set(MemberManagementRepository.INVITATION_LOCAL_GROUPS_PROPERTY, StringUtils.join(localGroupIds, "|"));
+                variables.set(MemberManagementRepository.INVITATION_MESSAGE_PROPERTY, invitation.getMessage());
 
                 // Properties
                 PropertyMap properties = new PropertyMap();

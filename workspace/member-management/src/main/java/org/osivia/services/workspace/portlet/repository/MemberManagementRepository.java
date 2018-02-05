@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.portlet.repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +13,7 @@ import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.services.workspace.portlet.model.Invitation;
+import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
 import org.osivia.services.workspace.portlet.model.InvitationRequest;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.Member;
@@ -49,6 +51,8 @@ public interface MemberManagementRepository {
     String INVITATION_MESSAGE_PROPERTY = "invitationMessage";
     /** Acknowledgment date property. */
     String ACKNOWLEDGMENT_DATE_PROPERTY = "acknowledgmentDate";
+    /** Invitation resending date property. */
+    String INVITATION_RESENDING_DATE = "invitationResendingDate";
     /** New user indicator property. */
     String NEW_USER_PROPERTY = "newUser";
     /** Generated password property. */
@@ -180,12 +184,10 @@ public interface MemberManagementRepository {
      * Update invitations.
      * 
      * @param portalControllerContext portal controller context
-     * @param workspaceId workspace identifier
      * @param invitations invitations
      * @throws PortletException
      */
-    void updateInvitations(PortalControllerContext portalControllerContext, String workspaceId, List<Invitation> invitations)
-            throws PortletException;
+    void updateInvitations(PortalControllerContext portalControllerContext, List<Invitation> invitations) throws PortletException;
 
 
     /**
@@ -267,5 +269,27 @@ public interface MemberManagementRepository {
      * @throws PortletException
      */
     void createInvitationRequest(PortalControllerContext portalControllerContext, String workspaceId, String uid) throws PortletException;
+
+
+    /**
+     * Get invitation edition form.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param path invitation document path
+     * @return form
+     * @throws PortletException
+     */
+    InvitationEditionForm getInvitationEditionForm(PortalControllerContext portalControllerContext, String path) throws PortletException;
+
+
+    /**
+     * Resend invitation.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form invitation edition form
+     * @param resendingDate invitation resending date
+     * @throws PortletException
+     */
+    void resendInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form, Date resendingDate) throws PortletException;
 
 }

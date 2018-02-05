@@ -32,11 +32,11 @@ import org.springframework.web.portlet.context.PortletContextAware;
  */
 @Controller
 @RequestMapping(path = "VIEW", params = "tab=requests")
-public class MemberManagementRequestsController implements PortletContextAware {
+public class MemberManagementRequestsController {
 
     /** Portlet context. */
+    @Autowired
     private PortletContext portletContext;
-
 
     /** Member management service. */
     @Autowired
@@ -168,15 +168,6 @@ public class MemberManagementRequestsController implements PortletContextAware {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         return this.service.getInvitationRequestsHelp(portalControllerContext);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletContext(PortletContext portletContext) {
-        this.portletContext = portletContext;
     }
 
 }

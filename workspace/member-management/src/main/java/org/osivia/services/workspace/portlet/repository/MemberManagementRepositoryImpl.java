@@ -38,14 +38,13 @@ import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.services.workspace.portlet.model.Invitation;
+import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
 import org.osivia.services.workspace.portlet.model.InvitationRequest;
 import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.Member;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
@@ -62,14 +61,17 @@ import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
  *
  * @author Cédric Krommenhoek
  * @see MemberManagementRepository
- * @see ApplicationContextAware
  */
 @Repository
-public class MemberManagementRepositoryImpl implements MemberManagementRepository, ApplicationContextAware {
+public class MemberManagementRepositoryImpl implements MemberManagementRepository {
 
     /** Current workspace attribute name. */
     private static final String CURRENT_WORKSPACE_ATTRIBUTE = "osivia.workspace.memberManagement.currentWorkspace";
 
+
+    /** Application context. */
+    @Autowired
+    private ApplicationContext applicationContext;
 
     /** Person service. */
     @Autowired
@@ -90,10 +92,6 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
     /** Notifications service. */
     @Autowired
     private INotificationsService notificationsService;
-
-
-    /** Application context. */
-    private ApplicationContext applicationContext;
 
 
     /** Log. */
@@ -374,8 +372,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
             if ((InvitationState.SENT.equals(state)) || (StringUtils.isNotEmpty(uid) && !memberIdentifiers.contains(uid))) {
                 // Invitation
-                Invitation invitation = this.getInvitation(uid, document, variables);
-                invitation.setDocument(document);
+                Invitation invitation = this.getInvitation(portalControllerContext, document);
 
                 invitations.add(invitation);
             }
@@ -388,12 +385,18 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
     /**
      * Get invitation.
      *
-     * @param uid user identifier
+     * @param portalControllerContext portal controller context
      * @param document invitation Nuxeo document
-     * @param variables invitation variables
      * @return invitation
+     * @throws PortletException
      */
-    protected Invitation getInvitation(String uid, Document document, PropertyMap variables) {
+    protected Invitation getInvitation(PortalControllerContext portalControllerContext, Document document) throws PortletException {
+        // Variables
+        PropertyMap variables = document.getProperties().getMap("pi:globalVariablesValues");
+
+        // User identifier
+        String uid = variables.getString(PERSON_UID_PROPERTY);
+        
         // Person
         Person person = this.personService.getPerson(uid);
 
@@ -410,6 +413,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             }
         }
 
+        // Document
+        invitation.setDocument(document);
+
         // Date
         Date date;
         Long dateProperty = variables.getLong(ACKNOWLEDGMENT_DATE_PROPERTY);
@@ -420,12 +426,48 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         }
         invitation.setDate(date);
 
+        // Resending date
+        Date resendingDate;
+        Long resendingDateProperty = variables.getLong(INVITATION_RESENDING_DATE);
+        if (resendingDateProperty == null) {
+            resendingDate = null;
+        } else {
+            resendingDate = new Date(resendingDateProperty);
+        }
+        invitation.setResendingDate(resendingDate);
+
         // Role
         WorkspaceRole role = WorkspaceRole.fromId(variables.getString(ROLE_PROPERTY));
         if (role == null) {
             role = WorkspaceRole.READER;
         }
         invitation.setRole(role);
+        
+        // Local groups
+        List<String> localGroupIds = Arrays.asList(StringUtils.split(StringUtils.trimToEmpty(variables.getString(INVITATION_LOCAL_GROUPS_PROPERTY)), "|"));
+        List<CollabProfile> invitationLocalGroups;
+        if (CollectionUtils.isEmpty(localGroupIds)) {
+            invitationLocalGroups = null;
+        } else {
+            invitationLocalGroups = new ArrayList<>(localGroupIds.size());
+            
+            // Search all workspace local groups
+            CollabProfile criteria = this.workspaceService.getEmptyProfile();
+            criteria.setWorkspaceId(this.getCurrentWorkspaceId(portalControllerContext));
+            criteria.setType(WorkspaceGroupType.local_group);
+            List<CollabProfile> workspaceLocalGroups = this.workspaceService.findByCriteria(criteria);
+            
+            for (CollabProfile localGroup : workspaceLocalGroups) {
+                if (localGroupIds.contains(localGroup.getCn())) {
+                    invitationLocalGroups.add(localGroup);
+                }
+            }
+        }
+        invitation.setLocalGroups(invitationLocalGroups);
+        
+        // Message
+        String message = variables.getString(INVITATION_MESSAGE_PROPERTY);
+        invitation.setMessage(message);
 
         // Invitation state
         InvitationState state = InvitationState.fromName(variables.getString(INVITATION_STATE_PROPERTY));
@@ -481,7 +523,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public void updateInvitations(PortalControllerContext portalControllerContext, String workspaceId, List<Invitation> invitations) throws PortletException {
+    public void updateInvitations(PortalControllerContext portalControllerContext, List<Invitation> invitations) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
@@ -622,7 +664,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         }
 
         if (!updatedInvitations.isEmpty()) {
-            this.updateInvitations(portalControllerContext, workspaceId, updatedInvitations);
+            this.updateInvitations(portalControllerContext, updatedInvitations);
         }
 
         if (!errors.getMessages().isEmpty()) {
@@ -997,8 +1039,73 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    public InvitationEditionForm getInvitationEditionForm(PortalControllerContext portalControllerContext, String path) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(GetInvitationCommand.class, path);
+        Document document = (Document) nuxeoController.executeNuxeoCommand(command);
+
+        // Invitation
+        Invitation invitation = this.getInvitation(portalControllerContext, document);
+
+
+        // Invitation edition form
+        InvitationEditionForm form = this.applicationContext.getBean(InvitationEditionForm.class, path);
+        form.setInvitation(invitation);
+
+        return form;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void resendInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form, Date resendingDate) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Procedure instance Nuxeo document
+        Document procedureInstance = form.getInvitation().getDocument();
+        // Procedure instance properties
+        PropertyMap procedureInstanceProperties = procedureInstance.getProperties();
+
+        // Global variables values
+        PropertyMap globalVariablesValues = procedureInstanceProperties.getMap("pi:globalVariablesValues");
+
+        // Variables
+        Map<String, String> variables;
+        if ((globalVariablesValues == null) || globalVariablesValues.isEmpty()) {
+            variables = new HashMap<>(0);
+        } else {
+            variables = new HashMap<>(globalVariablesValues.size());
+            for (String key : globalVariablesValues.getKeys()) {
+                variables.put(key, globalVariablesValues.getString(key));
+            }
+        }
+        // Update resending date
+        variables.put(INVITATION_RESENDING_DATE, String.valueOf(resendingDate.getTime()));
+        // Update message
+        variables.put(INVITATION_MESSAGE_PROPERTY, form.getInvitation().getMessage());
+
+        // Task properties
+        PropertyMap taskProperties = procedureInstanceProperties.getMap("pi:task");
+
+        try {
+            this.formsService.proceed(portalControllerContext, taskProperties, "resend", variables);
+
+            // Notification
+            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_RESENDING_SUCCESS");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        } catch (PortalException | FormFilterException e) {
+            // Error notification
+            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_RESENDING_ERROR");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
+
+            this.log.error(message, e);
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package org.osivia.services.workspace.portlet.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +24,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.services.workspace.portlet.model.Invitation;
+import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
 import org.osivia.services.workspace.portlet.model.InvitationRequest;
 import org.osivia.services.workspace.portlet.model.InvitationRequestsForm;
 import org.osivia.services.workspace.portlet.model.InvitationState;
@@ -195,12 +197,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         }
 
         // Update model
-        form.setLoaded(false);
-        this.getMembersForm(portalControllerContext);
-        InvitationsForm invitationForm = this.applicationContext.getBean(InvitationsForm.class);
-        invitationForm.setLoaded(false);
-        InvitationRequestsForm requestsForm = this.applicationContext.getBean(InvitationRequestsForm.class);
-        requestsForm.setLoaded(false);
+        this.invalidateLoadedForms();
+        // this.getMembersForm(portalControllerContext);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_MEMBERS_UPDATE_SUCCESS");
@@ -517,19 +515,15 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         String workspaceId = options.getWorkspaceId();
 
         // Update
-        this.repository.updateInvitations(portalControllerContext, workspaceId, form.getInvitations());
+        this.repository.updateInvitations(portalControllerContext, form.getInvitations());
 
         // Invitations count
         int count = this.repository.getInvitationsCount(portalControllerContext, workspaceId);
 
         // Update model
         options.setInvitationsCount(count);
-        MembersForm membersForm = this.applicationContext.getBean(MembersForm.class);
-        membersForm.setLoaded(false);
-        form.setLoaded(false);
-        this.getInvitationsForm(portalControllerContext);
-        InvitationRequestsForm requestsForm = this.applicationContext.getBean(InvitationRequestsForm.class);
-        requestsForm.setLoaded(false);
+        this.invalidateLoadedForms();
+        // this.getInvitationsForm(portalControllerContext);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_UPDATE_SUCCESS");
@@ -676,12 +670,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         // Update model
         options.setRequestsCount(count);
-        MembersForm membersForm = this.applicationContext.getBean(MembersForm.class);
-        membersForm.setLoaded(false);
-        form.setLoaded(false);
-        this.getInvitationRequestsForm(portalControllerContext);
-        InvitationsForm invitationsForm = this.applicationContext.getBean(InvitationsForm.class);
-        invitationsForm.setLoaded(false);
+        this.invalidateLoadedForms();
+        // this.getInvitationRequestsForm(portalControllerContext);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_REQUESTS_UPDATE_SUCCESS");
@@ -695,6 +685,100 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     @Override
     public String getInvitationRequestsHelp(PortalControllerContext portalControllerContext) throws PortletException {
         return this.repository.getHelp(portalControllerContext, INVITATION_REQUESTS_HELP_LOCATION_PROPERTY);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InvitationEditionForm getInvitationEditionForm(PortalControllerContext portalControllerContext, String path) throws PortletException {
+        return this.repository.getInvitationEditionForm(portalControllerContext, path);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void resendInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form) throws PortletException {
+        // Resending date
+        Date resendingDate = new Date();
+
+        this.repository.resendInvitation(portalControllerContext, form, resendingDate);
+
+        // Update model
+        form.getInvitation().setResendingDate(resendingDate);
+        this.invalidateLoadedForms();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Updated invitation
+        Invitation invitation = form.getInvitation();
+        invitation.setEdited(true);
+
+        // Invitations
+        List<Invitation> invitations = new ArrayList<>(1);
+        invitations.add(invitation);
+
+        this.repository.updateInvitations(portalControllerContext, invitations);
+
+        // Update model
+        this.invalidateLoadedForms();
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_UPDATE_SUCCESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Deleted invitation
+        Invitation invitation = form.getInvitation();
+        invitation.setDeleted(true);
+
+        // Invitations
+        List<Invitation> invitations = new ArrayList<>(1);
+        invitations.add(invitation);
+
+        this.repository.updateInvitations(portalControllerContext, invitations);
+
+        // Update model
+        this.invalidateLoadedForms();
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_DELETE_SUCCESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+    }
+
+
+    /**
+     * Invalidate loaded forms.
+     */
+    private void invalidateLoadedForms() {
+        MembersForm membersForm = this.applicationContext.getBean(MembersForm.class);
+        membersForm.setLoaded(false);
+
+        InvitationsForm invitationsForm = this.applicationContext.getBean(InvitationsForm.class);
+        invitationsForm.setLoaded(false);
+
+        InvitationRequestsForm requestsForm = this.applicationContext.getBean(InvitationRequestsForm.class);
+        requestsForm.setLoaded(false);
     }
 
 

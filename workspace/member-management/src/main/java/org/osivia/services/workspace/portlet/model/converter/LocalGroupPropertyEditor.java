@@ -33,6 +33,26 @@ public class LocalGroupPropertyEditor extends PropertyEditorSupport {
      * {@inheritDoc}
      */
     @Override
+    public String getAsText() {
+        Object value = this.getValue();
+
+        String text;
+
+        if ((value != null) && (value instanceof CollabProfile)) {
+            CollabProfile localGroup = (CollabProfile) value;
+            text = localGroup.getCn();
+        } else {
+            text = null;
+        }
+
+        return text;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setAsText(String text) throws IllegalArgumentException {
         // Local group
         CollabProfile localGroup = this.workspaceService.getProfile(text);

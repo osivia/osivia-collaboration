@@ -3,6 +3,7 @@ package org.osivia.services.workspace.portlet.service;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
 import org.osivia.services.workspace.portlet.model.InvitationRequestsForm;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
@@ -218,5 +219,46 @@ public interface MemberManagementService {
      * @throws PortletException
      */
     String getInvitationRequestsHelp(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Get invitation edition form.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param path invitation document path
+     * @return form
+     * @throws PortletException
+     */
+    InvitationEditionForm getInvitationEditionForm(PortalControllerContext portalControllerContext, String path) throws PortletException;
+
+
+    /**
+     * Resend invitation.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form invitation edition form
+     * @throws PortletException
+     */
+    void resendInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form) throws PortletException;
+
+
+    /**
+     * Update invitation.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form invitation edition form
+     * @throws PortletException
+     */
+    void updateInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form) throws PortletException;
+
+
+    /**
+     * Delete invitation.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form invitation edition form
+     * @throws PortletException
+     */
+    void deleteInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form) throws PortletException;
 
 }
