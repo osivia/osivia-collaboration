@@ -15,6 +15,8 @@ public class InvitationEditionForm {
 
     /** Invitation. */
     private Invitation invitation;
+    /** Message. */
+    private String message;
 
     /** Invitation path. */
     private final String path;
@@ -47,6 +49,24 @@ public class InvitationEditionForm {
      */
     public void setInvitation(Invitation invitation) {
         this.invitation = invitation;
+    }
+
+    /**
+     * Getter for message.
+     * 
+     * @return the message
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * Setter for message.
+     * 
+     * @param message the message to set
+     */
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     /**

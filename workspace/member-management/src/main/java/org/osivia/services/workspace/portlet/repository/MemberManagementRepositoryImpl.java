@@ -964,7 +964,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             String basePath = nuxeoController.getBasePath();
 
             // Nuxeo document context
-            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(basePath);
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(basePath, true);
 
             // Nuxeo document
             workspace = documentContext.getDoc();
@@ -1088,7 +1088,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         // Update resending date
         variables.put(INVITATION_RESENDING_DATE, String.valueOf(resendingDate.getTime()));
         // Update message
-        variables.put(INVITATION_MESSAGE_PROPERTY, form.getInvitation().getMessage());
+        variables.put(INVITATION_MESSAGE_PROPERTY, form.getMessage());
 
         // Task properties
         PropertyMap taskProperties = procedureInstanceProperties.getMap("pi:task");

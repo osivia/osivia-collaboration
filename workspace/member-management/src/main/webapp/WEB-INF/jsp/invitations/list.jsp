@@ -138,7 +138,7 @@
                                 
                                     <div class="media-right media-middle">
                                         <a href="${url}" class="btn btn-link btn-sm">
-                                            <span><op:translate key="EDIT" /></span>
+                                            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_EDIT" /></span>
                                         </a>
                                     </div>
                                 </c:if>

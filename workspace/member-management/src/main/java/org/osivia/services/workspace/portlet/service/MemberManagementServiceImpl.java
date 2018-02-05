@@ -34,6 +34,7 @@ import org.osivia.services.workspace.portlet.model.Member;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.model.comparator.InvitationComparator;
+import org.osivia.services.workspace.portlet.model.comparator.LocalGroupComparator;
 import org.osivia.services.workspace.portlet.model.comparator.MemberObjectComparator;
 import org.osivia.services.workspace.portlet.repository.MemberManagementRepository;
 import org.osivia.services.workspace.util.ApplicationContextProvider;
@@ -76,6 +77,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     /** Notifications service. */
     @Autowired
     private INotificationsService notificationsService;
+
+    /** Local group comparator. */
+    @Autowired
+    private LocalGroupComparator localGroupComparator;
 
 
     /** Mail pattern. */
@@ -130,6 +135,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
             // Local groups
             List<CollabProfile> localGroups = this.repository.getLocalGroups(portalControllerContext, workspaceId);
+            Collections.sort(localGroups, this.localGroupComparator);
             options.setWorkspaceLocalGroups(localGroups);
         }
 
@@ -198,7 +204,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         // Update model
         this.invalidateLoadedForms();
-        // this.getMembersForm(portalControllerContext);
+        this.getMembersForm(portalControllerContext);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_MEMBERS_UPDATE_SUCCESS");
@@ -523,7 +529,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Update model
         options.setInvitationsCount(count);
         this.invalidateLoadedForms();
-        // this.getInvitationsForm(portalControllerContext);
+        this.getInvitationsForm(portalControllerContext);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_UPDATE_SUCCESS");
@@ -671,7 +677,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Update model
         options.setRequestsCount(count);
         this.invalidateLoadedForms();
-        // this.getInvitationRequestsForm(portalControllerContext);
+        this.getInvitationRequestsForm(portalControllerContext);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_REQUESTS_UPDATE_SUCCESS");
@@ -708,6 +714,9 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         this.repository.resendInvitation(portalControllerContext, form, resendingDate);
 
         // Update model
+        String message = form.getMessage();
+        form.setMessage(null);
+        form.getInvitation().setMessage(message);
         form.getInvitation().setResendingDate(resendingDate);
         this.invalidateLoadedForms();
     }
