@@ -16,4 +16,7 @@
     
     <!-- Invitations list -->
     <jsp:include page="list.jsp" />
+    
+    <!-- Purge -->
+    <jsp:include page="purge.jsp" />
 </div>

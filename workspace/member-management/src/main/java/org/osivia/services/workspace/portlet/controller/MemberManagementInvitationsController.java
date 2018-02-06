@@ -164,6 +164,28 @@ public class MemberManagementInvitationsController {
 
 
     /**
+     * Purge invitations history action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param options options model attribute
+     * @param form invitations form model attribute
+     * @throws PortletException
+     */
+    @ActionMapping("purge")
+    public void purge(ActionRequest request, ActionResponse response, @ModelAttribute("options") MemberManagementOptions options,
+            @ModelAttribute("invitations") InvitationsForm form) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.purgeInvitationsHistory(portalControllerContext, options, form);
+        
+        // Copy render parameter
+        this.copyRenderParameters(request, response);
+    }
+
+
+    /**
      * Copy render parameters.
      *
      * @param request action request

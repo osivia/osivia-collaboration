@@ -146,6 +146,18 @@ public interface MemberManagementService {
 
 
     /**
+     * Purge invitations history.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param options options
+     * @param form invitations form
+     * @throws PortletException
+     */
+    void purgeInvitationsHistory(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form)
+            throws PortletException;
+
+
+    /**
      * Validate invitations creation form.
      * 
      * @param errors errors

@@ -242,12 +242,18 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
             // Invitation identifiers
             Set<String> invitationIdentifiers = new HashSet<>();
+            // Purge available indicator
+            boolean purgeAvailable = false;
+
             for (Invitation invitation : invitations) {
                 if (InvitationState.SENT.equals(invitation.getState())) {
                     invitationIdentifiers.add(invitation.getId());
+                } else {
+                    purgeAvailable = true;
                 }
             }
             form.setIdentifiers(invitationIdentifiers);
+            form.setPurgeAvailable(purgeAvailable);
 
             form.setLoaded(true);
         }
@@ -534,6 +540,39 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_UPDATE_SUCCESS");
         this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void purgeInvitationsHistory(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form)
+            throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Invitations
+        List<Invitation> invitations = form.getInvitations();
+
+        if (CollectionUtils.isNotEmpty(invitations)) {
+            for (Invitation invitation : invitations) {
+                if (!InvitationState.SENT.equals(invitation.getState())) {
+                    invitation.setDeleted(true);
+                }
+            }
+
+            // Update invitations
+            this.repository.updateInvitations(portalControllerContext, form.getInvitations());
+
+            // Update model
+            form.setLoaded(false);
+            this.getInvitationsForm(portalControllerContext);
+
+            // Notification
+            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_PURGE_SUCCESS");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        }
     }
 
 
