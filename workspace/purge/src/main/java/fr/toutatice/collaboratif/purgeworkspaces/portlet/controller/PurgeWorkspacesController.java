@@ -43,7 +43,7 @@ import fr.toutatice.collaboratif.purgeworkspaces.portlet.service.PurgeWorkspaces
 @SessionAttributes("form")
 public class PurgeWorkspacesController {
 
-	private static final String DEFAULT_PAGE_SIZE = "2";
+	private static final String DEFAULT_PAGE_SIZE = "10";
 	
     /** Portlet context. */
     @Autowired

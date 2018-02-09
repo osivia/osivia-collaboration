@@ -9,7 +9,14 @@
                 <div class="popover-container">
                     <ul class="list-unstyled selectable">
                         <c:forEach var="workspace" items="${form.list}" varStatus="status">
-                            <li>
+                        	<c:choose>
+	                       		<c:when test="${not empty form.list[status.index].deletedDate}">
+	                            	<li class="list-group-item-warning">
+	                            </c:when>
+	                            <c:otherwise>
+	                            	<li class>
+	                            </c:otherwise>
+                            </c:choose>
                                 <div class="table-row">
                                     <form:hidden path="list[${status.index}].selected" />
                                 
