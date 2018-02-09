@@ -25,6 +25,7 @@
         <module>participants</module>
         <module>pins</module>
         <module>trash</module>
+		<module>purge</module>
     </modules>
 
 

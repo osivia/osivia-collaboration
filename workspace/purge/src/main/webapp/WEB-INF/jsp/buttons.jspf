@@ -1,0 +1,16 @@
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
+
+<div class="form-group text-center">
+	<div>
+
+		<!-- Put in bin -->
+		<button type="submit" name="putInBin" class="btn btn-primary">
+			<i class="glyphicons glyphicons-bin"></i> <span><op:translate key="PUT_IN_BIN" /></span>
+		</button>
+      		
+      		<!-- Purge workspaces in bin -->
+      		<a href="${purgeUrl}" class="btn btn-primary">
+          		<span><op:translate key="PURGE_WORKSPACE_IN_BIN" /></span>
+      		</a>
+	</div>
+</div>
