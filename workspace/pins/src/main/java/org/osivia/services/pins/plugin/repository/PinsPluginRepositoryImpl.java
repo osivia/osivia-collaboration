@@ -1,6 +1,7 @@
 package org.osivia.services.pins.plugin.repository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.portlet.PortletException;
@@ -30,6 +31,8 @@ public class PinsPluginRepositoryImpl implements PinsPluginRepository {
 	
     /** Current workspace attribute name. */
     private static final String CURRENT_WORKSPACE_ATTRIBUTE = "osivia.workspace.edition.currentWorkspace";
+    
+    private static final String WEBID_PROPERTY = "ttc:webid";
 	
     /** Document DAO. */
     @Autowired
@@ -48,13 +51,23 @@ public class PinsPluginRepositoryImpl implements PinsPluginRepository {
          INuxeoCommand nuxeoCommand = new ListDocumentsCommand(NuxeoQueryFilterContext.CONTEXT_LIVE, listwebid, workspacePath, false);
          Documents documents = (Documents) nuxeoController.executeNuxeoCommand(nuxeoCommand);    
          
+         HashMap<String, DocumentDTO> map = new HashMap<>();
+         
          List<DocumentDTO> listDTO = new ArrayList<>();
+         
+         //The result list is not sorted because of the in clause
+         //First put dto in a hashmap
          if (documents != null)
          {
         	 for (int i=0; i< documents.size(); i++)
         	 {
-                 listDTO.add(documentDAO.toDTO(documents.get(i)));
+                 map.put(documents.get(i).getString(WEBID_PROPERTY), documentDAO.toDTO(documents.get(i)));
         	 }
+         }
+         //Then add dto in a list in the order of the listwebid
+         for (Object webid: listwebid)
+         {
+        	 listDTO.add(map.get(webid));
          }
          
          return listDTO;

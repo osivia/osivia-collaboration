@@ -94,7 +94,7 @@ public class ListDocumentsCommand implements INuxeoCommand {
      */
     @Override
     public String getId() {
-        return "Pins/" + this.workspacePath;
+        return "Pins/" + this.workspacePath + listWebid;
     }
 
 }
