@@ -7,6 +7,8 @@ import javax.portlet.PortletException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
+import org.osivia.portal.api.directory.v2.DirServiceFactory;
+import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -120,6 +122,16 @@ public class PurgeWorkspacesConfiguration extends CMSPortlet implements PortletC
     @Bean
     public INotificationsService getNotificationService() {
         return Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
+    }
+    
+    /**
+     * Get person service.
+     * 
+     * @return person service
+     */
+    @Bean
+    public PersonService getPersonService() {
+        return DirServiceFactory.getService(PersonService.class);
     }
     
 }

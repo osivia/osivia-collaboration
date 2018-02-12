@@ -23,18 +23,24 @@
                                     <div class="row">
                                         <!-- Workspace title -->
                                         <div class="col-sm-5 col-md-4">
+                                        	<div class="form-control-static text-overflow">
                                                 <span>${workspace.title}</span>
+                                            </div>
                                         </div>
                                         
                                         <!-- Workspace expiration date -->
                                         <div class="col-sm-4 col-md-3">
-                                             <span><fmt:formatDate value="${workspace.expirationDate}" type="date" dateStyle="long" /></span>
+                                        	<div class="form-control-static">
+                                             	<span><fmt:formatDate value="${workspace.expirationDate}" type="date" dateStyle="long" /></span>
+                                            </div>
                                         </div>
                                         
-                                        <!-- Workspace expiration date -->
+                                        <!-- Workspace deleted date -->
                                         <div class="hidden-sm col-md-3">
                                         	<c:if test="${not empty form.list[status.index].deletedDate}">
                                              	<span><op:formatRelativeDate value="${workspace.deletedDate}" /></span>
+                                             	<br>
+                                                <small><op:translate key="TRASH_BY_LAST_CONTRIBUTOR" args="${workspace.lastContributor}" /></small>
                                              </c:if>
                                         </div>
                                         

@@ -1,15 +1,11 @@
 package fr.toutatice.collaboratif.purgeworkspaces.portlet.service;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.portlet.PortletException;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +26,7 @@ import fr.toutatice.collaboratif.purgeworkspaces.portlet.repository.PurgeWorkspa
 @Service
 public class PurgeWorkspacesServiceImpl implements PurgeWorkspacesService, ApplicationContextAware {
 
-	private static final String EXPIRATION_DATE_PROPERTY = "dc:expired";
+	
 	
 	private static final String IN_BIN_PROPERTY = "ecm:currentLifeCycleState";
 	
@@ -117,33 +113,7 @@ public class PurgeWorkspacesServiceImpl implements PurgeWorkspacesService, Appli
     	options.setPageNumber(Integer.toString(pageNumber+1));
     	
     	//Load workspace list with order criteria and paging
-    	PaginableDocuments documents = this.repository.getListWorkspace(portalControllerContext, sortColumn, sortOrder, pageNumber, pageSize);
-    	
-    	//Total result number
-    	options.setTotalResultNumber(Integer.toString(documents.getTotalSize()));
-    	
-    	//Total page number
-    	int totalPageNumber = (int) (pageSize >0? Math.ceil(((double) documents.getTotalSize())/pageSize) : 1);
-    	options.setTotalPageNumber(Integer.toString(totalPageNumber));
-    	
-    	//Build of the return list of workspaceLine objects
-    	Calendar calendar = Calendar.getInstance();
-    	Date currentDate = calendar.getTime();
-		List<WorkspaceLine> list = new ArrayList<>();
-		Date expirationDate;
-		Date deletedDate;
-    	String inBin;
-    	boolean deleted = false;
-		for (Document document: documents)
-		{
-			expirationDate = document.getDate(EXPIRATION_DATE_PROPERTY);
-			inBin = document.getState();
-			deleted = "deleted".equals(inBin);
-			deletedDate = deleted? document.getDate(DELETED_DATE_PROPERTY) : null;
-			WorkspaceLine line = new WorkspaceLine(document.getId(),document.getTitle(), new ArrayList<String>(), expirationDate, deletedDate, expirationDate != null? currentDate.after(expirationDate) : false);
-			list.add(line);
-		}
-		return list;
+    	return this.repository.getListWorkspace(portalControllerContext, options, sortColumn, sortOrder, pageNumber, pageSize);
     }
     
     /**

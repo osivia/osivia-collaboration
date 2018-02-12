@@ -4,7 +4,7 @@
 
 <div class="text-center">
 	<div>
-		<span><op:translate key="WORKSPACE_TOTAL_NUMBER" /> : ${options.totalResultNumber}</span>
+		<span><op:translate key="WORKSPACE_TOTAL_NUMBER" args="${options.totalResultNumber}"/></span>
 	</div>
 	<ul class="pagination pagination-sm">
 		

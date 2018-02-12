@@ -19,9 +19,11 @@ public class WorkspaceLine {
 	private boolean selected;
 	
 	private boolean expired;
+	
+	private String lastContributor;
 
 	/** Constructor */
-	public WorkspaceLine(String id, String title, List<String> animators, Date expirationDate, Date deletedDate, boolean expired) {
+	public WorkspaceLine(String id, String title, List<String> animators, Date expirationDate,  Date deletedDate, String lastContributor,boolean expired) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -29,6 +31,7 @@ public class WorkspaceLine {
 		this.expirationDate = expirationDate;
 		this.deletedDate = deletedDate;
 		this.expired = expired;
+		this.lastContributor = lastContributor;
 	}
 
 	public String getTitle() {
@@ -85,6 +88,14 @@ public class WorkspaceLine {
 
 	public void setDeletedDate(Date deletedDate) {
 		this.deletedDate = deletedDate;
+	}
+
+	public String getLastContributor() {
+		return lastContributor;
+	}
+
+	public void setLastContributor(String lastContributor) {
+		this.lastContributor = lastContributor;
 	}
 
 	

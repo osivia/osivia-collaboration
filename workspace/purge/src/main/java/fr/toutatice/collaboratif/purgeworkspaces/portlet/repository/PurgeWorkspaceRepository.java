@@ -5,6 +5,9 @@ import java.util.List;
 import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.osivia.portal.api.context.PortalControllerContext;
 
+import fr.toutatice.collaboratif.purgeworkspaces.portlet.model.PurgeWorkspaceOptions;
+import fr.toutatice.collaboratif.purgeworkspaces.portlet.model.WorkspaceLine;
+
 /** 
  * Purge workspace repository
  * @author Julien Barberet
@@ -13,7 +16,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 public interface PurgeWorkspaceRepository {
 
 	/** Get list of workspace with order criteria */
-	PaginableDocuments getListWorkspace(PortalControllerContext portalControllerContext, 
+	List<WorkspaceLine> getListWorkspace(PortalControllerContext portalControllerContext, PurgeWorkspaceOptions options,
 			String sortColumn, String sortOrder, int pageNumber, int pageSize);
 	
 	/** Put a list of workspace in bin */
