@@ -15,28 +15,15 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoCompatibility;
  * @author Julien Barberet
  * @see INuxeoCommand
  */
-public class ListWorkspaceCommand implements INuxeoCommand {
-    
-    private String sortColumn;
-    
-    private String sortOrder;
-    
-    private int pageNumber;
-    
-    private int pageSize;
-
+public class ListDeletedWorkspaceCommand implements INuxeoCommand {
 
     /**
      * Constructor.
      *
      * @param queryContext Nuxeo query filter context
      */
-    public ListWorkspaceCommand(String sortColumn, String sortOrder, int pageNumber, int pageSize) {
+    public ListDeletedWorkspaceCommand() {
         super();
-        this.sortColumn = sortColumn;
-        this.sortOrder = sortOrder;
-        this.pageNumber = pageNumber;
-        this.pageSize = pageSize;
     }
 
 
@@ -55,9 +42,7 @@ public class ListWorkspaceCommand implements INuxeoCommand {
             request = nuxeoSession.newRequest("Document.Query");
             request.setHeader(Constants.HEADER_NX_SCHEMAS, "dublincore, common, toutatice");
         }
-        request.set("query", "SELECT * FROM Workspace WHERE ecm:isVersion = 0 ORDER BY "+sortColumn+ " "+sortOrder);
-        request.set("currentPageIndex", pageNumber);
-        request.set("pageSize", pageSize);
+        request.set("query", "SELECT * FROM Workspace WHERE ecm:isVersion = 0 AND ecm:currentLifeCycleState = 'deleted' ");
 
         return request.execute();
     }
@@ -68,7 +53,7 @@ public class ListWorkspaceCommand implements INuxeoCommand {
      */
     @Override
     public String getId() {
-        return "PurgeWorkspace "+UUID.randomUUID();
+        return "PurgeWorkspace"+UUID.randomUUID();
     }
 
 }

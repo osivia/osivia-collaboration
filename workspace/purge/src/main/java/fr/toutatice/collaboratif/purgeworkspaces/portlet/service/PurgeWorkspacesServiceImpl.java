@@ -6,6 +6,8 @@ import java.util.List;
 import javax.portlet.PortletException;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,9 +145,22 @@ public class PurgeWorkspacesServiceImpl implements PurgeWorkspacesService, Appli
      * {@inheritDoc}
      */
     @Override
-    public void purge(PortalControllerContext portalControllerContext, List<String> listIdToPurge)
+    public int purge(PortalControllerContext portalControllerContext)
     {
-    	this.repository.purge(portalControllerContext, listIdToPurge);
+    	// Get all deleted workspaces
+    	Documents documents = this.repository.getDeletedWorkspaces(portalControllerContext);
+    	ArrayList<String> listIdToPurge = new ArrayList<>();
+    	for (Document document: documents)
+		{
+    		listIdToPurge.add(document.getId());
+		}
+    	
+    	// Purge deleted workspaces
+    	if (listIdToPurge.size() >0)
+    	{
+    		this.repository.purge(portalControllerContext, listIdToPurge);
+    	}
+    	return listIdToPurge.size();
     }
     
     /**

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
@@ -16,13 +17,13 @@ import org.springframework.stereotype.Repository;
 
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.model.PurgeWorkspaceOptions;
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.model.WorkspaceLine;
+import fr.toutatice.collaboratif.purgeworkspaces.portlet.repository.command.ListDeletedWorkspaceCommand;
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.repository.command.ListWorkspaceCommand;
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.repository.command.PurgeCommand;
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.repository.command.PutInTrashWorkspaceCommand;
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.repository.command.RestoreWorkspaceCommand;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 
 /**
  * Purge workspace repository implementation
@@ -52,7 +53,7 @@ public class PurgeWorkspaceRepositoryImpl implements PurgeWorkspaceRepository {
 	             portalControllerContext.getPortletCtx());
 	
 	     // Nuxeo command
-	     INuxeoCommand nuxeoCommand = new ListWorkspaceCommand(NuxeoQueryFilterContext.CONTEXT_LIVE, sortColumn, sortOrder, pageNumber, pageSize);
+	     INuxeoCommand nuxeoCommand = new ListWorkspaceCommand(sortColumn, sortOrder, pageNumber, pageSize);
 	     PaginableDocuments documents = (PaginableDocuments) nuxeoController.executeNuxeoCommand(nuxeoCommand);
 	     
 	     //Total result number
@@ -120,16 +121,29 @@ public class PurgeWorkspaceRepositoryImpl implements PurgeWorkspaceRepository {
      * {@inheritDoc}
      */
 	@Override
+	public Documents getDeletedWorkspaces(PortalControllerContext portalControllerContext)
+	{
+		// Nuxeo controler
+		NuxeoController nuxeoController = new NuxeoController(portalControllerContext.getRequest(), portalControllerContext.getResponse(),
+	             portalControllerContext.getPortletCtx());
+		
+		INuxeoCommand nuxeoCommand = new ListDeletedWorkspaceCommand();
+	    return (Documents) nuxeoController.executeNuxeoCommand(nuxeoCommand);
+	}
+	
+	/**
+     * {@inheritDoc}
+     */
+	@Override
 	public void purge(PortalControllerContext portalControllerContext, List<String> listIdToPurge) {
 		
 		// Nuxeo controler
 		NuxeoController nuxeoController = new NuxeoController(portalControllerContext.getRequest(), portalControllerContext.getResponse(),
 	             portalControllerContext.getPortletCtx());
-		// Nuxeo command
+		
 		INuxeoCommand nuxeoCommand = new PurgeCommand(listIdToPurge);
 	    nuxeoController.executeNuxeoCommand(nuxeoCommand);
-		
-		
+	
 	}
 	
 	/**

@@ -57,7 +57,7 @@ public interface PurgeWorkspacesService {
 	 * @param portalControllerContext
 	 * @param listIdToPurge
 	 */
-	void purge(PortalControllerContext portalControllerContext, List<String> listIdToPurge);
+	int purge(PortalControllerContext portalControllerContext);
 	
 	/**
 	 * Load the workspaces with order criteria

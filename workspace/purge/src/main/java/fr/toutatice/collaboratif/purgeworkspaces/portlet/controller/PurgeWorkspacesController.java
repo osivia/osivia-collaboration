@@ -1,8 +1,6 @@
 package fr.toutatice.collaboratif.purgeworkspaces.portlet.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -29,7 +27,6 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.model.PurgeWorkspaceForm;
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.model.PurgeWorkspaceOptions;
-import fr.toutatice.collaboratif.purgeworkspaces.portlet.model.WorkspaceLine;
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.service.PurgeWorkspacesService;
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.service.PurgeWorkspacesServiceImpl;
 
@@ -87,7 +84,7 @@ public class PurgeWorkspacesController {
         form.setList(this.service.loadList(portalControllerContext, options));
         
     	// Portlet title
-        response.setTitle("Pins");
+        response.setTitle("Purge");
 
         return "view";
     }
@@ -167,21 +164,24 @@ public class PurgeWorkspacesController {
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
-        List<WorkspaceLine> listWorkspace = form.getList();
-        List<String> listIdToPurge = new ArrayList<>();
-        for (WorkspaceLine workspace : listWorkspace)
+    	int numberPurged = this.service.purge(portalControllerContext);
+
+    	//Reinit the page number
+    	options.setPageNumber("1");
+    	
+    	String message;
+    	if (numberPurged == 0)
+    	{
+            message = bundle.getString("NO_WORKSPACE_TO_PURGE");
+        } else if (numberPurged ==1)
         {
-        	if (workspace.getDeletedDate() != null)
-        	{
-        		listIdToPurge.add(workspace.getId());
-        	}
+        	message = bundle.getString("WORKSPACE_PURGE_SUCCESS");
+        } else {
+            message = bundle.getString("WORKSPACES_PURGE_SUCCESS",numberPurged);
+            
         }
-        
-        this.service.purge(portalControllerContext, listIdToPurge);
-        
-        // Notification
-        String message = bundle.getString("WORKSPACES_PURGE_SUCCESS");
-        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+    	// Notification
+    	this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
     }
     
     /**

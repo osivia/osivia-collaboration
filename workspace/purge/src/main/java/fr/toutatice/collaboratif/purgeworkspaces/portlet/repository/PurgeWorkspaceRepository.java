@@ -2,7 +2,7 @@ package fr.toutatice.collaboratif.purgeworkspaces.portlet.repository;
 
 import java.util.List;
 
-import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
+import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.portal.api.context.PortalControllerContext;
 
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.model.PurgeWorkspaceOptions;
@@ -27,4 +27,7 @@ public interface PurgeWorkspaceRepository {
 	
 	/** Restore a workspace */
 	void restore(PortalControllerContext portalControllerContext, String uid);
+	
+	/** Get workspaces in bin */
+	Documents getDeletedWorkspaces(PortalControllerContext portalControllerContext);
 }
