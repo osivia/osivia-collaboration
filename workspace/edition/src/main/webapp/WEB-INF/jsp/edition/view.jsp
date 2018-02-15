@@ -98,6 +98,22 @@
                             </div>
                         </div>
                     </spring:bind>
+                    
+                    <!-- Invitations -->
+                    <div class="form-group">
+                        <form:label path="workspaceType" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_INVITATIONS" /></form:label>
+                        <div class="col-sm-9">
+                            <div class="checkbox">
+                                <label>
+                                    <form:checkbox path="allowedInvitationRequests" />
+                                    <span><op:translate key="WORKSPACE_ALLOWED_INVITATION_REQUESTS_ACTION" /></span>
+                                </label>
+                                <p class="text-muted">
+                                    <span><op:translate key="WORKSPACE_ALLOWED_INVITATION_REQUESTS_HELP" /></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </c:if>
             </div>
             

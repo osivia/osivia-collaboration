@@ -32,7 +32,7 @@
             <div class="media-body media-middle">
                 <!-- Title -->
                 <h3 class="h4 media-heading">
-                    <ttc:title document="${document}" linkable="${(workspaceType.id eq 'PUBLIC')}" />
+                    <ttc:title document="${document}" linkable="${(workspaceType.id eq 'PUBLIC') || (workspaceType.id eq 'PUBLIC_INVITATION')}" />
                 </h3>
 
                 <!-- Type -->
@@ -51,22 +51,24 @@
                 </c:if>
                 
                 <!-- Action -->
-                <p class="small">
-                    <c:choose>
-                        <c:when test="${empty memberStatus}">
-                            <a href="javascript:;" onclick="$JQry('#${namespace}-confirmation-button').attr('href', '${createRequestUrl}');" data-toggle="modal" data-target="#${namespace}-confirmation">
-                                <span><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CREATION" /></span>
-                            </a>
-                        </c:when>
-                        
-                        <c:otherwise>
-                            <span class="text-${memberStatus.color}">
-                                <i class="${memberStatus.icon}"></i>
-                                <span><op:translate key="${memberStatus.key}" /></span>
-                            </span>
-                        </c:otherwise>
-                    </c:choose>
-                </p>
+                <c:if test="${workspaceType.allowedInvitationRequests}">
+                    <p>
+                        <c:choose>
+                            <c:when test="${empty memberStatus}">
+                                <a href="javascript:;" onclick="$JQry('#${namespace}-confirmation-button').attr('href', '${createRequestUrl}');" class="btn btn-default btn-sm" data-toggle="modal" data-target="#${namespace}-confirmation">
+                                    <span><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CREATION" /></span>
+                                </a>
+                            </c:when>
+                            
+                            <c:otherwise>
+                                <span class="text-${memberStatus.color}">
+                                    <i class="${memberStatus.icon}"></i>
+                                    <span><op:translate key="${memberStatus.key}" /></span>
+                                </span>
+                            </c:otherwise>
+                        </c:choose>
+                    </p>
+                </c:if>
             </div>
         </li>
     </c:forEach>
@@ -83,20 +85,31 @@
 
 
 <div id="${namespace}-confirmation" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="glyphicons glyphicons-remove"></i>
+                    <span class="sr-only"><op:translate key="CLOSE" /></span>
+                </button>
+
+                <h4 class="modal-title"><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CONFIRMATION_TITLE" /></h4>
+            </div>
+        
             <div class="modal-body">
-                <p class="text-center"><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CONFIRMATION_MESSAGE_1" /></p>
-                <p class="text-center"><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CONFIRMATION_MESSAGE_2" /></p>
-                <p class="text-center">
-                    <a id="${namespace}-confirmation-button" href="#" class="btn btn-default">
-                        <span><op:translate key="YES" /></span>
-                    </a>
-                    
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        <span><op:translate key="NO" /></span>
-                    </button>
-                </p>
+                <p><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CONFIRMATION_MESSAGE_1" /></p>
+                <p><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CONFIRMATION_MESSAGE_2" /></p>
+            </div>
+            
+            <div class="modal-footer">
+                <a id="${namespace}-confirmation-button" href="#" class="btn btn-primary">
+                    <i class="glyphicons glyphicons-inbox-out"></i>
+                    <span><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CONFIRM" /></span>
+                </a>
+                
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <span><op:translate key="CANCEL" /></span>
+                </button>
             </div>
         </div>
     </div>

@@ -78,7 +78,22 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
             StringBuilder builder = new StringBuilder();
             builder.append("ecm:primaryType = 'Workspace' ");
             builder.append("AND ttcs:spaceMembers/*/login <> '").append(user).append("' ");
-            builder.append("AND ttcs:visibility IN ('").append(WorkspaceType.PUBLIC.getId()).append("', '").append(WorkspaceType.PRIVATE.getId()).append("') ");
+
+            builder.append("AND ttcs:visibility IN (");
+            WorkspaceType[] workspaceTypes = new WorkspaceType[]{WorkspaceType.PUBLIC, WorkspaceType.PUBLIC_INVITATION, WorkspaceType.PRIVATE};
+            boolean first = true;
+            for (WorkspaceType workspaceType : workspaceTypes) {
+                if (first) {
+                    first = false;
+                } else {
+                    builder.append(", ");
+                }
+
+                builder.append("'");
+                builder.append(workspaceType.getId());
+                builder.append("'");
+            }
+            builder.append(")");
 
             filter = builder.toString();
         }

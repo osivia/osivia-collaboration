@@ -1,6 +1,5 @@
 package org.osivia.services.workspace.edition.portlet.model;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -26,56 +25,60 @@ public class WorkspaceEditionForm {
     private String title;
     /** Workspace description. */
     private String description;
-    /** Workspace root type indicator. */
-    private boolean root;
     /** Workspace template (only for root). */
     private String template;
     /** Workspace templates (only for root). */
     private Map<String, String> templates;
     /** Workspace type (only for root). */
     private WorkspaceType workspaceType;
-    /** Initial workspace type (only for root). */
-    private WorkspaceType initialWorkspaceType;
+    /** Allowed invitation requests indicator (only for root). */
+    private boolean allowedInvitationRequests;
     /** Workspace vignette. */
     private Image vignette;
     /** Workspace banner (only for root). */
     private Image banner;
-
     /** Workspace tasks. */
     private List<Task> tasks;
     /** Workspace editorial. */
     private Editorial editorial;
 
+    /** Initial workspace type (only for root). */
+    private WorkspaceType initialWorkspaceType;
+    /** Workspace types. */
+    private List<WorkspaceType> workspaceTypes;
+
+
     /** Workspace Nuxeo document. */
     private final Document document;
-    /** Workspace types. */
-    private final List<WorkspaceType> workspaceTypes;
+    /** Workspace root type indicator. */
+    private final boolean root;
 
 
     /**
      * Constructor.
      * 
      * @param document workspace Nuxeo document
+     * @param root workspace root type indicator
      */
-    public WorkspaceEditionForm(Document document) {
+    public WorkspaceEditionForm(Document document, boolean root) {
         super();
         this.document = document;
-        this.workspaceTypes = Arrays.asList(WorkspaceType.values());
+        this.root = root;
     }
 
 
     /**
      * Getter for title.
-     *
+     * 
      * @return the title
      */
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
     /**
      * Setter for title.
-     *
+     * 
      * @param title the title to set
      */
     public void setTitle(String title) {
@@ -84,38 +87,20 @@ public class WorkspaceEditionForm {
 
     /**
      * Getter for description.
-     *
+     * 
      * @return the description
      */
     public String getDescription() {
-        return this.description;
+        return description;
     }
 
     /**
      * Setter for description.
-     *
+     * 
      * @param description the description to set
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * Getter for root.
-     * 
-     * @return the root
-     */
-    public boolean isRoot() {
-        return root;
-    }
-
-    /**
-     * Setter for root.
-     * 
-     * @param root the root to set
-     */
-    public void setRoot(boolean root) {
-        this.root = root;
     }
 
     /**
@@ -173,21 +158,21 @@ public class WorkspaceEditionForm {
     }
 
     /**
-     * Getter for initialWorkspaceType.
+     * Getter for allowedInvitationRequests.
      * 
-     * @return the initialWorkspaceType
+     * @return the allowedInvitationRequests
      */
-    public WorkspaceType getInitialWorkspaceType() {
-        return initialWorkspaceType;
+    public boolean isAllowedInvitationRequests() {
+        return allowedInvitationRequests;
     }
 
     /**
-     * Setter for initialWorkspaceType.
+     * Setter for allowedInvitationRequests.
      * 
-     * @param initialWorkspaceType the initialWorkspaceType to set
+     * @param allowedInvitationRequests the allowedInvitationRequests to set
      */
-    public void setInitialWorkspaceType(WorkspaceType initialWorkspaceType) {
-        this.initialWorkspaceType = initialWorkspaceType;
+    public void setAllowedInvitationRequests(boolean allowedInvitationRequests) {
+        this.allowedInvitationRequests = allowedInvitationRequests;
     }
 
     /**
@@ -228,16 +213,16 @@ public class WorkspaceEditionForm {
 
     /**
      * Getter for tasks.
-     *
+     * 
      * @return the tasks
      */
     public List<Task> getTasks() {
-        return this.tasks;
+        return tasks;
     }
 
     /**
      * Setter for tasks.
-     *
+     * 
      * @param tasks the tasks to set
      */
     public void setTasks(List<Task> tasks) {
@@ -263,12 +248,21 @@ public class WorkspaceEditionForm {
     }
 
     /**
-     * Getter for document.
+     * Getter for initialWorkspaceType.
      * 
-     * @return the document
+     * @return the initialWorkspaceType
      */
-    public Document getDocument() {
-        return document;
+    public WorkspaceType getInitialWorkspaceType() {
+        return initialWorkspaceType;
+    }
+
+    /**
+     * Setter for initialWorkspaceType.
+     * 
+     * @param initialWorkspaceType the initialWorkspaceType to set
+     */
+    public void setInitialWorkspaceType(WorkspaceType initialWorkspaceType) {
+        this.initialWorkspaceType = initialWorkspaceType;
     }
 
     /**
@@ -278,6 +272,33 @@ public class WorkspaceEditionForm {
      */
     public List<WorkspaceType> getWorkspaceTypes() {
         return workspaceTypes;
+    }
+
+    /**
+     * Setter for workspaceTypes.
+     * 
+     * @param workspaceTypes the workspaceTypes to set
+     */
+    public void setWorkspaceTypes(List<WorkspaceType> workspaceTypes) {
+        this.workspaceTypes = workspaceTypes;
+    }
+
+    /**
+     * Getter for document.
+     * 
+     * @return the document
+     */
+    public Document getDocument() {
+        return document;
+    }
+
+    /**
+     * Getter for root.
+     * 
+     * @return the root
+     */
+    public boolean isRoot() {
+        return root;
     }
 
 }
