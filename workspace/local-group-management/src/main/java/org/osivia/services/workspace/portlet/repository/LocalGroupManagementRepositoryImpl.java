@@ -17,6 +17,7 @@ import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceGroupType;
 import org.osivia.directory.v2.model.ext.WorkspaceMember;
 import org.osivia.directory.v2.service.WorkspaceService;
+import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.directory.v2.service.PersonService;
@@ -25,12 +26,15 @@ import org.osivia.services.workspace.portlet.model.LocalGroupEditionForm;
 import org.osivia.services.workspace.portlet.model.LocalGroupListItem;
 import org.osivia.services.workspace.portlet.model.LocalGroups;
 import org.osivia.services.workspace.portlet.model.Member;
+import org.osivia.services.workspace.portlet.repository.command.UpdateRemovedLocalGroupLinkedInvitationsCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 
 /**
  * Workspace local group management repository implementation.
@@ -118,12 +122,15 @@ public class LocalGroupManagementRepositoryImpl implements LocalGroupManagementR
      */
     @Override
     public void setLocalGroups(PortalControllerContext portalControllerContext, LocalGroups localGroups) throws PortletException {
+        // Workspace identifier
+        String workspaceId = localGroups.getWorkspaceId();
+
         // Deleted local groups
         List<LocalGroup> deleted = new ArrayList<LocalGroup>();
         for (LocalGroup group : localGroups.getGroups()) {
             LocalGroupListItem localGroup = (LocalGroupListItem) group;
             if (localGroup.isDeleted()) {
-                workspaceService.removeLocalGroup(localGroups.getWorkspaceId(), localGroup.getId());
+                this.deleteLocalGroup(portalControllerContext, workspaceId, localGroup.getId());
 
                 deleted.add(group);
             }
@@ -234,8 +241,33 @@ public class LocalGroupManagementRepositoryImpl implements LocalGroupManagementR
      * {@inheritDoc}
      */
     @Override
-    public void deleteLocalGroup(PortalControllerContext portalControllerContext, String workspaceId, String id) throws PortletException {
-        this.workspaceService.removeLocalGroup(workspaceId, id);
+    public void deleteLocalGroup(PortalControllerContext portalControllerContext, String workspaceId, String localGroupId) throws PortletException {
+        // Remove local group
+        this.workspaceService.removeLocalGroup(workspaceId, localGroupId);
+
+        // Apply local group deletion to pending invitations
+        this.updateLinkedInvitations(portalControllerContext, workspaceId, localGroupId);
+    }
+
+
+    /**
+     * Apply local group deletion to pending invitations.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspaceId workspace identifier
+     * @param localGroupId deleted local group identifier
+     * @throws PortletException
+     */
+    private void updateLinkedInvitations(PortalControllerContext portalControllerContext, String workspaceId, String localGroupId) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
+        nuxeoController.setAsynchronousCommand(true);
+        
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(UpdateRemovedLocalGroupLinkedInvitationsCommand.class, workspaceId, localGroupId);
+        nuxeoController.executeNuxeoCommand(command);
     }
 
 

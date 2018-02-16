@@ -55,9 +55,9 @@
                     <p>
                         <c:choose>
                             <c:when test="${empty memberStatus}">
-                                <a href="javascript:;" onclick="$JQry('#${namespace}-confirmation-button').attr('href', '${createRequestUrl}');" class="btn btn-default btn-sm" data-toggle="modal" data-target="#${namespace}-confirmation">
+                                <button type="button" onclick="$JQry('#${namespace}-confirmation-button').attr('href', '${createRequestUrl}');" class="btn btn-default btn-sm" data-toggle="modal" data-target="#${namespace}-confirmation">
                                     <span><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CREATION" /></span>
-                                </a>
+                                </button>
                             </c:when>
                             
                             <c:otherwise>

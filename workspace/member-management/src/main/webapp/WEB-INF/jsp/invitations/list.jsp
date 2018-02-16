@@ -92,68 +92,66 @@
             </div>
             
             <!-- Body -->
-            <div class="portlet-filler">
-                <c:forEach var="invitation" items="${invitations.invitations}" varStatus="status">
-                    <div class="table-row">
-                        <div class="row">
-                            <!-- Invitation -->
-                            <div class="col-xs-7 col-sm-4 col-md-5 col-lg-6">
-                                <c:set var="person" scope="request" value="${invitation}" />
-                                <jsp:include page="../commons/person.jsp" />
-                            </div>
-                            
-                            <!-- Dates -->
-                            <div class="col-xs-5 col-sm-3 col-lg-2">
-                                <div class="${empty invitation.resendingDate ? 'form-control-static' : ''}">
-                                    <span><fmt:formatDate value="${invitation.date}" type="date" dateStyle="medium" /></span>
-                                    <c:if test="${not empty invitation.resendingDate}">
-                                        <br>
-                                        <small>
-                                            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_RESENDING_DATE" /></span>
-                                            <span><fmt:formatDate value="${invitation.resendingDate}" type="date" dateStyle="medium" /></span>
-                                        </small>
-                                    </c:if>
-                                </div>
-                            </div>
-                            
-                            <!-- Column reset -->
-                            <div class="clearfix visible-xs-block"></div>
-                            
-                            <div class="col-sm-5 col-md-4">
-                                <div class="media-body">
-                                    <!-- State -->
-                                    <div class="form-control-static">
-                                        <span class="${invitation.state.htmlClasses}">
-                                            <i class="${invitation.state.icon}"></i>
-                                            <span><op:translate key="${invitation.state.key}" /></span>
-                                        </span>
-                                    </div>
-                                </div>
-                                
-                                <c:if test="${invitation.state.editable}">
-                                    <portlet:renderURL var="url">
-                                        <portlet:param name="view" value="invitation-edition"/>
-                                        <portlet:param name="invitationPath" value="${invitation.document.path}"/>
-                                    </portlet:renderURL>
-                                
-                                    <div class="media-right media-middle">
-                                        <a href="${url}" class="btn btn-link btn-sm">
-                                            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_EDIT" /></span>
-                                        </a>
-                                    </div>
+            <c:forEach var="invitation" items="${invitations.invitations}" varStatus="status">
+                <div class="table-row">
+                    <div class="row">
+                        <!-- Invitation -->
+                        <div class="col-xs-7 col-sm-4 col-md-5 col-lg-6">
+                            <c:set var="person" scope="request" value="${invitation}" />
+                            <jsp:include page="../commons/person.jsp" />
+                        </div>
+                        
+                        <!-- Dates -->
+                        <div class="col-xs-5 col-sm-3 col-lg-2">
+                            <div class="${empty invitation.resendingDate ? 'form-control-static' : ''}">
+                                <span><fmt:formatDate value="${invitation.date}" type="date" dateStyle="medium" /></span>
+                                <c:if test="${not empty invitation.resendingDate}">
+                                    <br>
+                                    <small>
+                                        <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_RESENDING_DATE" /></span>
+                                        <span><fmt:formatDate value="${invitation.resendingDate}" type="date" dateStyle="medium" /></span>
+                                    </small>
                                 </c:if>
                             </div>
                         </div>
+                        
+                        <!-- Column reset -->
+                        <div class="clearfix visible-xs-block"></div>
+                        
+                        <div class="col-sm-5 col-md-4">
+                            <div class="media-body">
+                                <!-- State -->
+                                <div class="form-control-static">
+                                    <span class="${invitation.state.htmlClasses}">
+                                        <i class="${invitation.state.icon}"></i>
+                                        <span><op:translate key="${invitation.state.key}" /></span>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <c:if test="${invitation.state.editable}">
+                                <portlet:renderURL var="url">
+                                    <portlet:param name="view" value="invitation-edition"/>
+                                    <portlet:param name="invitationPath" value="${invitation.document.path}"/>
+                                </portlet:renderURL>
+                            
+                                <div class="media-right media-middle">
+                                    <a href="${url}" class="btn btn-default btn-sm">
+                                        <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_EDIT" /></span>
+                                    </a>
+                                </div>
+                            </c:if>
+                        </div>
                     </div>
-                </c:forEach>
-                
-                <!-- No results -->
-                <c:if test="${empty invitations.invitations}">
-                    <div class="table-row">
-                        <div class="text-center text-muted"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_NO_INVITATION" /></div>
-                    </div>
-                </c:if>
-            </div>
+                </div>
+            </c:forEach>
+            
+            <!-- No results -->
+            <c:if test="${empty invitations.invitations}">
+                <div class="table-row">
+                    <div class="text-center text-muted"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_NO_INVITATION" /></div>
+                </div>
+            </c:if>
         </div>
     </div>
 </form:form>

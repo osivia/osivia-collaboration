@@ -2,6 +2,7 @@ package org.osivia.services.workspace.portlet.model;
 
 import java.util.List;
 
+import org.osivia.portal.api.portlet.Refreshable;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Refreshable
 public class LocalGroupEditionForm extends LocalGroup {
 
     /** Workspace identifier. */

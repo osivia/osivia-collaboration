@@ -100,7 +100,7 @@
                 <div class="form-group">
                     <c:set var="placeholder"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_MESSAGE_PLACEHOLDER" /></c:set>
                     <form:label path="message" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_MESSAGE" /></form:label>
-                    <form:textarea path="message" cssClass="form-control" placeholder="${placeholder}" />
+                    <form:textarea path="message" rows="3" cssClass="form-control" placeholder="${placeholder}" />
                 </div>
             </div>
             

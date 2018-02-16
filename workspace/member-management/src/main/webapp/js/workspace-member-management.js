@@ -213,7 +213,7 @@ $JQry(function() {
 	});
 	
 	
-	$JQry(".workspace-member-management select.select2-invitation").change(function(event) {
+	$JQry(".workspace-member-management select").change(function(event) {
 		var $target = $JQry(event.target),
 			$row = $target.closest(".table-row"),
 			$edited = $row.find("input[type=hidden][id$='.edited']"),
