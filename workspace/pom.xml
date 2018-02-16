@@ -23,9 +23,9 @@
         <module>map</module>
         <module>acl-management</module>
         <module>participants</module>
-        <module>pins</module>
+        <module>sets</module>
         <module>trash</module>
-		<module>purge</module>
+	<module>purge</module>
     </modules>
 
 
