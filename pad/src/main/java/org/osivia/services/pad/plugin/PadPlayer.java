@@ -23,6 +23,7 @@ import javax.portlet.PortletContext;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.cms.DocumentContext;
+import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.cms.impl.BasicPermissions;
 import org.osivia.portal.api.player.Player;
 import org.osivia.services.pad.portlet.service.PadService;
@@ -37,23 +38,26 @@ import fr.toutatice.portail.cms.nuxeo.api.plugin.PluginModule;
 public class PadPlayer extends PluginModule implements INuxeoPlayerModule {
 
 	/**
-	 * @param portletContext
-	 */
+     * Constructor.
+     * 
+     * @param portletContext portlet context
+     */
 	public PadPlayer(PortletContext portletContext) {
 		super(portletContext);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.osivia.portal.api.player.IPlayerModule#getCMSPlayer(org.osivia.portal.api.cms.DocumentContext)
-	 */
+
+    /**
+     * {@inheritDoc}
+     */
 	@Override
 	public Player getCMSPlayer(DocumentContext<Document> docCtx) {
-				
         // Document
         Document document = docCtx.getDoc();
+        // Document type
+        DocumentType type = docCtx.getType();
 
-        if(docCtx.getType().getName().equals(PadPlugin.TOUTATICE_PAD)) {    
-            
+        if ((type != null) && PadPlugin.TOUTATICE_PAD.equals(type.getName())) {
             Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put(PadService.PAD_REF, document.getPath());
             
