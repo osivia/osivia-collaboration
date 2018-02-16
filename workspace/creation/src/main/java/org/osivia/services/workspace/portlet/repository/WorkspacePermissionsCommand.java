@@ -59,7 +59,7 @@ public class WorkspacePermissionsCommand implements INuxeoCommand {
         List<String> userNames = new ArrayList<>(1);
         userNames.add(username);
         
-        return securityService.removePermissions(document, null, userNames, PermissionsAdapter.LOCAL_GROUP_PERMISSIONS, false, true);
+        return securityService.removePermissions(this.document, null, userNames, PermissionsAdapter.LOCAL_GROUP_PERMISSIONS, false, true);
     }
 
 

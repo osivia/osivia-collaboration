@@ -29,6 +29,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
+import org.osivia.services.workspace.edition.portlet.model.converter.TitlePropertyEditor;
 import org.osivia.services.workspace.edition.portlet.model.validator.WorkspaceEditionFormValidator;
 import org.osivia.services.workspace.edition.portlet.service.WorkspaceEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,10 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
     /** Workspace edition form validator. */
     @Autowired
     private WorkspaceEditionFormValidator editionFormValidator;
+
+    /** Title property editor. */
+    @Autowired
+    private TitlePropertyEditor titlePropertyEditor;
 
     /** Workspace edition service. */
     @Autowired
@@ -459,6 +464,7 @@ public class WorkspaceEditionController extends CMSPortlet implements PortletCon
     @InitBinder("editionForm")
     public void editionFormInitBinder(PortletRequestDataBinder binder) {
         binder.addValidators(this.editionFormValidator);
+        binder.registerCustomEditor(String.class, "title", this.titlePropertyEditor);
         binder.setDisallowedFields("initialWorkspaceType", "workspaceTypes");
     }
 

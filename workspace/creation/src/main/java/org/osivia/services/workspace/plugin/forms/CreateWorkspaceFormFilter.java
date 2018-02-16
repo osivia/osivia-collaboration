@@ -2,6 +2,8 @@ package org.osivia.services.workspace.plugin.forms;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.Name;
 import javax.portlet.PortletException;
@@ -55,10 +57,17 @@ public class CreateWorkspaceFormFilter implements FormFilter {
     /** Stop workflow if granted indicator parameter. */
     private static final String STOP_WORKFLOW_IF_GRANTED = "stopWorkflowIfGranted";
 
+    /** Whitespaces regex. */
+    private static final String REGEX = "\\s\\s";
+
 
     /** Workspace creation service. */
     private WorkspaceCreationService service;
     
+
+    /** Whitespaces pattern. */
+    private final Pattern pattern;
+
     /** Internationalization bundle factory. */
     private final IBundleFactory bundleFactory;
     /** Person service. */
@@ -72,6 +81,7 @@ public class CreateWorkspaceFormFilter implements FormFilter {
      */
     public CreateWorkspaceFormFilter() {
         super();
+        this.pattern = Pattern.compile(REGEX);
 
         // Internationalization bundle factory
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
@@ -162,7 +172,12 @@ public class CreateWorkspaceFormFilter implements FormFilter {
 
         // Workspace title
         String titleVariableName = context.getParamValue(executor, TITLE_VARIABLE_NAME);
-        String title = variables.get(titleVariableName);
+        String title = StringUtils.trimToEmpty(variables.get(titleVariableName));
+        Matcher matcher = this.pattern.matcher(title);
+        while (matcher.find()) {
+            title = matcher.replaceAll(" ");
+            matcher = this.pattern.matcher(title);
+        }
 
         // Check workspace title availability
         if (!this.checkTitleAvailability(portalControllerContext, modelWebId, procedureInstanceUuid, title, titleVariableName)) {
