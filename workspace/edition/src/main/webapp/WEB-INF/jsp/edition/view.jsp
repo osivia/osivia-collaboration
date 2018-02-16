@@ -395,8 +395,7 @@
                     
                     <div class="pull-right">
                         <!-- Delete -->
-                        <!-- <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#${namespace}-delete-modal"> -->
-                        <button type="button" class="btn btn-danger" disabled="disabled">
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#${namespace}-delete-modal">
                             <i class="glyphicons glyphicons-bin"></i>
                             <span><op:translate key="DELETE" /></span>
                         </button>
@@ -408,7 +407,7 @@
     
     
     <!-- Delete confirmation modal -->
-    <%-- <div id="${namespace}-delete-modal" class="modal fade" role="dialog">
+    <div id="${namespace}-delete-modal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -421,19 +420,15 @@
                 </div>
                 
                 <div class="modal-body">
-                    <p class="text-danger">
+                    <p>
                         <span><op:translate key="WORKSPACE_DELETE_MODAL_MESSAGE" args="${fragment}" /></span>
                     </p>
-                    
-                    <div class="alert alert-danger">
-                        <i class="glyphicons glyphicons-exclamation-sign"></i>
-                        <strong><op:translate key="WORKSPACE_DELETE_MODAL_ALERT_MESSAGE" /></strong>
-                    </div>
                 </div>
                 
                 <div class="modal-footer">
                     <a href="${deleteUrl}" class="btn btn-danger" data-dismiss="modal">
-                        <span><op:translate key="CONFIRM" /></span>
+                        <i class="glyphicons glyphicons-bin"></i>
+                        <span><op:translate key="DELETE" /></span>
                     </a>
                     
                     <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -442,5 +437,5 @@
                 </div>
             </div>
         </div>
-    </div> --%>
+    </div>
 </div>

@@ -14,8 +14,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 
 /**
  * Check workspace title availability Nuxeo command.
@@ -80,13 +78,10 @@ public class CheckTitleAvailabilityCommand implements INuxeoCommand {
         clause.append("AND ecm:path <> '").append(this.path).append("' ");
         clause.append("AND dc:title ILIKE '").append(StringUtils.replace(this.title, "'", "\\'")).append("' ");
 
-        // Filtered clause
-        String filteredClause = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE, clause.toString());
-
         // Operation request
         OperationRequest request = nuxeoSession.newRequest("Document.QueryES");
         request.set(Constants.HEADER_NX_SCHEMAS, "dublincore");
-        request.set("query", "SELECT * FROM Document WHERE " + filteredClause);
+        request.set("query", "SELECT * FROM Document WHERE " + clause.toString());
 
         // Results
         Documents results = (Documents) request.execute();

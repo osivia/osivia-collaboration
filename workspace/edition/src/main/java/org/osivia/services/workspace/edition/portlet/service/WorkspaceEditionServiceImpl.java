@@ -420,17 +420,18 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         }
 
 
-        // Internationalization key
-        String key;
+        // Message fragment
+        String fragmentKey;
         if ("Room".equals(form.getDocument().getType())) {
-            key = "MESSAGE_WORKSPACE_DELETE_ROOM_SUCCESS";
+            fragmentKey = "WORKSPACE_EDITION_ROOM_FRAGMENT";
         } else {
-            key = "MESSAGE_WORKSPACE_DELETE_WORKSPACE_SUCCESS";
+            fragmentKey = "WORKSPACE_EDITION_WORKSPACE_FRAGMENT";
         }
+        String fragment = bundle.getString(fragmentKey);
 
         // Notification
-        String message = bundle.getString(key, form.getTitle());
-        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        String message = bundle.getString("MESSAGE_WORKSPACE_DELETE_INFO", fragment, form.getTitle());
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.INFO);
 
         return destroyPageUrl;
     }
