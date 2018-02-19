@@ -88,7 +88,8 @@
                 <!-- Local groups -->
                 <div class="form-group">
                     <form:label path="localGroups" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_LOCAL_GROUPS" /></form:label>
-                    <form:select path="localGroups" cssClass="form-control select2 select2-default">
+                    <c:set var="noResults"><op:translate key="SELECT2_NO_RESULTS" /></c:set>
+                    <form:select path="localGroups" cssClass="form-control select2 select2-default" data-no-results="${noResults}">
                         <c:forEach var="group" items="${options.workspaceLocalGroups}">
                             <form:option value="${group.cn}">${group.displayName}</form:option>
                         </c:forEach>
