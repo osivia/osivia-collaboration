@@ -60,6 +60,7 @@ public class SearchDocumentsCommand implements INuxeoCommand {
         clause.append(" ecm:path STARTSWITH '").append(contextPath).append("' ");
         clause.append("AND dc:title IS NOT NULL ");
         clause.append("AND ttc:webid IS NOT NULL ");
+        clause.append("AND ecm:primaryType != 'Workspace' ");
         if (StringUtils.isNotBlank(this.filter)) {
             clause.append("AND (ecm:fulltext = '").append(this.filter).append("' or ecm:fulltext = '").append(this.filter).append("*') ");
         }
