@@ -11,6 +11,7 @@ import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -81,12 +82,19 @@ public class PurgeWorkspacesController {
     	// Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         
-        form.setList(this.service.loadList(portalControllerContext, options));
+        String page = "error";
+        if (isAdministrator(portalControllerContext)) 
+        {
+        	page = "view";
+        	form.setList(this.service.loadList(portalControllerContext, options));
+            
+        	// Portlet title
+            response.setTitle("Purge");
+        }
         
-    	// Portlet title
-        response.setTitle("Purge");
+        
 
-        return "view";
+        return page;
     }
     
     /**
@@ -226,4 +234,16 @@ public class PurgeWorkspacesController {
         
         return this.service.getOptions(portalControllerContext, sort, alt, pageNumber, pageSize);
     }
+    
+	/**
+	 * Return true if the user has administrator role
+	 * @param portalControllerContext
+	 * @return true if the user has administrator role
+	 */
+	private boolean isAdministrator(PortalControllerContext portalControllerContext) {
+		PortletRequest request = portalControllerContext.getRequest();
+		if(request != null) 
+			return BooleanUtils.isTrue((Boolean) request.getAttribute("osivia.isAdministrator")); 
+		else return false;
+	}
 }

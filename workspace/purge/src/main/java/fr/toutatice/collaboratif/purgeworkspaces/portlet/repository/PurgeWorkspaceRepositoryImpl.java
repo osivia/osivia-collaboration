@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
+import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.directory.v2.service.PersonService;
@@ -19,7 +20,6 @@ import fr.toutatice.collaboratif.purgeworkspaces.portlet.model.PurgeWorkspaceOpt
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.model.WorkspaceLine;
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.repository.command.ListDeletedWorkspaceCommand;
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.repository.command.ListWorkspaceCommand;
-import fr.toutatice.collaboratif.purgeworkspaces.portlet.repository.command.PurgeCommand;
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.repository.command.PutInTrashWorkspaceCommand;
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.repository.command.RestoreWorkspaceCommand;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
@@ -40,6 +40,10 @@ public class PurgeWorkspaceRepositoryImpl implements PurgeWorkspaceRepository {
     /** Person service. */
     @Autowired
     private PersonService personService;
+    
+    /** Workspace service. */
+    @Autowired
+    private WorkspaceService workspaceService;
 	
 	/**
      * {@inheritDoc}
@@ -135,15 +139,13 @@ public class PurgeWorkspaceRepositoryImpl implements PurgeWorkspaceRepository {
      * {@inheritDoc}
      */
 	@Override
-	public void purge(PortalControllerContext portalControllerContext, List<String> listIdToPurge) {
+	public void purge(PortalControllerContext portalControllerContext, Documents documents) {
 		
-		// Nuxeo controler
-		NuxeoController nuxeoController = new NuxeoController(portalControllerContext.getRequest(), portalControllerContext.getResponse(),
-	             portalControllerContext.getPortletCtx());
-		
-		INuxeoCommand nuxeoCommand = new PurgeCommand(listIdToPurge);
-	    nuxeoController.executeNuxeoCommand(nuxeoCommand);
-	
+		for (Document document : documents)
+		{
+			if (document.getString("webc:url") != null) workspaceService.delete(document.getString("webc:url"), document.getId());
+		}
+	    
 	}
 	
 	/**

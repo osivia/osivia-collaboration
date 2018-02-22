@@ -23,7 +23,7 @@ public interface PurgeWorkspaceRepository {
 	void putInBin(PortalControllerContext portalControllerContext, List<String> listId);
 	
 	/** Purge the workspaces that are in bin */
-	void purge(PortalControllerContext portalControllerContext, List<String> listIdToPurge);
+	void purge(PortalControllerContext portalControllerContext, Documents documents);
 	
 	/** Restore a workspace */
 	void restore(PortalControllerContext portalControllerContext, String uid);

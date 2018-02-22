@@ -4,89 +4,72 @@
 
 <div class="text-center">
 	<div>
-		<span><op:translate key="WORKSPACE_TOTAL_NUMBER" args="${options.totalResultNumber}"/></span>
+		<span><op:translate key="WORKSPACE_TOTAL_NUMBER" args="${options.totalResultNumber}" /></span>
 	</div>
-	<ul class="pagination pagination-sm">
-		
+	<c:if test="${options.totalPageNumber gt 1}">
+		<ul class="pagination pagination-sm">
+
 			<c:choose>
 				<c:when test="${options.pageNumber eq '1'}">
-					<li class="disabled">
-						<a href="#">
-							<i class="halflings halflings-triangle-left"></i>
-						</a>
-					</li>
+					<li class="disabled"><a href="#"> <i class="halflings halflings-triangle-left"></i>
+					</a></li>
 				</c:when>
 				<c:otherwise>
 					<portlet:renderURL var="previousPageUrl">
 						<portlet:param name="sort" value="${options.sort}" />
-					    <portlet:param name="alt" value="${options.alt}"/>
-					    <portlet:param name="pageNumber" value="${options.pageNumber}"/>
-						<portlet:param name="pageSize" value="${options.pageSize}"/>
-						<portlet:param name="way" value="previous"/>
+						<portlet:param name="alt" value="${options.alt}" />
+						<portlet:param name="pageNumber" value="${options.pageNumber}" />
+						<portlet:param name="pageSize" value="${options.pageSize}" />
+						<portlet:param name="way" value="previous" />
 					</portlet:renderURL>
-					<li>
-						<a href="${previousPageUrl}">
-							<i class="halflings halflings-triangle-left"></i>
-						</a>
-					</li>
+					<li><a href="${previousPageUrl}"> <i class="halflings halflings-triangle-left"></i>
+					</a></li>
 				</c:otherwise>
 			</c:choose>
-			
-			
-		<c:forEach var="page" begin="1" end="${options.totalPageNumber}">
-			<c:choose>
-				<c:when test="${page eq options.pageNumber}">
-					
-					<li class="active">
-						<a href="#"> 
-							<span>${page}</span> 
-							<span class="sr-only"></span>
-						</a>
-					</li>
 
+
+			<c:forEach var="page" begin="1" end="${options.totalPageNumber}">
+				<c:choose>
+					<c:when test="${page eq options.pageNumber}">
+
+						<li class="active"><a href="#"> <span>${page}</span> <span class="sr-only"></span>
+						</a></li>
+
+					</c:when>
+					<c:otherwise>
+						<portlet:renderURL var="numberPageUrl">
+							<portlet:param name="sort" value="${options.sort}" />
+							<portlet:param name="alt" value="${options.alt}" />
+							<portlet:param name="pageNumber" value="${page}" />
+							<portlet:param name="pageSize" value="${options.pageSize}" />
+							<portlet:param name="way" value="other" />
+						</portlet:renderURL>
+						<c:if test="${((options.pageNumber - page) ) le 3 && (page - options.pageNumber) le 3}">
+							<li class=""><a href="${numberPageUrl}"> <span>${page}</span>
+							</a></li>
+						</c:if>
+
+					</c:otherwise>
+				</c:choose>
+
+			</c:forEach>
+			<c:choose>
+				<c:when test="${options.pageNumber eq options.totalPageNumber}">
+					<li class="disabled"><a href="#"> <i class="halflings halflings-triangle-right"></i>
+					</a></li>
 				</c:when>
 				<c:otherwise>
-					<portlet:renderURL var="numberPageUrl">
+					<portlet:renderURL var="nextPageUrl">
 						<portlet:param name="sort" value="${options.sort}" />
-					    <portlet:param name="alt" value="${options.alt}"/>
-					    <portlet:param name="pageNumber" value="${page}"/>
-						<portlet:param name="pageSize" value="${options.pageSize}"/>
-						<portlet:param name="way" value="other"/>
+						<portlet:param name="alt" value="${options.alt}" />
+						<portlet:param name="pageNumber" value="${options.pageNumber}" />
+						<portlet:param name="pageSize" value="${options.pageSize}" />
+						<portlet:param name="way" value="next" />
 					</portlet:renderURL>
-					<c:if test="${((options.pageNumber - page) ) le 3 && (page - options.pageNumber) le 3}">
-						<li class="">
-							<a href="${numberPageUrl}"> 
-								<span>${page}</span>
-							</a>
-						</li>
-					</c:if>
-
+					<li class=""><a href="${nextPageUrl}"> <i class="halflings halflings-triangle-right"></i>
+					</a></li>
 				</c:otherwise>
 			</c:choose>
-
-		</c:forEach>
-		<c:choose>
-			<c:when test="${options.pageNumber eq options.totalPageNumber}">
-				<li class="disabled">
-					<a href="#">
-					 <i class="halflings halflings-triangle-right"></i>
-					</a>
-				</li>
-			</c:when>
-			<c:otherwise>
-				<portlet:renderURL var="nextPageUrl">
-					<portlet:param name="sort" value="${options.sort}" />
-				    <portlet:param name="alt" value="${options.alt}"/>
-				    <portlet:param name="pageNumber" value="${options.pageNumber}"/>
-					<portlet:param name="pageSize" value="${options.pageSize}"/>
-					<portlet:param name="way" value="next"/>
-				</portlet:renderURL>
-				<li class="">
-					<a href="${nextPageUrl}"> 
-						<i class="halflings halflings-triangle-right"></i>
-					</a>
-				</li>
-			</c:otherwise>
-		</c:choose>
-	</ul>
+		</ul>
+	</c:if>
 </div>

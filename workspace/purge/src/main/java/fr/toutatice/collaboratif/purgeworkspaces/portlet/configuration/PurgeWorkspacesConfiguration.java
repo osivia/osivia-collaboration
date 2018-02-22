@@ -7,6 +7,7 @@ import javax.portlet.PortletException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
+import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -134,4 +135,13 @@ public class PurgeWorkspacesConfiguration extends CMSPortlet implements PortletC
         return DirServiceFactory.getService(PersonService.class);
     }
     
+    /**
+     * Get workspace service.
+     * 
+     * @return workspace service
+     */
+    @Bean
+    public WorkspaceService getWorkspaceService() {
+        return DirServiceFactory.getService(WorkspaceService.class);
+    }
 }

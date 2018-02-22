@@ -137,7 +137,6 @@ public class PurgeWorkspacesServiceImpl implements PurgeWorkspacesService, Appli
     		}
     	}
     	this.repository.putInBin(portalControllerContext, listWorkspaceToDel);
-    	System.out.println(listWorkspaceToDel);
     	
     }
     
@@ -149,18 +148,16 @@ public class PurgeWorkspacesServiceImpl implements PurgeWorkspacesService, Appli
     {
     	// Get all deleted workspaces
     	Documents documents = this.repository.getDeletedWorkspaces(portalControllerContext);
-    	ArrayList<String> listIdToPurge = new ArrayList<>();
-    	for (Document document: documents)
-		{
-    		listIdToPurge.add(document.getId());
-		}
     	
     	// Purge deleted workspaces
-    	if (listIdToPurge.size() >0)
+    	int size = 0;
+    	if (documents != null)
     	{
-    		this.repository.purge(portalControllerContext, listIdToPurge);
+    		size = documents.size();
+    		this.repository.purge(portalControllerContext, documents);
     	}
-    	return listIdToPurge.size();
+    	
+    	return size;
     }
     
     /**
