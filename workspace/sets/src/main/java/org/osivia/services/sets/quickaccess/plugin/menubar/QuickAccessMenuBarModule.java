@@ -79,13 +79,13 @@ public class QuickAccessMenuBarModule implements MenubarModule {
 
 					final String version = document.getString(MODEL_VERSION);
 
-					if (version != null && version.equals(WS_V_1)) {
+					if (version != null && version.equals(WS_V_1) && ((NuxeoDocumentContext) spaceDocumentContext).getPublicationInfos().isFacetSets()) {
 						String uid = portalControllerContext.getHttpServletRequest().getRemoteUser();
 
 						WorkspaceMember member = wsService.getMember(document.getString(WS_ID), uid);
 
 						if (isAdministrator(portalControllerContext) || (member != null && member.getRole() == WorkspaceRole.OWNER)) {
-
+							
 							Locale locale = null;
 							if(portalControllerContext.getRequest() != null) {
 								locale = portalControllerContext.getRequest().getLocale();
