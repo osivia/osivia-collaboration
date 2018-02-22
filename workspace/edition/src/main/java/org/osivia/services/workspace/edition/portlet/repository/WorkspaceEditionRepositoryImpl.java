@@ -492,7 +492,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         Document workspace = form.getDocument();
         String workspaceId = workspace.getString("webc:url");
 
-        this.workspaceService.delete(workspaceId);
+        this.workspaceService.delete(workspaceId, workspace.getId());
 
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(DeleteWorkspaceCommand.class, workspace.getPath());

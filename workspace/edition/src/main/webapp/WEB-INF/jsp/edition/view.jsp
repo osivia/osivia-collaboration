@@ -341,6 +341,7 @@
                     
                     <div class="pull-right">
                         <!-- Delete -->
+                        <!-- 
                         <c:set var="buttonAttributes">
                             <c:choose>
                                 <c:when test="${editionForm.admin}">data-toggle="modal" data-target="#${namespace}-delete-modal"</c:when>
@@ -351,6 +352,7 @@
                             <i class="glyphicons glyphicons-bin"></i>
                             <span><op:translate key="DELETE" /></span>
                         </button>
+                         -->
                     </div>
                 </div>
             </div>
@@ -384,7 +386,7 @@
                     </div>
                     
                     <div class="modal-footer">
-                        <a href="${deleteUrl}" class="btn btn-danger" data-dismiss="modal">
+                        <a href="${deleteUrl}" class="btn btn-danger">
                             <span><op:translate key="CONFIRM" /></span>
                         </a>
                         
