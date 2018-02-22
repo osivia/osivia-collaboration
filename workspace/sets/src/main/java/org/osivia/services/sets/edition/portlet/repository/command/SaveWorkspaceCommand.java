@@ -62,6 +62,7 @@ public class SaveWorkspaceCommand implements INuxeoCommand {
         PropertyList list = (PropertyList) workspace.getProperties().get(SETS_PROPERTY);
         
         ArrayList<Map<String, Object>> arrayList = new ArrayList<>();
+        boolean quickAccessListFind = false;
 		if (list != null && list.list().size() >0)
 		{
 			Map<String, Object> mapSet;
@@ -73,6 +74,7 @@ public class SaveWorkspaceCommand implements INuxeoCommand {
 				if (StringUtils.equals(setsId, ((PropertyMap) map).getString(NAME_PROPERTY)))
 				{
 					mapSet.put(LIST_WEBID_PROPERTY, listSet);
+					quickAccessListFind = true;
 				} else
 				{
 					
@@ -87,6 +89,14 @@ public class SaveWorkspaceCommand implements INuxeoCommand {
 				}
 				arrayList.add(mapSet);
 			}
+		}
+		//If the setsId set does not exist, we add it to the arrayList
+		if (!quickAccessListFind && listSet.size() >0)
+		{
+			Map<String, Object> mapSet = new HashMap<>();
+			mapSet.put(NAME_PROPERTY, setsId);
+			mapSet.put(LIST_WEBID_PROPERTY, listSet);
+			arrayList.add(mapSet);
 		}
 		PropertyMap sets = new PropertyMap();
 		sets.set(SETS_PROPERTY, convertToJson(arrayList));
