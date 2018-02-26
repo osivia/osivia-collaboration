@@ -27,6 +27,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 /**
  * Purge workspace configuration
@@ -143,5 +144,16 @@ public class PurgeWorkspacesConfiguration extends CMSPortlet implements PortletC
     @Bean
     public WorkspaceService getWorkspaceService() {
         return DirServiceFactory.getService(WorkspaceService.class);
+    }
+    
+
+    /**
+     * Get document DAO.
+     * 
+     * @return document DAO
+     */
+    @Bean
+    public DocumentDAO getDocumentDao() {
+        return DocumentDAO.getInstance();
     }
 }

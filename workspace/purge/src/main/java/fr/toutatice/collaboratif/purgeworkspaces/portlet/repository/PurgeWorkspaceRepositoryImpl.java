@@ -24,6 +24,8 @@ import fr.toutatice.collaboratif.purgeworkspaces.portlet.repository.command.PutI
 import fr.toutatice.collaboratif.purgeworkspaces.portlet.repository.command.RestoreWorkspaceCommand;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 /**
  * Purge workspace repository implementation
@@ -44,6 +46,10 @@ public class PurgeWorkspaceRepositoryImpl implements PurgeWorkspaceRepository {
     /** Workspace service. */
     @Autowired
     private WorkspaceService workspaceService;
+    
+    /** Document DAO. */
+    @Autowired
+    private DocumentDAO documentDAO;
 	
 	/**
      * {@inheritDoc}
@@ -97,7 +103,9 @@ public class PurgeWorkspaceRepositoryImpl implements PurgeWorkspaceRepository {
 	            lastContributorDisplayName = StringUtils.defaultIfBlank(lastContributorPerson.getDisplayName(), lastContributorId);
 	        }
 			
-			WorkspaceLine line = new WorkspaceLine(document.getId(),document.getTitle(), new ArrayList<String>(), expirationDate, deletedDate, lastContributorDisplayName, expirationDate != null? currentDate.after(expirationDate) : false);
+	        DocumentDTO dto = documentDAO.toDTO(document);
+	        String description = document.getString("dc:description");
+			WorkspaceLine line = new WorkspaceLine(dto, description, new ArrayList<String>(), expirationDate, deletedDate, lastContributorDisplayName, expirationDate != null? currentDate.after(expirationDate) : false);
 			list.add(line);
 		 }
 		 return list;

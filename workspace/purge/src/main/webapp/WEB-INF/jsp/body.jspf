@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
+<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
 
 <!-- Body -->
             <div class="portlet-filler">
@@ -23,9 +24,13 @@
                                     <div class="row">
                                         <!-- Workspace title -->
                                         <div class="col-sm-5 col-md-4">
-                                        	<div class="form-control-static text-overflow">
-                                                <span>${workspace.title}</span>
-                                            </div>
+                                        	 	<!-- Title -->
+									            <p><ttc:title document="${workspace.document}" icon="true" /></p>
+									            
+									            <!-- Description -->
+									            <c:if test="${not empty workspace.description}">
+									                <p class="text-pre-wrap">${workspace.description}</p>
+									            </c:if>
                                         </div>
                                         
                                         <!-- Workspace expiration date -->
@@ -48,7 +53,7 @@
                                         <div class="col-sm-3 col-md-2">
 											<c:if test="${not empty form.list[status.index].deletedDate}">
 												<portlet:actionURL name="restore" var="restoreUrl">
-													<portlet:param name="uid" value="${workspace.id}" />
+													<portlet:param name="uid" value="${workspace.document.id}" />
 													<portlet:param name="sort" value="${options.sort}"/>
 													<portlet:param name="alt" value="${options.alt}"/>
 													<portlet:param name="pageNumber" value="${options.pageNumber}"/>

@@ -14,4 +14,25 @@ ul.selectable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
             }
         }
     }
+    
+        // Selectable : selected
+    .ui-selected {
+        .transition-property(@transition-property: opacity);
+        .transition-duration(@transition-duration: 200ms);
+        
+        span, a {
+            color: #fff;
+        }
+    }
+        
+}
+
+.transition-property(@transition-property) {
+  -webkit-transition-property: @transition-property;
+          transition-property: @transition-property;
+}
+
+.transition-duration(@transition-duration) {
+  -webkit-transition-duration: @transition-duration;
+          transition-duration: @transition-duration;
 }

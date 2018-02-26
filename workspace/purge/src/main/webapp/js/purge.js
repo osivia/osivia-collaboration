@@ -3,6 +3,7 @@ $JQry( function() {
 	
 	$JQry( "ul.selectable" ).selectable({
 		cancel: "a",
+		filter: "li",
 		stop: function(event, ui) {
 			var $target = $JQry(event.target),
 			$selectable = $target.closest(".selectable");
@@ -46,6 +47,7 @@ $JQry( function() {
 		unselected: function(event, ui) {
 			if (!event.shiftKey) {
 				$JQry(ui.unselected).removeClass("bg-primary");
+				//deselect(ui.unselected);
 			}
 		},
 		
@@ -56,6 +58,16 @@ $JQry( function() {
 
 	
 } );
+
+function deselect(source) {
+	var $purge = $JQry(source).closest(".workspace-management"),
+		$selected = $purge.find(".ui-selected");
+	
+	$selected.each(function(index, element) {
+		$JQry(element).removeClass("ui-selected bg-primary");
+	});
+}
+
 
 function showBin()
 {

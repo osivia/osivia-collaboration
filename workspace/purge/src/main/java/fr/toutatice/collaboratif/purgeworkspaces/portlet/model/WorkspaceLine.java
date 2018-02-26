@@ -3,12 +3,14 @@ package fr.toutatice.collaboratif.purgeworkspaces.portlet.model;
 import java.util.Date;
 import java.util.List;
 
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+
 /** WorkspaceLine bean */
 public class WorkspaceLine {
 
-	private String id;
+	private DocumentDTO document;
 	
-	private String title;
+	private String description;
 	
 	private List<String> animators;
 	
@@ -23,23 +25,15 @@ public class WorkspaceLine {
 	private String lastContributor;
 
 	/** Constructor */
-	public WorkspaceLine(String id, String title, List<String> animators, Date expirationDate,  Date deletedDate, String lastContributor,boolean expired) {
+	public WorkspaceLine(DocumentDTO document, String description, List<String> animators, Date expirationDate,  Date deletedDate, String lastContributor,boolean expired) {
 		super();
-		this.id = id;
-		this.title = title;
+		this.document = document;
+		this.description = description;
 		this.animators = animators;
 		this.expirationDate = expirationDate;
 		this.deletedDate = deletedDate;
 		this.expired = expired;
 		this.lastContributor = lastContributor;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
 	}
 
 	public List<String> getAnimators() {
@@ -74,14 +68,6 @@ public class WorkspaceLine {
 		this.expired = expired;
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public Date getDeletedDate() {
 		return deletedDate;
 	}
@@ -98,5 +84,19 @@ public class WorkspaceLine {
 		this.lastContributor = lastContributor;
 	}
 
-	
+	public DocumentDTO getDocument() {
+		return document;
+	}
+
+	public void setDocument(DocumentDTO document) {
+		this.document = document;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }

@@ -6,7 +6,6 @@ import java.util.List;
 import javax.portlet.PortletException;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.springframework.beans.BeansException;
@@ -132,7 +131,7 @@ public class PurgeWorkspacesServiceImpl implements PurgeWorkspacesService, Appli
     		int index = Integer.parseInt(str);
     		if (index>=0)
     		{
-    			uid = ((WorkspaceLine) form.getList().get(index)).getId();
+    			uid = ((WorkspaceLine) form.getList().get(index)).getDocument().getId();
     			listWorkspaceToDel.add(uid);
     		}
     	}
