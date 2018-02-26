@@ -304,4 +304,5 @@ public class SetsEditionServiceImpl implements SetsEditionService, ApplicationCo
 		}
 		return max;
 	}
+
 }

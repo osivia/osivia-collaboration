@@ -21,6 +21,7 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.sets.edition.portlet.model.AddedDocument;
 import org.osivia.services.sets.edition.portlet.model.SetsEditionForm;
 import org.osivia.services.sets.edition.portlet.service.SetsEditionService;
@@ -62,6 +63,10 @@ public class SetsEditionController {
     /** Notifications service. */
     @Autowired
     private INotificationsService notificationsService;
+    
+	/** Portal URL factory. */
+	@Autowired
+	private IPortalUrlFactory portalUrlFactory;
     
     /**
      * Constructor.
@@ -159,7 +164,9 @@ public class SetsEditionController {
         String message = bundle.getString("MESSAGE_WORKSPACE_SAVED");
         this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
         
-        form.setToSave(false);
+        // Redirection URL
+        String redirectionUrl = this.getRedirectionUrl(portalControllerContext, true);
+        response.sendRedirect(redirectionUrl);
     }
 
 
@@ -178,8 +185,9 @@ public class SetsEditionController {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        form = this.service.getForm(portalControllerContext, true);
-        form.setToSave(false);
+        // Redirection URL
+        String redirectionUrl = this.getRedirectionUrl(portalControllerContext, false);
+        response.sendRedirect(redirectionUrl);
     }
     
     /**
@@ -239,6 +247,20 @@ public class SetsEditionController {
     		map.put(pinned.getWebId(), "");
     	}
     	return map;
+    }
+    
+	
+    /**
+     * Get redirection URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @param refresh                 refresh indicator
+     * @return URL
+     * @throws PortletException
+     */
+    private String getRedirectionUrl(PortalControllerContext portalControllerContext, boolean refresh) throws PortletException {
+        // Redirection URL
+        return this.portalUrlFactory.getBackURL(portalControllerContext, false, refresh);
     }
     
 }
