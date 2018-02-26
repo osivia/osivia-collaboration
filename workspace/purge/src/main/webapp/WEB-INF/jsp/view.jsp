@@ -29,7 +29,7 @@
 </portlet:renderURL>
 <portlet:renderURL var="sortExpirationDateUrl">
     <portlet:param name="sort" value="expirationDate" />
-    <portlet:param name="alt" value="${options.sort eq 'expirationDate' or not options.alt}"/>
+    <portlet:param name="alt" value="${options.sort eq 'expirationDate' and not options.alt}"/>
     <portlet:param name="pageNumber" value="1"/>
 	<portlet:param name="pageSize" value="${options.pageSize}"/>
 	<portlet:param name="way" value="other"/>

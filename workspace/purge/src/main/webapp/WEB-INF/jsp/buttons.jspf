@@ -13,9 +13,11 @@
 		</button>
       		
       		<!-- Purge workspaces in bin -->
-      		<button type="button" class="btn btn-danger btn-purge" data-toggle="modal" data-target="#${namespace}-delete-modal">
-          		<span><op:translate key="PURGE_WORKSPACE_IN_BIN" /></span>
-      		</button>
+      		<c:if test="${form.displayPurgeButton}">
+	      		<button type="button" class="btn btn-danger btn-purge" data-toggle="modal" data-target="#${namespace}-delete-modal">
+	          		<span><op:translate key="PURGE_WORKSPACE_IN_BIN" /></span>
+	      		</button>
+      		</c:if>
 	</div>
 </div>
 

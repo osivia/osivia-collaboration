@@ -66,4 +66,11 @@ public interface PurgeWorkspacesService {
 	 * @return
 	 */
 	List<WorkspaceLine> loadList(PortalControllerContext portalControllerContext, PurgeWorkspaceOptions options);
+	
+	/**
+	 * Return true if at least one workspace in bin exist
+	 * @param portalControllerContext
+	 * @return
+	 */
+	boolean existWorkspaceInBin(PortalControllerContext portalControllerContext);
 }

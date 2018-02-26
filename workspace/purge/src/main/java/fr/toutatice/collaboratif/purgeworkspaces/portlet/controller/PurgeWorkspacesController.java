@@ -88,6 +88,8 @@ public class PurgeWorkspacesController {
         	page = "view";
         	form.setList(this.service.loadList(portalControllerContext, options));
             
+        	form.setDisplayPurgeButton(this.service.existWorkspaceInBin(portalControllerContext));
+        	
         	// Portlet title
             response.setTitle("Purge");
         }

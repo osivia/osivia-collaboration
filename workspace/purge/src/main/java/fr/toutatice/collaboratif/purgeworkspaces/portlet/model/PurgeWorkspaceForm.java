@@ -22,6 +22,8 @@ public class PurgeWorkspaceForm {
 	
 	/** Concatenation of id of workspace to put in bin */
 	private String selectResult;
+	
+	private boolean displayPurgeButton;
 
 	/**
 	 * Constructor
@@ -44,6 +46,14 @@ public class PurgeWorkspaceForm {
 
 	public void setSelectResult(String selectResult) {
 		this.selectResult = selectResult;
+	}
+
+	public boolean isDisplayPurgeButton() {
+		return displayPurgeButton;
+	}
+
+	public void setDisplayPurgeButton(boolean displayPurgeButton) {
+		this.displayPurgeButton = displayPurgeButton;
 	}
 	
 }

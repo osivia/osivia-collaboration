@@ -2,8 +2,9 @@ $JQry( function() {
 	var previousIndex = -1;
 	
 	$JQry( "ul.selectable" ).selectable({
-		cancel: "a",
+		cancel: "a, li.list-group-item-warning",
 		filter: "li",
+		
 		stop: function(event, ui) {
 			var $target = $JQry(event.target),
 			$selectable = $target.closest(".selectable");
@@ -22,7 +23,7 @@ $JQry( function() {
 			{
 				showBin();
 			} else
-			{
+				{
 				hideBin();
 			}
 		},
@@ -34,9 +35,8 @@ $JQry( function() {
 			$selectable = $selecting.closest(".selectable"),
 			$selectee = $selectable.find(".data"),
 			currentIndex = $selectee.index(ui.selecting);
-		
-			$selectable.addClass("remove-hover");
 			
+			$selectable.addClass("remove-hover");
 			if (event.shiftKey && previousIndex > -1) {
 				$selectee.slice(Math.min(previousIndex, currentIndex), Math.max(previousIndex, currentIndex) + 1).addClass("ui-selected bg-primary");
 			} else {
@@ -47,7 +47,6 @@ $JQry( function() {
 		unselected: function(event, ui) {
 			if (!event.shiftKey) {
 				$JQry(ui.unselected).removeClass("bg-primary");
-				//deselect(ui.unselected);
 			}
 		},
 		
@@ -58,15 +57,6 @@ $JQry( function() {
 
 	
 } );
-
-function deselect(source) {
-	var $purge = $JQry(source).closest(".workspace-management"),
-		$selected = $purge.find(".ui-selected");
-	
-	$selected.each(function(index, element) {
-		$JQry(element).removeClass("ui-selected bg-primary");
-	});
-}
 
 
 function showBin()

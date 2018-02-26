@@ -163,6 +163,22 @@ public class PurgeWorkspacesServiceImpl implements PurgeWorkspacesService, Appli
      * {@inheritDoc}
      */
     @Override
+    public boolean existWorkspaceInBin(PortalControllerContext portalControllerContext)
+    {
+    	// Get all deleted workspaces
+    	Documents documents = this.repository.getDeletedWorkspaces(portalControllerContext);
+    	
+    	boolean exist = false;
+    	if (documents !=null) exist = !documents.isEmpty();
+    	
+    	return exist;
+    	
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void restore(PortalControllerContext portalControllerContext, String uid)
     {
     	this.repository.restore(portalControllerContext, uid);
