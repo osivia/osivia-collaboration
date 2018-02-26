@@ -12,32 +12,31 @@ import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.statistics.portlet.model.StatisticsConfiguration;
 import org.osivia.services.statistics.portlet.model.StatisticsVersion;
-import org.osivia.services.statistics.portlet.repository.IStatisticsRepository;
+import org.osivia.services.statistics.portlet.model.StatisticsWindowSettings;
+import org.osivia.services.statistics.portlet.service.StatisticsPortletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
-import org.springframework.web.portlet.context.PortletContextAware;
 
 /**
  * Statistics admin controller.
  *
  * @author Cédric Krommenhoek
- * @see PortletContextAware
  */
 @Controller
 @RequestMapping(value = "ADMIN")
-public class StatisticsAdminController implements PortletContextAware {
+public class StatisticsAdminController {
 
-    /** Statistics repository. */
+    /** Portlet service. */
     @Autowired
-    private IStatisticsRepository repository;
-
+    private StatisticsPortletService service;
+    
     /** Portlet context. */
+    @Autowired
     private PortletContext portletContext;
 
 
@@ -50,18 +49,18 @@ public class StatisticsAdminController implements PortletContextAware {
 
 
     /**
-     * Admin render mapping.
+     * View render mapping.
      *
      * @param request render request
      * @param response render response
-     * @return admin path
+     * @return view path
      */
     @RenderMapping
-    public String admin(RenderRequest request, RenderResponse response) {
+    public String view(RenderRequest request, RenderResponse response) {
         // Statistics versions
         request.setAttribute("versions", StatisticsVersion.values());
 
-        return "admin";
+        return "admin/view";
     }
 
 
@@ -70,16 +69,16 @@ public class StatisticsAdminController implements PortletContextAware {
      *
      * @param request action request
      * @param response action response
-     * @param configuration statistics configuration model attribute
+     * @param windowSettings window settings model attribute
      * @throws PortletException
      */
-    @ActionMapping(value = "save")
-    public void save(ActionRequest request, ActionResponse response, @ModelAttribute(value = "configuration") StatisticsConfiguration configuration)
+    @ActionMapping("save")
+    public void save(ActionRequest request, ActionResponse response, @ModelAttribute("windowSettings") StatisticsWindowSettings windowSettings)
             throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.repository.saveConfiguration(portalControllerContext, configuration);
+        this.service.saveWindowSettings(portalControllerContext, windowSettings);
 
         response.setWindowState(WindowState.NORMAL);
         response.setPortletMode(PortletMode.VIEW);
@@ -87,28 +86,19 @@ public class StatisticsAdminController implements PortletContextAware {
 
 
     /**
-     * Get statistics configuration model attribute.
+     * Get window settings model attribute.
      *
      * @param request portlet request
      * @param response portlet response
-     * @return configuration
+     * @return window settings
      * @throws PortletException
      */
-    @ModelAttribute(value = "configuration")
-    public StatisticsConfiguration getConfiguration(PortletRequest request, PortletResponse response) throws PortletException {
+    @ModelAttribute("windowSettings")
+    public StatisticsWindowSettings getWindowSettings(PortletRequest request, PortletResponse response) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        return this.repository.getConfiguration(portalControllerContext);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletContext(PortletContext portletContext) {
-        this.portletContext = portletContext;
+        return this.service.getWindowSettings(portalControllerContext);
     }
 
 }

@@ -1,6 +1,7 @@
 package org.osivia.services.statistics.portlet.model;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
@@ -13,9 +14,9 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 public enum StatisticsVersion {
 
     /** Live version. */
-    LIVE("live", true, "Version live"),
+    LIVE("live", true),
     /** published version. */
-    PUBLISHED("published", false, "Version publiée");
+    PUBLISHED("published", false);
 
 
     /** Default statistics version. */
@@ -26,8 +27,8 @@ public enum StatisticsVersion {
     private final String name;
     /** Nuxeo query filter context. */
     private final NuxeoQueryFilterContext filter;
-    /** Label. */
-    private final String label;
+    /** Internationalization key. */
+    private final String key;
 
 
     /**
@@ -36,7 +37,7 @@ public enum StatisticsVersion {
      * @param name name
      * @param live live version indicator
      */
-    private StatisticsVersion(String name, boolean live, String label) {
+    private StatisticsVersion(String name, boolean live) {
         // Name
         this.name = name;
 
@@ -45,8 +46,8 @@ public enum StatisticsVersion {
         int state = NumberUtils.toInt(version);
         this.filter = new NuxeoQueryFilterContext(state);
 
-        // Label
-        this.label = label;
+        // Internationalization key
+        this.key = "ADMIN_CREATIONS_VERSION_" + StringUtils.upperCase(this.name());
     }
 
 
@@ -89,12 +90,12 @@ public enum StatisticsVersion {
     }
 
     /**
-     * Getter for label.
-     *
-     * @return the label
+     * Getter for key.
+     * 
+     * @return the key
      */
-    public String getLabel() {
-        return this.label;
+    public String getKey() {
+        return key;
     }
 
 }

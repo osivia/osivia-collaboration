@@ -1,4 +1,4 @@
-package org.osivia.services.statistics.portlet.repository;
+package org.osivia.services.statistics.portlet.repository.command;
 
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;

@@ -13,10 +13,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,9 +30,10 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
-import org.osivia.services.statistics.portlet.model.StatisticsConfiguration;
+import org.osivia.services.statistics.portlet.model.CreationsView;
 import org.osivia.services.statistics.portlet.model.StatisticsVersion;
-import org.osivia.services.statistics.portlet.model.StatisticsView;
+import org.osivia.services.statistics.portlet.model.StatisticsWindowSettings;
+import org.osivia.services.statistics.portlet.repository.command.ListDocumentsCommand;
 import org.osivia.services.statistics.portlet.util.NXQLFormater;
 import org.springframework.stereotype.Repository;
 
@@ -47,20 +46,24 @@ import fr.toutatice.portail.cms.nuxeo.api.PageSelectors;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 
 /**
- * Statistics repository implementation.
+ * Statistics portlet repository implementation.
  *
  * @author Cédric Krommenhoek
- * @see IStatisticsRepository
+ * @see StatisticsPortletRepository
  */
 @Repository
-public class StatisticsRepositoryImpl implements IStatisticsRepository {
+public class StatisticsPortletRepositoryImpl implements StatisticsPortletRepository {
 
-    /** Periods number window property name. */
-    private static final String PERIODS_NUMBER_WINDOW_PROPERTY = "osivia.statistics.number";
-    /** Request window property name. */
-    private static final String REQUEST_WINDOW_PROPERTY = "osivia.statistics.request";
-    /** Version window property name. */
-    private static final String VERSION_WINDOW_PROPERTY = "osivia.statistics.version";
+    /** Creations months window property. */
+    private static final String CREATIONS_MONTHS_WINDOW_PROPERTY = "osivia.statistics.number";
+    /** Creations NXQL request window property. */
+    private static final String CREATIONS_REQUEST_WINDOW_PROPERTY = "osivia.statistics.request";
+    /** Creations version window property. */
+    private static final String CREATIONS_VERSION_WINDOW_PROPERTY = "osivia.statistics.version";
+    /** Visits days window property. */
+    private static final String VISITS_DAYS_WINDOW_PROPERTY = "osivia.statistics.visits.days";
+    /** Visits months window property. */
+    private static final String VISITS_MONTHS_WINDOW_PROPERTY = "osivia.statistics.visits.months";
 
 
     /** Bundle factory. */
@@ -70,7 +73,7 @@ public class StatisticsRepositoryImpl implements IStatisticsRepository {
     /**
      * Constructor.
      */
-    public StatisticsRepositoryImpl() {
+    public StatisticsPortletRepositoryImpl() {
         super();
 
         // Bundle factory
@@ -84,17 +87,19 @@ public class StatisticsRepositoryImpl implements IStatisticsRepository {
      * {@inheritDoc}
      */
     @Override
-    public StatisticsConfiguration getConfiguration(PortalControllerContext portalControllerContext) throws PortletException {
+    public StatisticsWindowSettings getWindowSettings(PortalControllerContext portalControllerContext) throws PortletException {
         // Window
         PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
 
-        // Configuration
-        StatisticsConfiguration configuration = new StatisticsConfiguration();
-        configuration.setNumber(NumberUtils.toInt(window.getProperty(PERIODS_NUMBER_WINDOW_PROPERTY)));
-        configuration.setRequest(window.getProperty(REQUEST_WINDOW_PROPERTY));
-        configuration.setVersion(StatisticsVersion.fromName(window.getProperty(VERSION_WINDOW_PROPERTY)));
+        // Window settings
+        StatisticsWindowSettings windowSettings = new StatisticsWindowSettings();
+        windowSettings.setCreationsMonths(NumberUtils.toInt(window.getProperty(CREATIONS_MONTHS_WINDOW_PROPERTY)));
+        windowSettings.setCreationsRequest(window.getProperty(CREATIONS_REQUEST_WINDOW_PROPERTY));
+        windowSettings.setCreationsVersion(StatisticsVersion.fromName(window.getProperty(CREATIONS_VERSION_WINDOW_PROPERTY)));
+        windowSettings.setVisitsDays(NumberUtils.toInt(window.getProperty(VISITS_DAYS_WINDOW_PROPERTY)));
+        windowSettings.setVisitsMonths(NumberUtils.toInt(window.getProperty(VISITS_MONTHS_WINDOW_PROPERTY)));
 
-        return configuration;
+        return windowSettings;
     }
 
 
@@ -102,12 +107,14 @@ public class StatisticsRepositoryImpl implements IStatisticsRepository {
      * {@inheritDoc}
      */
     @Override
-    public void saveConfiguration(PortalControllerContext portalControllerContext, StatisticsConfiguration configuration) throws PortletException {
+    public void saveWindowSettings(PortalControllerContext portalControllerContext, StatisticsWindowSettings windowSettings) throws PortletException {
         // Window
         PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
-        window.setProperty(PERIODS_NUMBER_WINDOW_PROPERTY, String.valueOf(configuration.getNumber()));
-        window.setProperty(REQUEST_WINDOW_PROPERTY, StringUtils.trimToNull(configuration.getRequest()));
-        window.setProperty(VERSION_WINDOW_PROPERTY, configuration.getVersion().getName());
+        window.setProperty(CREATIONS_MONTHS_WINDOW_PROPERTY, String.valueOf(windowSettings.getCreationsMonths()));
+        window.setProperty(CREATIONS_REQUEST_WINDOW_PROPERTY, StringUtils.trimToNull(windowSettings.getCreationsRequest()));
+        window.setProperty(CREATIONS_VERSION_WINDOW_PROPERTY, windowSettings.getCreationsVersion().getName());
+        window.setProperty(VISITS_DAYS_WINDOW_PROPERTY, String.valueOf(windowSettings.getVisitsDays()));
+        window.setProperty(VISITS_MONTHS_WINDOW_PROPERTY, String.valueOf(windowSettings.getVisitsMonths()));
     }
 
 
@@ -115,15 +122,15 @@ public class StatisticsRepositoryImpl implements IStatisticsRepository {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Integer[]> getDocumentsCountsByPeriods(PortalControllerContext portalControllerContext, StatisticsConfiguration configuration)
+    public Map<String, Integer[]> getDocumentsCountsByPeriods(PortalControllerContext portalControllerContext, StatisticsWindowSettings windowSettings)
             throws PortletException {
         // Results
-        Map<String, Integer[]> results = new LinkedHashMap<String, Integer[]>(configuration.getNumber());
+        Map<String, Integer[]> results = new LinkedHashMap<String, Integer[]>(windowSettings.getCreationsMonths());
 
         // Locale
         Locale locale = portalControllerContext.getRequest().getLocale();
         // Periods
-        List<Period> periods = this.getPeriods(Calendar.MONTH, configuration.getNumber() + 1, locale);
+        List<Period> periods = this.getPeriods(Calendar.MONTH, windowSettings.getCreationsMonths() + 1, locale);
         Iterator<Period> iterator = periods.iterator();
         Period firstPeriod = iterator.next();
         Period period = iterator.next();
@@ -133,7 +140,7 @@ public class StatisticsRepositoryImpl implements IStatisticsRepository {
         int aggregateCount = 0;
 
         // Documents
-        List<Document> documents = this.getDocuments(portalControllerContext, configuration);
+        List<Document> documents = this.getDocuments(portalControllerContext, windowSettings);
         for (Document document : documents) {
             // Date
             Date date = document.getDate("dc:created");
@@ -154,7 +161,7 @@ public class StatisticsRepositoryImpl implements IStatisticsRepository {
                     results.put(period.name, counts);
                     period = iterator.next();
                     
-                    if (StatisticsView.DIFFERENTIAL.equals(configuration.getView())) {
+                    if (CreationsView.DIFFERENTIAL.equals("foo")) { // FIXME
                         periodCount = 0;
                     }
                 }
@@ -179,24 +186,6 @@ public class StatisticsRepositoryImpl implements IStatisticsRepository {
         results.put(period.name, counts);
 
         return results;
-    }
-
-
-    /**
-     * Get Nuxeo controller.
-     *
-     * @param portalControllerContext portal controller context
-     * @return Nuxeo controller
-     */
-    private NuxeoController getNuxeoController(PortalControllerContext portalControllerContext) {
-        // Request
-        PortletRequest request = portalControllerContext.getRequest();
-        // Response
-        PortletResponse response = portalControllerContext.getResponse();
-        // Portlet context
-        PortletContext portletContext = portalControllerContext.getPortletCtx();
-
-        return new NuxeoController(request, response, portletContext);
     }
 
 
@@ -260,29 +249,29 @@ public class StatisticsRepositoryImpl implements IStatisticsRepository {
      * Get Nuxeo documents.
      *
      * @param portalControllerContext portal controller context
-     * @param configuration statistics configuration
+     * @param windowSettings window settings
      * @return documents
      * @throws PortletException
      */
-    private List<Document> getDocuments(PortalControllerContext portalControllerContext, StatisticsConfiguration configuration) throws PortletException {
+    private List<Document> getDocuments(PortalControllerContext portalControllerContext, StatisticsWindowSettings windowSettings) throws PortletException {
         List<Document> results;
 
         // Nuxeo controller
-        NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
 
         // Request
         String request;
         try {
-            request = this.beanShellInterpretation(nuxeoController, configuration);
+            request = this.beanShellInterpretation(nuxeoController, windowSettings);
         } catch (EvalError e) {
             throw new PortletException(e);
         }
 
         if (request != null) {
             // Filter
-            NuxeoQueryFilterContext filter = configuration.getVersion().getFilter();
+            NuxeoQueryFilterContext filter = windowSettings.getCreationsVersion().getFilter();
 
             // Nuxeo command
             INuxeoCommand command = new ListDocumentsCommand(request, filter);
@@ -301,15 +290,15 @@ public class StatisticsRepositoryImpl implements IStatisticsRepository {
      * BeanShell interpretation.
      *
      * @param nuxeoController Nuxeo controller
-     * @param configuration statistics configuration
+     * @param windowSettings window settings
      * @return request
      * @throws EvalError
      */
-    private String beanShellInterpretation(NuxeoController nuxeoController, StatisticsConfiguration configuration) throws EvalError {
+    private String beanShellInterpretation(NuxeoController nuxeoController, StatisticsWindowSettings windowSettings) throws EvalError {
         String result = null;
 
         // Request
-        String request = configuration.getRequest();
+        String request = windowSettings.getCreationsRequest();
 
         if (!StringUtils.contains(request, "basePath") || (nuxeoController.getBasePath() != null)) {
             // Portlet request
@@ -325,6 +314,18 @@ public class StatisticsRepositoryImpl implements IStatisticsRepository {
         }
 
         return result;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSpacePath(PortalControllerContext portalControllerContext) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        return nuxeoController.getSpacePath();
     }
 
 
