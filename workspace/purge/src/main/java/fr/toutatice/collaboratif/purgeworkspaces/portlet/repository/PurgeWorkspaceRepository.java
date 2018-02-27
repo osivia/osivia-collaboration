@@ -19,8 +19,8 @@ public interface PurgeWorkspaceRepository {
 	List<WorkspaceLine> getListWorkspace(PortalControllerContext portalControllerContext, PurgeWorkspaceOptions options,
 			String sortColumn, String sortOrder, int pageNumber, int pageSize);
 	
-	/** Put a list of workspace in bin */
-	void putInBin(PortalControllerContext portalControllerContext, List<String> listId);
+	/** Put a list of workspace in trash */
+	void putInTrash(PortalControllerContext portalControllerContext, List<String> listId);
 	
 	/** Purge the workspaces that are in bin */
 	void purge(PortalControllerContext portalControllerContext, Documents documents);

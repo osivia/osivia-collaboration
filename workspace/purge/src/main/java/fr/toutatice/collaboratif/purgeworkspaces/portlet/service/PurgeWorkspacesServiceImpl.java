@@ -121,7 +121,7 @@ public class PurgeWorkspacesServiceImpl implements PurgeWorkspacesService, Appli
      * {@inheritDoc}
      */
     @Override
-    public void putInBin(PortalControllerContext portalControllerContext, PurgeWorkspaceForm form)
+    public void putInTrash(PortalControllerContext portalControllerContext, PurgeWorkspaceForm form)
     {
     	String[] list = StringUtils.split(form.getSelectResult(), "#");
     	ArrayList<String> listWorkspaceToDel = new ArrayList<String>();
@@ -135,7 +135,7 @@ public class PurgeWorkspacesServiceImpl implements PurgeWorkspacesService, Appli
     			listWorkspaceToDel.add(uid);
     		}
     	}
-    	this.repository.putInBin(portalControllerContext, listWorkspaceToDel);
+    	this.repository.putInTrash(portalControllerContext, listWorkspaceToDel);
     	
     }
     

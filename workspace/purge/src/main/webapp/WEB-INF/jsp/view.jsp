@@ -5,13 +5,6 @@
 
 <portlet:defineObjects />
 
-<portlet:actionURL name="putInBin" var="putInBinUrl">
-	<portlet:param name="sort" value="${options.sort}"/>
-	<portlet:param name="alt" value="${options.alt}"/>
-	<portlet:param name="pageNumber" value="${options.pageNumber}"/>
-	<portlet:param name="pageSize" value="${options.pageSize}"/>
-	<portlet:param name="way" value="other"/>
-</portlet:actionURL>
 <portlet:actionURL name="purge" var="purgeUrl" >
 	<portlet:param name="sort" value="${options.sort}"/>
 	<portlet:param name="alt" value="${options.alt}"/>
@@ -19,7 +12,13 @@
 	<portlet:param name="pageSize" value="${options.pageSize}"/>
 	<portlet:param name="way" value="other"/>
 </portlet:actionURL>
-
+<portlet:actionURL name="trash" var="trashUrl">
+	<portlet:param name="sort" value="${options.sort}"/>
+	<portlet:param name="alt" value="${options.alt}"/>
+	<portlet:param name="pageNumber" value="${options.pageNumber}"/>
+	<portlet:param name="pageSize" value="${options.pageSize}"/>
+	<portlet:param name="way" value="other"/>
+</portlet:actionURL>
 <portlet:renderURL var="sortTitleUrl">
     <portlet:param name="sort" value="title" />
     <portlet:param name="alt" value="${options.sort eq 'title' and not options.alt}"/>
@@ -44,9 +43,8 @@
 
 
 <div class="workspace-management">
-	<form:form action="${putInBinUrl}" method="post" enctype="multipart/form-data" modelAttribute="form" cssClass="form-horizontal" role="form">
+	<form:form action="${trashUrl}" method="post" enctype="multipart/form-data" modelAttribute="form" cssClass="form-horizontal" role="form">
 		<div class="table">
-
 			<!-- Header -->
         	<%@ include file="header.jspf" %>
 

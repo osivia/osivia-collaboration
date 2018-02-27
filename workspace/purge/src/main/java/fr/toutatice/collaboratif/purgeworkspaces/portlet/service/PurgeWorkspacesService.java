@@ -39,11 +39,11 @@ public interface PurgeWorkspacesService {
 			String sort, String alt, String pageNumber, String pageSize) throws PortletException;
 	
 	/**
-	 * Put in bin a list of workspaces
+	 * Put in trash a list of workspaces
 	 * @param portalControllerContext
 	 * @param form
 	 */
-	void putInBin(PortalControllerContext portalControllerContext, PurgeWorkspaceForm form);
+	void putInTrash(PortalControllerContext portalControllerContext, PurgeWorkspaceForm form);
 	
 	/**
 	 * Restore a workspace

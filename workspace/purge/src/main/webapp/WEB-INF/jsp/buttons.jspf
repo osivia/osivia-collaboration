@@ -6,12 +6,6 @@
 
 <div class="form-group text-center">
 	<div>
-
-		<!-- Put in bin -->
-		<button type="submit" id="putInBin" class="btn btn-primary" style="display:none;">
-			<i class="glyphicons glyphicons-bin"></i> <span><op:translate key="PUT_IN_BIN" /></span>
-		</button>
-      		
       		<!-- Purge workspaces in bin -->
       		<c:if test="${form.displayPurgeButton}">
 	      		<button type="button" class="btn btn-danger btn-purge" data-toggle="modal" data-target="#${namespace}-delete-modal">

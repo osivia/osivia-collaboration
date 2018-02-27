@@ -4,6 +4,9 @@
 <!-- Header -->
 <div class="table-row table-header">
 
+	<!-- Contextual toolbar -->
+    <jsp:include page="contextual-toolbar.jsp" />
+
     <div class="row">
         <!-- Workspace Title -->
         <div class="col-sm-5 col-md-4">

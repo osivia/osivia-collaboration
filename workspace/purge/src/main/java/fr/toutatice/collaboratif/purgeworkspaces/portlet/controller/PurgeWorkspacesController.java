@@ -128,7 +128,7 @@ public class PurgeWorkspacesController {
     }
     
     /**
-     * Put in bin action mapping.
+     * Put in trash action mapping.
      *
      * @param request action request
      * @param response action response
@@ -137,8 +137,8 @@ public class PurgeWorkspacesController {
      * @throws PortletException
      * @throws IOException
      */
-    @ActionMapping(name = "putInBin")
-    public void putInBin(ActionRequest request, ActionResponse response, 
+    @ActionMapping(name = "trash")
+    public void putInTrash(ActionRequest request, ActionResponse response, 
     		@ModelAttribute("form") PurgeWorkspaceForm form,
     		@ModelAttribute("options") PurgeWorkspaceOptions options)
             throws PortletException, IOException {
@@ -147,7 +147,7 @@ public class PurgeWorkspacesController {
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
-        this.service.putInBin(portalControllerContext, form);
+        this.service.putInTrash(portalControllerContext, form);
         
         // Notification
         String message = bundle.getString("WORKSPACE_IN_BIN_SUCCESS");

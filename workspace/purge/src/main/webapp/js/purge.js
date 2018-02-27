@@ -7,7 +7,8 @@ $JQry( function() {
 		
 		stop: function(event, ui) {
 			var $target = $JQry(event.target),
-			$selectable = $target.closest(".selectable");
+			$selectable = $target.closest(".selectable"),
+			$workspaceMgmt = $selectable.closest(".workspace-management");
 			$selectable.removeClass("remove-hover");
 			
 			var $result = $JQry( "#selectResult" ).empty();
@@ -19,13 +20,7 @@ $JQry( function() {
 				}
 			});
 			$result.val(temp);
-			if (temp.length>0)
-			{
-				showBin();
-			} else
-				{
-				hideBin();
-			}
+			displayControls($workspaceMgmt);
 		},
 		selected: function(event, ui) {
 			$JQry(ui.selected).addClass("bg-primary").removeClass("bg-info");
@@ -58,13 +53,37 @@ $JQry( function() {
 	
 } );
 
-
-function showBin()
-{
-	$JQry("button#putInBin").show();
+function displayControls($browser) {
+	var $toolbar = $browser.find(".contextual-toolbar"),
+		$messageSelection = $toolbar.find(".message-selection"),
+		$delete = $toolbar.find(".delete"),
+		$selected = $browser.find(".ui-selected");
+	
+	if ($selected.length) {
+		$toolbar.addClass("in");
+		
+		if ($selected.length == 1) {
+			//Single element selected
+			$messageSelection.children().text("1 " + $messageSelection.data("message-single-selection"));
+		
+		} else {
+			// Multiple elements selected
+			$messageSelection.children().text($selected.length + " " + $messageSelection.data("message-multiple-selection"));
+		}
+	} else {
+		// No selection
+		$toolbar.removeClass("in");
+	}
 }
 
-function hideBin()
-{
-	$JQry("button#putInBin").hide();
+function deselect(source) {
+	var $browser = $JQry(source).closest(".workspace-management"),
+		$selected = $browser.find(".ui-selected");
+	$JQry( "#selectResult" ).empty();
+	
+	$selected.each(function(index, element) {
+		$JQry(element).removeClass("ui-selected bg-primary");
+	});
+	
+	displayControls($browser);
 }

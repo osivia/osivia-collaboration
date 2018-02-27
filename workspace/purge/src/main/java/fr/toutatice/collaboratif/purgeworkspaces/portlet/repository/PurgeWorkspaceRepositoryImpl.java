@@ -115,7 +115,7 @@ public class PurgeWorkspaceRepositoryImpl implements PurgeWorkspaceRepository {
      * {@inheritDoc}
      */
 	@Override
-	public void putInBin(PortalControllerContext portalControllerContext, List<String> listId) {
+	public void putInTrash(PortalControllerContext portalControllerContext, List<String> listId) {
 		
 		// Nuxeo controler
 		NuxeoController nuxeoController = new NuxeoController(portalControllerContext.getRequest(), portalControllerContext.getResponse(),
