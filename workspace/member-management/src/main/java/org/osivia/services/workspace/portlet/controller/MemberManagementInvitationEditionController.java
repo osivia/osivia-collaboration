@@ -154,14 +154,14 @@ public class MemberManagementInvitationEditionController {
 
     /**
      * Delete invitation action mapping.
-     * 
+     *
      * @param request action request
      * @param response action response
      * @param form invitation edition form model attribute
      * @param sessionStatus session status
      * @throws PortletException
      */
-    @ActionMapping(name = "submit", params = "delete")
+    @ActionMapping("delete")
     public void delete(ActionRequest request, ActionResponse response, @ModelAttribute("invitationEditionForm") InvitationEditionForm form,
             SessionStatus sessionStatus) throws PortletException {
         // Portal controller context

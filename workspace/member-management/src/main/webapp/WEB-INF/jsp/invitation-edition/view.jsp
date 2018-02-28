@@ -12,6 +12,8 @@
     <portlet:param name="invitationPath" value="${invitationEditionForm.path}"/>
 </portlet:actionURL>
 
+<portlet:actionURL name="delete" copyCurrentRenderParameters="true" var="deleteUrl" />
+
 
 <c:set var="namespace"><portlet:namespace /></c:set>
 
@@ -184,10 +186,10 @@
                         </div>
                         
                         <div class="modal-footer">
-                            <button type="submit" name="delete" class="btn btn-primary" data-dismiss="modal">
+                            <a href="${deleteUrl}" class="btn btn-primary" data-dismiss="modal">
                                 <i class="glyphicons glyphicons-bin"></i>
                                 <span><op:translate key="DELETE"/></span>
-                            </button>
+                            </a>
                             
                             <button type="button" class="btn btn-default" data-dismiss="modal">
                                 <span><op:translate key="CANCEL" /></span>
