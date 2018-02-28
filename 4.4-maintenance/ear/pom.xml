@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.osivia.services</groupId>
+        <artifactId>osivia-services-collaboration-parent</artifactId>
+        <version>4.4.12</version>
+    </parent>
+
+    <artifactId>osivia-services-collaboration-ear</artifactId>
+    <packaging>ear</packaging>
+
+    <name>OSIVIA Services - Collaboration EAR</name>
+
+
+    <dependencies>
+
+        <!-- Calendar -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-calendar</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        
+        <!-- Editor helpers -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-editor-helpers</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+
+        <!-- FAQ -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-faq</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+
+        <!-- Forum -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-forum</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        
+        <!-- Pad -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-pad</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency> 
+        
+        <!-- Statistics -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-statistics</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+
+        <!-- Taskbar -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-taskbar</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        
+        <!-- Versions -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-versions</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+
+        <!-- Widgets -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-widgets</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        
+        <!-- Workspace -->
+        <dependency>
+            <groupId>org.osivia.services.workspace</groupId>
+            <artifactId>osivia-services-workspace-creation</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.osivia.services.workspace</groupId>
+            <artifactId>osivia-services-workspace-edition</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.osivia.services.workspace</groupId>
+            <artifactId>osivia-services-workspace-member-management</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.osivia.services.workspace</groupId>
+            <artifactId>osivia-services-workspace-local-group-management</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.osivia.services.workspace</groupId>
+            <artifactId>osivia-services-workspace-map</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.osivia.services.workspace</groupId>
+            <artifactId>osivia-services-workspace-acl-management</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.osivia.services.workspace</groupId>
+            <artifactId>osivia-services-workspace-participants</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.osivia.services.workspace</groupId>
+            <artifactId>osivia-services-workspace-trash</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+        <plugins>
+
+            <!-- EAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <configuration>
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <modules>
+                        <!-- Calendar -->
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-calendar</artifactId>
+                            <contextRoot>/osivia-services-calendar</contextRoot>
+                        </webModule>
+                        
+                        <!-- Editor helpers -->
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-editor-helpers</artifactId>
+                            <contextRoot>/osivia-services-editor-helpers</contextRoot>
+                        </webModule>
+                        
+                        <!-- FAQ -->
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-faq</artifactId>
+                            <contextRoot>/osivia-services-faq</contextRoot>
+                        </webModule>
+                        
+                        <!-- Forum -->
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-forum</artifactId>
+                            <contextRoot>/osivia-services-forum</contextRoot>
+                        </webModule>
+                        
+                        <!-- Pad -->
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-pad</artifactId>
+                            <contextRoot>/osivia-services-pad</contextRoot>
+                        </webModule>                        
+                        
+                        <!-- Statistics -->
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-statistics</artifactId>
+                            <contextRoot>/osivia-services-statistics</contextRoot>
+                        </webModule>
+                        
+                        <!-- Taskbar -->
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-taskbar</artifactId>
+                            <contextRoot>/osivia-services-taskbar</contextRoot>
+                        </webModule>
+                        
+                        <!-- Widgets -->
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-widgets</artifactId>
+                            <contextRoot>/osivia-services-widgets</contextRoot>
+                        </webModule>
+                        
+                        <!-- Workspace -->
+                        <webModule>
+                            <groupId>org.osivia.services.workspace</groupId>
+                            <artifactId>osivia-services-workspace-creation</artifactId>
+                            <contextRoot>/osivia-services-workspace-creation</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>org.osivia.services.workspace</groupId>
+                            <artifactId>osivia-services-workspace-edition</artifactId>
+                            <contextRoot>/osivia-services-workspace-edition</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>org.osivia.services.workspace</groupId>
+                            <artifactId>osivia-services-workspace-member-management</artifactId>
+                            <contextRoot>/osivia-services-workspace-member-management</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>org.osivia.services.workspace</groupId>
+                            <artifactId>osivia-services-workspace-local-group-management</artifactId>
+                            <contextRoot>/osivia-services-workspace-local-group-management</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>org.osivia.services.workspace</groupId>
+                            <artifactId>osivia-services-workspace-map</artifactId>
+                            <contextRoot>/osivia-services-workspace-map</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>org.osivia.services.workspace</groupId>
+                            <artifactId>osivia-services-workspace-acl-management</artifactId>
+                            <contextRoot>/osivia-services-workspace-acl-management</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>org.osivia.services.workspace</groupId>
+                            <artifactId>osivia-services-workspace-participants</artifactId>
+                            <contextRoot>/osivia-services-workspace-participants</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>org.osivia.services.workspace</groupId>
+                            <artifactId>osivia-services-workspace-trash</artifactId>
+                            <contextRoot>/osivia-services-workspace-trash</contextRoot>
+                        </webModule>
+                    </modules>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

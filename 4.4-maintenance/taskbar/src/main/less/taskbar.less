@@ -1,0 +1,174 @@
+//
+// Taskbar
+// --------------------------------------------------
+
+
+// Utilities
+@import "mixins/text-overflow.less";
+@import "mixins/vendor-prefixes.less";
+
+// Skins
+@import "mixins/border-radius.less";
+@import "mixins/gradients.less";
+
+// Layout
+@import "mixins/clearfix.less";
+
+
+// Breakpoints
+@screen-sm-min: 768px;
+@screen-md-min: 992px;
+@screen-lg-min: 1200px;
+@screen-xs-max: (@screen-sm-min - 1);
+@screen-sm-max: (@screen-md-min - 1);
+@screen-md-max: (@screen-lg-min - 1);
+
+@padding: 10px;
+
+@bg-color: #f8f8f8;
+@border-color: darken(@bg-color, 6.5%);
+@link-color: #777;
+@link-hover-color: #333;
+
+
+// Layout
+@media screen and (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+    .navigation-panel {
+        width: 200px;
+    }
+}
+@media screen and (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+    .navigation-panel {
+        width: 225px;
+    }
+}
+@media screen and (min-width: @screen-lg-min) {
+    .navigation-panel {
+        width: 250px;
+    }
+}
+
+
+.taskbar {
+    overflow: hidden;
+    
+    padding: @padding 0;
+    
+    background-color: @bg-color;
+    border-style: solid;
+    border-width: 1px;
+    border-color: @border-color;
+    border-radius: 4px;
+    
+    .box-shadow(@shadow: 0 1px 1px fade(#000, 5%));
+    
+    .portlet-filler {
+        background: linear-gradient(@bg-color 10%, fade(@bg-color, 0%)),
+            linear-gradient(fade(@bg-color, 0%), @bg-color 90%) 0 100%,
+            linear-gradient(fade(#000, 5%), fade(#000, 0%)),
+            linear-gradient(fade(#000, 0), fade(#000, 5%)) 0 100%;
+        background-color: @bg-color;
+        background-repeat: no-repeat;
+        background-size: 100% 50px, 100% 50px, 100% 5px, 100% 5px;
+        background-attachment: local, local, scroll, scroll;
+    }
+    
+    ul {
+        margin-bottom: 0;
+        padding-left: 0;
+        
+        list-style: none;
+    }
+    
+    li {
+        &.active {
+            a {
+                font-weight: bold;
+            }
+        }
+        
+        &:not(.active) {
+            a {
+                color: @link-color;
+                
+                &:hover, &:focus {
+                    color: @link-hover-color;
+                }
+            }
+        }
+    }
+    
+    a {
+        display: block;
+        
+        &:hover, &:focus {
+            text-decoration: none;
+        }
+    }
+    
+    
+    // Normal view
+    &.taskbar-normal {
+        a {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            
+            padding: @padding;
+    
+            i {
+                margin-right: 3px;
+            }
+        }
+        
+        @media screen and (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+            max-width: 140px;
+        }
+        
+        @media screen and (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+            max-width: 170px;
+        }
+        
+        @media screen and (min-width: @screen-lg-min) {
+            max-width: 200px;
+        }
+    }
+    
+    
+    // Compact view
+    &.taskbar-compact {
+        @width: 50px;
+        @font-size: 20px;
+        
+        li {
+            padding: floor(@padding / 2);   
+            
+            &.active {
+                a {
+                    background-color: #fff;
+                    border-radius: 50%;
+                }
+            } 
+        }
+        
+        a {
+            line-height: floor(@width - @padding - 2);
+            font-size: @font-size;
+        }
+        
+        @media screen and (max-width: @screen-xs-max) {
+            li {
+                float: left;
+                width: 20%;
+            }
+            
+            a {
+                width: floor(@width - @padding - 2);
+                margin: 0 auto;
+            }
+        }
+        
+        @media screen and (min-width: @screen-sm-min) {
+            width: @width;
+        }
+    }
+}

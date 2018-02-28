@@ -1,0 +1,245 @@
+//
+// Calendar style
+// --------------------------------------------------
+
+
+// Small screen / tablet
+@screen-sm-min: 768px;
+@screen-xs-max: (@screen-sm-min - 1);
+
+@grey-light: #f5f5f5;
+@grey-lighter: #fafafa;
+@hour-height: 40px;
+
+
+.calendar {
+    .table {
+        table-layout: fixed;
+        
+        td {
+            padding-left: 0;
+            padding-right: 0;
+        }
+        
+        .table {
+            margin-bottom: 0;
+            
+            background-color: transparent;
+            
+            th {
+                padding-right: 8px;
+            }
+        }
+        
+        .middle-row {
+            > td {
+                border-bottom-color: @grey-light;
+            }
+        }
+    }
+    
+    .scollbar-spacer {
+        @media screen and (min-width: @screen-sm-min) {
+            padding-right: 12px;
+        }
+    }
+    
+    .bg-primary {
+        a {
+            color: #fff;
+        }
+    }
+    
+    .text-muted {
+        a:not(.label) {
+            color: inherit;
+        }
+    }
+    
+    
+    // Day & week
+    &.daily-calendar, &.weekly-calendar {
+        .table {
+            thead > tr > td {
+                padding-top: 0;
+            }
+            
+            tbody {
+                > tr > td {
+                    padding: 0;
+                }
+                
+                .table td:hover {
+                    background-color: @grey-light;
+                }
+            }
+
+            .fixed-column {
+                width: 60px;
+                min-width: 60px;
+            }
+            
+            .table {
+                tbody > * {
+                    height: 20px;
+                }
+            }
+            
+            th, td {
+                &.today {
+                    background-color: @grey-lighter;
+                }
+            }
+        }
+        
+        .wrapper {
+            height: 10 * @hour-height;
+            overflow: auto;
+            
+            > div {
+                position: relative;
+                height: 24 * @hour-height;
+            }
+        }
+        
+        .events-container {
+            position: absolute;
+            top: 0;
+            left: 60px;
+            right: 0;
+        }
+        
+        .event {
+            position: absolute;
+            border-radius: 4px;
+            padding: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            
+            &.has-previous {
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+            }
+            
+            &.has-next {
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+        }
+        
+        .daily-event {
+            border-radius: 4px;
+            margin: 2px 8px 0;
+            padding: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            
+            &.has-previous {
+                margin-left: 0;
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+            
+            &.has-next {
+                margin-right: 0;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+        }
+    }
+    
+    
+    // Month
+    &.monthly-calendar {
+        .table {
+            border-style: none;
+            
+            td {
+                padding: 8px;
+                
+                &.today {
+                    background-color: @grey-lighter;
+                    
+                    .day {
+                        font-weight: bold;
+                    }
+                }
+                
+                &:hover {
+                    background-color: @grey-light;
+                }
+            }
+            
+            thead th {
+                border-left-style: none;
+                border-right-style: none;
+            }
+            
+            tbody td {
+                height: 115px;
+            }
+            
+            @media screen and (max-width: @screen-xs-max) {
+                td {
+                    padding: 3px;
+                }
+                
+                tbody td {
+                    height: 40px;
+                }
+            }
+        }
+        
+        .event {
+            border-radius: 4px;
+            margin-bottom: 2px;
+            padding: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            
+            &.has-previous {
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+                
+                @media screen and (min-width: @screen-sm-min) {
+                    margin-left: -8px;
+                }
+            }
+            
+            &.has-next {
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+                
+                @media screen and (min-width: @screen-sm-min) {
+                    margin-right: -8px;
+                }
+            }
+            
+            @media screen and (max-width: @screen-xs-max) {
+                float: left;
+                height: 6px;
+                width: 6px;
+                margin: 1px;
+                font-size: 0;
+            }
+            
+            @media screen and (min-width: @screen-sm-min) {
+                + .event + .event {
+                    display: none;
+                }
+            }
+        }
+    }
+    
+    
+    // Planning
+    &.planning-calendar {        
+        .day-of-month {
+            width: 32px;
+            text-align: center;
+            font-size: 180%;
+        }
+    }
+}
