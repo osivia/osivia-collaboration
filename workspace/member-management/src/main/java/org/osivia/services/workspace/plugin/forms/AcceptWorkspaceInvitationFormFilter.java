@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.repository.MemberManagementRepository;
@@ -16,6 +17,7 @@ import org.springframework.context.ApplicationContext;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilter;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterContext;
+import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterExecutor;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterParameterType;
 
@@ -103,7 +105,7 @@ public class AcceptWorkspaceInvitationFormFilter implements FormFilter {
      * {@inheritDoc}
      */
     @Override
-    public void execute(FormFilterContext context, FormFilterExecutor executor) {
+    public void execute(FormFilterContext context, FormFilterExecutor executor) throws FormFilterException, PortalException {
         // Portal controller context
         PortalControllerContext portalControllerContext = context.getPortalControllerContext();
         // HTTP servlet request

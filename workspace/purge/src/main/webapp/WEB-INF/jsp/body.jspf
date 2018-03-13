@@ -1,0 +1,83 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op"%>
+<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
+
+<!-- Body -->
+            <div class="portlet-filler">
+                <div class="popover-container">
+                    <ul class="list-unstyled selectable">
+                        <c:forEach var="workspace" items="${form.list}" varStatus="status">
+                        	<c:choose>
+	                       		<c:when test="${not empty form.list[status.index].deletedDate}">
+	                            	<li class="list-group-item-warning">
+	                            </c:when>
+	                            <c:otherwise>
+	                            	<li class>
+	                            </c:otherwise>
+                            </c:choose>
+                                <div class="table-row">
+                                    <form:hidden path="list[${status.index}].selected" />
+                                
+                                    <div class="row">
+                                        <!-- Workspace title -->
+                                        <div class="col-sm-5 col-md-4">
+                                        	 	<!-- Title -->
+									            <p><ttc:title document="${workspace.document}" icon="true" /></p>
+									            
+									            <!-- Description -->
+									            <c:if test="${not empty workspace.description}">
+									                <p class="text-pre-wrap">${workspace.description}</p>
+									            </c:if>
+                                        </div>
+                                        
+                                        <!-- Workspace expiration date -->
+                                        <div class="col-sm-4 col-md-3">
+                                        	<div class="form-control-static">
+                                             	<span><fmt:formatDate value="${workspace.expirationDate}" type="date" dateStyle="long" /></span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Workspace deleted date -->
+                                        <div class="hidden-sm col-md-3">
+                                        	<c:if test="${not empty form.list[status.index].deletedDate}">
+                                             	<span><op:formatRelativeDate value="${workspace.deletedDate}" /></span>
+                                             	<br>
+                                                <small><op:translate key="TRASH_BY_LAST_CONTRIBUTOR" args="${workspace.lastContributor}" /></small>
+                                             </c:if>
+                                        </div>
+                                        
+                                        <!-- Restore button -->
+                                        <div class="col-sm-3 col-md-2">
+											<c:if test="${not empty form.list[status.index].deletedDate}">
+												<portlet:actionURL name="restore" var="restoreUrl">
+													<portlet:param name="uid" value="${workspace.document.id}" />
+													<portlet:param name="sort" value="${options.sort}"/>
+													<portlet:param name="alt" value="${options.alt}"/>
+													<portlet:param name="pageNumber" value="${options.pageNumber}"/>
+													<portlet:param name="pageSize" value="${options.pageSize}"/>
+													<portlet:param name="way" value="other"/>
+												</portlet:actionURL>
+												<a href="${restoreUrl}" class="btn btn-default btn-sm"> 
+													<span><op:translate key="WORKSPACE_RESTORE" /></span>
+												</a>
+											</c:if>
+										</div>
+                                    </div>
+                                </div>
+                            </li>
+                        </c:forEach>
+                    </ul>
+                </div>
+                
+                <!-- No results -->
+				<c:if test="${empty form.list}">
+					<div class="table-row">
+						<div class="text-center text-muted">
+							<op:translate key="WORKSPACE_EMPTY_MESSAGE" />
+						</div>
+					</div>
+				</c:if>
+			</div>

@@ -1,0 +1,50 @@
+ul.selectable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+
+.workspace-management {
+    .popover-container {
+        position: relative;
+        
+        .popover {
+            max-width: 100%;
+            
+            .popover-content {
+                .breadcrumb {
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }
+    
+        // Selectable : selected
+    .ui-selected {
+        .transition-property(@transition-property: opacity);
+        .transition-duration(@transition-duration: 200ms);
+        
+        span, a {
+            color: #fff;
+        }
+    }
+    
+    .selectable {
+    	li {
+    		.table-row {
+    			.row {
+    				i.glyphicons {
+    					margin-right : 8px;
+    				}
+    			}
+    		}
+    	}
+    }
+        
+}
+
+.transition-property(@transition-property) {
+  -webkit-transition-property: @transition-property;
+          transition-property: @transition-property;
+}
+
+.transition-duration(@transition-duration) {
+  -webkit-transition-duration: @transition-duration;
+          transition-duration: @transition-duration;
+}
