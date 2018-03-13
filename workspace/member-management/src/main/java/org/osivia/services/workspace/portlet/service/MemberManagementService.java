@@ -3,6 +3,7 @@ package org.osivia.services.workspace.portlet.service;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
 import org.osivia.services.workspace.portlet.model.InvitationRequestsForm;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
@@ -145,6 +146,18 @@ public interface MemberManagementService {
 
 
     /**
+     * Purge invitations history.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param options options
+     * @param form invitations form
+     * @throws PortletException
+     */
+    void purgeInvitationsHistory(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form)
+            throws PortletException;
+
+
+    /**
      * Validate invitations creation form.
      * 
      * @param errors errors
@@ -220,10 +233,53 @@ public interface MemberManagementService {
     String getInvitationRequestsHelp(PortalControllerContext portalControllerContext) throws PortletException;
 
 
-    /**
-     * Check current workspace integrity
+	/**
+     * Get invitation edition form.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param path invitation document path
+     * @return form
+     * @throws PortletException
      */
-	void checkIntegrity(PortalControllerContext portalControllerContext,
-			String workspaceId);
+    InvitationEditionForm getInvitationEditionForm(PortalControllerContext portalControllerContext, String path) throws PortletException;
+
+
+    /**
+     * Resend invitation.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form invitation edition form
+     * @throws PortletException
+     */
+    void resendInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form) throws PortletException;
+
+
+    /**
+     * Update invitation.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form invitation edition form
+     * @throws PortletException
+     */
+    void updateInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form) throws PortletException;
+
+
+    /**
+     * Delete invitation.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form invitation edition form
+     * @throws PortletException
+     */
+    void deleteInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form) throws PortletException;
+    
+
+    /**
+     * Check current workspace integrity.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspaceId workspace identifier
+     */
+    void checkIntegrity(PortalControllerContext portalControllerContext, String workspaceId);
 
 }

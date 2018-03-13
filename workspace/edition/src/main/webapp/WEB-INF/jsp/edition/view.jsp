@@ -116,6 +116,22 @@
                             </div>
                         </div>
                     </spring:bind>
+                    
+                    <!-- Invitations -->
+                    <div class="form-group">
+                        <form:label path="workspaceType" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_INVITATIONS" /></form:label>
+                        <div class="col-sm-9">
+                            <div class="checkbox">
+                                <label>
+                                    <form:checkbox path="allowedInvitationRequests" />
+                                    <span><op:translate key="WORKSPACE_ALLOWED_INVITATION_REQUESTS_ACTION" /></span>
+                                </label>
+                                <p class="text-muted">
+                                    <span><op:translate key="WORKSPACE_ALLOWED_INVITATION_REQUESTS_HELP" /></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </c:if>
             </div>
             
@@ -341,13 +357,7 @@
                     
                     <div class="pull-right">
                         <!-- Delete -->
-                        <c:set var="buttonAttributes">
-                            <c:choose>
-                                <c:when test="${editionForm.admin}">data-toggle="modal" data-target="#${namespace}-delete-modal"</c:when>
-                                <c:otherwise>disabled</c:otherwise>
-                            </c:choose>
-                        </c:set>
-                        <button type="button" class="btn btn-danger" ${buttonAttributes}>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#${namespace}-delete-modal">
                             <i class="glyphicons glyphicons-bin"></i>
                             <span><op:translate key="DELETE" /></span>
                         </button>
@@ -358,42 +368,36 @@
     </form:form>
     
     
-    <c:if test="${editionForm.admin}">
-        <!-- Delete confirmation modal -->
-        <div id="${namespace}-delete-modal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">
-                            <i class="glyphicons glyphicons-remove"></i>
-                            <span class="sr-only"><op:translate key="CLOSE" /></span>
-                        </button>
-                        
-                        <h4 class="modal-title"><op:translate key="WORKSPACE_DELETE_MODAL_TITLE" args="${fragment}" /></h4>
-                    </div>
+    <!-- Delete confirmation modal -->
+    <div id="${namespace}-delete-modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <i class="glyphicons glyphicons-remove"></i>
+                        <span class="sr-only"><op:translate key="CLOSE" /></span>
+                    </button>
                     
-                    <div class="modal-body">
-                        <p class="text-danger">
-                            <span><op:translate key="WORKSPACE_DELETE_MODAL_MESSAGE" args="${fragment}" /></span>
-                        </p>
-                        
-                        <div class="alert alert-danger">
-                            <i class="glyphicons glyphicons-exclamation-sign"></i>
-                            <strong><op:translate key="WORKSPACE_DELETE_MODAL_ALERT_MESSAGE" /></strong>
-                        </div>
-                    </div>
+                    <h4 class="modal-title"><op:translate key="WORKSPACE_DELETE_MODAL_TITLE" args="${fragment}" /></h4>
+                </div>
+                
+                <div class="modal-body">
+                    <p>
+                        <span><op:translate key="WORKSPACE_DELETE_MODAL_MESSAGE" args="${fragment}" /></span>
+                    </p>
+                </div>
+                
+                <div class="modal-footer">
+                    <a href="${deleteUrl}" class="btn btn-danger" data-dismiss="modal">
+                        <i class="glyphicons glyphicons-bin"></i>
+                        <span><op:translate key="DELETE" /></span>
+                    </a>
                     
-                    <div class="modal-footer">
-                        <a href="${deleteUrl}" class="btn btn-danger" data-dismiss="modal">
-                            <span><op:translate key="CONFIRM" /></span>
-                        </a>
-                        
-                        <button type="button" class="btn btn-default" data-dismiss="modal">
-                            <span><op:translate key="CANCEL" /></span>
-                        </button>
-                    </div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <span><op:translate key="CANCEL" /></span>
+                    </button>
                 </div>
             </div>
         </div>
-    </c:if>
+    </div>
 </div>

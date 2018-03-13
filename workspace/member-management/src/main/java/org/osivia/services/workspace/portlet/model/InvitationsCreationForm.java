@@ -2,6 +2,7 @@ package org.osivia.services.workspace.portlet.model;
 
 import java.util.List;
 
+import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -20,6 +21,8 @@ public class InvitationsCreationForm {
     private List<Invitation> pendingInvitations;
     /** Role. */
     private WorkspaceRole role;
+    /** Local groups. */
+    private List<CollabProfile> localGroups;
     /** Message. */
     private String message;
     /** Warning indicator. */
@@ -68,6 +71,24 @@ public class InvitationsCreationForm {
      */
     public void setRole(WorkspaceRole role) {
         this.role = role;
+    }
+
+    /**
+     * Getter for localGroups.
+     * 
+     * @return the localGroups
+     */
+    public List<CollabProfile> getLocalGroups() {
+        return localGroups;
+    }
+
+    /**
+     * Setter for localGroups.
+     * 
+     * @param localGroups the localGroups to set
+     */
+    public void setLocalGroups(List<CollabProfile> localGroups) {
+        this.localGroups = localGroups;
     }
 
     /**

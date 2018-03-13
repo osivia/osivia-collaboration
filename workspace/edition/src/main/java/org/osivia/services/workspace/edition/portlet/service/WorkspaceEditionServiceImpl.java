@@ -2,6 +2,7 @@ package org.osivia.services.workspace.edition.portlet.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -97,6 +98,8 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
     public WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
         // Workspace document
         Document workspace = this.repository.getWorkspace(portalControllerContext);
+        // Workspace root type indicator
+        boolean root = "Workspace".equals(workspace.getType());
         
         // User
         String user = portalControllerContext.getRequest().getRemoteUser();
@@ -107,13 +110,9 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         boolean admin = this.roleService.hasRole(dn, "role_workspace-management");
 
         // Form
-        WorkspaceEditionForm form = this.applicationContext.getBean(WorkspaceEditionForm.class, workspace, admin);
+        WorkspaceEditionForm form = this.applicationContext.getBean(WorkspaceEditionForm.class, workspace, admin, root);
         form.setTitle(workspace.getTitle());
         form.setDescription(workspace.getString("dc:description"));
-
-        // Workspace root type indicator
-        boolean root = "Workspace".equals(workspace.getType());
-        form.setRoot(root);
 
         // Templates
         if (root) {
@@ -128,9 +127,16 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
             String visibility = workspace.getString("ttcs:visibility");
             if (StringUtils.isNotEmpty(visibility)) {
                 WorkspaceType workspaceType = WorkspaceType.valueOf(visibility);
-                form.setWorkspaceType(workspaceType);
+                form.setWorkspaceType(this.retreivePartialWorkspaceType(workspaceType));
+                form.setAllowedInvitationRequests(workspaceType.isAllowedInvitationRequests());
                 form.setInitialWorkspaceType(workspaceType);
             }
+        }
+        
+        // Workspace types
+        if (root) {
+            List<WorkspaceType> workspaceTypes = Arrays.asList(new WorkspaceType[]{WorkspaceType.PUBLIC, WorkspaceType.PRIVATE});
+            form.setWorkspaceTypes(workspaceTypes);
         }
 
         // Visual
@@ -147,6 +153,28 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         form.setEditorial(editorial);
 
         return form;
+    }
+
+
+    /**
+     * Retreive partial workspace type.
+     * 
+     * @param fullWorkspaceType full workspace type
+     * @return workspace type
+     */
+    private WorkspaceType retreivePartialWorkspaceType(WorkspaceType fullWorkspaceType) {
+        // Partial workspace type
+        WorkspaceType partialWorkspaceType;
+
+        if (WorkspaceType.PUBLIC.equals(fullWorkspaceType) || WorkspaceType.PUBLIC_INVITATION.equals(fullWorkspaceType)) {
+            partialWorkspaceType = WorkspaceType.PUBLIC;
+        } else if (WorkspaceType.PRIVATE.equals(fullWorkspaceType) || WorkspaceType.INVITATION.equals(fullWorkspaceType)) {
+            partialWorkspaceType = WorkspaceType.PRIVATE;
+        } else {
+            partialWorkspaceType = null;
+        }
+
+        return partialWorkspaceType;
     }
 
 
@@ -239,14 +267,14 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         if (this.repository.checkPermissions(portalControllerContext, workspace)) {
             // Update workspace type
             if (form.isRoot()) {
-                WorkspaceType workspaceType = form.getWorkspaceType();
+                WorkspaceType workspaceType = this.retreiveFullWorkspaceType(form.getWorkspaceType(), form.isAllowedInvitationRequests());
                 WorkspaceType initialWorkspaceType = form.getInitialWorkspaceType();
 
-                if (!workspaceType.equals(initialWorkspaceType) && (form.isAdmin() || !initialWorkspaceType.isPortalAdministratorRestriction())) {
+                if ((workspaceType != null) && !workspaceType.equals(initialWorkspaceType)
+                        && (form.isAdmin() || !WorkspaceType.UNCHANGEABLE.equals(initialWorkspaceType))) {
                     this.repository.updateWorkspaceType(portalControllerContext, workspace, workspaceType);
                 }
             }
-
 
             // Update tasks
             List<Task> tasks = form.getTasks();
@@ -268,6 +296,37 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
             String message = bundle.getString("MESSAGE_WORKSPACE_EDITION_FORBIDDEN_ERROR", fragment);
             this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
         }
+    }
+
+
+    /**
+     * Retreive full workspace type.
+     * 
+     * @param partialWorkspaceType partial workspace type
+     * @param allowedInvitationRequests allowed invitation requests indicator
+     * @return workspace type
+     */
+    private WorkspaceType retreiveFullWorkspaceType(WorkspaceType partialWorkspaceType, boolean allowedInvitationRequests) {
+        // Full workspace type
+        WorkspaceType fullWorkspaceType;
+
+        if (WorkspaceType.PUBLIC.equals(partialWorkspaceType)) {
+            if (allowedInvitationRequests) {
+                fullWorkspaceType = WorkspaceType.PUBLIC;
+            } else {
+                fullWorkspaceType = WorkspaceType.PUBLIC_INVITATION;
+            }
+        } else if (WorkspaceType.PRIVATE.equals(partialWorkspaceType)) {
+            if (allowedInvitationRequests) {
+                fullWorkspaceType = WorkspaceType.PRIVATE;
+            } else {
+                fullWorkspaceType = WorkspaceType.INVITATION;
+            }
+        } else {
+            fullWorkspaceType = null;
+        }
+        
+        return fullWorkspaceType;
     }
 
 
@@ -352,17 +411,18 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         }
 
 
-        // Internationalization key
-        String key;
+        // Message fragment
+        String fragmentKey;
         if ("Room".equals(form.getDocument().getType())) {
-            key = "MESSAGE_WORKSPACE_DELETE_ROOM_SUCCESS";
+            fragmentKey = "WORKSPACE_EDITION_ROOM_FRAGMENT";
         } else {
-            key = "MESSAGE_WORKSPACE_DELETE_WORKSPACE_SUCCESS";
+            fragmentKey = "WORKSPACE_EDITION_WORKSPACE_FRAGMENT";
         }
+        String fragment = bundle.getString(fragmentKey);
 
         // Notification
-        String message = bundle.getString(key, form.getTitle());
-        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        String message = bundle.getString("MESSAGE_WORKSPACE_DELETE_INFO", fragment, form.getTitle());
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.INFO);
 
         return destroyPageUrl;
     }

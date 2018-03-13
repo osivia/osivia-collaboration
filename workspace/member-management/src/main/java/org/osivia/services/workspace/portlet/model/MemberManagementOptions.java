@@ -2,6 +2,7 @@ package org.osivia.services.workspace.portlet.model;
 
 import java.util.List;
 
+import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.portlet.Refreshable;
 import org.springframework.context.annotation.Scope;
@@ -31,6 +32,8 @@ public class MemberManagementOptions {
     private int requestsCount;
     /** Roles. */
     private List<WorkspaceRole> roles;
+    /** Workspace local groups. */
+    private List<CollabProfile> workspaceLocalGroups;
 
 
     /**
@@ -129,6 +132,24 @@ public class MemberManagementOptions {
      */
     public void setRoles(List<WorkspaceRole> roles) {
         this.roles = roles;
+    }
+
+    /**
+     * Getter for workspaceLocalGroups.
+     * 
+     * @return the workspaceLocalGroups
+     */
+    public List<CollabProfile> getWorkspaceLocalGroups() {
+        return workspaceLocalGroups;
+    }
+
+    /**
+     * Setter for workspaceLocalGroups.
+     * 
+     * @param workspaceLocalGroups the workspaceLocalGroups to set
+     */
+    public void setWorkspaceLocalGroups(List<CollabProfile> workspaceLocalGroups) {
+        this.workspaceLocalGroups = workspaceLocalGroups;
     }
 
 }

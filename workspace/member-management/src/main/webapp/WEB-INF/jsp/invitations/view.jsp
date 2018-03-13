@@ -11,9 +11,14 @@
     <!-- Tabs -->
     <jsp:include page="../commons/tabs.jsp" />
     
-    <!-- Invitations creation -->
-    <jsp:include page="creation.jsp" />
+    <div class="portlet-filler">
+        <!-- Invitations creation -->
+        <jsp:include page="creation.jsp" />
+        
+        <!-- Invitations list -->
+        <jsp:include page="list.jsp" />
+    </div>
     
-    <!-- Invitations list -->
-    <jsp:include page="list.jsp" />
+    <!-- Purge -->
+    <jsp:include page="purge.jsp" />
 </div>

@@ -1,7 +1,7 @@
 package org.osivia.services.workspace.edition.portlet.repository.command;
 
+import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -18,6 +18,10 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DeleteWorkspaceCommand implements INuxeoCommand {
+
+    /** Operation identifier . */
+    private static final String OPERATION_ID = "Document.PutDocumentInTrash";
+
 
     /** Workspace path. */
     private final String path;
@@ -39,15 +43,14 @@ public class DeleteWorkspaceCommand implements INuxeoCommand {
      */
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
-        // Document service
-        DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
-
         // Document reference
-        DocRef docRef = new DocRef(path);
+        DocRef docRef = new DocRef(this.path);
+        
+        // Operation request
+        OperationRequest request = nuxeoSession.newRequest(OPERATION_ID);
+        request.set("document", docRef);
 
-        documentService.remove(docRef);
-
-        return null;
+        return request.execute();
     }
 
 

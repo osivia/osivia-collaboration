@@ -49,7 +49,7 @@ public class UpdateWorkspaceTypeCommand implements INuxeoCommand {
 
         documentService.setProperty(this.workspace, "ttcs:visibility", this.workspaceType.getId());
 
-        if (WorkspaceType.PUBLIC.equals(this.workspaceType)) {
+        if (WorkspaceType.PUBLIC.equals(this.workspaceType) || WorkspaceType.PUBLIC_INVITATION.equals(this.workspaceType)) {
             // Grant read permission to everyone
             documentService.addPermission(this.workspace, "Everyone", "Read");
         } else {

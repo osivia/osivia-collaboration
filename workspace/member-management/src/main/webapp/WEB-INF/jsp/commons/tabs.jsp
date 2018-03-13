@@ -5,17 +5,37 @@
 <%@ page contentType="text/html" isELIgnored="false"%>
 
 
-<portlet:renderURL var="membersUrl">
-    <portlet:param name="tab" value="members" />
-</portlet:renderURL>
-
-<portlet:renderURL var="invitationsUrl">
-    <portlet:param name="tab" value="invitations" />
-</portlet:renderURL>
-
-<portlet:renderURL var="requestsUrl">
-    <portlet:param name="tab" value="requests" />
-</portlet:renderURL>
+<c:choose>
+    <c:when test="${view eq 'invitation-edition'}">
+        <portlet:actionURL name="redirectTab" var="membersUrl">
+            <portlet:param name="view" value="invitation-edition"/>
+            <portlet:param name="redirection" value="members"/>
+            <portlet:param name="invitationPath" value="${invitationEditionForm.path}"/>
+        </portlet:actionURL>
+        <portlet:actionURL name="redirectTab" var="invitationsUrl">
+            <portlet:param name="view" value="invitation-edition"/>
+            <portlet:param name="redirection" value="invitations"/>
+            <portlet:param name="invitationPath" value="${invitationEditionForm.path}"/>
+        </portlet:actionURL>
+        <portlet:actionURL name="redirectTab" var="requestsUrl">
+            <portlet:param name="view" value="invitation-edition"/>
+            <portlet:param name="redirection" value="requests"/>
+            <portlet:param name="invitationPath" value="${invitationEditionForm.path}"/>
+        </portlet:actionURL>
+    </c:when>
+    
+    <c:otherwise>
+        <portlet:renderURL var="membersUrl">
+            <portlet:param name="tab" value="members" />
+        </portlet:renderURL>
+        <portlet:renderURL var="invitationsUrl">
+            <portlet:param name="tab" value="invitations" />
+        </portlet:renderURL>
+        <portlet:renderURL var="requestsUrl">
+            <portlet:param name="tab" value="requests" />
+        </portlet:renderURL>
+    </c:otherwise>
+</c:choose>
 
 
 <c:set var="namespace"><portlet:namespace /></c:set>
@@ -41,7 +61,7 @@
                 </a>
             </li>
             
-            <c:if test="${(options.workspaceType eq 'PUBLIC') or (options.workspaceType eq 'PRIVATE')}">
+            <c:if test="${options.workspaceType.allowedInvitationRequests}">
                 <li role="presentation" class="${tab eq 'requests' ? 'active' : ''}">
                     <a href="${requestsUrl}">
                         <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_TAB_REQUESTS" /></span>

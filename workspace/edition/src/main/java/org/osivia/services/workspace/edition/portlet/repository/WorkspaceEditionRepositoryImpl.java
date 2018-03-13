@@ -15,7 +15,6 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -72,10 +71,6 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
     /** Taskbar service. */
     @Autowired
     private ITaskbarService taskbarService;
-
-    /** Workspace service. */
-    @Autowired
-    private WorkspaceService workspaceService;
 
     /** Document DAO. */
     @Autowired
@@ -490,9 +485,6 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
 
         // Workspace identifier
         Document workspace = form.getDocument();
-        String workspaceId = workspace.getString("webc:url");
-
-        this.workspaceService.delete(workspaceId);
 
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(DeleteWorkspaceCommand.class, workspace.getPath());

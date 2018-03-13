@@ -22,6 +22,8 @@ public class InvitationsForm {
     private List<Invitation> invitations;
     /** Invitation identifiers. */
     private Set<String> identifiers;
+    /** Purge invitations history availability indicator. */
+    private boolean purgeAvailable;
     /** Loaded invitations indicator. */
     private boolean loaded;
 
@@ -68,6 +70,24 @@ public class InvitationsForm {
      */
     public void setIdentifiers(Set<String> identifiers) {
         this.identifiers = identifiers;
+    }
+
+    /**
+     * Getter for purgeAvailable.
+     * 
+     * @return the purgeAvailable
+     */
+    public boolean isPurgeAvailable() {
+        return purgeAvailable;
+    }
+
+    /**
+     * Setter for purgeAvailable.
+     * 
+     * @param purgeAvailable the purgeAvailable to set
+     */
+    public void setPurgeAvailable(boolean purgeAvailable) {
+        this.purgeAvailable = purgeAvailable;
     }
 
     /**

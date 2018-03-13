@@ -136,7 +136,7 @@ $JQry(function() {
 		$element.on("select2:select", function(event) {
 			var $target = $JQry(event.target),
 				$form = $target.closest("form"),
-				$submit = $form.find("button[type=submit][name=add]");
+				$submit = $form.find("button[type=submit][name='add-member']");
 			
 			$submit.click();
         });
@@ -170,13 +170,27 @@ $JQry(function() {
 	});
 	
 	
-	$JQry(".workspace-local-group-management button[data-type=delete-member]").click(function(event) {
-		var $target = $JQry(event.target),
-			$fieldset = $target.closest("fieldset"),
-			$hidden = $fieldset.find("input[type=hidden]");
+	$JQry(".workspace-local-group-management button[data-type=remove-member]").click(function(event) {
+		var $target = $JQry(event.target);
+		var $li = $target.closest("li");
+		var $form = $li.closest("form");
+		var $input = $li.find("input[type=hidden][name$=deleted]");
+		var $submit = $form.find("input[type=submit][name='update-member']");
 		
-		$hidden.val(true);
-		$fieldset.prop("disabled", true);
+		$input.val(true);
+		$submit.click();
+	});
+	
+	
+	$JQry(".workspace-local-group-management button[data-type=restore-member]").click(function(event) {
+		var $target = $JQry(event.target);
+		var $li = $target.closest("li");
+		var $form = $li.closest("form");
+		var $input = $li.find("input[type=hidden][name$=deleted]");
+		var $submit = $form.find("input[type=submit][name='update-member']");
+		
+		$input.val(false);
+		$submit.click();
 	});
 	
 	

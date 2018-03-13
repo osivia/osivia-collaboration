@@ -1,6 +1,5 @@
 package org.osivia.services.workspace.portlet.service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -139,26 +138,13 @@ public class LocalGroupManagementServiceImpl implements LocalGroupManagementServ
      * {@inheritDoc}
      */
     @Override
-    public List<Member> getMembers(PortalControllerContext portalControllerContext, LocalGroupEditionForm form) throws PortletException {
-        return this.repository.getAllMembers(portalControllerContext, form.getWorkspaceId());
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addMembersToLocalGroup(PortalControllerContext portalControllerContext, LocalGroupEditionForm form) throws PortletException {
-        // Local group members
-        List<Member> members = form.getMembers();
-        if (members == null) {
-            members = new ArrayList<Member>();
-            form.setMembers(members);
-        }
-
+    public void addMember(PortalControllerContext portalControllerContext, LocalGroupEditionForm form) throws PortletException {
         // Added member
         Member addedMember = form.getAddedMember();
         addedMember.setAdded(true);
+
+        // Local group members
+        List<Member> members = form.getMembers();
         int index = members.indexOf(addedMember);
         if (index != -1) {
             Member member = members.get(index);
@@ -166,6 +152,10 @@ public class LocalGroupManagementServiceImpl implements LocalGroupManagementServ
         } else {
             members.add(addedMember);
         }
+
+        // Other workspace members
+        List<Member> otherMembers = form.getOtherMembers();
+        otherMembers.remove(addedMember);
 
         // Update model
         form.setAddedMember(null);

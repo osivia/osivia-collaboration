@@ -35,7 +35,7 @@
                                     </div>
                                 
                                     <div class="panel-body">
-                                        <h4 class="text-center">
+                                        <h4 class="text-center text-overflow">
                                             <a href="${member.url}" class="no-ajax-link">
                                                 <span>${member.displayName}</span>
                                             </a>
@@ -49,32 +49,24 @@
                                             </p>
                                         </c:if>
                                         
-                                        <c:choose>
-                                        	<c:when test="${(not empty profession) or (not empty institution)}">
-                                        		<p class="small text-center text-muted">
-                                        			<c:if test="${not empty profession}">
-                                        				<span>${profession}</span>
-                                        			</c:if>
-                                        			<c:if test="${not empty profession and not empty institution}">
-                                        				-
-                                        			</c:if>
-                                        			<c:if test="${not empty institution}">
-                                        				<span>${institution}</span>
-                                        			</c:if>                        			
-                                        		
-                                        		</p>
-                                        	</c:when>
-                                        	<c:otherwise>
-		                                        <c:if test="${not empty member.joinedDate}">
-		                                            <p class="small text-center text-muted">
-		                                                <span><op:translate key="WORKSPACE_PARTICIPANTS_MEMBER_SINCE" /></span>
-		                                                <span><fmt:formatDate value="${member.joinedDate}" type="date" dateStyle="long" /></span>
-		                                            </p>
-		                                        </c:if>                                        	
-                                        	</c:otherwise>
-                                        </c:choose>
-                                        
-
+                                        <p class="small text-center text-muted text-overflow">
+                                			<c:if test="${not empty profession}">
+                                				<span>${profession}</span>
+                                			</c:if>
+                                			<c:if test="${not empty profession and not empty institution}">
+                                				<span>-</span>
+                                			</c:if>
+                                			<c:if test="${not empty institution}">
+                                				<span>${institution}</span>
+                                			</c:if>
+                                            <c:if test="${(not empty profession or not empty institution) and not empty member.joinedDate}">
+                                                <br>
+                                            </c:if>
+                                            <c:if test="${not empty member.joinedDate}">
+                                                <span><op:translate key="WORKSPACE_PARTICIPANTS_MEMBER_SINCE" /></span>
+                                                <span><fmt:formatDate value="${member.joinedDate}" type="date" dateStyle="long" /></span>
+                                            </c:if>
+                                        </p>
                                     </div>
                                 </div>
                             </li>

@@ -2,7 +2,9 @@ package org.osivia.services.workspace.portlet.repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.naming.Name;
 import javax.naming.NamingException;
@@ -15,6 +17,7 @@ import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceGroupType;
 import org.osivia.directory.v2.model.ext.WorkspaceMember;
 import org.osivia.directory.v2.service.WorkspaceService;
+import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.directory.v2.service.PersonService;
@@ -23,12 +26,15 @@ import org.osivia.services.workspace.portlet.model.LocalGroupEditionForm;
 import org.osivia.services.workspace.portlet.model.LocalGroupListItem;
 import org.osivia.services.workspace.portlet.model.LocalGroups;
 import org.osivia.services.workspace.portlet.model.Member;
+import org.osivia.services.workspace.portlet.repository.command.UpdateRemovedLocalGroupLinkedInvitationsCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 
 /**
  * Workspace local group management repository implementation.
@@ -116,12 +122,15 @@ public class LocalGroupManagementRepositoryImpl implements LocalGroupManagementR
      */
     @Override
     public void setLocalGroups(PortalControllerContext portalControllerContext, LocalGroups localGroups) throws PortletException {
+        // Workspace identifier
+        String workspaceId = localGroups.getWorkspaceId();
+
         // Deleted local groups
         List<LocalGroup> deleted = new ArrayList<LocalGroup>();
         for (LocalGroup group : localGroups.getGroups()) {
             LocalGroupListItem localGroup = (LocalGroupListItem) group;
             if (localGroup.isDeleted()) {
-                workspaceService.removeLocalGroup(localGroups.getWorkspaceId(), localGroup.getId());
+                this.deleteLocalGroup(portalControllerContext, workspaceId, localGroup.getId());
 
                 deleted.add(group);
             }
@@ -149,15 +158,36 @@ public class LocalGroupManagementRepositoryImpl implements LocalGroupManagementR
         List<Person> persons = personService.findByCriteria(criteria);
 
 
-        // Members
+        // Local group members
         List<Member> members;
+        Set<String> memberIdentifiers;
         if (CollectionUtils.isEmpty(persons)) {
-            members = new ArrayList<Member>(0);
+            members = new ArrayList<>(0);
+            memberIdentifiers = new HashSet<>(0);
         } else {
-            members = new ArrayList<Member>(persons.size());
+            members = new ArrayList<>(persons.size());
+            memberIdentifiers = new HashSet<>(persons.size());
             for (Person person : persons) {
-                Member member = createMember(person);
+                Member member = this.createMember(person);
                 members.add(member);
+                memberIdentifiers.add(member.getId());
+            }
+        }
+
+
+        // Other workspace members
+        List<WorkspaceMember> workspaceMembers = this.workspaceService.getAllMembers(workspaceId);
+        List<Member> otherMembers;
+        if (CollectionUtils.isEmpty(workspaceMembers)) {
+            otherMembers = new ArrayList<>(0);
+        } else {
+            otherMembers = new ArrayList<>(workspaceMembers.size());
+            for (WorkspaceMember workspaceMember : workspaceMembers) {
+                Person person = workspaceMember.getMember();
+                if (!memberIdentifiers.contains(person.getUid())) {
+                    Member member = this.createMember(person);
+                    otherMembers.add(member);
+                }
             }
         }
 
@@ -169,6 +199,7 @@ public class LocalGroupManagementRepositoryImpl implements LocalGroupManagementR
         form.setDisplayName(group.getDisplayName());
         form.setDescription(group.getDescription());
         form.setMembers(members);
+        form.setOtherMembers(otherMembers);
         
         return form;
     }
@@ -210,8 +241,33 @@ public class LocalGroupManagementRepositoryImpl implements LocalGroupManagementR
      * {@inheritDoc}
      */
     @Override
-    public void deleteLocalGroup(PortalControllerContext portalControllerContext, String workspaceId, String id) throws PortletException {
-        this.workspaceService.removeLocalGroup(workspaceId, id);
+    public void deleteLocalGroup(PortalControllerContext portalControllerContext, String workspaceId, String localGroupId) throws PortletException {
+        // Remove local group
+        this.workspaceService.removeLocalGroup(workspaceId, localGroupId);
+
+        // Apply local group deletion to pending invitations
+        this.updateLinkedInvitations(portalControllerContext, workspaceId, localGroupId);
+    }
+
+
+    /**
+     * Apply local group deletion to pending invitations.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspaceId workspace identifier
+     * @param localGroupId deleted local group identifier
+     * @throws PortletException
+     */
+    private void updateLinkedInvitations(PortalControllerContext portalControllerContext, String workspaceId, String localGroupId) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
+        nuxeoController.setAsynchronousCommand(true);
+        
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(UpdateRemovedLocalGroupLinkedInvitationsCommand.class, workspaceId, localGroupId);
+        nuxeoController.executeNuxeoCommand(command);
     }
 
 
@@ -223,30 +279,6 @@ public class LocalGroupManagementRepositoryImpl implements LocalGroupManagementR
         CollabProfile group = workspaceService.createLocalGroup(localGroups.getWorkspaceId(), form.getDisplayName(), null);
 
         return this.createLocalGroup(group);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Member> getAllMembers(PortalControllerContext portalControllerContext, String workspaceId) throws PortletException {
-        // Workspace members
-        List<WorkspaceMember> workspaceMembers = this.workspaceService.getAllMembers(workspaceId);
-
-        // Members
-        List<Member> members;
-        if (CollectionUtils.isEmpty(workspaceMembers)) {
-            members = new ArrayList<Member>(0);
-        } else {
-            members = new ArrayList<Member>(workspaceMembers.size());
-            for (WorkspaceMember workspaceMember : workspaceMembers) {
-                Member member = this.createMember(workspaceMember.getMember());
-                members.add(member);
-            }
-        }
-
-        return members;
     }
 
 

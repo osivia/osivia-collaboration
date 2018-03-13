@@ -8,6 +8,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
+
 /**
  * Workspace creation form validator.
  *
@@ -52,7 +54,7 @@ public class WorkspaceEditionFormValidator implements Validator {
         if (form.isRoot()) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "NotEmpty");
 
-            if (form.isAdmin() || !form.getInitialWorkspaceType().isPortalAdministratorRestriction()) {
+            if (form.isAdmin() || !WorkspaceType.UNCHANGEABLE.equals(form.getInitialWorkspaceType())) {
                 ValidationUtils.rejectIfEmptyOrWhitespace(errors, "workspaceType", "NotEmpty");
             }
         }

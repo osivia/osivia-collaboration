@@ -1,8 +1,10 @@
 package org.osivia.services.workspace.portlet.model;
 
 import java.util.Date;
+import java.util.List;
 
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -24,6 +26,12 @@ public class Invitation extends MemberObject {
     private InvitationState state;
     /** Acknowledgment date. */
     private Date acknowledgmentDate;
+    /** Resending date. */
+    private Date resendingDate;
+    /** Local groups. */
+    private List<CollabProfile> localGroups;
+    /** Message. */
+    private String message;
 
     /** Unknown user indicator. */
     private final boolean unknownUser;
@@ -102,6 +110,60 @@ public class Invitation extends MemberObject {
      */
     public void setAcknowledgmentDate(Date acknowledgmentDate) {
         this.acknowledgmentDate = acknowledgmentDate;
+    }
+
+    /**
+     * Getter for resendingDate.
+     * 
+     * @return the resendingDate
+     */
+    public Date getResendingDate() {
+        return resendingDate;
+    }
+
+    /**
+     * Setter for resendingDate.
+     * 
+     * @param resendingDate the resendingDate to set
+     */
+    public void setResendingDate(Date resendingDate) {
+        this.resendingDate = resendingDate;
+    }
+
+    /**
+     * Getter for localGroups.
+     * 
+     * @return the localGroups
+     */
+    public List<CollabProfile> getLocalGroups() {
+        return localGroups;
+    }
+
+    /**
+     * Setter for localGroups.
+     * 
+     * @param localGroups the localGroups to set
+     */
+    public void setLocalGroups(List<CollabProfile> localGroups) {
+        this.localGroups = localGroups;
+    }
+
+    /**
+     * Getter for message.
+     * 
+     * @return the message
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * Setter for message.
+     * 
+     * @param message the message to set
+     */
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     /**

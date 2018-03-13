@@ -1,6 +1,6 @@
 $JQry(function() {
 	
-	$JQry(".workspace-member-management select.select2").each(function(index, element) {
+	$JQry(".workspace-member-management select.select2.select2-invitation").each(function(index, element) {
 		var $element = $JQry(element),
 			url = $element.data("url"),
 			minimumInputLength = $element.data("minimum-input-length"),

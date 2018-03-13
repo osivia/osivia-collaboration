@@ -116,56 +116,54 @@
             </div>
             
             <!-- Body -->
-            <div class="portlet-filler">
-                <div class="popover-container">
-                    <ul class="list-unstyled selectable">
-                        <c:forEach var="trashedDocument" items="${trashForm.trashedDocuments}" varStatus="status">
-                            <li>
-                                <div class="table-row" data-location-path="${trashedDocument.location.path}">
-                                    <form:hidden path="trashedDocuments[${status.index}].selected" />
-                                
-                                    <div class="row">
-                                        <!-- Document -->
-                                        <div class="col-sm-6 col-md-4">
-                                            <div class="form-control-static text-overflow">
-                                                <c:if test="${not empty trashedDocument.icon}">
-                                                    <i class="${trashedDocument.icon}"></i>
-                                                </c:if>
-                                                
-                                                <span>${trashedDocument.title}</span>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Date -->
-                                        <div class="col-sm-6 col-md-4">
-                                            <div class="text-overflow">
-                                                <span><op:formatRelativeDate value="${trashedDocument.deletionDate}" /></span>
-                                                <br>
-                                                <small><op:translate key="TRASH_BY_LAST_CONTRIBUTOR" args="${trashedDocument.lastContributor}" /></small>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Location -->
-                                        <div class="col-md-4 hidden-xs hidden-sm">
-                                            <button type="button" class="btn btn-default text-overflow location">
-                                                <i class="${trashedDocument.location.icon}"></i>
-                                                <span>${trashedDocument.location.title}</span>
-                                            </button>
+            <div class="popover-container">
+                <ul class="list-unstyled selectable">
+                    <c:forEach var="trashedDocument" items="${trashForm.trashedDocuments}" varStatus="status">
+                        <li>
+                            <div class="table-row" data-location-path="${trashedDocument.location.path}">
+                                <form:hidden path="trashedDocuments[${status.index}].selected" />
+                            
+                                <div class="row">
+                                    <!-- Document -->
+                                    <div class="col-sm-6 col-md-4">
+                                        <div class="form-control-static text-overflow">
+                                            <c:if test="${not empty trashedDocument.icon}">
+                                                <i class="${trashedDocument.icon}"></i>
+                                            </c:if>
+                                            
+                                            <span>${trashedDocument.title}</span>
                                         </div>
                                     </div>
+                                    
+                                    <!-- Date -->
+                                    <div class="col-sm-6 col-md-4">
+                                        <div class="text-overflow">
+                                            <span><op:formatRelativeDate value="${trashedDocument.deletionDate}" /></span>
+                                            <br>
+                                            <small><op:translate key="TRASH_BY_LAST_CONTRIBUTOR" args="${trashedDocument.lastContributor}" /></small>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Location -->
+                                    <div class="col-md-4 hidden-xs hidden-sm">
+                                        <button type="button" class="btn btn-default text-overflow location">
+                                            <i class="${trashedDocument.location.icon}"></i>
+                                            <span>${trashedDocument.location.title}</span>
+                                        </button>
+                                    </div>
                                 </div>
-                            </li>
-                        </c:forEach>
-                    </ul>
-                </div>
-            
-                <!-- No results -->
-                <c:if test="${empty trashForm.trashedDocuments}">
-                    <div class="table-row">
-                        <div class="text-center text-muted"><op:translate key="TRASH_EMPTY_MESSAGE" /></div>
-                    </div>
-                </c:if>
+                            </div>
+                        </li>
+                    </c:forEach>
+                </ul>
             </div>
+        
+            <!-- No results -->
+            <c:if test="${empty trashForm.trashedDocuments}">
+                <div class="table-row">
+                    <div class="text-center text-muted"><op:translate key="TRASH_EMPTY_MESSAGE" /></div>
+                </div>
+            </c:if>
         </div>
         
         

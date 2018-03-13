@@ -539,6 +539,8 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
         if (StringUtils.isBlank(displayName)) {
             displayName = id;
         }
+        // Last name
+        String lastName = person.getSn();
         // URL
         String url = "#";
         Link l = null; 
@@ -563,6 +565,7 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
         member.setUrl(url);
         member.setAvatarUrl(avatarUrl);
         member.setDisplayName(displayName);
+        member.setLastName(lastName);
         member.setEmail(email);
         try {
             Document document = (Document) personService.getEcmProfile(portalControllerContext, person);

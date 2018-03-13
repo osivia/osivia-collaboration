@@ -3,10 +3,8 @@ package org.osivia.services.workspace.portlet.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.annotation.PostConstruct;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -19,12 +17,14 @@ import javax.portlet.ResourceResponse;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.converter.InvitationPropertyEditor;
+import org.osivia.services.workspace.portlet.model.converter.LocalGroupPropertyEditor;
 import org.osivia.services.workspace.portlet.model.validator.InvitationsCreationFormValidator;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,30 +40,22 @@ import org.springframework.web.portlet.bind.PortletRequestDataBinder;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
-import org.springframework.web.portlet.context.PortletConfigAware;
-import org.springframework.web.portlet.context.PortletContextAware;
 
-import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import net.sf.json.JSONObject;
 
 /**
  * Member management portlet view invitations controller.
  *
  * @author Cédric Krommenhoek
- * @see CMSPortlet
- * @see PortletConfigAware
- * @see PortletContextAware
  */
 @Controller
 @RequestMapping(path = "VIEW", params = "tab=invitations")
 @SessionAttributes("creation")
-public class MemberManagementInvitationsController extends CMSPortlet implements PortletConfigAware, PortletContextAware {
+public class MemberManagementInvitationsController {
 
-    /** Portlet config. */
-    private PortletConfig portletConfig;
     /** Portlet context. */
+    @Autowired
     private PortletContext portletContext;
-
 
     /** Member management service. */
     @Autowired
@@ -77,23 +69,16 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
     @Autowired
     private InvitationPropertyEditor invitationPropertyEditor;
 
+    /** Local group property editor. */
+    @Autowired
+    private LocalGroupPropertyEditor localGroupPropertyEditor;
+
 
     /**
      * Constructor.
      */
     public MemberManagementInvitationsController() {
         super();
-    }
-
-
-    /**
-     * Post-construct.
-     *
-     * @throws PortletException
-     */
-    @PostConstruct
-    public void postConstruct() throws PortletException {
-        super.init(this.portletConfig);
     }
 
 
@@ -173,6 +158,28 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
             this.service.createInvitations(portalControllerContext, options, invitationsForm, creationForm);
         }
 
+        // Copy render parameter
+        this.copyRenderParameters(request, response);
+    }
+
+
+    /**
+     * Purge invitations history action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param options options model attribute
+     * @param form invitations form model attribute
+     * @throws PortletException
+     */
+    @ActionMapping("purge")
+    public void purge(ActionRequest request, ActionResponse response, @ModelAttribute("options") MemberManagementOptions options,
+            @ModelAttribute("invitations") InvitationsForm form) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.purgeInvitationsHistory(portalControllerContext, options, form);
+        
         // Copy render parameter
         this.copyRenderParameters(request, response);
     }
@@ -292,6 +299,7 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
     public void invitationsCreationFormInitBinder(PortletRequestDataBinder binder) {
         binder.addValidators(this.creationFormValidator);
         binder.registerCustomEditor(Invitation.class, this.invitationPropertyEditor);
+        binder.registerCustomEditor(CollabProfile.class, this.localGroupPropertyEditor);
     }
 
 
@@ -309,24 +317,6 @@ public class MemberManagementInvitationsController extends CMSPortlet implements
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         return this.service.getInvitationsHelp(portalControllerContext);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletConfig(PortletConfig portletConfig) {
-        this.portletConfig = portletConfig;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletContext(PortletContext portletContext) {
-        this.portletContext = portletContext;
     }
 
 }
