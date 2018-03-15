@@ -104,16 +104,16 @@
     <div class="dhx_cal_navline btn-toolbar" role="toolbar">
     	<div class="btn-group grp-btn-next-prev">
     		<!-- Previous period -->
-            <a href="${previous}" onclick="this.href=addScrollParam(this.href,null);" class="dhx_cal_prev_button btn btn-default btn-sm">
+            <a href="${previous}" onclick="this.href=addScrollParam(this.href,true,null);" class="dhx_cal_prev_button btn btn-default btn-sm">
                 <i class="halflings halflings-chevron-left"></i>
             </a>
             <!-- Next period -->
-            <a href="${next}" onclick="this.href=addScrollParam(this.href,null);" class="dhx_cal_next_button btn btn-default btn-sm">
+            <a href="${next}" onclick="this.href=addScrollParam(this.href,true,null);" class="dhx_cal_next_button btn btn-default btn-sm">
                 <i class="halflings halflings-chevron-right"></i>
             </a>
         </div>
         <!-- Today -->
-            <a href="${today}" onclick="this.href=addScrollParam(this.href,null);" class="dhx_cal_today_button btn btn-default btn-sm">
+            <a href="${today}" onclick="this.href=addScrollParam(this.href,true,null);" class="dhx_cal_today_button btn btn-default btn-sm">
             	<span><op:translate key="CALENDAR_TODAY" /></span>
         	</a>
         
@@ -127,17 +127,17 @@
 		    
 		    <ul class="dropdown-menu dropdown-menu-right">
 		        <li>
-			        <a href="${viewDay}" class="dropdown-item" onclick="this.href=addScrollParam(this.href,'day');">
+			        <a href="${viewDay}" class="dropdown-item" onclick="this.href=addScrollParam(this.href,true,'day');">
 	                	<op:translate key="CALENDAR_DAY" />
 		            </a>
 	            </li>
 	            <li>
-	            	<a href="${viewWeek}" class="dropdown-item" onclick="this.href=addScrollParam(this.href,'week');">
+	            	<a href="${viewWeek}" class="dropdown-item" onclick="this.href=addScrollParam(this.href,true,'week');">
 	                	<op:translate key="CALENDAR_WEEK" />
 	            	</a>
 	            </li>
 	           	<li>
-	           		<a href="${viewMonth}" class="dropdown-item" onclick="this.href=addScrollParam(this.href,'month');">
+	           		<a href="${viewMonth}" class="dropdown-item" onclick="this.href=addScrollParam(this.href,true,'month');">
 	                	<op:translate key="CALENDAR_MONTH" />
 	            	</a>
 	            </li>

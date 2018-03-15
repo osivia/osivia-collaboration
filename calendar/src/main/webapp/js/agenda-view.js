@@ -77,7 +77,7 @@ function saveEvent(ev)
 	var options = {
 		method : "post",
 		postBody : addScrollParam("timezone="+timezone+"&start=" + ev.start_date.toISOString() + "&end=" + ev.end_date.toISOString() 
-		+ "&doc_id=" + ev.doc_id+"&title="+ev.text,divSched.data("period"))
+		+ "&doc_id=" + ev.doc_id+"&title="+ev.text,true,divSched.data("period"))
 	};
 	var callerId = null;
 	directAjaxCall(container, options, urlDragNDrop, null, callerId);
@@ -91,20 +91,20 @@ function removeEvent(ev)
 	var container = null;
 	var options = {
 		method : "post",
-		postBody : addScrollParam("doc_id=" + ev.doc_id,divSched.data("period"))
+		postBody : addScrollParam("doc_id=" + ev.doc_id,true,divSched.data("period"))
 	};
 	var callerId = null;
 	directAjaxCall(container, options, urlRemove, null, callerId);
 }
 
-function addScrollParam(url,targetPeriod)
+function addScrollParam(url,add,targetPeriod)
 {	
 	var divScheduler = $JQry("div#scheduler_here");
 	var urlReturn;
-	if (divScheduler.data('period') == "month")
+	if (divScheduler.data('period') == "month" && add)
 	{
 		urlReturn = url +"&scrollViewMonth="+ $JQry("div.dhx_cal_data")[0].scrollTop;
-	} else if ((divScheduler.data('period') == "day" || divScheduler.data('period') == "week"))
+	} else if ((divScheduler.data('period') == "day" || divScheduler.data('period') == "week") && add)
 	{
 		urlReturn = url +"&scrollViewDayWeek="+ $JQry("div.dhx_cal_data")[0].scrollTop+"&hourPosition="+(24*$JQry("div.dhx_cal_data")[0].scrollTop/$JQry("div.dhx_cal_data")[0].scrollHeight).toFixed(4);
 	} else
@@ -167,10 +167,24 @@ $JQry(window).load(function() {
 		//Modifier onTemplatesReady doit se faire avant l'appel à scheduler.init
 		scheduler.attachEvent("onTemplatesReady", function(){
 		    scheduler.templates.event_text=function(start,end,event){
-		        return "<a href='" + viewEventUrl+"&doc_id="+event.doc_id + "' class='event_title' onclick='this.href=addScrollParam(this.href,null);'>" + event.text + "</a>";
+		    	var ev_url = event.view_url;
+		    	var add = false;
+		    	if (ev_url == null)
+		    	{
+		    		ev_url = viewEventUrl+"&doc_id="+event.doc_id;
+		    		add = true;
+		    	}
+		        return "<a href='" + ev_url + "' class='event_title' onclick='this.href=addScrollParam(this.href,"+add+",null);'>" + event.text + "</a>";
 		    };
 		    scheduler.templates.event_bar_text=function(start,end,event){
-		        return "<a href='" + viewEventUrl+"&doc_id="+event.doc_id + "' class='event_title' onclick='this.href=addScrollParam(this.href,null);'>" + event.text + "</a>";
+		    	var ev_url = event.view_url;
+		    	var add = false;
+		    	if (ev_url == null) 
+		    	{
+		    		ev_url = viewEventUrl+"&doc_id="+event.doc_id;
+		    		add = true;
+		    	}
+		        return "<a href='" + ev_url + "' class='event_title' onclick='this.href=addScrollParam(this.href,"+add+",null);'>" + event.text + "</a>";
 		    };
 		    scheduler.templates.event_class = function(start,end,ev){
 		    	var evClass;
@@ -221,11 +235,23 @@ $JQry(window).load(function() {
 			var event = scheduler.getEvent(id);
 			if (event.doc_id != undefined)
 			{
-				var viewEventUrl = divScheduler.data("url-viewevent");
-				var options = {
-						method : "post",
-						postBody: addScrollParam("doc_id=" + event.doc_id,divScheduler.data("period"))
-					};
+				var viewEventUrl;
+				var options;
+				if (event.view_url == null)
+				{
+					viewEventUrl = divScheduler.data("url-viewevent");
+					options = {
+							method : "post",
+							postBody: addScrollParam("doc_id=" + event.doc_id,true,divScheduler.data("period"))
+						};
+				} else
+				{
+					viewEventUrl = event.view_url;
+					options = {
+							method : "post",
+							postBody: addScrollParam("",false,divScheduler.data("period"))
+						};
+				}
 				directAjaxCall(null, options, viewEventUrl, null, null);
 				return false;
 			} else

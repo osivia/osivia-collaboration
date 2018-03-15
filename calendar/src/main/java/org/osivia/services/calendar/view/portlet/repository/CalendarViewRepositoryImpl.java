@@ -126,21 +126,23 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
                 portalControllerContext.getPortletCtx());
 
         Document document = this.getDocument(nuxeoController);
-
+        
         ArrayList<CalendarSynchronizationSource> listSource = new ArrayList<CalendarSynchronizationSource>();
-        PropertyList propertyList = (PropertyList) document.getProperties().get(LIST_SOURCE_SYNCHRO);
-        if (propertyList != null) {
-            CalendarSynchronizationSource source;
-            for (int i = 0; i < propertyList.size(); i++) {
-                PropertyMap map = propertyList.getMap(i);
-                source = new CalendarSynchronizationSource();
-                source.setColor((map.getString(COLOR_SYNCHRONIZATION) == null) ? null : CalendarColor.fromId(map.getString(COLOR_SYNCHRONIZATION)));
-                source.setDisplayName(map.getString(DISPLAYNAME_SYNCHRONIZATION));
-                source.setUrl(map.getString(URL_SYNCHRONIZATION));
-                source.setId(map.getString(SOURCEID_SYNCHRONIZATION));
-                listSource.add(source);
-            }
-        }
+        if (document != null) {
+	        PropertyList propertyList = (PropertyList) document.getProperties().get(LIST_SOURCE_SYNCHRO);
+	        if (propertyList != null) {
+	            CalendarSynchronizationSource source;
+	            for (int i = 0; i < propertyList.size(); i++) {
+	                PropertyMap map = propertyList.getMap(i);
+	                source = new CalendarSynchronizationSource();
+	                source.setColor((map.getString(COLOR_SYNCHRONIZATION) == null) ? null : CalendarColor.fromId(map.getString(COLOR_SYNCHRONIZATION)));
+	                source.setDisplayName(map.getString(DISPLAYNAME_SYNCHRONIZATION));
+	                source.setUrl(map.getString(URL_SYNCHRONIZATION));
+	                source.setId(map.getString(SOURCEID_SYNCHRONIZATION));
+	                listSource.add(source);
+	            }
+	        }
+	    }
 
         return listSource;
     }
@@ -156,8 +158,13 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
                 portalControllerContext.getPortletCtx());
 
         Document document = this.getDocument(nuxeoController);
-
-        return document.getString(PRIMARY_CALENDAR_COLOR);
+        if (document != null)
+        {
+        	return document.getString(PRIMARY_CALENDAR_COLOR);
+        } else
+        {
+        	return "";
+        }
     }
 
 
@@ -243,7 +250,8 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         Date endDate = document.getDate(END_DATE_PROPERTY);
         String bckgcolor = document.getString(BCKG_COLOR);
         boolean allDay = BooleanUtils.isTrue(document.getProperties().getBoolean(ALL_DAY_PROPERTY));
-        String viewURL = nuxeoController.getLink(document).getUrl();
+//        String viewURL = nuxeoController.getLink(document).getUrl();
+        String viewURL = null;
         String idEventSrc;
         String idParentSrc;
         idEventSrc = document.getString(ID_SOURCE_PROPERTY);
@@ -301,7 +309,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
      * @return document
      * @throws PortletException
      */
-    private Document getDocument(NuxeoController nuxeoController) throws PortletException {
+    protected Document getDocument(NuxeoController nuxeoController) throws PortletException {
         PortletRequest request = nuxeoController.getRequest();
         Document document = (Document) request.getAttribute(DOCUMENT_REQUEST_ATTRIBUTE);
 
