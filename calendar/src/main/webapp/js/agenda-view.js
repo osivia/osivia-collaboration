@@ -14,7 +14,7 @@ function dataLoading()
 {
 	var divScheduler = $JQry("div#scheduler_here");
 	var urLoad = divScheduler.data("url");
-	console.log("Scroll before dataLoading : "+scheduler.config.scroll_hour);
+	//console.log("Scroll before dataLoading : "+scheduler.config.scroll_hour);
 	//la méthode init supprime la classe portlet-filler du div dhx_cal_data. il faut donc le remettre pour que le composant s'affiche sur la hauteur disponible
 	//on ajoute des class flexbox aux composants parents uniquement si div#maximized est présent
 	var maximized = $JQry("div#maximized");
@@ -53,9 +53,9 @@ function setScrollPosition()
 	{
 		if ("-1" != scrollViewDayWeek && scrollViewDayWeek != "null") 
 		{
-			console.log("Before scrollTop:"+$JQry("div.dhx_cal_data")[0].scrollTop+" ,scrollHeight:"+$JQry("div.dhx_cal_data")[0].scrollHeight+" ,scrollViewDayWeek:"+scrollViewDayWeek);
+			//console.log("Before scrollTop:"+$JQry("div.dhx_cal_data")[0].scrollTop+" ,scrollHeight:"+$JQry("div.dhx_cal_data")[0].scrollHeight+" ,scrollViewDayWeek:"+scrollViewDayWeek);
 			$JQry("div.dhx_cal_data")[0].scrollTop=scrollViewDayWeek;
-			console.log("After scrollTop:"+$JQry("div.dhx_cal_data")[0].scrollTop+" ,scrollHeight:"+$JQry("div.dhx_cal_data")[0].scrollHeight);
+			//console.log("After scrollTop:"+$JQry("div.dhx_cal_data")[0].scrollTop+" ,scrollHeight:"+$JQry("div.dhx_cal_data")[0].scrollHeight);
 		}
 	}
 	else if (divScheduler.data("period")=="month")
@@ -152,7 +152,7 @@ function initScheduler(backFromPlanning)
 	scheduler.init('scheduler_here',new Date(divScheduler.data("startdate")),divScheduler.data("period"));
 	//Chargement des données
 	dataLoading();
-	console.log( "Init Scheduler terminé! Period: "+divScheduler.data("period") + " ,StartDate: " +divScheduler.data("startdate"));
+	//console.log( "Init Scheduler terminé! Period: "+divScheduler.data("period") + " ,StartDate: " +divScheduler.data("startdate"));
 	
 }
 
@@ -162,6 +162,12 @@ function initScheduler(backFromPlanning)
 $JQry(window).load(function() {
 	var divScheduler = $JQry("div#scheduler_here");
 	var viewEventUrl = divScheduler.data("url-viewevent");
+	
+	// Variable ajoutée pour corriger un bug dans le composant dhtmlx scheduler
+	// En cliquant rapidement (moins de 500ms entre chaque clic) pour créer plusieurs événements, ceux-ci étaient créées mais non enregistrés en base
+	// L'objectif est de ne plus les créer, en les filtrant lors de l'appel à l'écouter onBeforeEventCreated
+	var last_attached_event;
+	
 	if (divScheduler!= null && null != divScheduler.data("period"))
 	{
 		//Modifier onTemplatesReady doit se faire avant l'appel à scheduler.init
@@ -194,7 +200,6 @@ $JQry(window).load(function() {
 		    	} else {
 		    		evClass = ev.extraClass;
 		    	}
-		    	console.log("ExtraClass, color:"+evClass);
 			    return evClass;
 			}
 		});
@@ -260,23 +265,36 @@ $JQry(window).load(function() {
 			}
 		});
 		
-		
-		scheduler.attachEvent("onEventChanged", function (id, ev) {
-			console.log("onEventChanged, id="+id+" , ev="+ev.text);
-			saveEvent(ev);
+		scheduler.attachEvent("onDragEnd", function(){
+			last_attached_event = "onDragEnd";
+		});
+
+		scheduler.attachEvent("onEventDeleted", function (id) {
+			last_attached_event = "onEventDeleted";
+		});
+
+		scheduler.attachEvent("onBeforeEventCreated", function (e){
+			return !(last_attached_event == "onDragEnd");
 		});
 		
 		scheduler.attachEvent("onEventAdded", function (id, ev) {
-			console.log("onEventAdded, id="+id+" , ev="+ev.text);
+			//console.log("onEventAdded, id="+id+" , ev="+ev.text);
 			var divSched = $JQry("div#scheduler_here");
 			if (divSched.data("period")!="month")
 			{
 				saveEvent(ev);
 			}
+			last_attached_event = "onEventAdded";
+		});
+		
+		scheduler.attachEvent("onEventChanged", function (id, ev) {
+			//console.log("onEventChanged, id="+id+" , ev="+ev.text);
+			saveEvent(ev);
 		});
 		
 		scheduler.attachEvent("onEventSave", function (id, ev) {
-			console.log("onEventSave, id="+id+" , ev="+ev.text);
+			last_attached_event = "onEventSave";
+			//console.log("onEventSave, id="+id+" , ev="+ev.text);
 			var divSched = $JQry("div#scheduler_here");
 			if (divSched.data("period")!="month")
 			{
@@ -286,10 +304,11 @@ $JQry(window).load(function() {
 		});
 		
 		scheduler.attachEvent("onBeforeEventDelete", function (id,ev) {
-			console.log("onBeforeEventDelete, id="+id+" , ev="+ev.text);
+			//console.log("onBeforeEventDelete, id="+id+" , ev="+ev.text);
 			removeEvent(ev);
 			return true;
 		});
+
 		
 		/*scheduler.renderEvent = function(container, ev) {
 			var containerWidth = container.style.width;
@@ -331,8 +350,11 @@ $JQry(window).load(function() {
 		var event_step = 60;
 		//Evenement created by single click
 		scheduler.attachEvent("onEmptyClick", function(date, native_event){
-		   var fixed_date = fix_date(date);
-		   scheduler.addEventNow(fixed_date, scheduler.date.add(fixed_date, event_step, "minute"));
+			if (last_attached_event != "onDragEnd")
+			{
+				var fixed_date = fix_date(date);
+				scheduler.addEventNow(fixed_date, scheduler.date.add(fixed_date, event_step, "minute"));
+			}
 		});
 	}
 });
