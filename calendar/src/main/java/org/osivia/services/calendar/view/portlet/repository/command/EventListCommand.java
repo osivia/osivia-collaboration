@@ -88,10 +88,10 @@ public class EventListCommand implements INuxeoCommand {
         OperationRequest request;
         if (NuxeoCompatibility.canUseES()) {
             request = nuxeoSession.newRequest("Document.QueryES");
-            request.set(Constants.HEADER_NX_SCHEMAS, "dublincore, common, toutatice, vevent, synchronization");
+            request.set(Constants.HEADER_NX_SCHEMAS, "*");
         } else {
             request = nuxeoSession.newRequest("Document.Query");
-            request.setHeader(Constants.HEADER_NX_SCHEMAS, "dublincore, common, toutatice, vevent, synchronization");
+            request.setHeader(Constants.HEADER_NX_SCHEMAS, "*");
         }
         request.set("query", "SELECT * FROM Document WHERE " + filteredRequest);
 
