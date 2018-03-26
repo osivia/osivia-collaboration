@@ -112,7 +112,7 @@ public class EventEditionCommand implements INuxeoCommand {
     	if (date != null)
     	{
     		long gmtTime = date.getTime();
-    		long timezoneAlteredTime = gmtTime + clientTimezone.getRawOffset();
+    		long timezoneAlteredTime = gmtTime + clientTimezone.getRawOffset()+clientTimezone.getDSTSavings();
     		Calendar calDate = Calendar.getInstance(clientTimezone);
     		calDate.setTimeInMillis(timezoneAlteredTime);
 	    	date = calDate.getTime();
