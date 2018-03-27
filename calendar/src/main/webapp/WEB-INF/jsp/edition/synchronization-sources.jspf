@@ -1,0 +1,73 @@
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<c:set var="placeholder"><op:translate key="CALENDAR_SYNCHRONIZATION_SOURCE_PLACEHOLDER" /></c:set>
+
+
+<div class="form-group">
+    <label class="col-sm-3 col-lg-2 control-label"><op:translate key="CALENDAR_SYNCHRONIZATION_SOURCES"/></label>
+    <div class="col-sm-9 col-lg-10">
+        <c:choose>
+            <c:when test="${empty form.synchronizationSources}">
+                <p class="form-control-static">
+                    <span class="text-muted"><op:translate key="CALENDAR_NO_SYNCHRONIZATION_SOURCE" /></span>
+                </p>
+            </c:when>
+            
+            <c:otherwise>
+                <c:forEach var="source" items="${form.synchronizationSources}" varStatus="status">
+                    <div class="synchronization-source" data-source-id="${source.id}">
+                        <form:hidden path="synchronizationSources[${status.index}].url" />
+                        <form:hidden path="synchronizationSources[${status.index}].color" />
+                        <form:hidden path="synchronizationSources[${status.index}].displayName" />
+                        <input type="submit" name="edit-synchronization-source" class="hidden">
+                    
+                        <div class="media-body">
+                            <p class="form-control-static">
+                                <span class="calendar-color-container ${empty source.color.backgroundClass ? 'bg-primary' : source.color.backgroundClass}">
+                                    <span class="sr-only"><op:translate key="${source.color.key}" /></span>
+                                </span>
+                                
+                                <span>${source.displayName}</span>
+                            </p>
+                        </div>
+                        
+                        <div class="media-right media-middle">
+                            <!-- Edit -->
+                            <portlet:resourceURL id="synchronization-source-edition-url" var="url">
+                                <portlet:param name="sourceId" value="${source.id}" />
+                            </portlet:resourceURL>
+                            <button type="button" class="btn btn-default btn-sm" data-url="${url}">
+                                <span><op:translate key="CALENDAR_SYNCHRONIZATION_SOURCE_EDIT"/></span>
+                            </button>
+                        
+                            <!-- Remove -->
+                            <portlet:actionURL name="remove-synchronization-source" var="url">
+                                <portlet:param name="sourceId" value="${source.id}" />
+                            </portlet:actionURL>
+                            <a href="${url}" class="btn btn-default btn-sm">
+                                <span><op:translate key="CALENDAR_SYNCHRONIZATION_SOURCE_REMOVE"/></span>
+                            </a>
+                        </div>
+                    </div>
+                </c:forEach>
+            </c:otherwise>
+        </c:choose>
+        
+        <div class="synchronization-source">
+            <form:hidden path="addedSynchronizationSource.url" />
+            <form:hidden path="addedSynchronizationSource.color" />
+            <form:hidden path="addedSynchronizationSource.displayName" />
+            <input type="submit" name="add-synchronization-source" class="hidden">
+        
+            <!-- Add -->
+            <portlet:resourceURL id="synchronization-source-edition-url" var="url" />
+            <button type="button" class="btn btn-default btn-sm" data-url="${url}">
+                <span><op:translate key="CALENDAR_SYNCHRONIZATION_SOURCE_ADD"/></span>
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,72 @@
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<jsp:useBean id="currentDate" class="java.util.Date"/>
+<portlet:resourceURL id="vignette-preview" var="vignettePreviewUrl">
+    <portlet:param name="ts" value="${currentDate.time}" />
+</portlet:resourceURL>
+
+<c:set var="namespace"><portlet:namespace /></c:set>
+
+<c:set var="imageErrorMessage"><op:translate key="CALENDAR_IMAGE_ERROR_MESSAGE" /></c:set>
+
+
+<spring:bind path="vignette.upload">
+    <div class="form-group ${status.error ? 'has-error' : ''}">
+        <form:label path="vignette.upload" cssClass="col-sm-3 col-lg-6 control-label"><op:translate key="CALENDAR_VIGNETTE" /></form:label>
+        <div class="col-sm-9 col-lg-6">
+            <c:choose>
+                <c:when test="${form.vignette.deleted}">
+                    <!-- Deleted vignette -->
+                    <p class="form-control-static text-muted">
+                        <span><op:translate key="CALENDAR_DELETED_VIGNETTE" /></span>
+                    </p>
+                </c:when>
+
+                <c:when test="${not empty form.vignette.temporaryFile}">
+                    <!-- Preview -->
+                    <p class="form-control-static">
+                        <img src="${vignettePreviewUrl}" alt="" class="img-responsive vignette" data-error-message="${imageErrorMessage}">
+                    </p>
+                </c:when>
+
+                <c:when test="${empty form.vignette.url}">
+                    <!-- No vignette -->
+                    <p class="form-control-static text-muted">
+                        <span><op:translate key="CALENDAR_NO_VIGNETTE" /></span>
+                    </p>
+                </c:when>
+
+                <c:otherwise>
+                    <!-- Vignette -->
+                    <p class="form-control-static">
+                        <img src="${form.vignette.url}" alt="" class="img-responsive vignette">
+                    </p>
+                </c:otherwise>
+            </c:choose>
+
+            <form:errors path="vignette.upload" cssClass="help-block" />
+
+            <div>
+                <!-- Upload -->
+                <label class="btn btn-sm btn-default btn-file">
+                    <i class="halflings halflings-folder-open"></i>
+                    <span><op:translate key="CALENDAR_VIGNETTE_UPLOAD" /></span>
+                    <form:input type="file" path="vignette.upload" data-change-submit="${namespace}-vignette-submit" />
+                </label>
+                <input id="${namespace}-vignette-submit" type="submit" name="upload-vignette" class="hidden">
+
+                <!-- Delete -->
+                <c:set var="title"><op:translate key="CALENDAR_VIGNETTE_DELETE" /></c:set>
+                <button type="submit" name="delete-vignette" title="${title}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" ${empty form.vignette.url and empty form.vignette.temporaryFile ? 'disabled' : ''}>
+                    <i class="halflings halflings-trash"></i>
+                    <span class="sr-only">${title}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</spring:bind>
