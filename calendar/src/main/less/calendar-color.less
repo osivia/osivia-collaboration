@@ -1,0 +1,145 @@
+// Color picker
+.color-picker {
+    &.dropdown {
+        .dropdown-menu {
+            width: 64px;
+            min-width: unset;
+            
+            padding: 8px;
+            
+            a.calendar-color-container {
+                float: left;
+                
+                margin-left: 3px;
+                margin-right: 3px;
+                
+                &:hover, &:focus {
+                    margin-left: 2px;
+                    margin-right: 2px;
+                }
+            }
+        }
+    }
+}
+
+
+// Color container
+.calendar-color-container {
+    @line-height: 20px;
+    @margin: 1px;
+    
+    display: inline-block;
+    width: @line-height - 2 * @margin;
+    height: @line-height - 2 * @margin;
+    vertical-align: bottom;
+    
+    margin-top: @margin;
+    margin-bottom: @margin;
+    
+    border-radius: 50%;
+    
+    i {
+        display: block;
+        line-height: @line-height - 2 * @margin - 1;
+        
+        text-align: center;
+        font-size: 65%;
+    }
+    
+    a& {
+        width: @line-height - 4 * @margin;
+        height: @line-height - 4 * @margin;
+        
+        margin-top: 2 * @margin;
+        margin-bottom: 2 * @margin;
+        
+        i {
+            line-height: @line-height - 4 * @margin - 1;
+        }
+        
+        &:not(.active) {
+            i {
+                display: none;
+            }
+        }
+        
+        &:hover, &:focus {
+            width: @line-height - 2 * @margin;
+            height: @line-height - 2 * @margin;
+            
+            margin-top: @margin;
+            margin-bottom: @margin;
+            
+            text-decoration: none;
+            
+            box-shadow: 0 1px 1px 0 fade(#000, 14%), 0 2px 1px -1px fade(#000, 12%), 0 1px 3px 0 fade(#000, 20%);
+            
+            i {
+                line-height: @line-height - 2 * @margin - 1;
+            }
+            
+            &.bg-primary {
+                color: #fff;
+            }
+        }
+    }
+}
+
+
+// Colors generation
+.make-calendar-color(@name, @color) when (isColor(@color)) {
+    .text-@{name} {
+        color: @color;
+        
+        a& {
+            &:hover, &:focus {
+                color: darken(@color, 10%);
+            }
+        }
+    }
+    
+    .bg-@{name} {
+        color: #fff;
+        background-color: @color;
+        
+        a& {
+            &:hover, &:focus {
+                color: #fff;
+                background-color: darken(@color, 10%);
+            }
+        }
+        
+        &.dhx_cal_event {
+            background-color: unset;
+            
+            > * {
+                background-color: @color !important;
+            }
+            
+            &:hover > * {
+                background-color: darken(@color, 5%) !important;
+            }
+        }
+        
+        &.dhx_cal_event_line {
+            background-color: @color !important;
+            
+            &:hover {
+                background-color: darken(@color, 5%) !important;
+            }
+        }
+    }
+}
+
+.make-calendar-color(@name: e("primary"), @color: #039be5);
+.make-calendar-color(@name: e("red-tomato"), @color: #d50000);
+.make-calendar-color(@name: e("light-pink"), @color: #e67c73);
+.make-calendar-color(@name: e("mandarin"), @color: #f4511e);
+.make-calendar-color(@name: e("yellow-banana"), @color: #f6bf26);
+.make-calendar-color(@name: e("sage-green"), @color: #33b679);
+.make-calendar-color(@name: e("green-basil"), @color: #0b8043);
+.make-calendar-color(@name: e("peacock-blue"), @color: #039be5);
+.make-calendar-color(@name: e("blueberry"), @color: #3f51b5);
+.make-calendar-color(@name: e("lavender"), @color: #7986cb);
+.make-calendar-color(@name: e("purple-grape"), @color: #8e24aa);
+.make-calendar-color(@name: e("anthracite"), @color: #616161);

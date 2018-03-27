@@ -57,183 +57,6 @@
     }
     
     
-    // Day & week
-    &.daily-calendar, &.weekly-calendar {
-        .table {
-            thead > tr > td {
-                padding-top: 0;
-            }
-            
-            tbody {
-                > tr > td {
-                    padding: 0;
-                }
-                
-                .table td:hover {
-                    background-color: @grey-light;
-                }
-            }
-
-            .fixed-column {
-                width: 60px;
-                min-width: 60px;
-            }
-            
-            .table {
-                tbody > * {
-                    height: 20px;
-                }
-            }
-            
-            th, td {
-                &.today {
-                    background-color: @grey-lighter;
-                }
-            }
-        }
-        
-        .wrapper {
-            height: 10 * @hour-height;
-            overflow: auto;
-            
-            > div {
-                position: relative;
-                height: 24 * @hour-height;
-            }
-        }
-        
-        .events-container {
-            position: absolute;
-            top: 0;
-            left: 60px;
-            right: 0;
-        }
-        
-        .event {
-            position: absolute;
-            border-radius: 4px;
-            padding: 4px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            
-            &.has-previous {
-                border-top-left-radius: 0;
-                border-top-right-radius: 0;
-            }
-            
-            &.has-next {
-                border-bottom-left-radius: 0;
-                border-bottom-right-radius: 0;
-            }
-        }
-        
-        .daily-event {
-            border-radius: 4px;
-            margin: 2px 8px 0;
-            padding: 4px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            
-            &.has-previous {
-                margin-left: 0;
-                border-top-left-radius: 0;
-                border-bottom-left-radius: 0;
-            }
-            
-            &.has-next {
-                margin-right: 0;
-                border-top-right-radius: 0;
-                border-bottom-right-radius: 0;
-            }
-        }
-    }
-    
-    
-    // Month
-    &.monthly-calendar {
-        .table {
-            border-style: none;
-            
-            td {
-                padding: 8px;
-                
-                &.today {
-                    background-color: @grey-lighter;
-                    
-                    .day {
-                        font-weight: bold;
-                    }
-                }
-                
-                &:hover {
-                    background-color: @grey-light;
-                }
-            }
-            
-            thead th {
-                border-left-style: none;
-                border-right-style: none;
-            }
-            
-            tbody td {
-                height: 115px;
-            }
-            
-            @media screen and (max-width: @screen-xs-max) {
-                td {
-                    padding: 3px;
-                }
-                
-                tbody td {
-                    height: 40px;
-                }
-            }
-        }
-        
-        .event {
-            border-radius: 4px;
-            margin-bottom: 2px;
-            padding: 4px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            
-            &.has-previous {
-                border-top-left-radius: 0;
-                border-bottom-left-radius: 0;
-                
-                @media screen and (min-width: @screen-sm-min) {
-                    margin-left: -8px;
-                }
-            }
-            
-            &.has-next {
-                border-top-right-radius: 0;
-                border-bottom-right-radius: 0;
-                
-                @media screen and (min-width: @screen-sm-min) {
-                    margin-right: -8px;
-                }
-            }
-            
-            @media screen and (max-width: @screen-xs-max) {
-                float: left;
-                height: 6px;
-                width: 6px;
-                margin: 1px;
-                font-size: 0;
-            }
-            
-            @media screen and (min-width: @screen-sm-min) {
-                + .event + .event {
-                    display: none;
-                }
-            }
-        }
-    }
-    
-    
     // Planning
     &.planning-calendar {        
         .day-of-month {
@@ -242,4 +65,133 @@
             font-size: 180%;
         }
     }
+}
+
+ /* unvisited link */
+a.event_title:link,
+a.event_title:visited,
+a.event_title:hover,
+a.event_title:active  {
+	color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+//Il est obligatoire de préciser l'attribut height pour afficher le composant DHMTMLX Scheduler
+//Deux comportements possibles:
+//- par défaut, on lui attribue une hauteur fixe 
+div.dhx_cal_container {
+	font-family: inherit ! important;
+	font-size: inherit !important;
+	height:800px;
+	flex: unset;
+}
+//-si on est dans un div#maximized, on lui indique de prendre toute la hauteur et en parallèle on définit en javascript 
+//que ses parents ont l'attribut display:flex 
+body.fixed-layout{
+	div#maximized{
+		div.dhx_cal_container {
+			height:100% !important;
+		}
+	}
+}
+
+div.dhx_scale_bar,
+div.dhx_scale_hour {
+	color: #595959;
+	font: inherit !important;
+}
+
+div.dhx_title {
+	color: white !important;
+}
+
+a.dhx_cal_prev_button,
+a.dhx_cal_next_button {
+	position:initial !important;
+	height:initial;
+	text-align:center;
+}
+
+a.dhx_cal_today_button {
+	position:initial;
+	font-family:inherit;
+	width:initial;
+	height:initial;
+}
+
+div.dhx_cal_data {
+	font-family:inherit;
+}
+
+div.dhx_cal_navline {
+	.btn-group {
+		top: 0px;
+	}
+	
+	.dhx_cal_date {
+		top:0px;
+		font-family:inherit;
+	}
+	
+	.grp-btn-next-prev {
+		position: initial;
+	}
+	
+	.grp-btn-period {
+		position: relative;
+	}
+	
+	.period-button {
+		top: 0px !important;
+		position: relative !important;
+	}
+	
+}
+
+//Masquage de la barre de navigation du scheduler
+//.dhx_cal_navline{
+//   display: none;
+//}
+
+/* CSS part for event's edition */
+button.color-box{
+	cursor: pointer;
+	height: 16px;
+	margin: 0 2.5px;
+	width: 16px;
+	vertical-align: top;
+	position: relative;
+	display: flex;
+	border-spacing: 0;
+	cursor: pointer;
+	border: none;
+}
+
+button.background-color-selected
+{
+	padding: 0px 2px 0px 2px;
+    color: white;
+    top: 0px !important;
+}
+
+.dhx_cal_event div.dhx_footer,
+.dhx_cal_event.past_event div.dhx_footer,
+.dhx_cal_event.event_english div.dhx_footer,
+.dhx_cal_event.event_math div.dhx_footer,
+.dhx_cal_event.event_science div.dhx_footer{
+	background-color: transparent !important;
+}
+.dhx_cal_event .dhx_body{
+	opacity: 1;
+}
+.dhx_cal_event_line:hover,
+.dhx_cal_event:hover .dhx_body,
+.dhx_cal_event.selected .dhx_body,
+.dhx_cal_event.dhx_cal_select_menu .dhx_body{
+	opacity: 1;
+}
+
+.dhx_cal_event div textarea {
+	color:black;
 }
