@@ -7,7 +7,7 @@
         <if-exists>overwrite</if-exists>
         <instance>
             <display-name xml:lang="en">Nuxeo - Calendar</display-name>
-            <display-name xml:lang="fr">Nuxeo - Calendar</display-name>
+            <display-name xml:lang="fr">Nuxeo - Agenda</display-name>
             <instance-id>osivia-services-calendar-instance</instance-id>
             <portlet-ref>osivia-services-calendar</portlet-ref>
             <security-constraint>
@@ -23,20 +23,87 @@
         </instance>
     </deployment>
     
+    
     <deployment>
         <if-exists>overwrite</if-exists>
         <instance>
-            <display-name xml:lang="en">Calendar plugin</display-name>
-            <display-name xml:lang="fr">Calendar plugin</display-name>
-            <instance-id>osivia-services-calendarPlugin-instance</instance-id>
-            <portlet-ref>osivia-services-calendarPlugin</portlet-ref>
+            <instance-id>osivia-services-calendar-edition-instance</instance-id>
+            <portlet-ref>osivia-services-calendar-edition</portlet-ref>
+            <security-constraint>
+                <policy-permission>
+                    <action-name>view</action-name>
+                    <unchecked />
+                </policy-permission>
+            </security-constraint>
             <preferences>
                 <preference>
                     <name>hide</name>
                     <value>true</value>
                 </preference>
-            </preferences>            
+            </preferences>
         </instance>
-    </deployment>    
+    </deployment>
+    
+    
+    <deployment>
+        <if-exists>overwrite</if-exists>
+        <instance>
+            <instance-id>osivia-services-calendar-synchronization-edition-instance</instance-id>
+            <portlet-ref>osivia-services-calendar-synchronization-edition</portlet-ref>
+            <security-constraint>
+                <policy-permission>
+                    <action-name>view</action-name>
+                    <unchecked />
+                </policy-permission>
+            </security-constraint>
+            <preferences>
+                <preference>
+                    <name>hide</name>
+                    <value>true</value>
+                </preference>
+            </preferences>
+        </instance>
+    </deployment>
+    
+    
+    <deployment>
+        <if-exists>overwrite</if-exists>
+        <instance>
+            <instance-id>osivia-services-calendar-event-edition-instance</instance-id>
+            <portlet-ref>osivia-services-calendar-event-edition</portlet-ref>
+            <security-constraint>
+                <policy-permission>
+                    <action-name>view</action-name>
+                    <unchecked />
+                </policy-permission>
+            </security-constraint>
+            <preferences>
+                <preference>
+                    <name>hide</name>
+                    <value>true</value>
+                </preference>
+            </preferences>
+        </instance>
+    </deployment>
+    
+    <deployment>
+        <if-exists>overwrite</if-exists>
+        <instance>
+            <instance-id>osivia-services-calendar-event-view-instance</instance-id>
+            <portlet-ref>osivia-services-calendar-event-view</portlet-ref>
+            <security-constraint>
+                <policy-permission>
+                    <action-name>view</action-name>
+                    <unchecked />
+                </policy-permission>
+            </security-constraint>
+            <preferences>
+                <preference>
+                    <name>hide</name>
+                    <value>true</value>
+                </preference>
+            </preferences>
+        </instance>
+    </deployment>
     
 </deployments>
