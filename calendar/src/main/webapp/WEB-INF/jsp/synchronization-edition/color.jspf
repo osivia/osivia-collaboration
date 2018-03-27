@@ -1,0 +1,9 @@
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<div class="form-group">
+    <form:label path="color" cssClass="control-label"><op:translate key="CALENDAR_SYNCHRONIZATION_SOURCE_COLOR"/></form:label>
+    
+    <%@ include file="../common/color-picker.jspf" %>
+</div>

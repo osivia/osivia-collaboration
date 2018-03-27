@@ -1,0 +1,35 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+
+
+<%@ page isELIgnored="false"%>
+
+<div class="form-group">
+    <label class="col-sm-3 col-lg-2 control-label"><op:translate key="CALENDAR_EVENT_DATES"/></label>
+    <div class="col-sm-9 col-lg-10 form-control-static">
+    	<c:choose>
+    		<c:when test="${form.allDay}">
+	     		<op:translate key="CALENDAR_EVENT_ALL_DAY_FROM" />
+	     		<c:choose>
+	   				<c:when test="${form.sameDay}">
+	   					<fmt:formatDate value="${form.startDate}" type="date" pattern="EEEEEEEE dd/MM/yyyy" />
+	   				</c:when>
+	   				<c:otherwise>
+                        <fmt:formatDate value="${form.startDate}" pattern="EEEEEEEE dd/MM/yyyy" /> <op:translate key="CALENDAR_EVENT_ALL_DAY_TO" /> <fmt:formatDate value="${form.endDateAllDay}" pattern="EEEEEEEE dd/MM/yyyy" />
+	   				</c:otherwise>
+				</c:choose>
+    		</c:when>
+    		<c:otherwise>
+                <c:choose>
+                    <c:when test="${form.sameDay}">
+                        <fmt:formatDate value="${form.startDate}" pattern="EEEEEEEE dd/MM/yyyy" /> <op:translate key="CALENDAR_EVENT_SAME_DAY_FROM" /> <fmt:formatDate value="${form.startDate}" pattern="HH:mm" /> <op:translate key="CALENDAR_EVENT_SAME_DAY_TO" /> <fmt:formatDate value="${form.endDate}" pattern="HH:mm" />
+                    </c:when>
+                    <c:otherwise>
+                        <op:translate key="CALENDAR_EVENT_DAY_FROM" /> <fmt:formatDate value="${form.startDate}" pattern="EEEEEEEE dd/MM/yyyy HH:mm" /> <op:translate key="CALENDAR_EVENT_DAY_TO" /> <fmt:formatDate value="${form.endDate}" pattern="EEEEEEEE dd/MM/yyyy HH:mm" />
+                    </c:otherwise>
+                </c:choose>
+    		</c:otherwise>
+    	</c:choose>
+    </div>
+</div>
