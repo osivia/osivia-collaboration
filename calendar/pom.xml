@@ -14,6 +14,17 @@
     <name>OSIVIA Services - Calendar</name>
 
 
+	<dependencies>
+    
+        <!-- iCal4j -->
+		<dependency>
+		    <groupId>org.mnode.ical4j</groupId>
+		    <artifactId>ical4j</artifactId>
+		    <version>1.0.7</version>
+		 </dependency>
+         
+    </dependencies>
+
     <build>
         <plugins>
 
@@ -21,6 +32,14 @@
             <plugin>
                 <groupId>org.lesscss</groupId>
                 <artifactId>lesscss-maven-plugin</artifactId>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <attachClasses>true</attachClasses>
+                </configuration>
             </plugin>
 
         </plugins>
