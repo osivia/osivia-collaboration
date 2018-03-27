@@ -7,7 +7,7 @@ import org.apache.commons.lang.StringUtils;
  * 
  * @author Cédric Krommenhoek
  */
-public enum CalendarColor {
+public enum CalendarColor implements ICalendarColor{
 
     /** Red tomato. */
     RED_TOMATO,

@@ -8,6 +8,7 @@ import org.osivia.services.calendar.common.model.Attachments;
 import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
 import org.osivia.services.calendar.common.model.CalendarEventDates;
+import org.osivia.services.calendar.common.model.ICalendarColor;
 import org.osivia.services.calendar.common.repository.CalendarRepository;
 import org.osivia.services.calendar.event.edition.portlet.model.CalendarEventEditionForm;
 
@@ -89,7 +90,7 @@ public interface CalendarEventEditionRepository extends CalendarRepository {
      * @return color
      * @throws PortletException
      */
-    CalendarColor getColor(PortalControllerContext portalControllerContext, Document document, CalendarColor calendarColor) throws PortletException;
+    ICalendarColor getColor(PortalControllerContext portalControllerContext, Document document, CalendarColor calendarColor) throws PortletException;
 
 
     /**

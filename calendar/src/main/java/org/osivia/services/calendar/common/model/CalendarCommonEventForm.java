@@ -9,7 +9,7 @@ public class CalendarCommonEventForm extends AbstractCalendarEditionForm {
     /** Location. */
     private String location;
     /** Color. */
-    private CalendarColor color;
+    private ICalendarColor color;
     /** Description. */
     private String description;
     /** Attachments. */
@@ -40,11 +40,11 @@ public class CalendarCommonEventForm extends AbstractCalendarEditionForm {
 		this.location = location;
 	}
 
-	public CalendarColor getColor() {
+	public ICalendarColor getColor() {
 		return color;
 	}
 
-	public void setColor(CalendarColor color) {
+	public void setColor(ICalendarColor color) {
 		this.color = color;
 	}
 

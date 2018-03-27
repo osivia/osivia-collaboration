@@ -111,7 +111,7 @@ public class SynchronizationCommand implements INuxeoCommand {
 //            		calStartReccuringSource.setTime(startReccuringSource);
 //            	}
             	lastModified = document.getDate(LAST_MODIFIED_SOURCE);
-            	calLastModified.setTime(lastModified);
+            	if (lastModified != null) calLastModified.setTime(lastModified);
             	EventToSync eventToSync = mapVevent.get(eventKey);
             	if (eventToSync == null)
             	{
@@ -119,7 +119,7 @@ public class SynchronizationCommand implements INuxeoCommand {
             	}
             	else
             	{
-            		if (eventToSync.getLastModifiedSource().getTime().compareTo(calLastModified.getTime())!=0)
+            		if (calLastModified != null && eventToSync.getLastModifiedSource().getTime().compareTo(calLastModified.getTime())!=0)
 //            				&& eventToSync.getStartReccuringCalSource().getTime() != null
 //            				&& calStartReccuringSource != null
 //            				&& eventToSync.getStartReccuringCalSource().getTime().compareTo(calStartReccuringSource.getTime()) != 0)

@@ -30,6 +30,7 @@ import org.osivia.services.calendar.common.model.Attachments;
 import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
 import org.osivia.services.calendar.common.model.CalendarEventDates;
+import org.osivia.services.calendar.common.model.ICalendarColor;
 import org.osivia.services.calendar.common.service.CalendarServiceImpl;
 import org.osivia.services.calendar.event.edition.portlet.model.CalendarEventEditionForm;
 import org.osivia.services.calendar.event.edition.portlet.repository.CalendarEventEditionRepository;
@@ -166,7 +167,7 @@ public class CalendarEventEditionServiceImpl extends CalendarServiceImpl impleme
         form.setLocation(location);
 
         // Color
-        CalendarColor color = this.repository.getColor(portalControllerContext, document, calendarColor);
+        ICalendarColor color = this.repository.getColor(portalControllerContext, document, calendarColor);
         form.setColor(color);
 
         // Description

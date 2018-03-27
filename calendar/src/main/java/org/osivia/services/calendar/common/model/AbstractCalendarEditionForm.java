@@ -10,7 +10,7 @@ public abstract class AbstractCalendarEditionForm {
     /** Title. */
     private String title;
     /** Color. */
-    private CalendarColor color;
+    private ICalendarColor color;
 
 
     /**
@@ -44,7 +44,7 @@ public abstract class AbstractCalendarEditionForm {
      * 
      * @return the color
      */
-    public CalendarColor getColor() {
+    public ICalendarColor getColor() {
         return color;
     }
 
@@ -53,7 +53,7 @@ public abstract class AbstractCalendarEditionForm {
      * 
      * @param color the color to set
      */
-    public void setColor(CalendarColor color) {
+    public void setColor(ICalendarColor color) {
         this.color = color;
     }
 

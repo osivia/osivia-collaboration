@@ -232,6 +232,7 @@ $JQry(window).load(function() {
 					console.log( "Erreur lors de l'appel Ajax, status: "+status+ ", data: "+data);
 				}
 			});
+		    console.log("id : "+id+", boolReturn :"+boolReturn);
 		    return boolReturn;
 		});
 		

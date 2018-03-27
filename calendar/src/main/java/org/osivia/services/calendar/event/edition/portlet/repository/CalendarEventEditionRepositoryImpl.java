@@ -24,6 +24,7 @@ import org.osivia.services.calendar.common.model.Attachments;
 import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
 import org.osivia.services.calendar.common.model.CalendarEventDates;
+import org.osivia.services.calendar.common.model.ICalendarColor;
 import org.osivia.services.calendar.common.repository.CalendarRepositoryImpl;
 import org.osivia.services.calendar.event.edition.portlet.model.CalendarEventEditionForm;
 import org.osivia.services.calendar.event.edition.portlet.repository.command.CalendarEventCreationCommand;
@@ -200,7 +201,7 @@ public class CalendarEventEditionRepositoryImpl extends CalendarRepositoryImpl i
      * {@inheritDoc}
      */
     @Override
-    public CalendarColor getColor(PortalControllerContext portalControllerContext, Document document, CalendarColor calendarColor) throws PortletException {
+    public ICalendarColor getColor(PortalControllerContext portalControllerContext, Document document, CalendarColor calendarColor) throws PortletException {
         // Color identifier
         String colorId;
         if (document == null) {

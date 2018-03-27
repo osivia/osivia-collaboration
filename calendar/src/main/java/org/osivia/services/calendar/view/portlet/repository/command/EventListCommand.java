@@ -76,7 +76,7 @@ public class EventListCommand implements INuxeoCommand {
             clause.append("AND (vevent:dtstart < TIMESTAMP '").append(end).append("') ");
         }
         clause.append("AND (vevent:dtend > TIMESTAMP '").append(start).append("') ");
-        clause.append("AND (sync:idParentSource is null");
+        clause.append("AND (sync:idParentSource is null or sync:idParentSource = '' ");
         if (this.sourcesId != null && !this.sourcesId.isEmpty()) clause.append(" OR sync:idParentSource IN (").append(this.sourcesId).append(")");
         clause.append(") ");
         clause.append("ORDER BY vevent:dtstart");
