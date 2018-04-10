@@ -16,8 +16,8 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
+import org.osivia.services.calendar.common.model.ICalendarColor;
 import org.osivia.services.calendar.common.model.converter.CalendarColorPropertyEditor;
 import org.osivia.services.calendar.event.edition.portlet.model.CalendarEventEditionForm;
 import org.osivia.services.calendar.event.edition.portlet.model.validation.CalendarEventEditionFormValidator;
@@ -267,7 +267,7 @@ public class CalendarEventEditionController extends CMSPortlet {
     public void formInitBinder(WebDataBinder binder) {
         binder.setDisallowedFields("calendarColor", "startDate", "endDate");
         binder.addValidators(this.formValidator);
-        binder.registerCustomEditor(CalendarColor.class, this.calendarColorPropertyEditor);
+        binder.registerCustomEditor(ICalendarColor.class, this.calendarColorPropertyEditor);
     }
 
 }

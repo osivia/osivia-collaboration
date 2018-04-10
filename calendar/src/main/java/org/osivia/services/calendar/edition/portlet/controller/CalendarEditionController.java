@@ -14,8 +14,8 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
+import org.osivia.services.calendar.common.model.ICalendarColor;
 import org.osivia.services.calendar.common.model.converter.CalendarColorPropertyEditor;
 import org.osivia.services.calendar.edition.portlet.model.CalendarEditionForm;
 import org.osivia.services.calendar.edition.portlet.model.validation.CalendarFormValidator;
@@ -310,7 +310,7 @@ public class CalendarEditionController {
     @InitBinder("form")
     public void formInitBinder(WebDataBinder binder) {
         binder.addValidators(this.formValidator);
-        binder.registerCustomEditor(CalendarColor.class, this.calendarColorPropertyEditor);
+        binder.registerCustomEditor(ICalendarColor.class, this.calendarColorPropertyEditor);
     }
 
 }
