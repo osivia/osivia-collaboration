@@ -173,23 +173,13 @@ $JQry(window).load(function() {
 		//Modifier onTemplatesReady doit se faire avant l'appel à scheduler.init
 		scheduler.attachEvent("onTemplatesReady", function(){
 		    scheduler.templates.event_text=function(start,end,event){
-		    	var ev_url = event.view_url;
-		    	var add = false;
-		    	if (ev_url == null)
-		    	{
-		    		ev_url = viewEventUrl+"&doc_id="+event.doc_id;
-		    		add = true;
-		    	}
+		    	var ev_url = viewEventUrl+"&doc_id="+event.doc_id;
+		    	var add = true;
 		        return "<a href='" + ev_url + "' class='event_title' onclick='this.href=addScrollParam(this.href,"+add+",null);'>" + event.text + "</a>";
 		    };
 		    scheduler.templates.event_bar_text=function(start,end,event){
-		    	var ev_url = event.view_url;
-		    	var add = false;
-		    	if (ev_url == null) 
-		    	{
-		    		ev_url = viewEventUrl+"&doc_id="+event.doc_id;
-		    		add = true;
-		    	}
+		    	var ev_url = viewEventUrl+"&doc_id="+event.doc_id;
+		    	var add = true;
 		        return "<a href='" + ev_url + "' class='event_title' onclick='this.href=addScrollParam(this.href,"+add+",null);'>" + event.text + "</a>";
 		    };
 		    scheduler.templates.event_class = function(start,end,ev){
@@ -205,6 +195,26 @@ $JQry(window).load(function() {
 		});
 		
 		initScheduler(false);
+		
+		scheduler.attachEvent("onDblClick", function(id,ev){
+			var divScheduler = $JQry("div#scheduler_here");
+			var event = scheduler.getEvent(id);
+			if (event.doc_id != undefined)
+			{
+				var viewEventUrl;
+				var options;
+				viewEventUrl = divScheduler.data("url-viewevent");
+				options = {
+						method : "post",
+						postBody: addScrollParam("doc_id=" + event.doc_id,true,divScheduler.data("period"))
+					};
+				directAjaxCall(null, options, viewEventUrl, null, null);
+				return false;
+			} else
+			{
+				return true;
+			}
+		});
 		
 		//To display or hide menu bar on the event's left when the user click on the event
 		scheduler.attachEvent("onClick", function(id){
@@ -234,36 +244,6 @@ $JQry(window).load(function() {
 			});
 		    console.log("id : "+id+", boolReturn :"+boolReturn);
 		    return boolReturn;
-		});
-		
-		scheduler.attachEvent("onDblClick", function(id,ev){
-			var divScheduler = $JQry("div#scheduler_here");
-			var event = scheduler.getEvent(id);
-			if (event.doc_id != undefined)
-			{
-				var viewEventUrl;
-				var options;
-				if (event.view_url == null)
-				{
-					viewEventUrl = divScheduler.data("url-viewevent");
-					options = {
-							method : "post",
-							postBody: addScrollParam("doc_id=" + event.doc_id,true,divScheduler.data("period"))
-						};
-				} else
-				{
-					viewEventUrl = event.view_url;
-					options = {
-							method : "post",
-							postBody: addScrollParam("",false,divScheduler.data("period"))
-						};
-				}
-				directAjaxCall(null, options, viewEventUrl, null, null);
-				return false;
-			} else
-			{
-				return true;
-			}
 		});
 		
 		scheduler.attachEvent("onDragEnd", function(){
