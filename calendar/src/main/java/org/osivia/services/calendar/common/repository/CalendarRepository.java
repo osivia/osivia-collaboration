@@ -4,7 +4,6 @@ import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.calendar.common.model.CalendarColor;
 
 /**
  * Calendar repository interface.
@@ -38,16 +37,6 @@ public interface CalendarRepository {
      */
     String getTitle(PortalControllerContext portalControllerContext, Document document);
 
-
-    /**
-     * Get calendar color.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param calendar calendar Nuxeo document
-     * @return color
-     * @throws PortletException
-     */
-    CalendarColor getCalendarColor(PortalControllerContext portalControllerContext, Document calendar) throws PortletException;
     
     /**
      * Insert content menubar items.

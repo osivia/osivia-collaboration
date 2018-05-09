@@ -140,7 +140,7 @@ public class CalendarPlugin extends AbstractPluginPortlet  {
      *
      * @param context customization context
      */
-    private void customizeMenubarModules(CustomizationContext context) {
+    protected void customizeMenubarModules(CustomizationContext context) {
         // Menubar modules
         List<MenubarModule> modules = this.getMenubarModules(context);
 

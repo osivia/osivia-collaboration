@@ -5,9 +5,10 @@ import java.io.IOException;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.calendar.common.model.CalendarCommonEventForm;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
+import org.osivia.services.calendar.common.model.converter.CalendarColorPropertyEditor;
 import org.osivia.services.calendar.common.service.CalendarService;
-import org.osivia.services.calendar.event.edition.portlet.model.CalendarEventEditionForm;
 
 /**
  * Calendar event edition portlet service.
@@ -18,9 +19,11 @@ import org.osivia.services.calendar.event.edition.portlet.model.CalendarEventEdi
 public interface CalendarEventEditionService extends CalendarService {
 
     /** Date format pattern. */
-    String DATE_FORMAT_PATTERN = "dd/MM/yyyy";
+	public static final String DATE_FORMAT_PATTERN = "dd/MM/yyyy";
     /** Time format pattern. */
-    String TIME_FORMAT_PATTERN = "HH:mm";
+    public static final String TIME_FORMAT_PATTERN = "HH:mm";
+    /** Color Nuxeo document property. */
+    public static final String COLOR_PROPERTY = "vevent:color";
 
 
     /**
@@ -30,7 +33,7 @@ public interface CalendarEventEditionService extends CalendarService {
      * @return calendar event edition form
      * @throws PortletException
      */
-    CalendarEventEditionForm getForm(PortalControllerContext portalControllerContext) throws PortletException;
+    CalendarCommonEventForm getForm(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**
@@ -41,7 +44,7 @@ public interface CalendarEventEditionService extends CalendarService {
      * @throws PortletException
      * @throws IOException
      */
-    void uploadAttachments(PortalControllerContext portalControllerContext, CalendarEventEditionForm form) throws PortletException, IOException;
+    void uploadAttachments(PortalControllerContext portalControllerContext, CalendarCommonEventForm form) throws PortletException, IOException;
 
 
     /**
@@ -53,7 +56,7 @@ public interface CalendarEventEditionService extends CalendarService {
      * @throws PortletException
      * @throws IOException
      */
-    void deleteAttachment(PortalControllerContext portalControllerContext, CalendarEventEditionForm form, int index) throws PortletException, IOException;
+    void deleteAttachment(PortalControllerContext portalControllerContext, CalendarCommonEventForm form, int index) throws PortletException, IOException;
 
 
     /**
@@ -65,7 +68,7 @@ public interface CalendarEventEditionService extends CalendarService {
      * @throws PortletException
      * @throws IOException
      */
-    void restoreAttachment(PortalControllerContext portalControllerContext, CalendarEventEditionForm form, int index) throws PortletException, IOException;
+    void restoreAttachment(PortalControllerContext portalControllerContext, CalendarCommonEventForm form, int index) throws PortletException, IOException;
 
 
     /**
@@ -77,7 +80,7 @@ public interface CalendarEventEditionService extends CalendarService {
      * @throws PortletException
      * @throws IOException
      */
-    void save(PortalControllerContext portalControllerContext, CalendarEditionOptions options, CalendarEventEditionForm form)
+    void save(PortalControllerContext portalControllerContext, CalendarEditionOptions options, CalendarCommonEventForm form)
             throws PortletException, IOException;
 
 
@@ -89,5 +92,11 @@ public interface CalendarEventEditionService extends CalendarService {
      * @throws IOException
      */
     void cancel(PortalControllerContext portalControllerContext) throws PortletException, IOException;
+    
+    /**
+     * Get calendar color property editor
+     * @return
+     */
+    CalendarColorPropertyEditor getCalendarColorPropertyEditor();
 
 }

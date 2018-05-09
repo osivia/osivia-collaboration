@@ -28,9 +28,10 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.calendar.common.model.Attachment;
 import org.osivia.services.calendar.common.model.Attachments;
 import org.osivia.services.calendar.common.model.CalendarColor;
+import org.osivia.services.calendar.common.model.CalendarCommonEventForm;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
 import org.osivia.services.calendar.common.model.CalendarEventDates;
-import org.osivia.services.calendar.common.model.ICalendarColor;
+import org.osivia.services.calendar.common.model.converter.CalendarColorPropertyEditor;
 import org.osivia.services.calendar.common.service.CalendarServiceImpl;
 import org.osivia.services.calendar.event.edition.portlet.model.CalendarEventEditionForm;
 import org.osivia.services.calendar.event.edition.portlet.repository.CalendarEventEditionRepository;
@@ -39,6 +40,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 /**
@@ -84,6 +87,10 @@ public class CalendarEventEditionServiceImpl extends CalendarServiceImpl impleme
     /** Document DAO. */
     @Autowired
     private DocumentDAO dao;
+
+    /** Calendar color property editor. */
+    @Autowired
+    private CalendarColorPropertyEditor calendarColorPropertyEditor;
 
 
     /** Log. */
@@ -136,7 +143,7 @@ public class CalendarEventEditionServiceImpl extends CalendarServiceImpl impleme
      * {@inheritDoc}
      */
     @Override
-    public CalendarEventEditionForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
+    public CalendarCommonEventForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
         // Calendar edition options
         CalendarEditionOptions options = this.getEditionOptions(portalControllerContext);
         // Calendar event edition form
@@ -146,7 +153,7 @@ public class CalendarEventEditionServiceImpl extends CalendarServiceImpl impleme
         Document document = options.getDocument();
 
         // Calendar color
-        CalendarColor calendarColor = this.repository.getCalendarColor(portalControllerContext, options);
+        CalendarColor calendarColor = (CalendarColor) getCalendarColor(portalControllerContext, options);
         form.setCalendarColor(calendarColor);
 
         // Title
@@ -167,7 +174,7 @@ public class CalendarEventEditionServiceImpl extends CalendarServiceImpl impleme
         form.setLocation(location);
 
         // Color
-        ICalendarColor color = this.repository.getColor(portalControllerContext, document, calendarColor);
+        CalendarColor color = getColor(portalControllerContext, document, calendarColor);
         form.setColor(color);
 
         // Description
@@ -186,7 +193,7 @@ public class CalendarEventEditionServiceImpl extends CalendarServiceImpl impleme
      * {@inheritDoc}
      */
     @Override
-    public void uploadAttachments(PortalControllerContext portalControllerContext, CalendarEventEditionForm form) throws PortletException, IOException {
+    public void uploadAttachments(PortalControllerContext portalControllerContext, CalendarCommonEventForm form) throws PortletException, IOException {
         // Attachments
         Attachments attachments = form.getAttachments();
         // Attachment files
@@ -236,7 +243,7 @@ public class CalendarEventEditionServiceImpl extends CalendarServiceImpl impleme
      * {@inheritDoc}
      */
     @Override
-    public void deleteAttachment(PortalControllerContext portalControllerContext, CalendarEventEditionForm form, int index)
+    public void deleteAttachment(PortalControllerContext portalControllerContext, CalendarCommonEventForm form, int index)
             throws PortletException, IOException {
         List<Attachment> files = form.getAttachments().getFiles();
         Attachment file = files.get(index);
@@ -248,7 +255,7 @@ public class CalendarEventEditionServiceImpl extends CalendarServiceImpl impleme
      * {@inheritDoc}
      */
     @Override
-    public void restoreAttachment(PortalControllerContext portalControllerContext, CalendarEventEditionForm form, int index)
+    public void restoreAttachment(PortalControllerContext portalControllerContext, CalendarCommonEventForm form, int index)
             throws PortletException, IOException {
         List<Attachment> files = form.getAttachments().getFiles();
         Attachment file = files.get(index);
@@ -260,7 +267,7 @@ public class CalendarEventEditionServiceImpl extends CalendarServiceImpl impleme
      * {@inheritDoc}
      */
     @Override
-    public void save(PortalControllerContext portalControllerContext, CalendarEditionOptions options, CalendarEventEditionForm form)
+    public void save(PortalControllerContext portalControllerContext, CalendarEditionOptions options, CalendarCommonEventForm form)
             throws PortletException, IOException {
         // Action response
         ActionResponse response = (ActionResponse) portalControllerContext.getResponse();
@@ -288,6 +295,15 @@ public class CalendarEventEditionServiceImpl extends CalendarServiceImpl impleme
         String redirectionUrl = this.getRedirectionUrl(portalControllerContext, false);
         response.sendRedirect(redirectionUrl);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CalendarColorPropertyEditor getCalendarColorPropertyEditor()
+    {
+    	return this.calendarColorPropertyEditor;
+    }
 
 
     /**
@@ -295,7 +311,7 @@ public class CalendarEventEditionServiceImpl extends CalendarServiceImpl impleme
      * 
      * @param form calendar event edition form
      */
-    protected void updateFormDates(CalendarEventEditionForm form) {
+    protected void updateFormDates(CalendarCommonEventForm form) {
         // Dates
         CalendarEventDates dates = form.getDates();
 
@@ -369,6 +385,56 @@ public class CalendarEventEditionServiceImpl extends CalendarServiceImpl impleme
     private String getRedirectionUrl(PortalControllerContext portalControllerContext, boolean refresh) throws PortletException {
         // Redirection URL
         return this.portalUrlFactory.getBackURL(portalControllerContext, false, refresh);
+    }
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    protected CalendarColor getCalendarColor(PortalControllerContext portalControllerContext, CalendarEditionOptions options) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // Calendar path
+        String path;
+        if (options.isCreation()) {
+            path = options.getParentPath();
+        } else {
+            // Event path
+            String eventPath = options.getDocument().getPath();
+
+            path = StringUtils.substringBeforeLast(eventPath, "/");
+        }
+
+        // Calendar Nuxeo document
+        NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
+        Document calendar = documentContext.getDocument();
+
+        return this.getCalendarColor(portalControllerContext, calendar);
+    }
+    
+    /**
+     * 
+     * @param portalControllerContext
+     * @param document
+     * @param calendarColor
+     * @return
+     * @throws PortletException
+     */
+    private CalendarColor getColor(PortalControllerContext portalControllerContext, Document document, CalendarColor calendarColor) throws PortletException {
+        // Color identifier
+        String colorId;
+        if (document == null) {
+            colorId = null;
+        } else {
+            colorId = document.getString(COLOR_PROPERTY);
+        }
+
+        if ((colorId == null) && (calendarColor != null)) {
+            colorId = ((CalendarColor) calendarColor).getId();
+        }
+
+        return CalendarColor.fromId(colorId);
     }
 
 }

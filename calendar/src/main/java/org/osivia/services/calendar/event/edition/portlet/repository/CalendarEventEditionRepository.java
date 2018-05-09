@@ -5,12 +5,10 @@ import javax.portlet.PortletException;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.calendar.common.model.Attachments;
-import org.osivia.services.calendar.common.model.CalendarColor;
+import org.osivia.services.calendar.common.model.CalendarCommonEventForm;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
 import org.osivia.services.calendar.common.model.CalendarEventDates;
-import org.osivia.services.calendar.common.model.ICalendarColor;
 import org.osivia.services.calendar.common.repository.CalendarRepository;
-import org.osivia.services.calendar.event.edition.portlet.model.CalendarEventEditionForm;
 
 /**
  * Calendar repository interface.
@@ -34,18 +32,6 @@ public interface CalendarEventEditionRepository extends CalendarRepository {
     String DESCRIPTION_PROPERTY = "note:note";
     /** Attachments Nuxeo document property. */
     String ATTACHMENTS_PROPERTY = "files:files";
-
-
-    /**
-     * Get calendar color.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param options calendar edition options
-     * @return color
-     * @throws PortletException
-     */
-    CalendarColor getCalendarColor(PortalControllerContext portalControllerContext, CalendarEditionOptions options) throws PortletException;
-
 
     /**
      * Get all day indicator.
@@ -80,19 +66,6 @@ public interface CalendarEventEditionRepository extends CalendarRepository {
      */
     String getLocation(PortalControllerContext portalControllerContext, Document document) throws PortletException;
 
-
-    /**
-     * Get calendar event color.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param document Nuxeo document
-     * @param calendarColor calendar color
-     * @return color
-     * @throws PortletException
-     */
-    ICalendarColor getColor(PortalControllerContext portalControllerContext, Document document, CalendarColor calendarColor) throws PortletException;
-
-
     /**
      * Get calendar event description.
      * 
@@ -123,6 +96,6 @@ public interface CalendarEventEditionRepository extends CalendarRepository {
      * @param form calendar event edition form
      * @throws PortletException
      */
-    void save(PortalControllerContext portalControllerContext, CalendarEditionOptions options, CalendarEventEditionForm form) throws PortletException;
+    void save(PortalControllerContext portalControllerContext, CalendarEditionOptions options, CalendarCommonEventForm form) throws PortletException;
 
 }

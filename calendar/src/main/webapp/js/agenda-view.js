@@ -14,7 +14,7 @@ function dataLoading()
 {
 	var divScheduler = $JQry("div#scheduler_here");
 	var urLoad = divScheduler.data("url");
-	console.log("Scroll before dataLoading : "+scheduler.config.scroll_hour);
+	//console.log("Scroll before dataLoading : "+scheduler.config.scroll_hour);
 	//la méthode init supprime la classe portlet-filler du div dhx_cal_data. il faut donc le remettre pour que le composant s'affiche sur la hauteur disponible
 	//on ajoute des class flexbox aux composants parents uniquement si div#maximized est présent
 	var maximized = $JQry("div#maximized");
@@ -53,9 +53,9 @@ function setScrollPosition()
 	{
 		if ("-1" != scrollViewDayWeek && scrollViewDayWeek != "null") 
 		{
-			console.log("Before scrollTop:"+$JQry("div.dhx_cal_data")[0].scrollTop+" ,scrollHeight:"+$JQry("div.dhx_cal_data")[0].scrollHeight+" ,scrollViewDayWeek:"+scrollViewDayWeek);
+			//console.log("Before scrollTop:"+$JQry("div.dhx_cal_data")[0].scrollTop+" ,scrollHeight:"+$JQry("div.dhx_cal_data")[0].scrollHeight+" ,scrollViewDayWeek:"+scrollViewDayWeek);
 			$JQry("div.dhx_cal_data")[0].scrollTop=scrollViewDayWeek;
-			console.log("After scrollTop:"+$JQry("div.dhx_cal_data")[0].scrollTop+" ,scrollHeight:"+$JQry("div.dhx_cal_data")[0].scrollHeight);
+			//console.log("After scrollTop:"+$JQry("div.dhx_cal_data")[0].scrollTop+" ,scrollHeight:"+$JQry("div.dhx_cal_data")[0].scrollHeight);
 		}
 	}
 	else if (divScheduler.data("period")=="month")
@@ -65,22 +65,6 @@ function setScrollPosition()
 			$JQry("div.dhx_cal_data")[0].scrollTop=scrollViewMonth;
 		}
 	}
-}
-
-function saveEvent(ev)
-{
-	var divSched = $JQry("div#scheduler_here");
-	var urlDragNDrop = divSched.data("url-dragndrop");
-	var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-	// AJAX parameters
-	var container = null;
-	var options = {
-		method : "post",
-		postBody : addScrollParam("timezone="+timezone+"&start=" + ev.start_date.toISOString() + "&end=" + ev.end_date.toISOString() 
-		+ "&doc_id=" + ev.doc_id+"&title="+ev.text,divSched.data("period"))
-	};
-	var callerId = null;
-	directAjaxCall(container, options, urlDragNDrop, null, callerId);
 }
 
 function removeEvent(ev)
@@ -95,24 +79,6 @@ function removeEvent(ev)
 	};
 	var callerId = null;
 	directAjaxCall(container, options, urlRemove, null, callerId);
-}
-
-function addScrollParam(url,targetPeriod)
-{	
-	var divScheduler = $JQry("div#scheduler_here");
-	var urlReturn;
-	if (divScheduler.data('period') == "month")
-	{
-		urlReturn = url +"&scrollViewMonth="+ $JQry("div.dhx_cal_data")[0].scrollTop;
-	} else if ((divScheduler.data('period') == "day" || divScheduler.data('period') == "week"))
-	{
-		urlReturn = url +"&scrollViewDayWeek="+ $JQry("div.dhx_cal_data")[0].scrollTop+"&hourPosition="+(24*$JQry("div.dhx_cal_data")[0].scrollTop/$JQry("div.dhx_cal_data")[0].scrollHeight).toFixed(4);
-	} else
-	{
-		urlReturn = url;
-	}
-	
-	return urlReturn;
 }
 
 function initScheduler(backFromPlanning)
@@ -152,7 +118,7 @@ function initScheduler(backFromPlanning)
 	scheduler.init('scheduler_here',new Date(divScheduler.data("startdate")),divScheduler.data("period"));
 	//Chargement des données
 	dataLoading();
-	console.log( "Init Scheduler terminé! Period: "+divScheduler.data("period") + " ,StartDate: " +divScheduler.data("startdate"));
+	//console.log( "Init Scheduler terminé! Period: "+divScheduler.data("period") + " ,StartDate: " +divScheduler.data("startdate"));
 	
 }
 
@@ -170,26 +136,9 @@ $JQry(window).load(function() {
 	
 	if (divScheduler!= null && null != divScheduler.data("period"))
 	{
-		//Modifier onTemplatesReady doit se faire avant l'appel à scheduler.init
-		scheduler.attachEvent("onTemplatesReady", function(){
-		    scheduler.templates.event_text=function(start,end,event){
-		        return "<a href='" + viewEventUrl+"&doc_id="+event.doc_id + "' class='event_title' onclick='this.href=addScrollParam(this.href,null);'>" + event.text + "</a>";
-		    };
-		    scheduler.templates.event_bar_text=function(start,end,event){
-		        return "<a href='" + viewEventUrl+"&doc_id="+event.doc_id + "' class='event_title' onclick='this.href=addScrollParam(this.href,null);'>" + event.text + "</a>";
-		    };
-		    scheduler.templates.event_class = function(start,end,ev){
-		    	var evClass;
-		    	if (ev.extraClass == undefined)
-		    	{
-		    		evClass = divScheduler.data("color-main-agenda");
-		    	} else {
-		    		evClass = ev.extraClass;
-		    	}
-		    	console.log("ExtraClass, color:"+evClass);
-			    return evClass;
-			}
-		});
+		//printCell is in agenda-view-cell.js
+		//Important: do printCell before initScheduler
+		printCell();
 		
 		initScheduler(false);
 		
@@ -252,11 +201,6 @@ $JQry(window).load(function() {
 			return !(last_attached_event == "onDragEnd");
 		});
 		
-		scheduler.attachEvent("onEventChanged", function (id, ev) {
-			console.log("onEventChanged, id="+id+" , ev="+ev.text);
-			saveEvent(ev);
-		});
-		
 		scheduler.attachEvent("onEventAdded", function (id, ev) {
 			//console.log("onEventAdded, id="+id+" , ev="+ev.text);
 			var divSched = $JQry("div#scheduler_here");
@@ -265,6 +209,11 @@ $JQry(window).load(function() {
 				saveEvent(ev);
 			}
 			last_attached_event = "onEventAdded";
+		});
+		
+		scheduler.attachEvent("onEventChanged", function (id, ev) {
+			//console.log("onEventChanged, id="+id+" , ev="+ev.text);
+			saveEvent(ev);
 		});
 		
 		scheduler.attachEvent("onEventSave", function (id, ev) {

@@ -17,7 +17,6 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.menubar.MenubarGroup;
 import org.osivia.portal.api.menubar.MenubarItem;
-import org.osivia.services.calendar.common.model.CalendarColor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -88,23 +87,6 @@ public class CalendarRepositoryImpl implements CalendarRepository {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public CalendarColor getCalendarColor(PortalControllerContext portalControllerContext, Document calendar) throws PortletException {
-        // Color identifier
-        String colorId;
-        if (calendar == null) {
-            colorId = null;
-        } else {
-            colorId = calendar.getString(CALENDAR_COLOR_PROPERTY);
-        }
-
-        return CalendarColor.fromId(colorId);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings("unchecked")
     @Override
     public void insertContentMenubarItems(PortalControllerContext portalControllerContext) throws PortletException {
@@ -117,31 +99,34 @@ public class CalendarRepositoryImpl implements CalendarRepository {
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         // Nuxeo document context
         NuxeoDocumentContext documentContext = nuxeoController.getCurrentDocumentContext();
-        // Nuxeo document
-        Document document = documentContext.getDocument();
-        nuxeoController.setCurrentDoc(document);
-
-        // Internationalization bundle
-        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
-
-        if (WindowState.MAXIMIZED.equals(request.getWindowState())) {
-            // Insert content menubar items
-            nuxeoController.insertContentMenuBarItems();
-
-            if ((document != null) && ("Agenda".equals(document.getType())) && (response instanceof MimeResponse)) {
-                MimeResponse mimeResponse = (MimeResponse) response;
-
-                // Action URL
-                PortletURL actionUrl = mimeResponse.createActionURL();
-                actionUrl.setParameters(request.getParameterMap());
-                actionUrl.setParameter(ActionRequest.ACTION_NAME, "synchronize");
-
-                // Menubar
-                List<MenubarItem> menubar = (List<MenubarItem>) request.getAttribute(Constants.PORTLET_ATTR_MENU_BAR);
-                MenubarItem menubarItem = new MenubarItem("SYNCHRONIZED_CALENDAR", bundle.getString("REFRESH"), "glyphicons glyphicons-repeat",
-                        MenubarGroup.GENERIC, 100, actionUrl.toString(), null, null, null);
-                menubar.add(menubarItem);
-            }
+        if (documentContext != null)
+        {
+	        // Nuxeo document
+	        Document document = documentContext.getDocument();
+	        nuxeoController.setCurrentDoc(document);
+	
+	        // Internationalization bundle
+	        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
+	
+	        if (WindowState.MAXIMIZED.equals(request.getWindowState())) {
+	            // Insert content menubar items
+	            nuxeoController.insertContentMenuBarItems();
+	
+	            if ((document != null) && ("Agenda".equals(document.getType())) && (response instanceof MimeResponse)) {
+	                MimeResponse mimeResponse = (MimeResponse) response;
+	
+	                // Action URL
+	                PortletURL actionUrl = mimeResponse.createActionURL();
+	                actionUrl.setParameters(request.getParameterMap());
+	                actionUrl.setParameter(ActionRequest.ACTION_NAME, "synchronize");
+	
+	                // Menubar
+	                List<MenubarItem> menubar = (List<MenubarItem>) request.getAttribute(Constants.PORTLET_ATTR_MENU_BAR);
+	                MenubarItem menubarItem = new MenubarItem("SYNCHRONIZED_CALENDAR", bundle.getString("REFRESH"), "glyphicons glyphicons-repeat",
+	                        MenubarGroup.GENERIC, 100, actionUrl.toString(), null, null, null);
+	                menubar.add(menubarItem);
+	            }
+	        }
         }
     }
 

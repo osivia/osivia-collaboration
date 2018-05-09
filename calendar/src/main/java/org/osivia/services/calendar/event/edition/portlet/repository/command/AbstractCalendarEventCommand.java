@@ -64,7 +64,7 @@ public abstract class AbstractCalendarEventCommand implements INuxeoCommand {
         if (form.getColor() == null) {
             colorId = null;
         } else {
-            colorId = form.getColor().getId();
+            colorId = ((CalendarColor) form.getColor()).getId();
         }
         // Color
         CalendarColor color = CalendarColor.fromId(colorId);

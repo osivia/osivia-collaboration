@@ -44,7 +44,7 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
 
     /** Calendar repository. */
     @Autowired
-    private ICalendarRepository calendarRepository;
+    protected ICalendarRepository calendarRepository;
 
     /** Bundle factory. */
     private final IBundleFactory bundleFactory;

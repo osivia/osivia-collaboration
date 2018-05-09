@@ -125,8 +125,8 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
         return form;
     }
 
-
-    private CalendarColor getCalendarColor(PortalControllerContext portalControllerContext, Document document) throws PortletException {
+    @Override
+    public CalendarColor getCalendarColor(PortalControllerContext portalControllerContext, Document document) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 

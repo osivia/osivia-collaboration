@@ -47,7 +47,7 @@ public class CalendarEditionController {
 
     /** Portlet context. */
     @Autowired
-    private PortletContext portletContext;
+    protected PortletContext portletContext;
 
     /** Portlet service. */
     @Autowired

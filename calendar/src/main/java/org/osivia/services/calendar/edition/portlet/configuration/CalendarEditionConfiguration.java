@@ -43,7 +43,7 @@ public class CalendarEditionConfiguration extends CMSPortlet implements PortletC
 
     /** Portlet config. */
     @Autowired
-    private PortletConfig portletConfig;
+    protected PortletConfig portletConfig;
 
 
     /**

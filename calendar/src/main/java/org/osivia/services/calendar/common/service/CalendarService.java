@@ -2,7 +2,9 @@ package org.osivia.services.calendar.common.service;
 
 import javax.portlet.PortletException;
 
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
 import org.osivia.services.calendar.common.model.CalendarOptions;
 
@@ -36,4 +38,12 @@ public interface CalendarService {
      */
     CalendarEditionOptions getEditionOptions(PortalControllerContext portalControllerContext) throws PortletException;
     
+    /**
+     * Get calendar color
+     * @param portalControllerContext
+     * @param calendar
+     * @return
+     * @throws PortletException
+     */
+    CalendarColor getCalendarColor(PortalControllerContext portalControllerContext, Document calendar) throws PortletException;
 }

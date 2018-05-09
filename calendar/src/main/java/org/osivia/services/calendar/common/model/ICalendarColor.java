@@ -1,7 +1,7 @@
 package org.osivia.services.calendar.common.model;
 
 public interface ICalendarColor {
-
+	
     /**
      * Getter for id.
      * 

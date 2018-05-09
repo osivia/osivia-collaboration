@@ -26,8 +26,6 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -66,7 +64,7 @@ public class ViewCalendarController {
     /** Error JSP path. */
     private static final String ERROR_PATH = "error";
     /** Calendar data request attribute. */
-    private static final String CALENDAR_DATA_ATTRIBUTE = "calendarData";
+    protected static final String CALENDAR_DATA_ATTRIBUTE = "calendarData";
     /** Events data request attribute. */
     private static final String EVENTS_DATA_ATTRIBUTE = "eventsData";
     /** Error message request attribute. */
@@ -85,11 +83,11 @@ public class ViewCalendarController {
 
     /** Portlet context. */
     @Autowired
-    private PortletContext portletContext;
+    protected PortletContext portletContext;
 
     /** Calendar service. */
     @Autowired
-    private CalendarViewService calendarService;
+    protected CalendarViewService calendarService;
 
     /** Portal URL factory. */
     @Autowired
@@ -97,15 +95,11 @@ public class ViewCalendarController {
 
     /** Bundle factory. */
     @Autowired
-    private IBundleFactory bundleFactory;
+    protected IBundleFactory bundleFactory;
 
     /** Notifications service. */
     @Autowired
-    private INotificationsService notificationsService;
-
-
-    /** Log. */
-    private final Log log;
+    protected INotificationsService notificationsService;
 
 
     /**
@@ -113,7 +107,6 @@ public class ViewCalendarController {
      */
     public ViewCalendarController() {
         super();
-        this.log = LogFactory.getLog(this.getClass());
     }
 
 
@@ -513,7 +506,7 @@ public class ViewCalendarController {
      * @throws PortletException
      * @throws IOException
      */
-    private void dataLoading(ResourceResponse response, PortalControllerContext portalControllerContext, CalendarData calendarData)
+    protected void dataLoading(ResourceResponse response, PortalControllerContext portalControllerContext, CalendarData calendarData)
             throws PortletException, IOException {
         JSONArray array = this.calendarService.loadEventsArray(portalControllerContext, calendarData);
 
@@ -527,7 +520,7 @@ public class ViewCalendarController {
     }
 
 
-    private void setResponseParameter(ActionResponse response, String date, String period, String scrollViewDayWeek, String scrollViewMonth) {
+    protected void setResponseParameter(ActionResponse response, String date, String period, String scrollViewDayWeek, String scrollViewMonth) {
         response.setRenderParameter(DATE_PARAMETER, date);
         response.setRenderParameter(PERIOD_TYPE_PARAMETER, period);
         if (scrollViewDayWeek == null)

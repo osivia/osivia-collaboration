@@ -3,7 +3,6 @@ package org.osivia.services.calendar.event.edition.portlet.model;
 import org.osivia.services.calendar.common.model.AbstractCalendarEditionForm;
 import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.model.CalendarCommonEventForm;
-import org.osivia.services.calendar.common.model.CalendarEventDates;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,9 +18,6 @@ import org.springframework.stereotype.Component;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CalendarEventEditionForm extends CalendarCommonEventForm {
 
-    /** Dates. */
-    private CalendarEventDates dates;
-
     /** Calendar color. */
     private CalendarColor calendarColor;
 
@@ -33,24 +29,14 @@ public class CalendarEventEditionForm extends CalendarCommonEventForm {
         super();
     }
 
+    @Override
+	public CalendarColor getColor() {
+		return (CalendarColor) color;
+	}
 
-    /**
-     * Getter for dates.
-     * 
-     * @return the dates
-     */
-    public CalendarEventDates getDates() {
-        return dates;
-    }
-
-    /**
-     * Setter for dates.
-     * 
-     * @param dates the dates to set
-     */
-    public void setDates(CalendarEventDates dates) {
-        this.dates = dates;
-    }
+	public void setColor(CalendarColor color) {
+		this.color = color;
+	}
 
     /**
      * Getter for calendarColor.

@@ -10,7 +10,7 @@ public abstract class AbstractCalendarEditionForm {
     /** Title. */
     private String title;
     /** Color. */
-    private ICalendarColor color;
+    protected Enum color;
 
 
     /**
@@ -44,7 +44,7 @@ public abstract class AbstractCalendarEditionForm {
      * 
      * @return the color
      */
-    public ICalendarColor getColor() {
+    public Enum getColor() {
         return color;
     }
 
@@ -53,7 +53,7 @@ public abstract class AbstractCalendarEditionForm {
      * 
      * @param color the color to set
      */
-    public void setColor(ICalendarColor color) {
+    public void setColor(Enum color) {
         this.color = color;
     }
 
