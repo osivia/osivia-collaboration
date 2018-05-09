@@ -12,6 +12,7 @@ import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.NuxeoPropertyList;
 import org.nuxeo.ecm.automation.client.model.NuxeoPropertyMap;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.edition.portlet.model.CalendarEditionForm;
 import org.osivia.services.calendar.edition.portlet.model.CalendarSynchronizationSource;
 import org.osivia.services.calendar.edition.portlet.model.Picture;
@@ -56,7 +57,7 @@ public abstract class AbstractCalendarCommand implements INuxeoCommand {
         if (form.getColor() == null) {
             colorId = null;
         } else {
-            colorId = form.getColor().getId();
+            colorId = ((CalendarColor) form.getColor()).getId();
         }
         
         // Synchronization sources property

@@ -66,7 +66,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
 
     /** Application context. */
     @Autowired
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
 
     
     /**
@@ -126,7 +126,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
                 portalControllerContext.getPortletCtx());
 
         Document document = this.getDocument(nuxeoController);
-        
+
         ArrayList<CalendarSynchronizationSource> listSource = new ArrayList<CalendarSynchronizationSource>();
         if (document != null) {
 	        PropertyList propertyList = (PropertyList) document.getProperties().get(LIST_SOURCE_SYNCHRO);
@@ -283,7 +283,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
      * @return CMS path
      * @throws PortletException
      */
-    private String getCMSPath(NuxeoController nuxeoController) throws PortletException {
+    protected String getCMSPath(NuxeoController nuxeoController) throws PortletException {
         // Portlet configuration
         CalendarOptions configuration = this.getConfiguration(nuxeoController.getPortalCtx());
 

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerationException;
@@ -97,7 +98,7 @@ public class SynchronizationCommand implements INuxeoCommand {
         	logger.info("Traitement de l'événement : "+document.getId());
             
         	idSource = document.getString(ID_SOURCE_PROPERTY);
-            if (idSource != null) {
+            if (StringUtils.isNotEmpty(idSource)) {
             	idParentSource = document.getString(ID_PARENT_SOURCE_PROPERTY);
             	eventKey = new EventKey(idSource, idParentSource, null);
 //            	startReccuringSource = sourceContent.getDate("startDateReccuringSource");
@@ -111,6 +112,7 @@ public class SynchronizationCommand implements INuxeoCommand {
 //            		calStartReccuringSource.setTime(startReccuringSource);
 //            	}
             	lastModified = document.getDate(LAST_MODIFIED_SOURCE);
+            	
             	if (lastModified != null) calLastModified.setTime(lastModified);
             	EventToSync eventToSync = mapVevent.get(eventKey);
             	if (eventToSync == null)

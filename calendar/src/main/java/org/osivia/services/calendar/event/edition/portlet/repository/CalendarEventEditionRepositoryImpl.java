@@ -13,7 +13,6 @@ import javax.activation.MimeTypeParseException;
 import javax.portlet.PortletException;
 
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
@@ -21,12 +20,10 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.calendar.common.model.Attachment;
 import org.osivia.services.calendar.common.model.Attachments;
-import org.osivia.services.calendar.common.model.CalendarColor;
+import org.osivia.services.calendar.common.model.CalendarCommonEventForm;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
 import org.osivia.services.calendar.common.model.CalendarEventDates;
-import org.osivia.services.calendar.common.model.ICalendarColor;
 import org.osivia.services.calendar.common.repository.CalendarRepositoryImpl;
-import org.osivia.services.calendar.event.edition.portlet.model.CalendarEventEditionForm;
 import org.osivia.services.calendar.event.edition.portlet.repository.command.CalendarEventCreationCommand;
 import org.osivia.services.calendar.event.edition.portlet.repository.command.CalendarEventEditionCommand;
 import org.osivia.services.calendar.event.edition.portlet.service.CalendarEventEditionService;
@@ -36,7 +33,6 @@ import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 /**
@@ -52,7 +48,7 @@ public class CalendarEventEditionRepositoryImpl extends CalendarRepositoryImpl i
 
     /** Application context. */
     @Autowired
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
     
     /** Document DAO. */
     @Autowired
@@ -79,33 +75,6 @@ public class CalendarEventEditionRepositoryImpl extends CalendarRepositoryImpl i
         this.timeFormat = new SimpleDateFormat(CalendarEventEditionService.TIME_FORMAT_PATTERN);
         // Half-hour
         this.halfHour = Long.valueOf(TimeUnit.HOURS.toMinutes(1) / 2).intValue();
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public CalendarColor getCalendarColor(PortalControllerContext portalControllerContext, CalendarEditionOptions options) throws PortletException {
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-
-        // Calendar path
-        String path;
-        if (options.isCreation()) {
-            path = options.getParentPath();
-        } else {
-            // Event path
-            String eventPath = options.getDocument().getPath();
-
-            path = StringUtils.substringBeforeLast(eventPath, "/");
-        }
-
-        // Calendar Nuxeo document
-        NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
-        Document calendar = documentContext.getDocument();
-
-        return this.getCalendarColor(portalControllerContext, calendar);
     }
 
 
@@ -201,27 +170,6 @@ public class CalendarEventEditionRepositoryImpl extends CalendarRepositoryImpl i
      * {@inheritDoc}
      */
     @Override
-    public ICalendarColor getColor(PortalControllerContext portalControllerContext, Document document, CalendarColor calendarColor) throws PortletException {
-        // Color identifier
-        String colorId;
-        if (document == null) {
-            colorId = null;
-        } else {
-            colorId = document.getString(COLOR_PROPERTY);
-        }
-
-        if ((colorId == null) && (calendarColor != null)) {
-            colorId = calendarColor.getId();
-        }
-
-        return CalendarColor.fromId(colorId);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getDescription(PortalControllerContext portalControllerContext, Document document) throws PortletException {
         String description;
 
@@ -284,7 +232,7 @@ public class CalendarEventEditionRepositoryImpl extends CalendarRepositoryImpl i
      * {@inheritDoc}
      */
     @Override
-    public void save(PortalControllerContext portalControllerContext, CalendarEditionOptions options, CalendarEventEditionForm form) throws PortletException {
+    public void save(PortalControllerContext portalControllerContext, CalendarEditionOptions options, CalendarCommonEventForm form) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 

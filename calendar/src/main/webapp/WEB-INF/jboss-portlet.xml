@@ -19,6 +19,7 @@
             <link rel="stylesheet" type="text/css" href="/js/scheduler/dhtmlxscheduler.css" />
             <script type="text/javascript" src="/js/scheduler/locale/locale_fr.js"/>
             <script type="text/javascript" src="/js/agenda-view.js" />
+            <script type="text/javascript" src="/js/agenda-view-cell.js" />
         </header-content>
 
         <portlet-info>

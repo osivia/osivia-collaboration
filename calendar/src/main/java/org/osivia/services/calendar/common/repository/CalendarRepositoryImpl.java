@@ -17,7 +17,6 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.menubar.MenubarGroup;
 import org.osivia.portal.api.menubar.MenubarItem;
-import org.osivia.services.calendar.common.model.CalendarColor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -82,23 +81,6 @@ public class CalendarRepositoryImpl implements CalendarRepository {
         }
 
         return title;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public CalendarColor getCalendarColor(PortalControllerContext portalControllerContext, Document calendar) throws PortletException {
-        // Color identifier
-        String colorId;
-        if (calendar == null) {
-            colorId = null;
-        } else {
-            colorId = calendar.getString(CALENDAR_COLOR_PROPERTY);
-        }
-
-        return CalendarColor.fromId(colorId);
     }
 
 

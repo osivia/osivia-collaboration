@@ -3,7 +3,6 @@ package org.osivia.services.calendar.common.model.converter;
 import java.beans.PropertyEditorSupport;
 
 import org.osivia.services.calendar.common.model.CalendarColor;
-import org.osivia.services.calendar.common.model.ICalendarColor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,7 +27,7 @@ public class CalendarColorPropertyEditor extends PropertyEditorSupport {
      */
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
-        ICalendarColor color = CalendarColor.fromId(text);
+        CalendarColor color = CalendarColor.fromId(text);
 
         this.setValue(color);
     }

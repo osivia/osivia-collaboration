@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.osivia.services.calendar.event.edition.portlet.model.CalendarEventEditionForm;
+import org.osivia.services.calendar.common.model.CalendarCommonEventForm;
 import org.osivia.services.calendar.event.edition.portlet.service.CalendarEventEditionService;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -46,7 +46,7 @@ public class CalendarEventEditionFormValidator implements Validator {
      */
     @Override
     public boolean supports(Class<?> clazz) {
-        return CalendarEventEditionForm.class.isAssignableFrom(clazz);
+        return CalendarCommonEventForm.class.isAssignableFrom(clazz);
     }
 
 
@@ -56,7 +56,7 @@ public class CalendarEventEditionFormValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         // Form
-        CalendarEventEditionForm form = (CalendarEventEditionForm) target;
+        CalendarCommonEventForm form = (CalendarCommonEventForm) target;
 
         // Title
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "title", "NotEmpty");

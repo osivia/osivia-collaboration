@@ -16,10 +16,9 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.calendar.common.model.CalendarColor;
+import org.osivia.services.calendar.common.model.CalendarCommonEventForm;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
-import org.osivia.services.calendar.common.model.ICalendarColor;
-import org.osivia.services.calendar.common.model.converter.CalendarColorPropertyEditor;
-import org.osivia.services.calendar.event.edition.portlet.model.CalendarEventEditionForm;
 import org.osivia.services.calendar.event.edition.portlet.model.validation.CalendarEventEditionFormValidator;
 import org.osivia.services.calendar.event.edition.portlet.service.CalendarEventEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,23 +51,19 @@ public class CalendarEventEditionController extends CMSPortlet {
 
     /** Portlet config. */
     @Autowired
-    private PortletConfig portletConfig;
+    protected PortletConfig portletConfig;
 
     /** Portlet context. */
     @Autowired
-    private PortletContext portletContext;
+    protected PortletContext portletContext;
 
     /** Portlet service. */
     @Autowired
-    private CalendarEventEditionService service;
+    protected CalendarEventEditionService service;
 
     /** Calendar event edition form validator. */
     @Autowired
-    private CalendarEventEditionFormValidator formValidator;
-
-    /** Calendar color property editor. */
-    @Autowired
-    private CalendarColorPropertyEditor calendarColorPropertyEditor;
+    protected CalendarEventEditionFormValidator formValidator;
 	
 
     /**
@@ -119,7 +114,7 @@ public class CalendarEventEditionController extends CMSPortlet {
      * @throws IOException
      */
     @ActionMapping(name = "save", params = "upload-attachments")
-    public void uploadAttachments(ActionRequest request, ActionResponse response, @ModelAttribute("form") CalendarEventEditionForm form) throws PortletException, IOException {
+    public void uploadAttachments(ActionRequest request, ActionResponse response, @ModelAttribute("form") CalendarCommonEventForm form) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
@@ -139,7 +134,7 @@ public class CalendarEventEditionController extends CMSPortlet {
      */
     @ActionMapping(name = "save", params = "delete-attachment")
     public void deleteAttachment(ActionRequest request, ActionResponse response, @RequestParam("delete-attachment") Integer index,
-            @ModelAttribute("form") CalendarEventEditionForm form) throws PortletException, IOException {
+            @ModelAttribute("form") CalendarCommonEventForm form) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
@@ -159,7 +154,7 @@ public class CalendarEventEditionController extends CMSPortlet {
      */
     @ActionMapping(name = "save", params = "restore-attachment")
     public void restoreAttachment(ActionRequest request, ActionResponse response, @RequestParam("restore-attachment") Integer index,
-            @ModelAttribute("form") CalendarEventEditionForm form) throws PortletException, IOException {
+            @ModelAttribute("form") CalendarCommonEventForm form) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
@@ -181,7 +176,7 @@ public class CalendarEventEditionController extends CMSPortlet {
      */
     @ActionMapping(name = "save", params = "save")
     public void save(ActionRequest request, ActionResponse response, @ModelAttribute("options") CalendarEditionOptions options,
-            @ModelAttribute("form") @Validated CalendarEventEditionForm form, BindingResult result, SessionStatus status) throws PortletException, IOException {
+            @ModelAttribute("form") @Validated CalendarCommonEventForm form, BindingResult result, SessionStatus status) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         
@@ -250,7 +245,7 @@ public class CalendarEventEditionController extends CMSPortlet {
      * @throws PortletException
      */
     @ModelAttribute("form")
-    public CalendarEventEditionForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
+    public CalendarCommonEventForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
@@ -267,7 +262,7 @@ public class CalendarEventEditionController extends CMSPortlet {
     public void formInitBinder(WebDataBinder binder) {
         binder.setDisallowedFields("calendarColor", "startDate", "endDate");
         binder.addValidators(this.formValidator);
-        binder.registerCustomEditor(ICalendarColor.class, this.calendarColorPropertyEditor);
+        binder.registerCustomEditor(CalendarColor.class, this.service.getCalendarColorPropertyEditor());
     }
 
 }

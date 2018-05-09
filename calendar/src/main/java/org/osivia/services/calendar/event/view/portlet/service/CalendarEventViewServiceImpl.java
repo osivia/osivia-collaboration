@@ -44,20 +44,20 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
 
     /** Application context. */
     @Autowired
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
 
     /** Portlet repository. */
     @Autowired
     @Qualifier("common-repository")
-    private CalendarRepository repository;
+    protected CalendarRepository repository;
 
     /** Document DAO. */
     @Autowired
-    private DocumentDAO dao;
+    protected DocumentDAO dao;
 
 
     /** Date format. */
-    private final DateFormat dateFormat;
+    protected final DateFormat dateFormat;
 
 
     /**
@@ -125,8 +125,8 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
         return form;
     }
 
-
-    private CalendarColor getCalendarColor(PortalControllerContext portalControllerContext, Document document) throws PortletException {
+    @Override
+    public CalendarColor getCalendarColor(PortalControllerContext portalControllerContext, Document document) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -167,7 +167,7 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
     }
 
 
-    private void setAttachments(PortalControllerContext portalControllerContext, Document document, CalendarEventViewForm form) {
+    protected void setAttachments(PortalControllerContext portalControllerContext, Document document, CalendarEventViewForm form) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         // Attachments
@@ -211,7 +211,7 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
     }
 
 
-    private Date getEndDateAllDay(CalendarEventViewForm form) {
+    protected Date getEndDateAllDay(CalendarEventViewForm form) {
         if (form.getEndDate() != null) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(form.getEndDate());
@@ -223,7 +223,7 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
     }
 
 
-    private boolean isSameDay(CalendarEventViewForm form) {
+    protected boolean isSameDay(CalendarEventViewForm form) {
         boolean sameDay = false;
         Calendar calStart = Calendar.getInstance();
         Calendar calEnd = Calendar.getInstance();
@@ -254,7 +254,7 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
     }
 
 
-    private boolean isAllDay(PortalControllerContext portalControllerContext, Document document) throws PortletException {
+    protected boolean isAllDay(PortalControllerContext portalControllerContext, Document document) throws PortletException {
         boolean allDay;
 
         if (document == null) {
@@ -267,7 +267,7 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
     }
 
 
-    private String getLocation(PortalControllerContext portalControllerContext, Document document) throws PortletException {
+    protected String getLocation(PortalControllerContext portalControllerContext, Document document) throws PortletException {
         String location;
 
         if (document == null) {
@@ -297,7 +297,7 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
     }
 
 
-    private String getDescription(PortalControllerContext portalControllerContext, Document document) throws PortletException {
+    protected String getDescription(PortalControllerContext portalControllerContext, Document document) throws PortletException {
         String description;
 
         if (document == null) {

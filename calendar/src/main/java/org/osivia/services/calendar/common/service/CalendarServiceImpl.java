@@ -8,6 +8,7 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
 import org.osivia.services.calendar.common.model.CalendarOptions;
 import org.osivia.services.calendar.common.repository.CalendarRepository;
@@ -27,16 +28,18 @@ public class CalendarServiceImpl implements CalendarService {
 
     /** Temporary file suffix. */
     protected static final String TEMPORARY_FILE_SUFFIX = ".tmp";
+    /** Calendar color Nuxeo document property. */
+    private static final String CALENDAR_COLOR_PROPERTY = "cal:color";
 
 
     /** Application context. */
     @Autowired
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
 
     /** Repository. */
     @Autowired
     @Qualifier("common-repository")
-    private CalendarRepository repository;
+    protected CalendarRepository repository;
 
 
     /**
@@ -105,7 +108,23 @@ public class CalendarServiceImpl implements CalendarService {
         return options;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CalendarColor getCalendarColor(PortalControllerContext portalControllerContext, Document calendar) throws PortletException {
+        // Color identifier
+        String colorId;
+        if (calendar == null) {
+            colorId = null;
+        } else {
+            colorId = calendar.getString(CALENDAR_COLOR_PROPERTY);
+        }
 
+        return CalendarColor.fromId(colorId);
+    }
+    
+    
     /**
      * Get portlet title.
      * 

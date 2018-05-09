@@ -8,8 +8,6 @@ public class CalendarCommonEventForm extends AbstractCalendarEditionForm {
     private boolean allDay;
     /** Location. */
     private String location;
-    /** Color. */
-    private ICalendarColor color;
     /** Description. */
     private String description;
     /** Attachments. */
@@ -19,6 +17,9 @@ public class CalendarCommonEventForm extends AbstractCalendarEditionForm {
     private Date startDate;
     /** End date. */
     private Date endDate;
+
+    /** Dates. */
+    private CalendarEventDates dates;
 	
 	public CalendarCommonEventForm() {
 		super();
@@ -38,14 +39,6 @@ public class CalendarCommonEventForm extends AbstractCalendarEditionForm {
 
 	public void setLocation(String location) {
 		this.location = location;
-	}
-
-	public ICalendarColor getColor() {
-		return color;
-	}
-
-	public void setColor(ICalendarColor color) {
-		this.color = color;
 	}
 
 	public String getDescription() {
@@ -79,7 +72,23 @@ public class CalendarCommonEventForm extends AbstractCalendarEditionForm {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
+    /**
+     * Getter for dates.
+     * 
+     * @return the dates
+     */
+    public CalendarEventDates getDates() {
+        return dates;
+    }
 
+    /**
+     * Setter for dates.
+     * 
+     * @param dates the dates to set
+     */
+    public void setDates(CalendarEventDates dates) {
+        this.dates = dates;
+    }
 	
 	
 }

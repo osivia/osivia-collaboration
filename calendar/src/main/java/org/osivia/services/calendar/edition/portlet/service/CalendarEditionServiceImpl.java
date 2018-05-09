@@ -68,11 +68,11 @@ public class CalendarEditionServiceImpl extends CalendarServiceImpl implements C
 
     /** Application context. */
     @Autowired
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
 
     /** Portlet repository. */
     @Autowired
-    private CalendarEditionRepository repository;
+    protected CalendarEditionRepository repository;
 
     /** Portal URL factory. */
     @Autowired
@@ -139,7 +139,7 @@ public class CalendarEditionServiceImpl extends CalendarServiceImpl implements C
         form.setVignette(vignette);
 
         // Color
-        CalendarColor color = this.repository.getCalendarColor(portalControllerContext, document);
+        CalendarColor color = getCalendarColor(portalControllerContext, document);
         form.setColor(color);
 
         // Synchronization sources

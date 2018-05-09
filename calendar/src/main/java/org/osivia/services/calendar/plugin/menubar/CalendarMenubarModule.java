@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.portlet.PortletException;
+
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
@@ -30,7 +32,7 @@ public class CalendarMenubarModule implements MenubarModule {
     /** Calendar Nuxeo document type name. */
     private static final String CALENDAR_TYPE = "Agenda";
     /** Calendar event Nuxeo document type name. */
-    private static final String EVENT_TYPE = "VEVENT";
+    protected static final String EVENT_TYPE = "VEVENT";
     /** Id event source */
     private static final String ID_EVENT_SOURCE_PROPERTY = "sync:idSource";
 
@@ -41,9 +43,9 @@ public class CalendarMenubarModule implements MenubarModule {
     /** Add calendar event menubar item identifier. */
     private static final String ADD_EVENT_MENUBAR_ITEM_ID = ADD_MENUBAR_ITEM_ID + "_" + EVENT_TYPE;
     /** Edit menubar item identifier. */
-    private static final String EDIT_MENUBAR_ITEM_ID = "EDIT";
+    protected static final String EDIT_MENUBAR_ITEM_ID = "EDIT";
     /** Edit menubar item identifier. */
-    private static final String DELETE_MENUBAR_ITEM_ID = "DELETE";
+    protected static final String DELETE_MENUBAR_ITEM_ID = "DELETE";
     /** Refresh menubar item identifier. */
     private static final String REFRESH_MENUBAR_ITEM_ID = "REFRESH";
 
@@ -147,7 +149,11 @@ public class CalendarMenubarModule implements MenubarModule {
 
                 // If event came from synchronization, disable edit and delete options
                 if (document.getString(ID_EVENT_SOURCE_PROPERTY) != null && !document.getString(ID_EVENT_SOURCE_PROPERTY).isEmpty()) {
-                    this.removeEditAndDelete(menubar, documentType);
+                    try {
+						this.removeEditAndDelete(menubar, documentType, document, portalControllerContext);
+					} catch (PortletException e) {
+						throw new PortalException(e);
+					}
                 }
             }
         }
@@ -200,7 +206,7 @@ public class CalendarMenubarModule implements MenubarModule {
      * @param menubar menubar
      * @param documentType document type
      */
-    private void removeEditAndDelete(List<MenubarItem> menubar, DocumentType documentType) {
+    public void removeEditAndDelete(List<MenubarItem> menubar, DocumentType documentType, Document document, PortalControllerContext portalControllerContext) throws PortletException{
         if ((documentType != null) && EVENT_TYPE.equals(documentType.getName())) {
             Set<MenubarItem> removedItems = new HashSet<>();
             for (MenubarItem menubarItem : menubar) {

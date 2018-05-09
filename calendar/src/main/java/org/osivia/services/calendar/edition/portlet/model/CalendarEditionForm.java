@@ -3,6 +3,7 @@ package org.osivia.services.calendar.edition.portlet.model;
 import java.util.List;
 
 import org.osivia.services.calendar.common.model.AbstractCalendarEditionForm;
+import org.osivia.services.calendar.common.model.CalendarColor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,14 @@ public class CalendarEditionForm extends AbstractCalendarEditionForm {
         super();
     }
 
+    @Override
+	public CalendarColor getColor() {
+		return (CalendarColor) color;
+	}
+
+	public void setColor(CalendarColor color) {
+		this.color = color;
+	}
 
     /**
      * Getter for description.

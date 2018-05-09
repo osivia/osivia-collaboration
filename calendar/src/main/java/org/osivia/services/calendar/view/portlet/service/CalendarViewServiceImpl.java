@@ -52,9 +52,13 @@ import org.springframework.stereotype.Service;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.CalendarParser;
+import net.fortuna.ical4j.data.CalendarParserFactory;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ComponentList;
+import net.fortuna.ical4j.model.ParameterFactoryRegistry;
+import net.fortuna.ical4j.model.PropertyFactoryRegistry;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
@@ -75,11 +79,11 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
 
     /** Application context. */
     @Autowired
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
 
     /** Calendar repository. */
     @Autowired
-    private CalendarViewRepository repository;
+    protected CalendarViewRepository repository;
 
     /** Notifications service. */
     @Autowired
@@ -135,7 +139,7 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
      * @return period type
      * @throws PortletException
      */
-    private PeriodTypes getPeriodType(PortalControllerContext portalControllerContext, String periodTypeName) throws PortletException {
+    protected PeriodTypes getPeriodType(PortalControllerContext portalControllerContext, String periodTypeName) throws PortletException {
         // Configuration
         CalendarOptions configuration = this.repository.getConfiguration(portalControllerContext);
         if (StringUtils.isBlank(configuration.getCmsPath())) {
@@ -361,7 +365,17 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
                 URL url = new URL(source.getUrl());
                 URLConnection conn = url.openConnection();
 
-                CalendarBuilder builder = new CalendarBuilder();
+                
+                CalendarParser parser = CalendarParserFactory.getInstance().createParser();
+                
+                PropertyFactoryRegistry propertyFactoryRegistry = new PropertyFactoryRegistry();
+                
+                ParameterFactoryRegistry parameterFactoryRegistry = new ParameterFactoryRegistry();
+                
+                TimeZoneRegistry tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry();
+                
+                
+                CalendarBuilder builder = new CalendarBuilder(parser, propertyFactoryRegistry, parameterFactoryRegistry, tzRegistry);
                 BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
                 net.fortuna.ical4j.model.Calendar calendar;
@@ -530,7 +544,7 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
     }
 
 
-    private EventToSync buildEvent(VEvent vevent, String idAgenda, TimeZone timeZoneAllEvent) {
+    public EventToSync buildEvent(VEvent vevent, String idAgenda, TimeZone timeZoneAllEvent) throws PortletException {
         boolean allDay = (vevent.getStartDate().getValue().length() == 8 && vevent.getEndDate().getValue().length() == 8);
 
         Calendar startCal = Calendar.getInstance();

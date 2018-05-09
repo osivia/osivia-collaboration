@@ -39,7 +39,7 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
     private CalendarViewRepository calendarRepository;
 
     /** Bundle factory. */
-    private final IBundleFactory bundleFactory;
+    protected final IBundleFactory bundleFactory;
 
     protected PeriodTypes periodType;
 
@@ -104,7 +104,7 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
      * @param forcedSelectedDate forced selected date, may be null
      * @throws PortletException
      */
-    private void fillCalendarDates(PortalControllerContext portalControllerContext, CalendarData calendarData, Date forcedSelectedDate) throws PortletException {
+    protected void fillCalendarDates(PortalControllerContext portalControllerContext, CalendarData calendarData, Date forcedSelectedDate) throws PortletException {
         // Period type
         PeriodTypes periodType = calendarData.getPeriodType();
 

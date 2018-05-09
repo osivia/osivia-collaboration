@@ -12,8 +12,10 @@ import org.osivia.services.calendar.common.service.CalendarService;
 import org.osivia.services.calendar.view.portlet.model.CalendarViewForm;
 import org.osivia.services.calendar.view.portlet.model.calendar.CalendarData;
 import org.osivia.services.calendar.view.portlet.model.events.Event;
+import org.osivia.services.calendar.view.portlet.model.events.EventToSync;
 import org.osivia.services.calendar.view.portlet.model.events.EventsData;
 
+import net.fortuna.ical4j.model.component.VEvent;
 import net.sf.json.JSONArray;
 
 /**
@@ -193,5 +195,14 @@ public interface CalendarViewService extends CalendarService {
      * @throws PortletException
      */
     public JSONArray loadEventsArray(PortalControllerContext portalControllerContext, CalendarData calendarData) throws PortletException;
+    
+    /**
+     * Build event
+     * @param vevent
+     * @param idAgenda
+     * @param timeZoneAllEvent
+     * @return
+     */
+    EventToSync buildEvent(VEvent vevent, String idAgenda, net.fortuna.ical4j.model.TimeZone timeZoneAllEvent) throws PortletException;
 
 }

@@ -72,6 +72,15 @@ public class CalendarSynchronizationEditionForm {
     }
 
     /**
+     * Setter for color.
+     * 
+     * @param color the color to set
+     */
+    public void setColor(String colorId) {
+    	this.color = CalendarColor.fromId(colorId);
+    }
+    
+    /**
      * Getter for displayName.
      * 
      * @return the displayName
