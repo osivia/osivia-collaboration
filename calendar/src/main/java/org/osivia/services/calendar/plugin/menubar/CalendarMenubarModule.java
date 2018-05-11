@@ -30,18 +30,18 @@ import org.osivia.services.calendar.edition.portlet.service.CalendarEditionServi
 public class CalendarMenubarModule implements MenubarModule {
 
     /** Calendar Nuxeo document type name. */
-    private static final String CALENDAR_TYPE = "Agenda";
+	protected static final String CALENDAR_TYPE = "Agenda";
     /** Calendar event Nuxeo document type name. */
     protected static final String EVENT_TYPE = "VEVENT";
     /** Id event source */
-    private static final String ID_EVENT_SOURCE_PROPERTY = "sync:idSource";
+    protected static final String ID_EVENT_SOURCE_PROPERTY = "sync:idSource";
 
     /** Add menubar item identifier. */
-    private static final String ADD_MENUBAR_ITEM_ID = "ADD";
+    protected static final String ADD_MENUBAR_ITEM_ID = "ADD";
     /** Add calendar menubar item identifier. */
-    private static final String ADD_CALENDAR_MENUBAR_ITEM_ID = ADD_MENUBAR_ITEM_ID + "_" + CALENDAR_TYPE;
+    protected static final String ADD_CALENDAR_MENUBAR_ITEM_ID = ADD_MENUBAR_ITEM_ID + "_" + CALENDAR_TYPE;
     /** Add calendar event menubar item identifier. */
-    private static final String ADD_EVENT_MENUBAR_ITEM_ID = ADD_MENUBAR_ITEM_ID + "_" + EVENT_TYPE;
+    protected static final String ADD_EVENT_MENUBAR_ITEM_ID = ADD_MENUBAR_ITEM_ID + "_" + EVENT_TYPE;
     /** Edit menubar item identifier. */
     protected static final String EDIT_MENUBAR_ITEM_ID = "EDIT";
     /** Edit menubar item identifier. */
@@ -49,15 +49,15 @@ public class CalendarMenubarModule implements MenubarModule {
     /** Refresh menubar item identifier. */
     private static final String REFRESH_MENUBAR_ITEM_ID = "REFRESH";
 
-    private static final String SYNCHRO_MENUBAR_ITEM_ID = "SYNCHRONIZED_CALENDAR";
+    protected static final String SYNCHRO_MENUBAR_ITEM_ID = "SYNCHRONIZED_CALENDAR";
 
     /** Calendar edition portlet instance. */
-    private static final String CALENDAR_EDITION_PORTLET_INSTANCE = "osivia-services-calendar-edition-instance";
+    protected static final String CALENDAR_EDITION_PORTLET_INSTANCE = "osivia-services-calendar-edition-instance";
     /** Calendar event edition portlet instance. */
-    private static final String EVENT_EDITION_PORTLET_INSTANCE = "osivia-services-calendar-event-edition-instance";
+    protected static final String EVENT_EDITION_PORTLET_INSTANCE = "osivia-services-calendar-event-edition-instance";
 
     /** Portal URL factory. */
-    private final IPortalUrlFactory portalUrlFactory;
+    protected final IPortalUrlFactory portalUrlFactory;
 
 
     /**
@@ -160,7 +160,7 @@ public class CalendarMenubarModule implements MenubarModule {
     }
 
 
-    private void customizeMenubarItem(PortalControllerContext portalControllerContext, MenubarItem item, Document document, String documentType,
+    protected void customizeMenubarItem(PortalControllerContext portalControllerContext, MenubarItem item, Document document, String documentType,
             boolean creation) throws PortalException {
         // Portlet instance
         String instance;
