@@ -76,7 +76,7 @@ public class CalendarPlugin extends AbstractPluginPortlet  {
      *
      * @param context customization context
      */
-    private void customizeDocumentTypes(CustomizationContext context) {
+    protected void customizeDocumentTypes(CustomizationContext context) {
         // Document types
         Map<String, DocumentType> types = this.getDocTypes(context);
 
@@ -103,7 +103,7 @@ public class CalendarPlugin extends AbstractPluginPortlet  {
      *
      * @param context customize players
      */
-    private void customizePlayers(CustomizationContext context) {
+    protected void customizePlayers(CustomizationContext context) {
         // Portlet context
         PortletContext portletContext = this.getPortletContext();
 
