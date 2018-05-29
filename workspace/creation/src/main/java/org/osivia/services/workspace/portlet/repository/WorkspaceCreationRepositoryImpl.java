@@ -189,7 +189,7 @@ public class WorkspaceCreationRepositoryImpl implements WorkspaceCreationReposit
         // Taskbar tasks
         List<TaskbarTask> tasks;
         try {
-            tasks = this.taskbarService.getTasks(portalControllerContext, workspace.getPath(), true);
+            tasks = this.taskbarService.getAllTasks(portalControllerContext, workspace.getPath(), true);
         } catch (PortalException e) {
             throw new PortletException(e);
         }
