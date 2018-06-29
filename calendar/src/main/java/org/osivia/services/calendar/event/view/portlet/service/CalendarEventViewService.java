@@ -32,7 +32,7 @@ public interface CalendarEventViewService extends CalendarService {
     /** Color Nuxeo document property. */
     String COLOR_PROPERTY = "vevent:color";
     /** Description Nuxeo document property. */
-    String DESCRIPTION_PROPERTY = "note:note";
+    String DESCRIPTION_PROPERTY = "dc:description";
     /** Id parent source */
     String ID_PARENT_SOURCE_PROPERTY = "sync:idParentSource";
     

@@ -15,7 +15,7 @@
                 <span class="text-muted">-</span>
             </c:when>
             <c:otherwise>
-                <ttc:transform document="${form.document}" property="note:note" />
+                <ttc:transform document="${form.document}" property="dc:description" />
             </c:otherwise>
         </c:choose>
     </div>
