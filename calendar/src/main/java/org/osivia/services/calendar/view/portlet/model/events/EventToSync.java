@@ -42,6 +42,7 @@ public class EventToSync {
 		this.lastModifiedSource = lastModifiedSrc;
 		this.startReccuringCalSrc = startReccuring;
 		this.location = location;
+	}
 
 	public String getId() {
 		return id;
