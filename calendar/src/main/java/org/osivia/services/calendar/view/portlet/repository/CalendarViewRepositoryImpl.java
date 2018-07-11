@@ -250,8 +250,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         Date endDate = document.getDate(END_DATE_PROPERTY);
         String bckgcolor = document.getString(BCKG_COLOR);
         boolean allDay = BooleanUtils.isTrue(document.getProperties().getBoolean(ALL_DAY_PROPERTY));
-//        String viewURL = nuxeoController.getLink(document).getUrl();
-        String viewURL = null;
+        String viewURL = nuxeoController.getLink(document).getUrl();
         String idEventSrc;
         String idParentSrc;
         idEventSrc = document.getString(ID_SOURCE_PROPERTY);

@@ -2,7 +2,6 @@ package org.osivia.services.calendar.event.edition.portlet.controller;
 
 import java.io.IOException;
 
-import javax.annotation.PostConstruct;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
@@ -15,6 +14,8 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.model.CalendarCommonEventForm;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
+import org.springframework.web.portlet.context.PortletConfigAware;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 
@@ -45,43 +47,46 @@ import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
  * @see CMSPortlet
  */
 @Controller
-@RequestMapping(value = "VIEW")
+@RequestMapping("VIEW")
 @SessionAttributes("form")
-public class CalendarEventEditionController extends CMSPortlet {
-
-    /** Portlet config. */
-    @Autowired
-    protected PortletConfig portletConfig;
+public class CalendarEventEditionController extends CMSPortlet implements PortletConfigAware {
 
     /** Portlet context. */
     @Autowired
-    protected PortletContext portletContext;
+    private PortletContext portletContext;
 
     /** Portlet service. */
     @Autowired
-    protected CalendarEventEditionService service;
+    private CalendarEventEditionService service;
 
     /** Calendar event edition form validator. */
     @Autowired
-    protected CalendarEventEditionFormValidator formValidator;
+    private CalendarEventEditionFormValidator formValidator;
 	
+
+    /** Log. */
+    private final Log log;
+
 
     /**
      * Constructor.
      */
 	public CalendarEventEditionController() {
 		super();
+        this.log = LogFactory.getLog(this.getClass());
 	}
 
 
     /**
-     * Post-construct.
-     *
-     * @throws PortletException
+     * {@inheritDoc}
      */
-    @PostConstruct
-    public void postConstruct() throws PortletException {
-        super.init(this.portletConfig);
+    @Override
+    public void setPortletConfig(PortletConfig portletConfig) {
+        try {
+            super.init(portletConfig);
+        } catch (PortletException e) {
+            this.log.error(e);
+        }
     }
 
 
