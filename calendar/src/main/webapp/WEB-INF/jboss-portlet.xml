@@ -64,6 +64,9 @@
         </transaction>
 
         <header-content>
+            <!-- TinyMCE -->
+            <script src="/components/tinymce/tinymce.min.js" type="text/javascript"/>
+        
             <link rel="stylesheet" type="text/css" href="/css/calendar-color.min.css" />
             <link rel="stylesheet" type="text/css" href="/css/calendar-edition.min.css" />
             <script type="text/javascript" src="/js/calendar-common.js" />
