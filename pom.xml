@@ -176,7 +176,7 @@
         <url>https://github.com/osivia/osivia-collaboration</url>
 	<connection>scm:git:ssh://git@github.com/osivia/osivia-collaboration.git</connection>
 	<developerConnection>scm:git:ssh://git@github.com/osivia/osivia-collaboration.git</developerConnection>     
-	<tag>HEAD</tag>
+	<tag>svn/branches/4.6-maintenance</tag>
     </scm>
 
 
