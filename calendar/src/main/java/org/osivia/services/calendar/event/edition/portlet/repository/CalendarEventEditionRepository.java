@@ -29,7 +29,7 @@ public interface CalendarEventEditionRepository extends CalendarRepository {
     /** Color Nuxeo document property. */
     String COLOR_PROPERTY = "vevent:color";
     /** Description Nuxeo document property. */
-    String DESCRIPTION_PROPERTY = "dc:description";
+    String DESCRIPTION_PROPERTY = "note:note";
     /** Attachments Nuxeo document property. */
     String ATTACHMENTS_PROPERTY = "files:files";
 

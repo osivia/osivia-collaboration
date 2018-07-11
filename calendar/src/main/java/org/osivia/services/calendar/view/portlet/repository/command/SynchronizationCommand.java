@@ -23,6 +23,7 @@ import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.services.calendar.event.view.portlet.service.CalendarEventViewService;
 import org.osivia.services.calendar.view.portlet.model.events.EventKey;
 import org.osivia.services.calendar.view.portlet.model.events.EventToSync;
 import org.osivia.services.calendar.view.portlet.repository.CalendarViewRepository;
@@ -199,7 +200,7 @@ public class SynchronizationCommand implements INuxeoCommand {
 	        map.set(CalendarViewRepository.START_DATE_PROPERTY, getDateWithServerTimeZone(event.getStartCal()));
         }
         map.set(CalendarViewRepository.TITLE_PROPERTY, event.getTitle());
-        map.set(CalendarViewRepository.DESCRIPTION_PROPERTY, event.getDescription());
+        map.set(CalendarEventViewService.DESCRIPTION_PROPERTY, event.getDescription());
         map.set(CalendarViewRepository.ID_PARENT_SOURCE_PROPERTY, event.getIdAgendaSource());
         map.set(CalendarViewRepository.ID_SOURCE_PROPERTY, event.getIdEventSource());
         map.set(CalendarViewRepository.CREATED_SOURCE, getDateWithServerTimeZone(event.getCreateCalSource()));
