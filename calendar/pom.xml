@@ -12,7 +12,7 @@
     <packaging>war</packaging>
 
     <name>OSIVIA Services - Calendar</name>
-    
+
 
 	<dependencies>
     
@@ -24,7 +24,6 @@
 		 </dependency>
          
     </dependencies>
-
 
     <build>
         <plugins>
@@ -42,7 +41,7 @@
                     <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
-            
+
         </plugins>
     </build>
 

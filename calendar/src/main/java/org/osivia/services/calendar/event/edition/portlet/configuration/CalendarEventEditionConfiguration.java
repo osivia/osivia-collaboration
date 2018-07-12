@@ -1,12 +1,13 @@
 package org.osivia.services.calendar.event.edition.portlet.configuration;
 
-import javax.annotation.PostConstruct;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.portlet.context.PortletConfigAware;
 import org.springframework.web.portlet.context.PortletContextAware;
 import org.springframework.web.portlet.multipart.CommonsPortletMultipartResolver;
 import org.springframework.web.portlet.multipart.PortletMultipartResolver;
@@ -37,15 +39,15 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
  */
 @Configuration
 @ComponentScan(basePackages = {"org.osivia.services.calendar.common", "org.osivia.services.calendar.event.edition.portlet"})
-public class CalendarEventEditionConfiguration extends CMSPortlet implements PortletContextAware {
+public class CalendarEventEditionConfiguration extends CMSPortlet implements PortletConfigAware, PortletContextAware {
 
     /** Application context. */
     @Autowired
     private ApplicationContext applicationContext;
 
-    /** Portlet config. */
-    @Autowired
-    private PortletConfig portletConfig;
+
+    /** Log. */
+    private final Log log;
 
 
     /**
@@ -53,17 +55,20 @@ public class CalendarEventEditionConfiguration extends CMSPortlet implements Por
      */
     public CalendarEventEditionConfiguration() {
         super();
+        this.log = LogFactory.getLog(this.getClass());
     }
 
 
     /**
-     * Post-construct.
-     *
-     * @throws PortletException
+     * {@inheritDoc}
      */
-    @PostConstruct
-    public void postConstruct() throws PortletException {
-        super.init(this.portletConfig);
+    @Override
+    public void setPortletConfig(PortletConfig portletConfig) {
+        try {
+            super.init(portletConfig);
+        } catch (PortletException e) {
+            this.log.error(e);
+        }
     }
 
 

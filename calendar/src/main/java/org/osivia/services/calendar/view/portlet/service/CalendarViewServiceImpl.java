@@ -594,9 +594,9 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
         String description = (vevent.getDescription() == null) ? null : vevent.getDescription().getValue();
         String summary = (vevent.getSummary() == null) ? null : vevent.getSummary().getValue();
         String uid = (vevent.getUid() == null) ? null : vevent.getUid().getValue();
+        String location = (vevent.getLocation() == null) ? null : vevent.getLocation().getValue();
 
-
-        return new EventToSync(null, summary, allDay, startCal, endCal, description, idAgenda, uid, createdCal, lastModifiedCal, startReccuringStartSource);
+        return new EventToSync(null, summary, allDay, startCal, endCal, description, idAgenda, uid, createdCal, lastModifiedCal, startReccuringStartSource, location);
     }
 
 }

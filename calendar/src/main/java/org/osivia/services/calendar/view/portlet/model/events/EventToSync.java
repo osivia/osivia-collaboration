@@ -26,8 +26,10 @@ public class EventToSync {
 	
 	private final Calendar startReccuringCalSrc;
 	
+	private final String location;
+	
 	public EventToSync(String id, String title, boolean allDay, Calendar start, Calendar end, String desc,
-			String idAgendaSrc, String idEventSrc, Calendar createdSrc, Calendar lastModifiedSrc, Calendar startReccuring) {
+			String idAgendaSrc, String idEventSrc, Calendar createdSrc, Calendar lastModifiedSrc, Calendar startReccuring, String location) {
 		this.id = id;
 		this.title = title;
 		this.allDay = allDay;
@@ -39,6 +41,7 @@ public class EventToSync {
 		this.createdCalSrc = createdSrc;
 		this.lastModifiedSource = lastModifiedSrc;
 		this.startReccuringCalSrc = startReccuring;
+		this.location = location;
 	}
 
 	public String getId() {
@@ -87,5 +90,9 @@ public class EventToSync {
 
 	public Calendar getStartReccuringCalSource() {
 		return startReccuringCalSrc;
+	}
+	
+	public String getLocation() {
+		return location;
 	}
 }

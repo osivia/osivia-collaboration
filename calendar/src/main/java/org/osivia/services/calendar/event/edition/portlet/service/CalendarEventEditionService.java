@@ -21,9 +21,9 @@ public interface CalendarEventEditionService extends CalendarService {
     /** Date format pattern. */
 	public static final String DATE_FORMAT_PATTERN = "dd/MM/yyyy";
     /** Time format pattern. */
-	public static final String TIME_FORMAT_PATTERN = "HH:mm";
+    public static final String TIME_FORMAT_PATTERN = "HH:mm";
     /** Color Nuxeo document property. */
-	public static final String COLOR_PROPERTY = "vevent:color";
+    public static final String COLOR_PROPERTY = "vevent:color";
 
 
     /**
