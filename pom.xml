@@ -10,6 +10,7 @@
     <name>OSIVIA Services - Collaboration parent</name>
 
 
+
     <properties>
         <toutatice.version>4.7-SNAPSHOT</toutatice.version>
         <directory.version>4.7</directory.version>
