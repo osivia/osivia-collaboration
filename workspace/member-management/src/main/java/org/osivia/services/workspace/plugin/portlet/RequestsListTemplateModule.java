@@ -209,9 +209,11 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
         if (StringUtils.isNotEmpty(user) && "createRequest".equals(action)) {
             // Workspace identifier
             String workspaceId = request.getParameter("id");
+            // User message
+            String userMessage = request.getParameter("userMessage");
 
             if (StringUtils.isNotEmpty(workspaceId)) {
-                repository.createInvitationRequest(portalControllerContext, workspaceId, user);
+                repository.createInvitationRequest(portalControllerContext, workspaceId, user, userMessage);
             }
         }
     }

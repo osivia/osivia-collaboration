@@ -22,6 +22,8 @@ public class InvitationRequest extends MemberObject {
     private InvitationState state;
     /** Accepted invitation request indicator. */
     private boolean accepted;
+    /** User message */
+    private String userMessage;
 
 
     /**
@@ -96,5 +98,23 @@ public class InvitationRequest extends MemberObject {
     public void setAccepted(boolean accepted) {
         this.accepted = accepted;
     }
+
+    /**
+     * Getter for userMessage.
+     * @return userMessage
+     */
+	public String getUserMessage() {
+		return userMessage;
+	}
+
+	/**
+	 * Setter for userMessage.
+	 * @param userMessage
+	 */
+	public void setUserMessage(String userMessage) {
+		this.userMessage = userMessage;
+	}
+    
+    
 
 }

@@ -43,6 +43,8 @@ public interface MemberManagementRepository {
     String PERSON_UID_PROPERTY = "uid";
     /** Invitation state property. */
     String INVITATION_STATE_PROPERTY = "invitationState";
+    /** Message sent by the user. */
+    String USER_MESSAGE = "userMessage";    
     /** Role property. */
     String ROLE_PROPERTY = "role";
     /** Invitation local groups property. */
@@ -266,9 +268,10 @@ public interface MemberManagementRepository {
      * @param portalControllerContext portal controller context
      * @param workspaceId workspace identifier
      * @param uid user identifier
+     * @param userMessage user message input
      * @throws PortletException
      */
-    void createInvitationRequest(PortalControllerContext portalControllerContext, String workspaceId, String uid) throws PortletException;
+    void createInvitationRequest(PortalControllerContext portalControllerContext, String workspaceId, String uid, String userMessage) throws PortletException;
 
 
     /**

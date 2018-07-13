@@ -168,6 +168,13 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
+                                
+								<!-- Column reset -->
+                                <div class="clearfix visible-xs-block"></div>
+                                <div class="col-xs-12">
+                                	<blockquote>${invitationRequest.userMessage}</blockquote>
+                                </div>
+                                                                
                             </div>
                         </fieldset>
                     </div>

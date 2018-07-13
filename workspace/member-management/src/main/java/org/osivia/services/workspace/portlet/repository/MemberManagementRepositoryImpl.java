@@ -778,6 +778,10 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         // Invitation state
         InvitationState state = InvitationState.fromName(variables.getString(INVITATION_STATE_PROPERTY));
         request.setState(state);
+        
+        // user message
+        String userMessage = variables.getString(USER_MESSAGE);
+        request.setUserMessage(userMessage);
 
         return request;
     }
@@ -909,7 +913,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public void createInvitationRequest(PortalControllerContext portalControllerContext, String workspaceId, String uid) throws PortletException {
+    public void createInvitationRequest(PortalControllerContext portalControllerContext, String workspaceId, String uid, String userMessage)
+    		throws PortletException {
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
@@ -924,6 +929,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             variables.put(WORKSPACE_TITLE_PROPERTY, workspace.getTitle());
             variables.put(PERSON_UID_PROPERTY, uid);
             variables.put(INVITATION_STATE_PROPERTY, InvitationState.SENT.name());
+            variables.put(USER_MESSAGE, userMessage);
 
             this.formsService.start(portalControllerContext, REQUEST_MODEL_ID, variables);
 
