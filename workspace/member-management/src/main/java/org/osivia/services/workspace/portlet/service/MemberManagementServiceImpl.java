@@ -72,11 +72,11 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /** Bundle factory. */
     @Autowired
-    private IBundleFactory bundleFactory;
+    protected IBundleFactory bundleFactory;
 
     /** Notifications service. */
     @Autowired
-    private INotificationsService notificationsService;
+    protected INotificationsService notificationsService;
 
     /** Local group comparator. */
     @Autowired

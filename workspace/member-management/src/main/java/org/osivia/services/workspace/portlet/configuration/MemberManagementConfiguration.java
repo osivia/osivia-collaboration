@@ -145,7 +145,7 @@ public class MemberManagementConfiguration extends CMSPortlet implements Portlet
     public IBundleFactory getBundleFactory() {
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
-        return internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        return internationalizationService.getBundleFactory(this.getClass().getClassLoader(), applicationContext);
     }
 
 
