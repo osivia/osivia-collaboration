@@ -818,7 +818,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     /**
      * Invalidate loaded forms.
      */
-    private void invalidateLoadedForms() {
+    protected void invalidateLoadedForms() {
         MembersForm membersForm = this.applicationContext.getBean(MembersForm.class);
         membersForm.setLoaded(false);
 
