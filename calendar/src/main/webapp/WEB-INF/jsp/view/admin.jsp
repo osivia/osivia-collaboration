@@ -47,6 +47,20 @@
         </div>
     </div>
     
+    <!-- Read only indicator -->
+    <div class="form-group">
+        <form:label path="readOnly" cssClass="control-label col-sm-3"><op:translate key="CALENDAR_READ_ONLY" /></form:label>
+        <div class="col-sm-9">
+            <div class="checkbox">
+                <label>
+                    <form:checkbox path="readOnly" />
+                    <span><op:translate key="CALENDAR_READ_ONLY_CHECKBOX" /></span>
+                </label>
+            </div>
+            <span class="help-block"><op:translate key="CALENDAR_READ_ONLY_HELP" /></span>
+        </div>
+    </div>
+    
     <!-- Buttons -->
     <div class="form-group">
         <div class="col-sm-offset-3 col-sm-9">

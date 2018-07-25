@@ -144,31 +144,35 @@ $JQry(window).load(function() {
 		
 		//To display or hide menu bar on the event's left when the user click on the event
 		scheduler.attachEvent("onClick", function(id){
-		    var divScheduler = $JQry("div#scheduler_here");
-			var isEditableUrl = divScheduler.data("url-eventeditable");
-			var boolReturn = false;
-		    jQuery.ajax({
-				url: isEditableUrl,
-				data: {
-					id: id
-				},
-				async: false,
-				cache: false,
-				dataType: "json",
-				success : function(data, status, xhr) {
-					if (data)
-					{
-						boolReturn = true;
-					} else
-					{
-						boolReturn = false;
+			if (isReadonly(id)) {
+				return false;
+			} else {
+			    var divScheduler = $JQry("div#scheduler_here");
+				var isEditableUrl = divScheduler.data("url-eventeditable");
+				var boolReturn = false;
+			    jQuery.ajax({
+					url: isEditableUrl,
+					data: {
+						id: id
+					},
+					async: false,
+					cache: false,
+					dataType: "json",
+					success : function(data, status, xhr) {
+						if (data)
+						{
+							boolReturn = true;
+						} else
+						{
+							boolReturn = false;
+						}
+					},
+					error : function(data, status, xhr) {
+						console.log( "Erreur lors de l'appel Ajax, status: "+status+ ", data: "+data);
 					}
-				},
-				error : function(data, status, xhr) {
-					console.log( "Erreur lors de l'appel Ajax, status: "+status+ ", data: "+data);
-				}
-			});
-		    return boolReturn;
+				});
+			    return boolReturn;
+			}
 		});
 		
 		scheduler.attachEvent("onDblClick", function(id,ev){
@@ -187,6 +191,10 @@ $JQry(window).load(function() {
 			{
 				return true;
 			}
+		});
+		
+		scheduler.attachEvent("onBeforeDrag", function(id) {
+			return !isReadonly(id);
 		});
 		
 		scheduler.attachEvent("onDragEnd", function(){
@@ -279,6 +287,15 @@ $JQry(window).load(function() {
 				scheduler.addEventNow(fixed_date, scheduler.date.add(fixed_date, event_step, "minute"));
 			}
 		});
+	}
+	
+	
+	function isReadonly(id){
+		if (!id) {
+			return false;
+		} else {
+			return scheduler.getEvent(id).readonly;
+		}
 	}
 });
 

@@ -13,6 +13,8 @@ public class CalendarOptions {
     private boolean compactView;
     /** Default period type name. */
     private String periodTypeName;
+    /** Read only indicator. */
+    private boolean readOnly;
 
 
     /**
@@ -75,6 +77,24 @@ public class CalendarOptions {
      */
     public void setPeriodTypeName(String periodTypeName) {
         this.periodTypeName = periodTypeName;
+    }
+
+    /**
+     * Getter for readOnly.
+     * 
+     * @return the readOnly
+     */
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    /**
+     * Setter for readOnly.
+     * 
+     * @param readOnly the readOnly to set
+     */
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
 }

@@ -18,13 +18,17 @@ function printCell()
 	    };
 	    scheduler.templates.event_class = function(start,end,ev){
 	    	var evClass;
-	    	if (ev.extraClass == undefined)
-	    	{
+	    	
+	    	if (ev.extraClass == undefined) {
 	    		evClass = divScheduler.data("color-main-agenda");
 	    	} else {
 	    		evClass = ev.extraClass;
 	    	}
-	    	console.log("ExtraClass, color:"+evClass);
+	    	
+	    	if (ev.readonly) {
+	    		evClass += " readonly";
+	    	}
+	    	
 		    return evClass;
 		}
 	});

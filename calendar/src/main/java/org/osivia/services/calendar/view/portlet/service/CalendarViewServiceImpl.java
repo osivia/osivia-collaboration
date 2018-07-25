@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 import javax.portlet.WindowState;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -538,6 +539,8 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
             } else {
                 object.put("extraClass", CalendarColor.fromId(event.getBckgColor()).getBackgroundClass());
             }
+            object.put("readonly", this.isEventReadOnly(portalControllerContext, event));
+
             array.add(object);
         }
         return array;
@@ -597,6 +600,29 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
         String location = (vevent.getLocation() == null) ? null : vevent.getLocation().getValue();
 
         return new EventToSync(null, summary, allDay, startCal, endCal, description, idAgenda, uid, createdCal, lastModifiedCal, startReccuringStartSource, location);
+    }
+
+
+    /**
+     * Check if event is read only.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param event event
+     * @return true if event is read only
+     * @throws PortletException
+     */
+    protected boolean isEventReadOnly(PortalControllerContext portalControllerContext, Event event) throws PortletException {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+        // Calendar options
+        CalendarOptions options = this.repository.getConfiguration(portalControllerContext);
+
+        // Anonymous remote user indicator
+        boolean anonymousUser = StringUtils.isEmpty(request.getRemoteUser());
+        // Synchronized event indicator
+        boolean synchronizedEvent = StringUtils.isNotEmpty(event.getIdEventSource());
+
+        return options.isReadOnly() || anonymousUser || synchronizedEvent;
     }
 
 }

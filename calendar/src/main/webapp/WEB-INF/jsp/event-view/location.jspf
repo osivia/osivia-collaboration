@@ -14,7 +14,7 @@
                 <span class="text-muted">-</span>
             </c:when>
             <c:otherwise>
-                ${form.location}
+                <div class="text-pre-wrap">${form.location}</div>
             </c:otherwise>
         </c:choose>
     </div>
