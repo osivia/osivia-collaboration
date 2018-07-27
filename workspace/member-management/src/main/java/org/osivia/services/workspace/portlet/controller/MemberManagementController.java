@@ -1,5 +1,11 @@
 package org.osivia.services.workspace.portlet.controller;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
@@ -8,10 +14,17 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.services.workspace.portlet.model.Member;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
@@ -23,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 /**
  * Workspace member management portlet view controller.
@@ -40,6 +54,10 @@ public class MemberManagementController {
     /** Member management service. */
     @Autowired
     private MemberManagementService service;
+
+    /** Bundle factory. */
+    @Autowired
+    protected IBundleFactory bundleFactory;
 
 
     /**
@@ -173,6 +191,55 @@ public class MemberManagementController {
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 
         return this.service.getMembersHelp(portalControllerContext);
+    }
+    
+    /**
+     * Export members table (CSV)
+     * 
+     * @param request
+     * @param response
+     * @param members
+     * @throws IOException
+     */
+    @ResourceMapping("exportCsv")
+    public void exportCsv(ResourceRequest request, ResourceResponse response, @ModelAttribute("members") MembersForm members, 
+    		@ModelAttribute("options") MemberManagementOptions options) throws IOException {
+    	
+    	response.setContentType("text/csv");
+        response.setProperty("Content-disposition", "attachment; filename=\"" + "members_"+options.getWorkspaceId()+".csv" + "\"");
+    	
+    	OutputStreamWriter writer = new OutputStreamWriter(response.getPortletOutputStream());
+    	List<String> headers = new ArrayList<String>();
+    	
+    	Bundle bundle = bundleFactory.getBundle(null);
+    	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER"));
+    	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER_EXTRA"));
+    	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER_ACKNOWLEDGMENT_DATE"));
+    	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ROLE"));
+    	
+    	
+    	
+    	CSVPrinter printer = CSVFormat.EXCEL.withHeader(headers.toArray(new String[headers.size()])).print(writer);
+    	
+    	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
+    	
+    	for(Member m : members.getMembers()) {
+    		String date = "";
+    		if(m.getDate() != null) {
+				date = sdf.format(m.getDate());
+			}
+    		
+			String role = "";
+			if(m.getRole() != null) { 
+				role = bundle.getString(m.getRole().getKey(), m.getRole().getClassLoader());
+			
+			}
+			printer.printRecord(m.getDisplayName(),m.getExtra(), date, role);
+
+    	}
+    	
+    	printer.close();
+    	writer.close();
     }
 
 }

@@ -25,9 +25,18 @@
     <portlet:param name="alt" value="${alt}" />
 </portlet:actionURL>
 
+<portlet:resourceURL  id="exportCsv" var="exportCsvUrl">
+</portlet:resourceURL>
 
 <c:set var="namespace"><portlet:namespace /></c:set>
 
+<!-- Export tools -->
+<div class="text-right">
+	<a class="btn btn-default" href="${exportCsvUrl}"> <i
+		class="glyphicons glyphicons-table"></i> <span><op:translate
+				key="WORKSPACE_MEMBER_MANAGEMENT_EXPORT" /></span>
+	</a>
+</div>
 
 <form:form action="${updateUrl}" method="post" modelAttribute="members" role="form">
     <div>
