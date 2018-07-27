@@ -115,6 +115,11 @@ function initScheduler(backFromPlanning)
 		//Set the height of the dhx_cal_navline
 		scheduler.xy.nav_height = 45;
 	}
+	
+	if (divScheduler.data("read-only")) {
+		scheduler.config.readonly = true;
+	}
+	
 	scheduler.init('scheduler_here',new Date(divScheduler.data("startdate")),divScheduler.data("period"));
 	//Chargement des données
 	dataLoading();
@@ -281,8 +286,9 @@ $JQry(window).load(function() {
 		var event_step = 60;
 		//Evenement created by single click
 		scheduler.attachEvent("onEmptyClick", function(date, native_event){
-			if (last_attached_event != "onDragEnd")
-			{
+			if (scheduler.config.readonly) {
+				return false;
+			} else if (last_attached_event != "onDragEnd") {
 				var fixed_date = fix_date(date);
 				scheduler.addEventNow(fixed_date, scheduler.date.add(fixed_date, event_step, "minute"));
 			}

@@ -152,7 +152,7 @@ public interface CalendarViewRepository extends CalendarRepository {
      * @return
      * @throws PortletException
      */
-    public boolean isEventEditable(PortalControllerContext portalControllerContext, String docid) throws PortletException;
+    boolean isEventEditable(PortalControllerContext portalControllerContext, String docid) throws PortletException;
     
     /**
      * Synchronization of events
@@ -161,7 +161,7 @@ public interface CalendarViewRepository extends CalendarRepository {
      * @return true if synchronization success
      * @throws PortletException
      */
-    public void synchronize(PortalControllerContext portalControllerContext,  Map<EventKey, EventToSync> map) throws PortletException;
+    void synchronize(PortalControllerContext portalControllerContext, Map<EventKey, EventToSync> map) throws PortletException;
     
     /**
      * Return the list of the synchronization sources of the current agenda
@@ -170,7 +170,7 @@ public interface CalendarViewRepository extends CalendarRepository {
      * @return list of URLs
      * @throws PortletException
      */
-    public List<CalendarSynchronizationSource> getSynchronizationSources(PortalControllerContext portalControllerContext) throws PortletException;
+    List<CalendarSynchronizationSource> getSynchronizationSources(PortalControllerContext portalControllerContext) throws PortletException;
     
     /**
      * Return the colorId of the agenda
@@ -178,7 +178,6 @@ public interface CalendarViewRepository extends CalendarRepository {
      * @return
      * @throws PortletException
      */
-    public String getColorIdAgenda(PortalControllerContext portalControllerContext)
-			throws PortletException;
+    String getColorIdAgenda(PortalControllerContext portalControllerContext) throws PortletException;
 
 }

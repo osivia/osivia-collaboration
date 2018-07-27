@@ -84,14 +84,14 @@ public interface CalendarViewService extends CalendarService {
 
     /**
      * Get docid
-     * 
+     *
      * @param portalControllerContext
      * @param docid
      * @return
      * @throws PortletException
      */
     Event getEvent(PortalControllerContext portalControllerContext, String docid) throws PortletException;
-    
+
     /**
      * Get view path.
      *
@@ -127,77 +127,91 @@ public interface CalendarViewService extends CalendarService {
 
     /**
      * Define portlet URI.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @throws PortletException
      */
     void definePortletUri(PortalControllerContext portalControllerContext) throws PortletException;
-    
+
     /**
      * Save event
-     * 
+     *
      * @param portalControllerContext
      * @param form
      * @param timezone client timezone
      * @throws PortletException
      */
     void save(PortalControllerContext portalControllerContext, CalendarViewForm form, TimeZone timezone) throws PortletException;
-    
+
     /**
      * Remove event
-     * 
+     *
      * @param portalControllerContext
      * @param form
      * @param options
      * @throws PortletException
      */
     void remove(PortalControllerContext portalControllerContext, CalendarViewForm form) throws PortletException;
-    
+
     /**
      * Return true if event is editable
+     *
      * @param portalControllerContext
      * @param docid
      * @return
      * @throws PortletException
      */
-    public boolean isEventEditable(PortalControllerContext portalControllerContext, String docid) throws PortletException;
-    
+    boolean isEventEditable(PortalControllerContext portalControllerContext, String docid) throws PortletException;
+
     /**
      * Synchronization of events
+     *
      * @param portalControllerContext
      * @throws PortletException
      */
-    public void synchronize(PortalControllerContext portalControllerContext) throws PortletException;
-    
+    void synchronize(PortalControllerContext portalControllerContext) throws PortletException;
+
     /**
      * Return the map of the different color (primary color of the calendar and color of each synchrnonization sources)
+     *
      * @param portalControllerContext
      * @return
      * @throws PortletException
      */
-    public Map<String, CalendarColor> getSourcesColor(PortalControllerContext portalControllerContext)
-			throws PortletException;
-    
+    Map<String, CalendarColor> getSourcesColor(PortalControllerContext portalControllerContext) throws PortletException;
+
     /**
      * Return the id of the color of the agenda
+     *
      * @param portalControllerContext
      * @return
      * @throws PortletException
      */
-    public String getColorIdAgenda(PortalControllerContext portalControllerContext)
-			throws PortletException;
-    
+    String getColorIdAgenda(PortalControllerContext portalControllerContext) throws PortletException;
+
+    /**
+     * Check if calendar is read only.
+     *
+     * @param portalControllerContext portal controller context
+     * @return true if calendar is read only
+     * @throws PortletException
+     */
+    boolean isCalendarReadOnly(PortalControllerContext portalControllerContext) throws PortletException;
+
+
     /**
      * Load events array
+     *
      * @param portalControllerContext
      * @param calendarData
      * @return
      * @throws PortletException
      */
-    public JSONArray loadEventsArray(PortalControllerContext portalControllerContext, CalendarData calendarData) throws PortletException;
-    
+    JSONArray loadEventsArray(PortalControllerContext portalControllerContext, CalendarData calendarData) throws PortletException;
+
     /**
      * Build event
+     *
      * @param vevent
      * @param idAgenda
      * @param timeZoneAllEvent

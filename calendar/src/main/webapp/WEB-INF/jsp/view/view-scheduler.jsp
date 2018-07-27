@@ -100,6 +100,7 @@
     data-url-eventeditable="${isEventEditable}"
     data-url-synchronize="${synchronize}"
     data-color-main-agenda="${calendarData.agendaBackgroundColor}"
+    data-read-only="${calendarData.readOnly}"
     data-namespace="${namespace}">
     <div class="dhx_cal_navline btn-toolbar" role="toolbar">
     	<div class="btn-group grp-btn-next-prev">

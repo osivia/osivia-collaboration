@@ -240,6 +240,10 @@ public class ViewCalendarController {
         String colorIdAgenda = this.calendarService.getColorIdAgenda(portalControllerContext);
         calendarData.setAgendaBackgroundColor(CalendarColor.fromId(colorIdAgenda).getBackgroundClass());
 
+        // Read only indicator
+        boolean readOnly = this.calendarService.isCalendarReadOnly(portalControllerContext);
+        calendarData.setReadOnly(readOnly);
+
         // Portlet URI
         this.calendarService.definePortletUri(portalControllerContext);
 

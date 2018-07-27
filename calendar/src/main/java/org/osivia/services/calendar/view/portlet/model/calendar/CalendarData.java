@@ -32,6 +32,9 @@ public class CalendarData {
     private String scrollViewMonth;
     /** Agenda background color*/
     private String agendaBackgroundColor;
+    /** Read only indicator. */
+    private boolean readOnly;
+
 
     /**
      * Default constructor.
@@ -192,7 +195,6 @@ public class CalendarData {
         this.endDate = endDate;
     }
 
-
 	/**
 	 * @return the agendaBackgroundColor
 	 */
@@ -200,12 +202,29 @@ public class CalendarData {
 		return agendaBackgroundColor;
 	}
 
-
 	/**
 	 * @param agendaBackgroundColor the agendaBackgroundColor to set
 	 */
 	public void setAgendaBackgroundColor(String agendaBackgroundColor) {
 		this.agendaBackgroundColor = agendaBackgroundColor;
 	}
+
+    /**
+     * Getter for readOnly.
+     * 
+     * @return the readOnly
+     */
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    /**
+     * Setter for readOnly.
+     * 
+     * @param readOnly the readOnly to set
+     */
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
 
 }

@@ -498,6 +498,23 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
      * {@inheritDoc}
      */
     @Override
+    public boolean isCalendarReadOnly(PortalControllerContext portalControllerContext) throws PortletException {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+        // Calendar options
+        CalendarOptions options = this.repository.getConfiguration(portalControllerContext);
+
+        // Anonymous remote user indicator
+        boolean anonymousUser = StringUtils.isEmpty(request.getRemoteUser());
+        
+        return options.isReadOnly() || anonymousUser;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public JSONArray loadEventsArray(PortalControllerContext portalControllerContext, CalendarData calendarData) throws PortletException {
         EventsData eventsData = getEventsData(portalControllerContext, calendarData);
         List<DailyEvent> listEvent = ((DailyCalendarEventsData) eventsData).getEvents();
@@ -612,17 +629,10 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
      * @throws PortletException
      */
     protected boolean isEventReadOnly(PortalControllerContext portalControllerContext, Event event) throws PortletException {
-        // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();
-        // Calendar options
-        CalendarOptions options = this.repository.getConfiguration(portalControllerContext);
-
-        // Anonymous remote user indicator
-        boolean anonymousUser = StringUtils.isEmpty(request.getRemoteUser());
         // Synchronized event indicator
         boolean synchronizedEvent = StringUtils.isNotEmpty(event.getIdEventSource());
 
-        return options.isReadOnly() || anonymousUser || synchronizedEvent;
+        return synchronizedEvent || this.isCalendarReadOnly(portalControllerContext);
     }
 
 }
