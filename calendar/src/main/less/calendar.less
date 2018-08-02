@@ -146,8 +146,44 @@ div.dhx_cal_navline {
 		top: 0px !important;
 		position: relative !important;
 	}
-	
 }
+
+
+.dhx_cal_navline {
+    &.btn-toolbar {
+        margin-left: 0;
+        
+        &:first-child {
+            margin-left: 0;
+        }
+        
+        &, .btn-group, .checkbox, .dhx_cal_date {
+            position: relative;
+        }
+        
+        .dropdown {
+            form {
+                padding: 0 20px;
+                
+                .checkbox {
+                    margin-top: 0;
+                }
+            }
+        }
+    }
+}
+
+
+.dhx_cal_select_menu {
+    .dhx_title {
+        display: none;
+    }
+    
+    .dhx_body {
+        border-radius: 4px;
+    }
+}
+
 
 //Masquage de la barre de navigation du scheduler
 //.dhx_cal_navline{

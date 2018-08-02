@@ -5,7 +5,7 @@
 <%@page import="java.util.Date"%>
 <%@ page import="org.osivia.services.calendar.view.portlet.model.calendar.CalendarData" %>
 <%@ page import="org.apache.commons.lang.time.DateUtils" %>
-<%@ page import="java.text.SimpleDateFormat;" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 
 
 <%@ page contentType="text/html" isELIgnored="false"%>
