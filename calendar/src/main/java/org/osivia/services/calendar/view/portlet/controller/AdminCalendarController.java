@@ -33,7 +33,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
  * @author Cédric Krommenhoek
  */
 @Controller
-@RequestMapping(value = "ADMIN")
+@RequestMapping("ADMIN")
 public class AdminCalendarController {
 
     /** Admin JSP path. */

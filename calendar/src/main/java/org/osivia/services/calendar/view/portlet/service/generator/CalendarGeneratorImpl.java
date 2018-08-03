@@ -20,6 +20,7 @@ import org.osivia.services.calendar.view.portlet.repository.CalendarViewReposito
 import org.osivia.services.calendar.view.portlet.service.CalendarViewService;
 import org.osivia.services.calendar.view.portlet.utils.PeriodTypes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 
 /**
@@ -33,6 +34,10 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
     /** Planning compact maximum number of days to display. */
     protected static final int PLANNING_COMPACT_MAX = 5;
 
+
+    /** Application context. */
+    @Autowired
+    private ApplicationContext applicationContext;
 
     /** Calendar repository. */
     @Autowired
@@ -74,7 +79,8 @@ public abstract class CalendarGeneratorImpl implements ICalendarGenerator {
      */
     @Override
     public CalendarData generateCalendarData(PortalControllerContext portalControllerContext, PeriodTypes periodType) throws PortletException {
-        CalendarData calendarData = new CalendarData();
+        CalendarData calendarData = this.applicationContext.getBean(CalendarData.class);
+
         // Period type
         calendarData.setPeriodType(periodType);
         // Generator

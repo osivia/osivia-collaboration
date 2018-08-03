@@ -6,6 +6,9 @@ import org.apache.commons.lang.time.DateUtils;
 import org.osivia.services.calendar.view.portlet.service.CalendarViewService;
 import org.osivia.services.calendar.view.portlet.service.generator.ICalendarGenerator;
 import org.osivia.services.calendar.view.portlet.utils.PeriodTypes;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Calendar data.
@@ -13,6 +16,8 @@ import org.osivia.services.calendar.view.portlet.utils.PeriodTypes;
  * @author Cédric Krommenhoek
  * @author Julien Barberet
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CalendarData {
 
     /** Period type. */

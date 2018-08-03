@@ -90,7 +90,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
 
         // Calendar configuration
-        CalendarOptions configuration = new CalendarOptions();
+        CalendarOptions configuration = this.applicationContext.getBean(CalendarOptions.class);
         configuration.setCmsPath(window.getProperty(CMS_PATH_WINDOW_PROPERTY));
         configuration.setPeriodTypeName(window.getProperty(DEFAULT_VIEW_WINDOW_PROPERTY));
         configuration.setCompactView(BooleanUtils.toBoolean(window.getProperty(COMPACT_VIEW_WINDOW_PROPERTY)));
