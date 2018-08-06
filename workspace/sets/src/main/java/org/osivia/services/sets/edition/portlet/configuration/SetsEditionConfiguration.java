@@ -7,11 +7,13 @@ import javax.portlet.PortletException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -35,7 +37,7 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
  */
 @Configuration
 @ComponentScan(basePackages = {"org.osivia.services.sets.edition.portlet"})
-public class SetsEditionConfiguration extends CMSPortlet implements PortletContextAware {
+public class SetsEditionConfiguration extends CMSPortlet  {
 
     /** Application context. */
     @Autowired
@@ -62,16 +64,10 @@ public class SetsEditionConfiguration extends CMSPortlet implements PortletConte
     @PostConstruct
     public void postConstruct() throws PortletException {
         super.init(this.portletConfig);
+        PortletAppUtils.registerApplication(portletConfig, applicationContext);
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletContext(PortletContext portletContext) {
-        portletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
-    }
 
 
     /**

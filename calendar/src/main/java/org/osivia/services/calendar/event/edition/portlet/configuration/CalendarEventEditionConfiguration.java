@@ -8,10 +8,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -39,7 +41,7 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
  */
 @Configuration
 @ComponentScan(basePackages = {"org.osivia.services.calendar.common", "org.osivia.services.calendar.event.edition.portlet"})
-public class CalendarEventEditionConfiguration extends CMSPortlet implements PortletConfigAware, PortletContextAware {
+public class CalendarEventEditionConfiguration extends CMSPortlet implements PortletConfigAware {
 
     /** Application context. */
     @Autowired
@@ -66,19 +68,13 @@ public class CalendarEventEditionConfiguration extends CMSPortlet implements Por
     public void setPortletConfig(PortletConfig portletConfig) {
         try {
             super.init(portletConfig);
+            PortletAppUtils.registerApplication(portletConfig, applicationContext);            
         } catch (PortletException e) {
             this.log.error(e);
         }
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletContext(PortletContext portletContext) {
-        portletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
-    }
 
 
     /**

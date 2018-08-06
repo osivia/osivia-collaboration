@@ -1,11 +1,15 @@
 package org.osivia.services.forum.util.controller;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
+
+import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
+import org.springframework.web.portlet.context.PortletConfigAware;
 import org.springframework.web.portlet.context.PortletContextAware;
 
 import javax.annotation.PostConstruct;
@@ -19,7 +23,7 @@ import java.io.IOException;
  * @see CMSPortlet
  * @see PortletContextAware
  */
-public abstract class AbstractForumController extends CMSPortlet implements PortletContextAware {
+public abstract class AbstractForumController extends CMSPortlet implements PortletConfigAware, PortletContextAware {
 
     /** Application context. */
     @Autowired
@@ -69,7 +73,13 @@ public abstract class AbstractForumController extends CMSPortlet implements Port
     @Override
     public void setPortletContext(PortletContext portletContext) {
         this.portletContext = portletContext;
-        this.portletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
+                
+     }
+    
+    @Override
+    public void setPortletConfig(PortletConfig portletConfig) {
+            PortletAppUtils.registerApplication(portletConfig, applicationContext);            
+
     }
 
 }

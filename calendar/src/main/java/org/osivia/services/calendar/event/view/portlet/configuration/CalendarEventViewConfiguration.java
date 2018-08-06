@@ -7,9 +7,11 @@ import javax.portlet.PortletException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -36,7 +38,7 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
  */
 @Configuration
 @ComponentScan(basePackages = {"org.osivia.services.calendar.common", "org.osivia.services.calendar.event.view.portlet"})
-public class CalendarEventViewConfiguration extends CMSPortlet implements PortletContextAware {
+public class CalendarEventViewConfiguration extends CMSPortlet  {
 
     /** Application context. */
     @Autowired
@@ -63,16 +65,10 @@ public class CalendarEventViewConfiguration extends CMSPortlet implements Portle
     @PostConstruct
     public void postConstruct() throws PortletException {
         super.init(this.portletConfig);
-    }
+        PortletAppUtils.registerApplication(portletConfig, applicationContext);
+     }
 
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletContext(PortletContext portletContext) {
-        portletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
-    }
 
 
     /**
@@ -99,7 +95,7 @@ public class CalendarEventViewConfiguration extends CMSPortlet implements Portle
     @Bean(name = "messageSource")
     public ResourceBundleMessageSource getMessageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames("calendar-common");
+        messageSource.setBasenames("calendar-event-edition","calendar-common");
         return messageSource;
     }
 
