@@ -19,6 +19,7 @@
 
     <modules>
         <module>calendar</module>
+        <module>contact</module>
         <module>editor-helpers</module>
         <module>faq</module>
         <module>forum</module>
