@@ -216,8 +216,7 @@ public class MemberManagementController {
     	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER_EXTRA"));
     	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER_ACKNOWLEDGMENT_DATE"));
     	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ROLE"));
-    	
-    	
+    	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ID"));  	
     	
     	CSVPrinter printer = CSVFormat.EXCEL.withHeader(headers.toArray(new String[headers.size()])).print(writer);
     	
@@ -234,7 +233,7 @@ public class MemberManagementController {
 				role = bundle.getString(m.getRole().getKey(), m.getRole().getClassLoader());
 			
 			}
-			printer.printRecord(m.getDisplayName(),m.getExtra(), date, role);
+			printer.printRecord(m.getDisplayName(),m.getExtra(), date, role, m.getId());
 
     	}
     	
