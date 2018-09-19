@@ -344,8 +344,10 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
 		// Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        String parentPath = nuxeoController.getContentPath();
-        form.setParentPath(parentPath);
+        // CMS path
+        String cmsPath = this.getCMSPath(nuxeoController);
+        form.setParentPath(cmsPath);
+
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(EventEditionCommand.class, form, clientTimezone);
         Document document = (Document) nuxeoController.executeNuxeoCommand(command);
