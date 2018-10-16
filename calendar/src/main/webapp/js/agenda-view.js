@@ -103,7 +103,7 @@ function initScheduler(backFromPlanning)
 		scheduler.config.now_date = new Date();//J'ai remaqué qu'il faut mettre aussi cette ligne pour afficher le liseret rouge de l'heure actuelle	
 		scheduler.config.day_date = "%D %j %F"; 
 		
-		scheduler.config.scroll_hour = new Date().getHours();//Pour positionner l'ascenseur à la position de l'heure actuelle
+		//scheduler.config.scroll_hour = new Date().getHours();//Pour positionner l'ascenseur à la position de l'heure actuelle
 		scheduler.config.preserve_scroll = false;//Scroll position is set via Pour réafficher l'ascenseur à la bonne position après une action, il faut impérativement mettre preserve_scroll = false
 		scheduler.config.wai_aria_attributes = true;//accessibilité
 		//scheduler.config.server_utc = true;
@@ -124,6 +124,24 @@ function initScheduler(backFromPlanning)
 	if (divScheduler.data("read-only")) {
 		scheduler.config.readonly = true;
 	}
+	
+	var scrollHour = divScheduler.data("scroll-hour");
+	if (scrollHour) {
+		scheduler.config.scroll_hour = scrollHour;
+	} else {
+		scheduler.config.scroll_hour = new Date().getHours();
+	}
+	
+	var firstHour = divScheduler.data("first-hour");
+	if (firstHour) {
+		scheduler.config.first_hour = firstHour;
+	}
+	
+	var lastHour = divScheduler.data("last-hour");
+	if (lastHour) {
+		scheduler.config.last_hour = lastHour;
+	}
+	
 	
 	scheduler.init('scheduler_here',new Date(divScheduler.data("startdate")),divScheduler.data("period"));
 	//Chargement des données
