@@ -51,20 +51,30 @@ function saveEvent(ev)
 	directAjaxCall(container, options, urlDragNDrop, null, callerId);
 }
 
-function addScrollParam(url,targetPeriod)
-{	
+function addScrollParam(url, targetPeriod) {
 	var divScheduler = $JQry("div#scheduler_here");
 	var urlReturn;
-	if (divScheduler.data('period') == "month")
-	{
-		urlReturn = url +"&scrollViewMonth="+ $JQry("div.dhx_cal_data")[0].scrollTop;
-	} else if ((divScheduler.data('period') == "day" || divScheduler.data('period') == "week"))
-	{
-		urlReturn = url +"&scrollViewDayWeek="+ $JQry("div.dhx_cal_data")[0].scrollTop+"&hourPosition="+(24*$JQry("div.dhx_cal_data")[0].scrollTop/$JQry("div.dhx_cal_data")[0].scrollHeight).toFixed(4);
-	} else
-	{
+
+	if (!divScheduler.data("add-scroll-param")) {
+		if (divScheduler.data('period') == "month") {
+			urlReturn = url + "&scrollViewMonth="
+					+ $JQry("div.dhx_cal_data")[0].scrollTop;
+		} else if ((divScheduler.data('period') == "day" || divScheduler
+				.data('period') == "week")) {
+			urlReturn = url
+					+ "&scrollViewDayWeek="
+					+ $JQry("div.dhx_cal_data")[0].scrollTop
+					+ "&hourPosition="
+					+ (24 * $JQry("div.dhx_cal_data")[0].scrollTop / $JQry("div.dhx_cal_data")[0].scrollHeight)
+							.toFixed(4);
+		} else {
+			urlReturn = url;
+		}
+
+		divScheduler.data("add-scroll-param", true);
+	} else {
 		urlReturn = url;
 	}
-	
+
 	return urlReturn;
 }
