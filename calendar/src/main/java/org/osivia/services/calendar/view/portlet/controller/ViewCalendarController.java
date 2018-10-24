@@ -371,6 +371,7 @@ public class ViewCalendarController {
 
         CalendarViewForm form = new CalendarViewForm();
         DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        df1.setTimeZone(TimeZone.getTimeZone("GMT"));
         try {
             form.setEndDate(df1.parse(endDate));
             form.setStartDate(df1.parse(startDate));
