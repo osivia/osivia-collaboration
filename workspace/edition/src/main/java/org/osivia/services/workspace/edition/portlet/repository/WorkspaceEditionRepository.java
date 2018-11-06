@@ -54,17 +54,6 @@ public interface WorkspaceEditionRepository {
 
 
     /**
-     * Get workspace banner.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param workspace workspace or room Nuxeo document
-     * @return banner
-     * @throws PortletException
-     */
-    Image getBanner(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
-
-
-    /**
      * Get workspace tasks.
      * 
      * @param portalControllerContext portal controller context

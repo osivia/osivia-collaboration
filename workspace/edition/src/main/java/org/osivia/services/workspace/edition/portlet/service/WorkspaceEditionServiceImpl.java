@@ -85,6 +85,9 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
      */
     @Override
     public WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
         // Workspace document
         Document workspace = this.repository.getWorkspace(portalControllerContext);
         // Workspace root type indicator
@@ -94,6 +97,12 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         WorkspaceEditionForm form = this.applicationContext.getBean(WorkspaceEditionForm.class, workspace, root);
         form.setTitle(workspace.getTitle());
         form.setDescription(workspace.getString("dc:description"));
+
+        // Welcome title
+        if (root) {
+            String welcomeTitle = workspace.getString("ttcs:welcomeTitle");
+            form.setWelcomeTitle(StringUtils.defaultIfBlank(welcomeTitle, bundle.getString("WORKSPACE_WELCOME_TITLE_DEFAULT")));
+        }
 
         // Templates
         if (root) {
@@ -124,10 +133,6 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         Image vignette = this.repository.getVignette(portalControllerContext, workspace);
         form.setVignette(vignette);
         
-        // Banner
-        Image banner = this.repository.getBanner(portalControllerContext, workspace);
-        form.setBanner(banner);
-
         // Tasks
         List<Task> tasks = this.repository.getTasks(portalControllerContext, workspace);
         Collections.sort(tasks, this.tasksComparator);
@@ -204,37 +209,6 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         Image vignette = form.getVignette();
         vignette.setUpdated(false);
         vignette.setDeleted(true);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void uploadBanner(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException, IOException {
-        // Banner
-        Image banner = form.getBanner();
-        banner.setUpdated(true);
-        banner.setDeleted(false);
-
-        // Temporary file
-        MultipartFile upload = form.getBanner().getUpload();
-        File temporaryFile = File.createTempFile("banner-", ".tmp");
-        temporaryFile.deleteOnExit();
-        upload.transferTo(temporaryFile);
-        banner.setTemporaryFile(temporaryFile);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void deleteBanner(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
-        // Banner
-        Image banner = form.getBanner();
-        banner.setUpdated(false);
-        banner.setDeleted(true);
     }
 
 

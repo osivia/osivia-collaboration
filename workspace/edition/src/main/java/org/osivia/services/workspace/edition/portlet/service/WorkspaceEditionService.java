@@ -62,27 +62,6 @@ public interface WorkspaceEditionService {
 
 
     /**
-     * Upload banner.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param form workspace edition form
-     * @throws PortletException
-     * @throws IOException
-     */
-    void uploadBanner(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException, IOException;
-
-
-    /**
-     * Delete banner.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param form workspace edition form
-     * @throws PortletException
-     */
-    void deleteBanner(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
-
-
-    /**
      * Create editorial.
      * 
      * @param portalControllerContext portal controller context

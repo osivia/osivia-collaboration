@@ -50,6 +50,7 @@ public class WorkspaceEditionFormValidator implements Validator {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "title", "NotEmpty");
 
         if (form.isRoot()) {
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "welcomeTitle", "NotEmpty");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "NotEmpty");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "workspaceType", "NotEmpty");
         }

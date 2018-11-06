@@ -196,33 +196,6 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
-    public Image getBanner(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-
-        // Banner properties
-        PropertyMap properties = workspace.getProperties().getMap("ttcs:headImage");
-
-        // Banner URL
-        String url;
-        if ((properties == null) || StringUtils.isEmpty(properties.getString("data"))) {
-            url = null;
-        } else {
-            url = nuxeoController.createFileLink(workspace, "ttcs:headImage");
-        }
-
-        // Banner
-        Image banner = this.applicationContext.getBean(Image.class);
-        banner.setUrl(url);
-
-        return banner;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public List<Task> getTasks(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());

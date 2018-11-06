@@ -47,6 +47,26 @@
                     </div>
                 </spring:bind>
                 
+                <!-- Welcome title -->
+                <c:if test="${editionForm.root}">
+                    <c:set var="placeholder"><op:translate key="WORKSPACE_WELCOME_TITLE_DEFAULT" /></c:set>
+                    <spring:bind path="welcomeTitle">
+                        <div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
+                            <form:label path="welcomeTitle" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_WELCOME_TITLE" /></form:label>
+                            <div class="col-sm-9">
+                                <form:input path="welcomeTitle" cssClass="form-control" placeholder="${placeholder}" />
+                                <c:if test="${status.error}">
+                                    <span class="form-control-feedback">
+                                        <i class="glyphicons glyphicons-remove"></i>
+                                    </span>
+                                </c:if>
+                                <p class="help-block"><op:translate key="WORKSPACE_WELCOME_TITLE_HELP" /></p>
+                                <form:errors path="welcomeTitle" cssClass="help-block" />
+                            </div>
+                        </div>
+                    </spring:bind>
+                </c:if>
+                
                 <!-- Description -->
                 <c:set var="placeholder"><op:translate key="WORKSPACE_DESCRIPTION_PLACEHOLDER" args="${fragment}" /></c:set>
                 <spring:bind path="description">
@@ -172,63 +192,7 @@
                             </button>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Banner -->
-                <div class="form-group">
-                    <form:label path="banner.upload" cssClass="col-sm-3 col-lg-6 control-label"><op:translate key="WORKSPACE_BANNER" /></form:label>
-                    <div class="col-sm-9 col-lg-6">
-                        <!-- Preview -->
-                        <c:choose>
-                            <c:when test="${editionForm.banner.updated}">
-                                <!-- Preview -->
-                                <portlet:resourceURL id="bannerPreview" var="previewUrl">
-                                    <portlet:param name="ts" value="${currentDate.time}" />
-                                </portlet:resourceURL>
-                                <p class="form-control-static">
-                                    <img src="${previewUrl}" alt="" class="img-responsive">
-                                </p>
-                            </c:when>
-                            
-                            <c:when test="${editionForm.banner.deleted}">
-                                <!-- Deleted banner -->
-                                <p class="form-control-static text-muted">
-                                    <span><op:translate key="WORKSPACE_DELETED_BANNER" /></span>
-                                </p>
-                            </c:when>
-                        
-                            <c:when test="${empty editionForm.banner.url}">
-                                <!-- No banner -->
-                                <p class="form-control-static text-muted">
-                                    <span><op:translate key="WORKSPACE_NO_BANNER" /></span>
-                                </p>
-                            </c:when>
-                            
-                            <c:otherwise>
-                                <!-- Banner -->
-                                <p class="form-control-static">
-                                    <img src="${editionForm.banner.url}" alt="" class="img-responsive">
-                                </p>
-                            </c:otherwise>
-                        </c:choose>
-                    
-                        <div>
-                            <!-- Upload -->
-                            <label class="btn btn-sm btn-default btn-file">
-                                <i class="halflings halflings-folder-open"></i>
-                                <span><op:translate key="WORKSPACE_IMAGE_UPLOAD" /></span>
-                                <form:input type="file" path="banner.upload" />
-                            </label>
-                            <input type="submit" name="upload-banner" class="hidden">
-                            
-                            <!-- Delete -->
-                            <button type="submit" name="delete-banner" class="btn btn-sm btn-default">
-                                <i class="halflings halflings-trash"></i>
-                                <span class="sr-only"><op:translate key="WORKSPACE_IMAGE_DELETE" /></span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                </div>                
             </div>
         </div>
             

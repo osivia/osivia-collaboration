@@ -58,6 +58,7 @@ public class UpdatePropertiesCommand implements INuxeoCommand {
         properties.set("dc:title", this.form.getTitle());
         properties.set("dc:description", this.form.getDescription());
         if (this.form.isRoot()) {
+            properties.set("ttcs:welcomeTitle", this.form.getWelcomeTitle());
             properties.set("ttc:pageTemplate", StringUtils.trimToNull(this.form.getTemplate()));
         }
         documentService.update(workspace, properties, this.form.isRoot());
@@ -76,22 +77,6 @@ public class UpdatePropertiesCommand implements INuxeoCommand {
             temporaryFile.delete();
         } else if (vignette.isDeleted()) {
             documentService.removeBlob(workspace, "ttc:vignette");
-        }
-
-        // Banner
-        Image banner = this.form.getBanner();
-        if (banner.isUpdated()) {
-            // Temporary file
-            File temporaryFile = banner.getTemporaryFile();
-            // File blob
-            Blob blob = new FileBlob(temporaryFile);
-
-            documentService.setBlob(workspace, blob, "ttcs:headImage");
-
-            // Delete temporary file
-            temporaryFile.delete();
-        } else if (banner.isDeleted()) {
-            documentService.removeBlob(workspace, "ttcs:headImage");
         }
 
         return null;

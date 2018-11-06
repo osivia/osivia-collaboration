@@ -23,6 +23,8 @@ public class WorkspaceEditionForm {
 
     /** Workspace title. */
     private String title;
+    /** Workspace welcome title (only for root). */
+    private String welcomeTitle;
     /** Workspace description. */
     private String description;
     /** Workspace template (only for root). */
@@ -35,8 +37,6 @@ public class WorkspaceEditionForm {
     private boolean allowedInvitationRequests;
     /** Workspace vignette. */
     private Image vignette;
-    /** Workspace banner (only for root). */
-    private Image banner;
     /** Workspace tasks. */
     private List<Task> tasks;
     /** Workspace editorial. */
@@ -83,6 +83,24 @@ public class WorkspaceEditionForm {
      */
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    /**
+     * Getter for welcomeTitle.
+     * 
+     * @return the welcomeTitle
+     */
+    public String getWelcomeTitle() {
+        return welcomeTitle;
+    }
+
+    /**
+     * Setter for welcomeTitle.
+     * 
+     * @param welcomeTitle the welcomeTitle to set
+     */
+    public void setWelcomeTitle(String welcomeTitle) {
+        this.welcomeTitle = welcomeTitle;
     }
 
     /**
@@ -191,24 +209,6 @@ public class WorkspaceEditionForm {
      */
     public void setVignette(Image vignette) {
         this.vignette = vignette;
-    }
-
-    /**
-     * Getter for banner.
-     * 
-     * @return the banner
-     */
-    public Image getBanner() {
-        return banner;
-    }
-
-    /**
-     * Setter for banner.
-     * 
-     * @param banner the banner to set
-     */
-    public void setBanner(Image banner) {
-        this.banner = banner;
     }
 
     /**
