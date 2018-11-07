@@ -142,6 +142,10 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         Editorial editorial = this.repository.getEditorial(portalControllerContext, workspace);
         form.setEditorial(editorial);
 
+        // Other hidden tasks
+        List<Task> otherTasks = this.repository.getOtherTasks(portalControllerContext, workspace);
+        form.setOtherTasks(otherTasks);
+
         return form;
     }
 
@@ -276,6 +280,9 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
             // Update editorial
             this.repository.updateEditorial(portalControllerContext, form);
             
+            // Update other tasks
+            this.repository.updateOtherTasks(portalControllerContext, form);
+
 
             // Notification
             String message = bundle.getString("MESSAGE_WORKSPACE_EDITION_SUCCESS", fragment);

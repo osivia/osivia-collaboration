@@ -341,6 +341,23 @@
                 </div>
             </div>
         </spring:bind>
+        
+        <!-- Other tasks -->
+        <c:if test="${not empty editionForm.otherTasks}">
+            <div class="form-group">
+                <form:label path="otherTasks" cssClass="col-sm-3 col-lg-2 control-label"><op:translate key="WORKSPACE_OTHER_TASKS" /></form:label>
+                <div class="col-sm-9 col-lg-10">
+                    <c:forEach var="otherTask" items="${editionForm.otherTasks}" varStatus="status">
+                        <div class="checkbox">
+                            <label>
+                                <form:checkbox path="otherTasks[${status.index}].active" />
+                                <span>${otherTask.displayName}</span>
+                            </label>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
+        </c:if>
 
         <!-- Buttons -->
         <div>

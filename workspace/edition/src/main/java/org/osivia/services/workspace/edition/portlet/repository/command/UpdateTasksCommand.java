@@ -99,7 +99,7 @@ public class UpdateTasksCommand implements INuxeoCommand {
                 // Type
                 String type;
                 if (TaskbarItemType.CMS.equals(task.getType())) {
-                    type = task.getDocumentType();
+                    type = StringUtils.defaultIfEmpty(task.getDocumentType(), "Staple");
                 } else {
                     type = "Staple";
                 }
