@@ -168,7 +168,7 @@ public class TaskbarRepositoryImpl implements ITaskbarRepository {
         // Factory
         TaskbarFactory factory = this.taskbarService.getFactory();
 
-        return factory.createTaskbarTask(item, null, false);
+        return factory.createTaskbarTask(item, null, null, false);
     }
 
 
