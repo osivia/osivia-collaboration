@@ -322,7 +322,7 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
      * {@inheritDoc}
      */
     @Override
-    public void save(PortalControllerContext portalControllerContext, CalendarViewForm form, java.util.TimeZone timezone) throws PortletException {
+    public void save(PortalControllerContext portalControllerContext, CalendarViewForm form) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
         try {
@@ -335,7 +335,7 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
                 this.notificationsService.addSimpleNotification(portalControllerContext, bundle.getString("MESSAGE_NO_RIGHT_SYNCHRO"),
                         NotificationsType.WARNING);
             } else {
-                this.repository.save(portalControllerContext, form, timezone);
+                this.repository.save(portalControllerContext, form);
 
                 this.notificationsService.addSimpleNotification(portalControllerContext, bundle.getString("MESSAGE_EVENT_SAVE"), NotificationsType.SUCCESS);
             }

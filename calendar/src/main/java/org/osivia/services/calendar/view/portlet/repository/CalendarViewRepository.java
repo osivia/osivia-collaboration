@@ -123,10 +123,9 @@ public interface CalendarViewRepository extends CalendarRepository {
      *
      * @param portalControllerContext portal controller context
      * @param form form
-     * @param timezone client timeZone
      * @throws PortletException
      */
-    void save(PortalControllerContext portalControllerContext, CalendarViewForm form, TimeZone timezone) throws PortletException;
+    void save(PortalControllerContext portalControllerContext, CalendarViewForm form) throws PortletException;
 
     /**
      * Remove document using document_id

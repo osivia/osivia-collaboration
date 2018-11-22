@@ -340,7 +340,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
      * {@inheritDoc}
      */
 	@Override
-	public void save(PortalControllerContext portalControllerContext, CalendarViewForm form, TimeZone clientTimezone) throws PortletException {
+	public void save(PortalControllerContext portalControllerContext, CalendarViewForm form) throws PortletException {
 		// Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -349,7 +349,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         form.setParentPath(cmsPath);
 
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(EventEditionCommand.class, form, clientTimezone);
+        INuxeoCommand command = this.applicationContext.getBean(EventEditionCommand.class, form);
         Document document = (Document) nuxeoController.executeNuxeoCommand(command);
         
         if (CalendarEditionMode.EDITION.equals(form.getMode())) {

@@ -385,16 +385,7 @@ public class ViewCalendarController {
                 form.setMode(CalendarEditionMode.EDITION);
             }
 
-            // Récupérer l'évènement concerné et modifier sa date de début et de fin
-            TimeZone timezone = null;
-            if (timezoneName.isEmpty()) 
-            {
-            	timezone = TimeZone.getDefault();
-            } else
-            {
-            	timezone = TimeZone.getTimeZone(timezoneName);
-            }
-            this.calendarService.save(portalControllerContext, form, timezone);
+            this.calendarService.save(portalControllerContext, form);
         } catch (ParseException e) {
             // Bundle
             Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
