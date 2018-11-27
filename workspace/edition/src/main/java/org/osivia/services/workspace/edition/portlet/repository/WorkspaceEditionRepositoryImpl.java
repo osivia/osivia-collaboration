@@ -329,9 +329,9 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
 
         // Other taskbar items
         List<TaskbarItem> otherItems = new ArrayList<>();
+        List<String> ignored = Arrays.asList(ITaskbarService.SEARCH_TASK_ID, WorkspaceEditionService.WORKSPACE_EDITORIAL_TASK_ID);
         for (TaskbarItem item : taskbarItems.getAll()) {
-            if (!TaskbarItemType.TRANSVERSAL.equals(item.getType()) && item.isHidden()
-                    && !WorkspaceEditionService.WORKSPACE_EDITORIAL_TASK_ID.equals(item.getId())) {
+            if (!TaskbarItemType.TRANSVERSAL.equals(item.getType()) && item.isHidden() && !ignored.contains(item.getId())) {
                 otherItems.add(item);
             }
         }
