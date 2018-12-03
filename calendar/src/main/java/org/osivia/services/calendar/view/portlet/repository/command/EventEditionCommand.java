@@ -33,18 +33,16 @@ public class EventEditionCommand implements INuxeoCommand {
     /** Calendar edition form. */
     private final CalendarViewForm form;
 
-    /** Client timezone */
-    private final TimeZone clientTimezone;
+
 
     /**
      * Constructor.
      *
      * @param form calendar edition form
      */
-    public EventEditionCommand(CalendarViewForm form, TimeZone clientTimezone) {
+    public EventEditionCommand(CalendarViewForm form) {
         super();
         this.form = form;
-        this.clientTimezone = clientTimezone;
     }
 
 
@@ -91,8 +89,8 @@ public class EventEditionCommand implements INuxeoCommand {
         PropertyMap properties = new PropertyMap();
         //Les dates sont déjà au format UTC, donc on passe par DateFormatUtils.format sinon Nuxeo enlève 1 ou 2 heures en pensant qu'on lui passe des dates en GMT+1
         
-        properties.set(CalendarViewRepository.END_DATE_PROPERTY, convertWithTimezone(this.form.getEndDate()));
-        properties.set(CalendarViewRepository.START_DATE_PROPERTY, convertWithTimezone(this.form.getStartDate()));
+        properties.set(CalendarViewRepository.END_DATE_PROPERTY, this.form.getEndDate());
+        properties.set(CalendarViewRepository.START_DATE_PROPERTY, this.form.getStartDate());
         properties.set(CalendarViewRepository.TITLE_PROPERTY, this.form.getTitle());
 
         // Creation
@@ -100,24 +98,6 @@ public class EventEditionCommand implements INuxeoCommand {
 
 
         return document;
-    }
-
-    /**
-     * Convert date from client timezone date to server timezone
-     * @param date
-     * @return
-     */
-    private Date convertWithTimezone(Date date)
-    {
-    	if (date != null)
-    	{
-    		long gmtTime = date.getTime();
-    		long timezoneAlteredTime = gmtTime + clientTimezone.getRawOffset()+clientTimezone.getDSTSavings();
-    		Calendar calDate = Calendar.getInstance(clientTimezone);
-    		calDate.setTimeInMillis(timezoneAlteredTime);
-	    	date = calDate.getTime();
-	    }
-    	return date;
     }
 
     /**
@@ -137,8 +117,8 @@ public class EventEditionCommand implements INuxeoCommand {
         
         // Update document properties
         PropertyMap map = new PropertyMap();
-        map.set(CalendarViewRepository.END_DATE_PROPERTY, convertWithTimezone(this.form.getEndDate()));
-        map.set(CalendarViewRepository.START_DATE_PROPERTY, convertWithTimezone(this.form.getStartDate()));
+        map.set(CalendarViewRepository.END_DATE_PROPERTY, this.form.getEndDate());
+        map.set(CalendarViewRepository.START_DATE_PROPERTY, this.form.getStartDate());
         map.set(CalendarViewRepository.TITLE_PROPERTY, this.form.getTitle());
         Document document = documentService.update(docRef, map, true);
 

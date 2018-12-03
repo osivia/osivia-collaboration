@@ -138,10 +138,9 @@ public interface CalendarViewService extends CalendarService {
      *
      * @param portalControllerContext
      * @param form
-     * @param timezone client timezone
      * @throws PortletException
      */
-    void save(PortalControllerContext portalControllerContext, CalendarViewForm form, TimeZone timezone) throws PortletException;
+    void save(PortalControllerContext portalControllerContext, CalendarViewForm form) throws PortletException;
 
     /**
      * Remove event
