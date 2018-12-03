@@ -376,11 +376,10 @@ public class ViewCalendarController {
      * @throws PortletException
      * @throws IOException
      */
-    @ActionMapping(value = "dragndrop")
+    @ActionMapping("dragndrop")
     public void dragndrop(ActionRequest request, ActionResponse response, PortletSession session, @RequestParam("start") String startDate,
             @RequestParam("end") String endDate, @RequestParam("doc_id") String docid, 
             @RequestParam("title") String title,
-            @RequestParam("timezone") String timezoneName,
             @RequestParam(value = SCROLL_DAY_WEEK_PARAMETER, required = false) String scrollViewDayWeek,
             @RequestParam(value = SCROLL_MONTH_PARAMETER, required = false) String scrollViewMonth, @RequestParam(value = PERIOD_TYPE_PARAMETER) String period,
             @RequestParam(value = DATE_PARAMETER) String date) throws PortletException, IOException {
