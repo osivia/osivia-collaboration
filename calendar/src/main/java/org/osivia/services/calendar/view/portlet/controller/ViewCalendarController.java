@@ -278,18 +278,36 @@ public class ViewCalendarController {
      *
      * @param request resource request
      * @param response resource response
-     * @param path parent path, may be null for root node
+     * @param start start date request parameter
+     * @param end end date request parameter
+     * @param calendarData calendar data model attribute
      * @throws PortletException
      * @throws IOException
      */
     @ResourceMapping(value = "loadData")
-    public void loadData(ResourceRequest request, ResourceResponse response, @ModelAttribute(value = CALENDAR_DATA_ATTRIBUTE) CalendarData calendarData,
-            @RequestParam("start") Date startDate, @RequestParam("end") Date endDate) throws PortletException, IOException {
+    public void loadData(ResourceRequest request, ResourceResponse response, @RequestParam(name = "start", required = false) String start,
+            @RequestParam(name = "end", required = false) String end, @ModelAttribute(CALENDAR_DATA_ATTRIBUTE) CalendarData calendarData)
+            throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        // Start date
+        Date startDate;
+        if (StringUtils.isEmpty(start)) {
+            startDate = new Date();
+        } else {
+            startDate = new Date(Long.valueOf(start));
+        }
         calendarData.setStartDate(startDate);
-        if (endDate != null)
-            calendarData.setEndDate(endDate);
+
+        // End date
+        Date endDate;
+        if (StringUtils.isEmpty(end)) {
+            endDate = null;
+        } else {
+            endDate = new Date(Long.valueOf(Long.valueOf(end)));
+        }
+        calendarData.setEndDate(endDate);
 
         dataLoading(response, portalControllerContext, calendarData);
     }
@@ -385,16 +403,7 @@ public class ViewCalendarController {
                 form.setMode(CalendarEditionMode.EDITION);
             }
 
-            // Récupérer l'évènement concerné et modifier sa date de début et de fin
-            TimeZone timezone = null;
-            if (timezoneName.isEmpty()) 
-            {
-            	timezone = TimeZone.getDefault();
-            } else
-            {
-            	timezone = TimeZone.getTimeZone(timezoneName);
-            }
-            this.calendarService.save(portalControllerContext, form, timezone);
+            this.calendarService.save(portalControllerContext, form);
         } catch (ParseException e) {
             // Bundle
             Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());

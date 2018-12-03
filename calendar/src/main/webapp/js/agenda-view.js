@@ -32,8 +32,8 @@ function dataLoading()
 	jQuery.ajax({
 		url: urLoad,
 		data: {
-			start: scheduler.getState().min_date,
-			end: scheduler.getState().max_date
+			start: scheduler.getState().min_date.getTime(),
+			end: scheduler.getState().max_date.getTime()
 		},
 		cache: false,
 		dataType: "json",
@@ -142,6 +142,7 @@ function initScheduler(backFromPlanning)
 		scheduler.config.last_hour = lastHour;
 	}
 	
+	onSchedulerResize(true);
 	
 	scheduler.init('scheduler_here',new Date(divScheduler.data("startdate")),divScheduler.data("period"));
 	//Chargement des données
@@ -269,6 +270,13 @@ $JQry(window).load(function() {
 			return true;
 		});
 		
+		scheduler.attachEvent("onSchedulerResize", onSchedulerResize);
+		
+		
+		scheduler.ignore_week = isIgnoredDate;
+		scheduler.ignore_month = isIgnoredDate;
+		
+		
 		/*scheduler.renderEvent = function(container, ev) {
 			var containerWidth = container.style.width;
 			var containerHeight = container.style.height;
@@ -337,3 +345,37 @@ $JQry(function() {
 		}
 	}
 });
+
+
+function onSchedulerResize(init) {
+	// Scale width
+	var scaleWidth;
+	if (window.innerWidth < 768) {
+		scaleWidth = 35;
+	} else {
+		scaleWidth = 50;
+	}
+	scheduler.xy.scale_width = scaleWidth;
+	
+	// Scroll width
+	var scrollWidth;
+	if (window.innerWidth < 768) {
+		scrollWidth = 1;
+	} else {
+		scrollWidth = 18;
+	}
+	scheduler.xy.scroll_width = scrollWidth;
+	
+	if (!init) {
+		// Redraw
+		scheduler.setCurrentView();
+	}
+	
+	return true;
+};
+
+
+function isIgnoredDate(date) {
+	return (window.innerWidth < 768) && ((date.getDay() == 6) || (date.getDay() == 0));
+};
+

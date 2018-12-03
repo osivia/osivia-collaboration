@@ -90,7 +90,7 @@
 <!-- Vue semaine -->
 <div id="scheduler_here" class="dhx_cal_container"
 	data-period="${calendarData.periodType.name}" 
-    data-startdate="<%=formater.format(calendarData.getStartDate())%>"
+    data-startdate="${calendarData.startDate.time}"
     data-url="${loadData}"
     data-url-dragndrop="${dragndrop}"
     data-url-remove="${remove}"
