@@ -10,17 +10,18 @@
             <trans-attribute>Required</trans-attribute>
         </transaction>
 
+       
         <header-content>
             <link rel="stylesheet" type="text/css" href="/css/calendar.min.css" />
             <link rel="stylesheet" type="text/css" href="/css/calendar-color.min.css" />
-            <script type="text/javascript" src="/js/scheduler/sources/dhtmlxscheduler.js" />
+            <script type="text/javascript" src="/js/scheduler/dhtmlxscheduler.js" />
             <script type="text/javascript" src="/js/scheduler/ext/dhtmlxscheduler_limit.js" />
-            <!-- <script type="text/javascript" src="/js/scheduler/ext/dhtmlxscheduler_key_nav.js" /> -->
+            <script type="text/javascript" src="/js/scheduler/ext/dhtmlxscheduler_readonly.js" />
             <link rel="stylesheet" type="text/css" href="/js/scheduler/dhtmlxscheduler.css" />
             <script type="text/javascript" src="/js/scheduler/locale/locale_fr.js"/>
             <script type="text/javascript" src="/js/agenda-view.js" />
             <script type="text/javascript" src="/js/agenda-view-cell.js" />
-        </header-content>
+        </header-content>  
 
         <portlet-info>
             <icon>
