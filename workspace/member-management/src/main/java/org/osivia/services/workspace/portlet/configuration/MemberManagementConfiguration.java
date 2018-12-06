@@ -12,6 +12,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -35,7 +36,7 @@ import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoServiceFactory;
  */
 @Configuration
 @ComponentScan(basePackages = "org.osivia.services.workspace.portlet")
-public class MemberManagementConfiguration extends CMSPortlet implements PortletContextAware {
+public class MemberManagementConfiguration extends CMSPortlet {
 
     /** Application context. */
     @Autowired
@@ -62,15 +63,8 @@ public class MemberManagementConfiguration extends CMSPortlet implements Portlet
     @PostConstruct
     public void postConstruct() throws PortletException {
         super.init(this.portletConfig);
-    }
+        PortletAppUtils.registerApplication(portletConfig, applicationContext);
 
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletContext(PortletContext portletContext) {
-        portletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
     }
 
 
@@ -158,5 +152,6 @@ public class MemberManagementConfiguration extends CMSPortlet implements Portlet
     public INotificationsService getNotificationService() {
         return Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
     }
+
 
 }
