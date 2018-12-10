@@ -151,6 +151,16 @@ function initScheduler(backFromPlanning)
 	
 }
 
+function isDraggingEnded( last_attached_event, last_dragging_date)	{
+	if(last_attached_event != "onDragEnd")
+		return true;
+	var currentDate = new Date();
+	if( currentDate.getTime() - last_dragging_date.getTime() > 1000)
+		return true;
+	else 
+		return false;
+}
+
 /**
  * Chargement du calendrier au chargement de la portlet
  */
@@ -162,6 +172,7 @@ $JQry(window).load(function() {
 	// En cliquant rapidement (moins de 500ms entre chaque clic) pour créer plusieurs événements, ceux-ci étaient créées mais non enregistrés en base
 	// L'objectif est de ne plus les créer, en les filtrant lors de l'appel à l'écouter onBeforeEventCreated
 	var last_attached_event;
+	var last_dragging_date;
 	
 	if (divScheduler!= null && null != divScheduler.data("period"))
 	{
@@ -228,6 +239,7 @@ $JQry(window).load(function() {
 		
 		scheduler.attachEvent("onDragEnd", function(){
 			last_attached_event = "onDragEnd";
+			last_dragging_date = new Date();
 		});
 
 		scheduler.attachEvent("onEventDeleted", function (id) {
@@ -235,7 +247,8 @@ $JQry(window).load(function() {
 		});
 
 		scheduler.attachEvent("onBeforeEventCreated", function (e){
-			return !(last_attached_event == "onDragEnd");
+			//return !(last_attached_event == "onDragEnd");
+			return isDraggingEnded(last_attached_event, last_dragging_date);
 		});
 		
 		scheduler.attachEvent("onEventAdded", function (id, ev) {
@@ -319,7 +332,7 @@ $JQry(window).load(function() {
 		scheduler.attachEvent("onEmptyClick", function(date, native_event){
 			if (scheduler.config.readonly) {
 				return false;
-			} else if (last_attached_event != "onDragEnd") {
+			} else if (isDraggingEnded(last_attached_event, last_dragging_date)) {
 				var fixed_date = fix_date(date);
 				scheduler.addEventNow(fixed_date, scheduler.date.add(fixed_date, event_step, "minute"));
 			}
