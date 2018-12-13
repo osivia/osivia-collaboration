@@ -169,8 +169,6 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         DocumentType picturebook = new DocumentType("PictureBook", true, true, true, true, false, true, Arrays.asList(picture.getName(), "PictureBook"), null,
                 "glyphicons glyphicons-pictures");
         types.put(picturebook.getName(), picturebook);
-        this.addSubType(context, "Workspace", picturebook.getName());
-        this.addSubType(context, "Room", picturebook.getName());
 
         // Audio
         DocumentType audio = new DocumentType("Audio", false, false, false, false, false, true, new ArrayList<String>(0), null, "glyphicons glyphicons-music",
