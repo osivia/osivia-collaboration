@@ -2,7 +2,6 @@ package org.osivia.services.workspace.portlet.configuration;
 
 import javax.annotation.PostConstruct;
 import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 
 import org.osivia.directory.v2.service.WorkspaceService;
@@ -12,14 +11,13 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.portlet.context.PortletContextAware;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
@@ -32,7 +30,7 @@ import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
  */
 @Configuration
 @ComponentScan(basePackages = "org.osivia.services.workspace.portlet")
-public class LocalGroupManagementConfiguration extends CMSPortlet implements PortletContextAware {
+public class LocalGroupManagementConfiguration extends CMSPortlet{
 
     /** Application context. */
     @Autowired
@@ -59,16 +57,17 @@ public class LocalGroupManagementConfiguration extends CMSPortlet implements Por
     @PostConstruct
     public void postConstruct() throws PortletException {
         super.init(this.portletConfig);
+        PortletAppUtils.registerApplication(portletConfig, applicationContext);
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletContext(PortletContext portletContext) {
-        portletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
-    }
+//    /**
+//     * {@inheritDoc}
+//     */
+//    @Override
+//    public void setPortletContext(PortletContext portletContext) {
+//        portletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
+//    }
 
 
     /**
