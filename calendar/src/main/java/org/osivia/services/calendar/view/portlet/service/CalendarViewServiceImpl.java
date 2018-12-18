@@ -25,13 +25,16 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
-import org.osivia.portal.api.internationalization.IInternationalizationService;
-import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.menubar.MenubarGroup;
+import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.service.CalendarServiceImpl;
 import org.osivia.services.calendar.edition.portlet.model.CalendarSynchronizationSource;
@@ -86,13 +89,18 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
     @Autowired
     protected CalendarViewRepository repository;
 
+    /** Portal URL factory. */
+    @Autowired
+    private IPortalUrlFactory portalUrlFactory;
+
     /** Notifications service. */
     @Autowired
     private INotificationsService notificationsService;
 
+    /** Internationalization bundle factory. */
+    @Autowired
+    private IBundleFactory bundleFactory;
 
-    /** Bundle factory. */
-    private final IBundleFactory bundleFactory;
 
     /** logger */
     protected static final Log logger = LogFactory.getLog(CalendarViewServiceImpl.class);
@@ -102,11 +110,6 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
      */
     public CalendarViewServiceImpl() {
         super();
-
-        // Bundle factory
-        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
-                IInternationalizationService.MBEAN_NAME);
-        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
 
@@ -234,6 +237,8 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
         // Period type
         PeriodTypes periodType = calendarData.getPeriodType();
 
+        // Integration
+        this.addIntegrationMenubarItem(portalControllerContext);
         // Insert content menubar items
         this.repository.insertContentMenubarItems(portalControllerContext);
 
@@ -244,6 +249,48 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
         }
 
         return viewPath;
+    }
+
+
+    /**
+     * Add integration menubar item.
+     * 
+     * @param portalControllerContext portal controller context
+     * @throws PortletException
+     */
+    @SuppressWarnings("unchecked")
+    private void addIntegrationMenubarItem(PortalControllerContext portalControllerContext) throws PortletException {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
+        // Menubar
+        List<MenubarItem> menubar = (List<MenubarItem>) request.getAttribute(Constants.PORTLET_ATTR_MENU_BAR);
+
+        // Calendar path
+        String path = this.repository.getCalendarPath(portalControllerContext);
+
+        // URL
+        String url;
+        if (StringUtils.isEmpty(path)) {
+            url = null;
+        } else {
+            Map<String, String> parameters = new HashMap<>();
+            parameters.put("format", "ics");
+
+            try {
+                url = this.portalUrlFactory.getPermaLink(portalControllerContext, "integration", parameters, path,
+                        IPortalUrlFactory.PERM_LINK_TYPE_PORTLET_RESOURCE);
+            } catch (PortalException e) {
+                throw new PortletException(e);
+            }
+        }
+
+        if (StringUtils.isNotEmpty(url)) {
+            MenubarItem item = new MenubarItem("CALENDAR_INTEGRATION_ICS", bundle.getString("CALENDAR_INTEGRATION_ICS_MENUBAR_ITEM"), null,
+                    MenubarGroup.SPECIFIC, 0, url, null, null, null);
+            menubar.add(item);
+        }
     }
 
 

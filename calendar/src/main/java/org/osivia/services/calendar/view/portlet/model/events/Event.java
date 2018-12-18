@@ -2,16 +2,32 @@ package org.osivia.services.calendar.view.portlet.model.events;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  * Event.
  *
  * @author Cédric Krommenhoek
  * @author Julien Barberet
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Event {
 
     /** Event time. */
     private String time;
+
+    /** Event last modified date. */
+    private Date lastModified;
+    /** Event location. */
+    private String location;
+    /** Event description. */
+    private String description;
+    /** Background color */
+    private String bckgColor;
+
 
     /** Event identifier. */
     private final String id;
@@ -25,14 +41,13 @@ public class Event {
     private final boolean allDay;
     /** Event view document URL. */
     private final String viewURL;
-    /** Background color */
-    private final String bckgcolor;
     /** Summary */
     private final String summary;
     /** Id event source */
     private final String idEventSource;
     /** Id parent source */
     private final String idParentSource;
+
 
     /**
      * Constructor.
@@ -43,14 +58,14 @@ public class Event {
      * @param endDate event end date
      * @param viewURL event view document URL
      */
-    public Event(String id, String title, Date startDate, Date endDate, boolean allDay, String bckgcolor, String viewURL, String idEventSrc, String idParentSrc) {
+    public Event(String id, String title, Date startDate, Date endDate, boolean allDay, String bckgColor, String viewURL, String idEventSrc, String idParentSrc) {
         super();
         this.id = id;
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
         this.allDay = allDay;
-        this.bckgcolor = bckgcolor;
+        this.bckgColor = bckgColor;
         this.summary = null;
         this.viewURL = viewURL;
         this.idEventSource = idEventSrc;
@@ -63,7 +78,7 @@ public class Event {
      * @param event event
      */
     public Event(Event event) {
-        this(event.id, event.title, event.startDate, event.endDate, event.allDay, event.bckgcolor, event.viewURL, event.idEventSource, event.idParentSource);
+        this(event.id, event.title, event.startDate, event.endDate, event.allDay, event.bckgColor, event.viewURL, event.idEventSource, event.idParentSource);
     }
 
 
@@ -133,6 +148,78 @@ public class Event {
     }
 
     /**
+     * Getter for lastModified.
+     * 
+     * @return the lastModified
+     */
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    /**
+     * Setter for lastModified.
+     * 
+     * @param lastModified the lastModified to set
+     */
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    /**
+     * Getter for location.
+     * 
+     * @return the location
+     */
+    public String getLocation() {
+        return location;
+    }
+
+    /**
+     * Setter for location.
+     * 
+     * @param location the location to set
+     */
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    /**
+     * Getter for description.
+     * 
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Setter for description.
+     * 
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * Getter for bckgColor.
+     * 
+     * @return the bckgColor
+     */
+    public String getBckgColor() {
+        return bckgColor;
+    }
+
+    /**
+     * Setter for bckgColor.
+     * 
+     * @param bckgColor the bckgColor to set
+     */
+    public void setBckgColor(String bckgColor) {
+        this.bckgColor = bckgColor;
+    }
+
+    /**
      * Getter for id.
      *
      * @return the id
@@ -167,14 +254,6 @@ public class Event {
     public Date getEndDate() {
         return this.endDate;
     }
-
-    
-    /**
-     * Getter for background Color
-     */
-    public String getBckgColor() {
-		return bckgcolor;
-	}
 
 
 	public String getSummary() {
