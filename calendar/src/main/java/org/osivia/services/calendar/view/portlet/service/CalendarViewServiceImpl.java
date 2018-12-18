@@ -260,36 +260,41 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
      */
     @SuppressWarnings("unchecked")
     private void addIntegrationMenubarItem(PortalControllerContext portalControllerContext) throws PortletException {
-        // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();
-        // Internationalization bundle
-        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
-        // Menubar
-        List<MenubarItem> menubar = (List<MenubarItem>) request.getAttribute(Constants.PORTLET_ATTR_MENU_BAR);
+        // Calendar options
+        CalendarOptions options = this.repository.getConfiguration(portalControllerContext);
 
-        // Calendar path
-        String path = this.repository.getCalendarPath(portalControllerContext);
+        if (options.isIntegration()) {
+            // Portlet request
+            PortletRequest request = portalControllerContext.getRequest();
+            // Internationalization bundle
+            Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
+            // Menubar
+            List<MenubarItem> menubar = (List<MenubarItem>) request.getAttribute(Constants.PORTLET_ATTR_MENU_BAR);
 
-        // URL
-        String url;
-        if (StringUtils.isEmpty(path)) {
-            url = null;
-        } else {
-            Map<String, String> parameters = new HashMap<>();
-            parameters.put("format", "ics");
+            // Calendar path
+            String path = this.repository.getCalendarPath(portalControllerContext);
 
-            try {
-                url = this.portalUrlFactory.getPermaLink(portalControllerContext, "integration", parameters, path,
-                        IPortalUrlFactory.PERM_LINK_TYPE_PORTLET_RESOURCE);
-            } catch (PortalException e) {
-                throw new PortletException(e);
+            // URL
+            String url;
+            if (StringUtils.isEmpty(path)) {
+                url = null;
+            } else {
+                Map<String, String> parameters = new HashMap<>();
+                parameters.put("format", "ics");
+
+                try {
+                    url = this.portalUrlFactory.getPermaLink(portalControllerContext, "integration", parameters, path,
+                            IPortalUrlFactory.PERM_LINK_TYPE_PORTLET_RESOURCE);
+                } catch (PortalException e) {
+                    throw new PortletException(e);
+                }
             }
-        }
 
-        if (StringUtils.isNotEmpty(url)) {
-            MenubarItem item = new MenubarItem("CALENDAR_INTEGRATION_ICS", bundle.getString("CALENDAR_INTEGRATION_ICS_MENUBAR_ITEM"), null,
-                    MenubarGroup.SPECIFIC, 0, url, null, null, null);
-            menubar.add(item);
+            if (StringUtils.isNotEmpty(url)) {
+                MenubarItem item = new MenubarItem("CALENDAR_INTEGRATION_ICS", bundle.getString("CALENDAR_INTEGRATION_ICS_MENUBAR_ITEM"), null,
+                        MenubarGroup.SPECIFIC, 0, url, null, null, null);
+                menubar.add(item);
+            }
         }
     }
 

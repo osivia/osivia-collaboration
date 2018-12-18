@@ -493,15 +493,10 @@ public class ViewCalendarController {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        String integration = this.calendarIntegrationService.getIntegration(portalControllerContext, format);
-
         // Content type
         response.setContentType("text/calendar");
-
-        // Content
-        PrintWriter printWriter = new PrintWriter(response.getPortletOutputStream());
-        printWriter.write(integration);
-        printWriter.close();
+        
+        this.calendarIntegrationService.integrate(portalControllerContext, response.getPortletOutputStream(), format);
     }
 
 

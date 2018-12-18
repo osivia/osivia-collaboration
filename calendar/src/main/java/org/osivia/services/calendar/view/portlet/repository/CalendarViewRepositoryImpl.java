@@ -61,6 +61,8 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
     private static final String COMPACT_VIEW_WINDOW_PROPERTY = "osivia.calendar.compactView";
     /** Read only indicator window property name. */
     private static final String READ_ONLY_WINDOW_PROPERTY = "osivia.calendar.readOnly";
+    /** Integration indicator window property name. */
+    private static final String INTEGRATION_WINDOW_PROPERTY = "osivia.calendar.integration";
 
     /** Nuxeo document request attribute name. */
     private static final String DOCUMENT_REQUEST_ATTRIBUTE = "osivia.calendar.document";
@@ -94,6 +96,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         configuration.setPeriodTypeName(window.getProperty(DEFAULT_VIEW_WINDOW_PROPERTY));
         configuration.setCompactView(BooleanUtils.toBoolean(window.getProperty(COMPACT_VIEW_WINDOW_PROPERTY)));
         configuration.setReadOnly(BooleanUtils.toBoolean(window.getProperty(READ_ONLY_WINDOW_PROPERTY)));
+        configuration.setIntegration(BooleanUtils.toBoolean(window.getProperty(INTEGRATION_WINDOW_PROPERTY)));
 
         return configuration;
     }
@@ -194,6 +197,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         window.setProperty(DEFAULT_VIEW_WINDOW_PROPERTY, configuration.getPeriodTypeName());
         window.setProperty(COMPACT_VIEW_WINDOW_PROPERTY, BooleanUtils.toStringTrueFalse(configuration.isCompactView()));
         window.setProperty(READ_ONLY_WINDOW_PROPERTY, BooleanUtils.toStringTrueFalse(configuration.isReadOnly()));
+        window.setProperty(INTEGRATION_WINDOW_PROPERTY, BooleanUtils.toStringTrueFalse(configuration.isIntegration()));
     }
 
 

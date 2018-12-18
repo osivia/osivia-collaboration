@@ -1,6 +1,7 @@
 package org.osivia.services.calendar.view.portlet.service;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.portlet.PortletException;
 
@@ -14,14 +15,14 @@ import org.osivia.portal.api.context.PortalControllerContext;
 public interface CalendarIntegrationService {
 
     /**
-     * Get calendar integration.
+     * Integrate calendar.
      * 
      * @param portalControllerContext portal controller context
+     * @param outputStream output steam
      * @param format calendar integration format
-     * @return integration
      * @throws PortletException
      * @throws IOException
      */
-    String getIntegration(PortalControllerContext portalControllerContext, String format) throws PortletException, IOException;
+    void integrate(PortalControllerContext portalControllerContext, OutputStream outputStream, String format) throws PortletException, IOException;
 
 }

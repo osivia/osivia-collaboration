@@ -61,6 +61,19 @@
         </div>
     </div>
     
+    <!-- Integration indicator -->
+    <div class="form-group">
+        <form:label path="integration" cssClass="control-label col-sm-3"><op:translate key="CALENDAR_INTEGRATION" /></form:label>
+        <div class="col-sm-9">
+            <div class="checkbox">
+                <label>
+                    <form:checkbox path="integration" />
+                    <span><op:translate key="CALENDAR_INTEGRATION_CHECKBOX" /></span>
+                </label>
+            </div>
+        </div>
+    </div>
+    
     <!-- Buttons -->
     <div class="form-group">
         <div class="col-sm-offset-3 col-sm-9">

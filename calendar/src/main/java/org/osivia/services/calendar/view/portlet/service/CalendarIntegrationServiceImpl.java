@@ -1,6 +1,7 @@
 package org.osivia.services.calendar.view.portlet.service;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import javax.portlet.PortletException;
@@ -13,10 +14,12 @@ import org.osivia.services.calendar.view.portlet.repository.CalendarViewReposito
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.PropertyList;
+import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Description;
@@ -59,7 +62,7 @@ public class CalendarIntegrationServiceImpl implements CalendarIntegrationServic
      * {@inheritDoc}
      */
     @Override
-    public String getIntegration(PortalControllerContext portalControllerContext, String format) throws PortletException, IOException {
+    public void integrate(PortalControllerContext portalControllerContext, OutputStream outputStream, String format) throws PortletException, IOException {
         // Calendar
         Calendar calendar = new Calendar();
         calendar.getProperties().add(this.prodId);
@@ -78,8 +81,13 @@ public class CalendarIntegrationServiceImpl implements CalendarIntegrationServic
                 }
             }
         }
-
-        return calendar.toString();
+        
+        CalendarOutputter outputter = new CalendarOutputter();
+        try {
+            outputter.output(calendar, outputStream);
+        } catch (ValidationException e) {
+            throw new PortletException(e);
+        }
     }
 
 
