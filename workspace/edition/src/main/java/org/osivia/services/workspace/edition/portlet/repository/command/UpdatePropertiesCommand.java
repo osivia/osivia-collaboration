@@ -80,17 +80,7 @@ public class UpdatePropertiesCommand implements INuxeoCommand {
         } else if (vignette.isDeleted()) {
             documentService.removeBlob(workspace, "ttc:vignette");
         }
-
-        if(!workspace.getTitle().equals(form.getTitle())) {
-        	        	
-			OperationRequest reindex = nuxeoSession.newRequest("Document.ReIndexES");
-			reindex.set("repositoryName", workspace.getRepository());
-			reindex.set("type", "QUERY");
-			reindex.set("query", "SELECT * FROM Document where ecm:path STARTSWITH '"
-					+ workspace.getPath() + "'");
-			reindex.execute();
-        }
-        
+       
         
         return null;
     }
