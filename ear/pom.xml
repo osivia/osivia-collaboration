@@ -133,6 +133,12 @@
         </dependency>
         <dependency>
             <groupId>org.osivia.services.workspace</groupId>
+            <artifactId>osivia-services-workspace-sharing</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.osivia.services.workspace</groupId>
             <artifactId>osivia-services-workspace-trash</artifactId>
             <version>${project.version}</version>
             <type>war</type>
@@ -249,6 +255,11 @@
                             <groupId>org.osivia.services.workspace</groupId>
                             <artifactId>osivia-services-workspace-participants</artifactId>
                             <contextRoot>/osivia-services-workspace-participants</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>org.osivia.services.workspace</groupId>
+                            <artifactId>osivia-services-workspace-sharing</artifactId>
+                            <contextRoot>/osivia-services-workspace-sharing</contextRoot>
                         </webModule>
                         <webModule>
                             <groupId>org.osivia.services.workspace</groupId>

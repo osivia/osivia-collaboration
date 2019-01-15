@@ -24,8 +24,9 @@
         <module>acl-management</module>
         <module>participants</module>
         <module>sets</module>
+        <module>sharing</module>
         <module>trash</module>
-	<module>purge</module>
+	    <module>purge</module>
     </modules>
 
 
