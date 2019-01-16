@@ -85,9 +85,6 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
      */
     @Override
     public WorkspaceEditionForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
-        // Internationalization bundle
-        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-
         // Workspace document
         Document workspace = this.repository.getWorkspace(portalControllerContext);
         // Workspace root type indicator
@@ -99,10 +96,8 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         form.setDescription(workspace.getString("dc:description"));
 
         // Welcome title
-        if (root) {
-            String welcomeTitle = workspace.getString("ttcs:welcomeTitle");
-            form.setWelcomeTitle(StringUtils.defaultIfBlank(welcomeTitle, bundle.getString("WORKSPACE_WELCOME_TITLE_DEFAULT")));
-        }
+        String welcomeTitle = workspace.getString("ttcs:welcomeTitle");
+        form.setWelcomeTitle(welcomeTitle);
 
         // Templates
         if (root) {

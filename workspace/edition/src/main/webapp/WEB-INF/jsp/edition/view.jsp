@@ -48,24 +48,19 @@
                 </spring:bind>
                 
                 <!-- Welcome title -->
-                <c:if test="${editionForm.root}">
-                    <c:set var="placeholder"><op:translate key="WORKSPACE_WELCOME_TITLE_DEFAULT" /></c:set>
-                    <spring:bind path="welcomeTitle">
-                        <div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
-                            <form:label path="welcomeTitle" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_WELCOME_TITLE" /></form:label>
-                            <div class="col-sm-9">
-                                <form:input path="welcomeTitle" cssClass="form-control" placeholder="${placeholder}" />
-                                <c:if test="${status.error}">
-                                    <span class="form-control-feedback">
-                                        <i class="glyphicons glyphicons-remove"></i>
-                                    </span>
-                                </c:if>
-                                <p class="help-block"><op:translate key="WORKSPACE_WELCOME_TITLE_HELP" /></p>
-                                <form:errors path="welcomeTitle" cssClass="help-block" />
-                            </div>
-                        </div>
-                    </spring:bind>
-                </c:if>
+                <c:set var="placeholder"><op:translate key="WORKSPACE_WELCOME_TITLE_PLACEHOLDER" args="${fragment}" /></c:set>
+                <div class="form-group">
+                    <form:label path="welcomeTitle" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_WELCOME_TITLE" /></form:label>
+                    <div class="col-sm-9">
+                        <form:input path="welcomeTitle" cssClass="form-control" placeholder="${placeholder}" />
+                        <c:if test="${status.error}">
+                            <span class="form-control-feedback">
+                                <i class="glyphicons glyphicons-remove"></i>
+                            </span>
+                        </c:if>
+                        <p class="help-block"><op:translate key="WORKSPACE_WELCOME_TITLE_HELP" args="${fragment}" /></p>
+                    </div>
+                </div>
                 
                 <!-- Description -->
                 <c:set var="placeholder"><op:translate key="WORKSPACE_DESCRIPTION_PLACEHOLDER" args="${fragment}" /></c:set>
@@ -140,8 +135,8 @@
             <div class="col-lg-4">
                 <!-- Vignette -->
                 <div class="form-group">
-                    <form:label path="vignette.upload" cssClass="col-sm-3 col-lg-6 control-label"><op:translate key="WORKSPACE_VIGNETTE" /></form:label>
-                    <div class="col-sm-9 col-lg-6">
+                    <form:label path="vignette.upload" cssClass="col-sm-3 col-lg-4 control-label"><op:translate key="WORKSPACE_VIGNETTE" /></form:label>
+                    <div class="col-sm-9 col-lg-8">
                         <!-- Preview -->
                         <c:choose>
                             <c:when test="${editionForm.vignette.updated}">
@@ -191,6 +186,8 @@
                                 <span class="sr-only"><op:translate key="WORKSPACE_IMAGE_DELETE" /></span>
                             </button>
                         </div>
+                        
+                        <p class="help-block"><op:translate key="WORKSPACE_VIGNETTE_HELP" args="${fragment}" /></p>
                     </div>
                 </div>                
             </div>

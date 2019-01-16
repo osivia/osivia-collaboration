@@ -3,7 +3,6 @@ package org.osivia.services.workspace.edition.portlet.repository.command;
 import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.Blob;
@@ -57,9 +56,9 @@ public class UpdatePropertiesCommand implements INuxeoCommand {
         // Updated properties
         PropertyMap properties = new PropertyMap();
         properties.set("dc:title", this.form.getTitle());
+        properties.set("ttcs:welcomeTitle", this.form.getWelcomeTitle());
         properties.set("dc:description", this.form.getDescription());
         if (this.form.isRoot()) {
-            properties.set("ttcs:welcomeTitle", this.form.getWelcomeTitle());
             properties.set("ttc:pageTemplate", StringUtils.trimToNull(this.form.getTemplate()));
         }
         
