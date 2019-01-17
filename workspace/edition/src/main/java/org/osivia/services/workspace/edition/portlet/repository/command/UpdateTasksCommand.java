@@ -125,7 +125,7 @@ public class UpdateTasksCommand implements INuxeoCommand {
 
 
                 // Created document
-                Document document = documentService.createDocument(this.workspace, type, null, properties);
+                Document document = documentService.createDocument(this.workspace, type, null, properties, true);
 
                 // Update task
                 task.setPath(document.getPath());
