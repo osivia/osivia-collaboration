@@ -379,7 +379,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      */
     @Override
     public Editorial createEditorial(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
-        Task task = getEditorialTask(portalControllerContext, null);
+        Task task = this.getEditorialTask(portalControllerContext, null);
 
         if (task != null) {
             task.setActive(true);

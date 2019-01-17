@@ -57,16 +57,6 @@ $JQry(function() {
 	});
 	
 	
-	// Auto upload banner for preview generation
-	$JQry(".workspace-edition input[type=file][name='banner.upload']").change(function(event) {
-		var $target = $JQry(event.target),
-			$formGroup = $target.closest(".form-group"),
-			$submit = $formGroup.find("input[type=submit][name='upload-banner']");
-		
-		$submit.click();
-	});
-	
-	
 	// Auto submit when checkbox is checked
 	$JQry(".workspace-edition input[type=checkbox][name='editorial.displayed']").change(function(event) {
 		var $target = $JQry(event.target),
