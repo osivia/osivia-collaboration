@@ -152,13 +152,13 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
 
         // Period type
         PeriodTypes periodType;
-        if (configuration.getPeriodTypeName() != null && !configuration.getPeriodTypeName().isEmpty())
-        {
-        	periodTypeName = configuration.getPeriodTypeName();
-        	periodType = PeriodTypes.fromName(periodTypeName);
-        }
         if (periodTypeName == null) {
-            periodType = PeriodTypes.WEEK;
+            if (configuration.getPeriodTypeName() != null && !configuration.getPeriodTypeName().isEmpty()) {
+                periodTypeName = configuration.getPeriodTypeName();
+                periodType = PeriodTypes.fromName(periodTypeName);
+            } else {
+                periodType = PeriodTypes.WEEK;
+            }
         } else {
             periodType = PeriodTypes.fromName(periodTypeName);
         }
