@@ -15,6 +15,8 @@ public class SharingForm {
 
     /** Enabled indicator. */
     private boolean enabled;
+    /** Link. */
+    private SharingLink link;
 
 
     /**
@@ -41,6 +43,24 @@ public class SharingForm {
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    /**
+     * Getter for link.
+     * 
+     * @return the link
+     */
+    public SharingLink getLink() {
+        return link;
+    }
+
+    /**
+     * Setter for link.
+     * 
+     * @param link the link to set
+     */
+    public void setLink(SharingLink link) {
+        this.link = link;
     }
 
 }

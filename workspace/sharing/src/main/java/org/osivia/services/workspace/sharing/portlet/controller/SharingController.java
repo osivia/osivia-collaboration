@@ -1,5 +1,8 @@
 package org.osivia.services.workspace.sharing.portlet.controller;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
@@ -11,6 +14,7 @@ import javax.portlet.RenderResponse;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.sharing.portlet.model.SharingForm;
+import org.osivia.services.workspace.sharing.portlet.model.SharingPermission;
 import org.osivia.services.workspace.sharing.portlet.service.SharingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -118,6 +122,20 @@ public class SharingController {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         
         return this.service.getForm(portalControllerContext);
+    }
+
+
+    /**
+     * Get permissions model attribute.
+     * 
+     * @param request portlet request
+     * @param response portlet response
+     * @return permissions
+     * @throws PortletException
+     */
+    @ModelAttribute("permissions")
+    public List<SharingPermission> getPermissions(PortletRequest request, PortletResponse response) throws PortletException {
+        return Arrays.asList(SharingPermission.values());
     }
 
 }

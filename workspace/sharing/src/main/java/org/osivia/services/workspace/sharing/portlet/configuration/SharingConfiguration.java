@@ -7,6 +7,7 @@ import javax.portlet.PortletException;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -94,6 +95,17 @@ public class SharingConfiguration extends CMSPortlet implements PortletConfigAwa
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("sharing");
         return messageSource;
+    }
+
+
+    /**
+     * Get portal URL factory.
+     * 
+     * @return portal URL factory
+     */
+    @Bean
+    public IPortalUrlFactory getPortalUrlFactory() {
+        return Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
     }
 
 

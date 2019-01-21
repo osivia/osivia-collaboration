@@ -48,4 +48,20 @@
             </div>
         </div>
     </div>
+    
+    <!-- URL -->
+    <div class="form-group">
+        <form:label path="link.url" cssClass="control-label"><op:translate key="SHARING_LINK_URL_LABEL" /></form:label>
+        <form:input path="link.url" readonly="true" cssClass="form-control" />
+    </div>
+    
+    <!-- Permission -->
+    <div class="form-group">
+        <form:label path="link.permission" cssClass="control-label"><op:translate key="SHARING_LINK_PERMISSION_LABEL" /></form:label>
+        <form:select path="link.permission" cssClass="form-control">
+            <c:forEach var="permission" items="${permissions}">
+                <form:option value="${permission.id}"><op:translate key="${permission.key}" /></form:option>
+            </c:forEach>
+        </form:select>
+    </div>
 </form:form>

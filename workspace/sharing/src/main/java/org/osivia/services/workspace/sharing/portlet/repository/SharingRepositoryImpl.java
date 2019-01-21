@@ -2,9 +2,13 @@ package org.osivia.services.workspace.sharing.portlet.repository;
 
 import javax.portlet.PortletException;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.services.workspace.sharing.portlet.model.SharingLink;
+import org.osivia.services.workspace.sharing.portlet.model.SharingPermission;
 import org.osivia.services.workspace.sharing.portlet.repository.command.DisableSharingCommand;
 import org.osivia.services.workspace.sharing.portlet.repository.command.EnableSharingCommand;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +31,10 @@ public class SharingRepositoryImpl implements SharingRepository {
     /** Application context. */
     @Autowired
     private ApplicationContext applicationContext;
+
+    /** Portal URL factory. */
+    @Autowired
+    private IPortalUrlFactory portalUrlFactory;
 
 
     /**
@@ -71,12 +79,47 @@ public class SharingRepositoryImpl implements SharingRepository {
      * {@inheritDoc}
      */
     @Override
-    public void enableSharing(PortalControllerContext portalControllerContext, String path) throws PortletException {
+    public SharingLink getLink(PortalControllerContext portalControllerContext, String path) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // Document context
+        NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
+        // Document
+        Document document = documentContext.getDocument();
+
+
+        // Sharing link
+        SharingLink link = this.applicationContext.getBean(SharingLink.class);
+
+        // Link identifier
+        String id = document.getString(SHARING_LINK_ID_PROPERTY);
+        link.setId(id);
+
+        // Link URL
+        if (StringUtils.isNotEmpty(id)) {
+            String url = this.portalUrlFactory.getSharingLinkUrl(portalControllerContext, id);
+            link.setUrl(url);
+        }
+
+        // Link permission
+        SharingPermission permission = SharingPermission.fromId(document.getString(SHARING_LINK_PERMISSION_PROPERTY));
+        link.setPermission(permission);
+
+        return link;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void enableSharing(PortalControllerContext portalControllerContext, String path, SharingLink link) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(EnableSharingCommand.class, path);
+        INuxeoCommand command = this.applicationContext.getBean(EnableSharingCommand.class, path, link);
         nuxeoController.executeNuxeoCommand(command);
     }
 
