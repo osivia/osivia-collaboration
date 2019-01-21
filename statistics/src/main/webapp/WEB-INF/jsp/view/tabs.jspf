@@ -3,15 +3,7 @@
 
 
 <ul class="nav nav-pills">
-    <!-- Creations -->
-    <li class="${tab eq 'creations' ? 'active' : ''}" role="presentation">
-        <portlet:renderURL var="url">
-            <portlet:param name="tab" value="creations"/>
-        </portlet:renderURL>
-    
-        <a href="${url}"><op:translate key="TAB_CREATIONS" /></a>
-    </li>
-    
+
     <!-- Visits -->
     <li class="${tab eq 'visits' ? 'active' : ''}" role="presentation">
         <portlet:renderURL var="url">
@@ -20,4 +12,14 @@
     
         <a href="${url}"><op:translate key="TAB_VISITS" /></a>
     </li>
+    
+    <!-- Creations -->
+    <li class="${tab eq 'creations' ? 'active' : ''}" role="presentation">
+        <portlet:renderURL var="url">
+            <portlet:param name="tab" value="creations"/>
+        </portlet:renderURL>
+    
+        <a href="${url}"><op:translate key="TAB_CREATIONS" /></a>
+    </li>
+
 </ul>
