@@ -1,5 +1,7 @@
 package org.osivia.services.workspace.sharing.portlet.model;
 
+import java.util.List;
+
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,8 @@ public class SharingForm {
     private boolean enabled;
     /** Link. */
     private SharingLink link;
+    /** Users. */
+    private List<String> users;
 
 
     /**
@@ -61,6 +65,24 @@ public class SharingForm {
      */
     public void setLink(SharingLink link) {
         this.link = link;
+    }
+
+    /**
+     * Getter for users.
+     * 
+     * @return the users
+     */
+    public List<String> getUsers() {
+        return users;
+    }
+
+    /**
+     * Setter for users.
+     * 
+     * @param users the users to set
+     */
+    public void setUsers(List<String> users) {
+        this.users = users;
     }
 
 }

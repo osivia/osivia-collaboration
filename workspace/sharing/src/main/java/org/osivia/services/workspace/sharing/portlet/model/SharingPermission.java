@@ -10,9 +10,9 @@ import org.apache.commons.lang.StringUtils;
 public enum SharingPermission {
 
     /** Read permission. */
-    READ,
+    READ("Read"),
     /** Write permission. */
-    WRITE;
+    WRITE("ReadWrite");
 
 
     /** Default permission. */
@@ -28,8 +28,8 @@ public enum SharingPermission {
     /**
      * Constructor.
      */
-    private SharingPermission() {
-        this.id = StringUtils.lowerCase(this.name());
+    private SharingPermission(String id) {
+        this.id = id;
         this.key = "SHARING_LINK_PERMISSION_" + StringUtils.upperCase(this.name());
     }
 

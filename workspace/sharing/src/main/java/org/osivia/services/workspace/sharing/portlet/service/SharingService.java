@@ -56,4 +56,25 @@ public interface SharingService {
      */
     void disableSharing(PortalControllerContext portalControllerContext, SharingForm form) throws PortletException;
 
+
+    /**
+     * Update permissions.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form form
+     * @throws PortletException
+     */
+    void updatePermissions(PortalControllerContext portalControllerContext, SharingForm form) throws PortletException;
+
+
+    /**
+     * Remove user permission.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form form
+     * @param user user
+     * @throws PortletException
+     */
+    void removeUser(PortalControllerContext portalControllerContext, SharingForm form, String user) throws PortletException;
+
 }

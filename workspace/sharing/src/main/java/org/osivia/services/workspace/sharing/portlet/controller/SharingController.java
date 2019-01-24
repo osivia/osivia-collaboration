@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
@@ -105,6 +106,42 @@ public class SharingController {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         this.service.disableSharing(portalControllerContext, form);
+    }
+
+
+    /**
+     * Update permissions action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param form form model attribute
+     * @throws PortletException
+     */
+    @ActionMapping(name = "save", params = "update-permissions")
+    public void updatePermissions(ActionRequest request, ActionResponse response, @ModelAttribute("form") SharingForm form) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.updatePermissions(portalControllerContext, form);
+    }
+
+
+    /**
+     * Remove user permission action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param user removed user request parameter
+     * @param form form model attribute
+     * @throws PortletException
+     */
+    @ActionMapping("remove-user")
+    public void removeUser(ActionRequest request, ActionResponse response, @RequestParam("user") String user, @ModelAttribute("form") SharingForm form)
+            throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.removeUser(portalControllerContext, form, user);
     }
 
 

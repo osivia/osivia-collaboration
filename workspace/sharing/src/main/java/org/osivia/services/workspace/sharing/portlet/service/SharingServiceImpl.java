@@ -1,15 +1,18 @@
 package org.osivia.services.workspace.sharing.portlet.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.workspace.sharing.portlet.model.SharingForm;
 import org.osivia.services.workspace.sharing.portlet.model.SharingLink;
+import org.osivia.services.workspace.sharing.portlet.model.SharingPermission;
 import org.osivia.services.workspace.sharing.portlet.model.SharingWindowProperties;
 import org.osivia.services.workspace.sharing.portlet.repository.SharingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +44,10 @@ public class SharingServiceImpl implements SharingService {
     /** Portlet repository. */
     @Autowired
     private SharingRepository repository;
+
+    /** Portal URL factory. */
+    @Autowired
+    private IPortalUrlFactory portalUrlFactory;
 
 
     /**
@@ -93,6 +100,10 @@ public class SharingServiceImpl implements SharingService {
             // Link
             SharingLink link = this.repository.getLink(portalControllerContext, path);
             form.setLink(link);
+
+            // Users
+            List<String> users = this.repository.getUsers(portalControllerContext, path);
+            form.setUsers(users);
         }
 
         return form;
@@ -111,8 +122,16 @@ public class SharingServiceImpl implements SharingService {
 
         // Sharing link
         SharingLink link = this.applicationContext.getBean(SharingLink.class);
+        // Link identifier
+        String linkId = this.generateLinkId();
+        link.setId(linkId);
+        // Link permission
+        SharingPermission linkPermission = SharingPermission.DEFAULT;
+        link.setPermission(linkPermission);
+        // Link URL
+        String url = this.portalUrlFactory.getSharingLinkUrl(portalControllerContext, linkId);
+        link.setUrl(url);
         
-
         // Enable sharing
         this.repository.enableSharing(portalControllerContext, path, link);
 
@@ -165,8 +184,8 @@ public class SharingServiceImpl implements SharingService {
         long reminder = value;
         for (int i = (exponent - 1); i >= 0; i--) {
             long pow = Double.valueOf(Math.pow(BASE_62, i)).longValue();
-            long div = Math.floorDiv(reminder, pow);
-            long mod = Math.floorMod(reminder, pow);
+            long div = reminder / pow;
+            long mod = reminder % pow;
 
             base62Array[exponent - i - 1] = Long.valueOf(div).intValue();
             reminder = mod;
@@ -199,6 +218,41 @@ public class SharingServiceImpl implements SharingService {
         // Update model
         form.setEnabled(false);
         form.setLink(null);
+        form.setUsers(null);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updatePermissions(PortalControllerContext portalControllerContext, SharingForm form) throws PortletException {
+        // Window properties
+        SharingWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
+        // Document path
+        String path = windowProperties.getPath();
+
+        // Link permission
+        SharingPermission permission = form.getLink().getPermission();
+
+        this.repository.updatePermissions(portalControllerContext, path, permission, null, null);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeUser(PortalControllerContext portalControllerContext, SharingForm form, String user) throws PortletException {
+        // Window properties
+        SharingWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
+        // Document path
+        String path = windowProperties.getPath();
+
+        this.repository.updatePermissions(portalControllerContext, path, null, user, false);
+
+        // Update model
+        form.getUsers().remove(user);
     }
 
 }

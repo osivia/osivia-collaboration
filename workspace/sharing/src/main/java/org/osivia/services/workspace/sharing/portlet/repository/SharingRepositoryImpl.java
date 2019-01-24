@@ -1,5 +1,8 @@
 package org.osivia.services.workspace.sharing.portlet.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.portlet.PortletException;
 
 import org.apache.commons.lang.StringUtils;
@@ -11,6 +14,8 @@ import org.osivia.services.workspace.sharing.portlet.model.SharingLink;
 import org.osivia.services.workspace.sharing.portlet.model.SharingPermission;
 import org.osivia.services.workspace.sharing.portlet.repository.command.DisableSharingCommand;
 import org.osivia.services.workspace.sharing.portlet.repository.command.EnableSharingCommand;
+import org.osivia.services.workspace.sharing.portlet.repository.command.GetSharingPermissionsCommand;
+import org.osivia.services.workspace.sharing.portlet.repository.command.UpdateSharingPermissionsCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
@@ -18,6 +23,8 @@ import org.springframework.stereotype.Repository;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Sharing portlet repository implementation.
@@ -85,6 +92,7 @@ public class SharingRepositoryImpl implements SharingRepository {
 
         // Document context
         NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
+        documentContext.reload();
         // Document
         Document document = documentContext.getDocument();
 
@@ -114,6 +122,38 @@ public class SharingRepositoryImpl implements SharingRepository {
      * {@inheritDoc}
      */
     @Override
+    public List<String> getUsers(PortalControllerContext portalControllerContext, String path) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(GetSharingPermissionsCommand.class, path);
+        Object result = nuxeoController.executeNuxeoCommand(command);
+
+        // Users
+        List<String> users;
+
+        if ((result != null) && (result instanceof JSONArray)) {
+            JSONArray array = (JSONArray) result;
+            users = new ArrayList<>(array.size());
+
+            for (int i = 0; i < array.size(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                String user = object.getString("user");
+                users.add(user);
+            }
+        } else {
+            users = null;
+        }
+
+        return users;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void enableSharing(PortalControllerContext portalControllerContext, String path, SharingLink link) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
@@ -134,6 +174,29 @@ public class SharingRepositoryImpl implements SharingRepository {
 
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(DisableSharingCommand.class, path);
+        nuxeoController.executeNuxeoCommand(command);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updatePermissions(PortalControllerContext portalControllerContext, String path, SharingPermission permission, String user, Boolean add)
+            throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // Permission identifier
+        String permissionId;
+        if (permission == null) {
+            permissionId = null;
+        } else {
+            permissionId = permission.getId();
+        }
+
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(UpdateSharingPermissionsCommand.class, path, permissionId, user, add);
         nuxeoController.executeNuxeoCommand(command);
     }
 
