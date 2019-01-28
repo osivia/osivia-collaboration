@@ -7,9 +7,9 @@ import javax.portlet.PortletException;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.services.workspace.sharing.common.repository.SharingCommonRepositoryImpl;
 import org.osivia.services.workspace.sharing.portlet.model.SharingLink;
 import org.osivia.services.workspace.sharing.portlet.model.SharingPermission;
 import org.osivia.services.workspace.sharing.portlet.repository.command.DisableSharingCommand;
@@ -30,10 +30,11 @@ import net.sf.json.JSONObject;
  * Sharing portlet repository implementation.
  * 
  * @author Cédric Krommenhoek
+ * @see SharingCommonRepositoryImpl
  * @see SharingRepository
  */
 @Repository
-public class SharingRepositoryImpl implements SharingRepository {
+public class SharingRepositoryImpl extends SharingCommonRepositoryImpl implements SharingRepository {
 
     /** Application context. */
     @Autowired
@@ -62,23 +63,8 @@ public class SharingRepositoryImpl implements SharingRepository {
 
         // Document context
         NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
-        // Document
-        Document document = documentContext.getDocument();
 
-        // Facets
-        PropertyList facets = document.getFacets();
-
-        boolean enabled = false;
-        if (facets != null) {
-            int i = 0;
-            while (!enabled && (i < facets.size())) {
-                String facet = facets.getString(i);
-                enabled = SHARING_FACET.equals(facet);
-                i++;
-            }
-        }
-
-        return enabled;
+        return this.isSharingEnabled(portalControllerContext, documentContext);
     }
 
 

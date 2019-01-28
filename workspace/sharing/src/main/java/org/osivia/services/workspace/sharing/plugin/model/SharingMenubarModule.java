@@ -39,7 +39,7 @@ public class SharingMenubarModule implements MenubarModule {
     @Override
     public void customizeDocument(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext documentContext)
             throws PortalException {
-        this.service.addMenubarItem(portalControllerContext, menubar, documentContext);
+        this.service.addMenubarItems(portalControllerContext, menubar, documentContext);
     }
 
 

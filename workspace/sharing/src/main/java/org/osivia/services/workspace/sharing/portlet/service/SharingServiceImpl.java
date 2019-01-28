@@ -1,11 +1,15 @@
 package org.osivia.services.workspace.sharing.portlet.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
@@ -95,6 +99,7 @@ public class SharingServiceImpl implements SharingService {
         // Enabled indicator
         boolean enabled = this.repository.isSharingEnabled(portalControllerContext, path);
         form.setEnabled(enabled);
+        form.setInitialEnabled(enabled);
 
         if (enabled) {
             // Link
@@ -253,6 +258,32 @@ public class SharingServiceImpl implements SharingService {
 
         // Update model
         form.getUsers().remove(user);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void close(PortalControllerContext portalControllerContext, SharingForm form) throws PortletException, IOException {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+
+        // Window properties
+        SharingWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
+        // Document path
+        String path = windowProperties.getPath();
+
+        if (BooleanUtils.xor(new boolean[]{form.isEnabled(), form.isInitialEnabled()}) && (portletResponse instanceof ActionResponse)) {
+            // Redirection
+            String url = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, path, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null,
+                    null, null, null);
+            ActionResponse actionResponse = (ActionResponse) portletResponse;
+            actionResponse.sendRedirect(url);
+        } else {
+            // Close modal
+            form.setClose(true);
+        }
     }
 
 }

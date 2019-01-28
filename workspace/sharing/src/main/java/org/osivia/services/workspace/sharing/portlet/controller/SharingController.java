@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.sharing.portlet.controller;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,10 +19,12 @@ import org.osivia.services.workspace.sharing.portlet.model.SharingPermission;
 import org.osivia.services.workspace.sharing.portlet.service.SharingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.portlet.bind.PortletRequestDataBinder;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
@@ -146,6 +149,24 @@ public class SharingController {
 
 
     /**
+     * Close modal action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param form form model attribute
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ActionMapping("close")
+    public void close(ActionRequest request, ActionResponse response, @ModelAttribute("form") SharingForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.close(portalControllerContext, form);
+    }
+
+
+    /**
      * Get form model attribute.
      * 
      * @param request portlet request
@@ -159,6 +180,17 @@ public class SharingController {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         
         return this.service.getForm(portalControllerContext);
+    }
+
+
+    /**
+     * Form init binder.
+     *
+     * @param binder web data binder
+     */
+    @InitBinder("form")
+    public void editionFormInitBinder(PortletRequestDataBinder binder) {
+        binder.setDisallowedFields("initialEnabled", "close");
     }
 
 

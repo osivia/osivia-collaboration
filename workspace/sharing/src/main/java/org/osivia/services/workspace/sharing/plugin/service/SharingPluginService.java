@@ -33,13 +33,13 @@ public interface SharingPluginService {
 
 
     /**
-     * Add sharing menubar item.
+     * Add sharing menubar items.
      * 
      * @param portalControllerContext portal controller context
      * @param menubar menubar
      * @param documentContext document context
      * @throws PortalException
      */
-    void addMenubarItem(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext documentContext) throws PortalException;
+    void addMenubarItems(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext documentContext) throws PortalException;
 
 }

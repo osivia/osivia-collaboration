@@ -1,5 +1,7 @@
 package org.osivia.services.workspace.sharing.portlet.service;
 
+import java.io.IOException;
+
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -76,5 +78,16 @@ public interface SharingService {
      * @throws PortletException
      */
     void removeUser(PortalControllerContext portalControllerContext, SharingForm form, String user) throws PortletException;
+
+
+    /**
+     * Close modal.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form form
+     * @throws PortletException
+     * @throws IOException
+     */
+    void close(PortalControllerContext portalControllerContext, SharingForm form) throws PortletException, IOException;
 
 }

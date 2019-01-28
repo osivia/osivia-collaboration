@@ -5,6 +5,7 @@ import java.util.List;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.workspace.sharing.common.repository.SharingCommonRepository;
 import org.osivia.services.workspace.sharing.portlet.model.SharingLink;
 import org.osivia.services.workspace.sharing.portlet.model.SharingPermission;
 
@@ -12,11 +13,9 @@ import org.osivia.services.workspace.sharing.portlet.model.SharingPermission;
  * Sharing portlet repository interface.
  * 
  * @author Cédric Krommenhoek
+ * @see SharingCommonRepository
  */
-public interface SharingRepository {
-
-    /** Sharing facet. */
-    String SHARING_FACET = "Sharing";
+public interface SharingRepository extends SharingCommonRepository {
 
     /** Sharing link identifier Nuxeo document property. */
     String SHARING_LINK_ID_PROPERTY = "sharing:linkId";

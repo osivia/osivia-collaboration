@@ -22,6 +22,11 @@ public class SharingForm {
     /** Users. */
     private List<String> users;
 
+    /** Enabled indicator initial value. */
+    private boolean initialEnabled;
+    /** Close modal indicator. */
+    private boolean close;
+
 
     /**
      * Constructor.
@@ -83,6 +88,42 @@ public class SharingForm {
      */
     public void setUsers(List<String> users) {
         this.users = users;
+    }
+
+    /**
+     * Getter for initialEnabled.
+     * 
+     * @return the initialEnabled
+     */
+    public boolean isInitialEnabled() {
+        return initialEnabled;
+    }
+
+    /**
+     * Setter for initialEnabled.
+     * 
+     * @param initialEnabled the initialEnabled to set
+     */
+    public void setInitialEnabled(boolean initialEnabled) {
+        this.initialEnabled = initialEnabled;
+    }
+
+    /**
+     * Getter for close.
+     * 
+     * @return the close
+     */
+    public boolean isClose() {
+        return close;
+    }
+
+    /**
+     * Setter for close.
+     * 
+     * @param close the close to set
+     */
+    public void setClose(boolean close) {
+        this.close = close;
     }
 
 }
