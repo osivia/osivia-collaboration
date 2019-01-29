@@ -12,8 +12,8 @@
 
 
     <properties>
-        <toutatice.version>4.7.13</toutatice.version>
-        <directory.version>4.7.2</directory.version>
+        <toutatice.version>4.7-SNAPSHOT</toutatice.version>
+        <directory.version>4.7-SNAPSHOT</directory.version>
     </properties>
 
 
@@ -61,6 +61,10 @@
         <dependency>
             <groupId>toutatice-portail.cms</groupId>
             <artifactId>toutatice-portail-cms-nuxeo-dependencies</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>toutatice-portail.cms</groupId>
+            <artifactId>toutatice-portail-cms-nuxeo-dependencies-test</artifactId>
         </dependency>
 
     </dependencies>

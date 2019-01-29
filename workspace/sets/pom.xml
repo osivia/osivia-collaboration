@@ -12,23 +12,7 @@
     <packaging>war</packaging>
 
     <name>OSIVIA Services - Sets</name>
-    
-
-	<dependencies>
-
-    </dependencies>
 
 
-    <build>
-        <plugins>
-
-            <!-- LESS -->
-            <plugin>
-                <groupId>org.lesscss</groupId>
-                <artifactId>lesscss-maven-plugin</artifactId>
-            </plugin>
-            
-        </plugins>
-    </build>
 
 </project>
