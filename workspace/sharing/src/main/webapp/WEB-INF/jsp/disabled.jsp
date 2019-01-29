@@ -16,7 +16,7 @@
             <span><op:translate key="SHARING_LEGEND" /></span>
         </legend>
     
-        <div class="clearfix">
+        <div class="form-group clearfix">
             <div class="pull-left">
                 <p class="form-control-static"><op:translate key="DISABLED_SHARING_HELP_MESSAGE" /></p>
             </div>
