@@ -1,6 +1,6 @@
 package org.osivia.services.workspace.sharing.portlet.repository;
 
-import java.util.List;
+import java.util.SortedMap;
 
 import javax.portlet.PortletException;
 
@@ -21,6 +21,8 @@ public interface SharingRepository extends SharingCommonRepository {
     String SHARING_LINK_ID_PROPERTY = "sharing:linkId";
     /** Sharing link permission Nuxeo document property. */
     String SHARING_LINK_PERMISSION_PROPERTY = "sharing:linkPermission";
+    /** Sharing banned users Nuxeo document property. */
+    String SHARING_BANNED_USERS_PROPERTY = "sharing:bannedUsers";
 
     /** Elasticsearch synchronized operation flag. */
     String ES_SYNC_FLAG = "nx_es_sync";
@@ -56,7 +58,7 @@ public interface SharingRepository extends SharingCommonRepository {
      * @return users
      * @throws PortletException
      */
-    List<String> getUsers(PortalControllerContext portalControllerContext, String path) throws PortletException;
+    SortedMap<String, Boolean> getUsers(PortalControllerContext portalControllerContext, String path) throws PortletException;
 
 
     /**

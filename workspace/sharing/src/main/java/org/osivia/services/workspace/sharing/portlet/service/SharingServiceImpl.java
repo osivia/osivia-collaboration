@@ -1,7 +1,7 @@
 package org.osivia.services.workspace.sharing.portlet.service;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.SortedMap;
 import java.util.UUID;
 
 import javax.portlet.ActionResponse;
@@ -107,7 +107,7 @@ public class SharingServiceImpl implements SharingService {
             form.setLink(link);
 
             // Users
-            List<String> users = this.repository.getUsers(portalControllerContext, path);
+            SortedMap<String, Boolean> users = this.repository.getUsers(portalControllerContext, path);
             form.setUsers(users);
         }
 
@@ -257,7 +257,24 @@ public class SharingServiceImpl implements SharingService {
         this.repository.updatePermissions(portalControllerContext, path, null, user, false);
 
         // Update model
-        form.getUsers().remove(user);
+        form.getUsers().put(user, false);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void restoreUser(PortalControllerContext portalControllerContext, SharingForm form, String user) throws PortletException {
+        // Window properties
+        SharingWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
+        // Document path
+        String path = windowProperties.getPath();
+
+        this.repository.updatePermissions(portalControllerContext, path, null, user, null);
+
+        // Update model
+        form.getUsers().put(user, true);
     }
 
 

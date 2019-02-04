@@ -81,6 +81,17 @@ public interface SharingService {
 
 
     /**
+     * Restore user permission.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form form
+     * @param user user
+     * @throws PortletException
+     */
+    void restoreUser(PortalControllerContext portalControllerContext, SharingForm form, String user) throws PortletException;
+
+
+    /**
      * Close modal.
      * 
      * @param portalControllerContext portal controller context

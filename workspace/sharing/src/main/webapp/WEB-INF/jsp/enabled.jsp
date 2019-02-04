@@ -92,21 +92,43 @@
                     <table class="table">
                         <tbody>
                             <c:forEach var="user" items="${form.users}">
-                                <portlet:actionURL name="remove-user" var="url">
-                                    <portlet:param name="user" value="${user}"/>
-                                </portlet:actionURL>
-                            
-                                <tr>
-                                    <td>
-                                        <span><ttc:user name="${user}" linkable="false" /></span>
-                                    </td>
+                                <c:choose>
+                                    <c:when test="${user.value}">
+                                        <portlet:actionURL name="remove-user" var="url">
+                                            <portlet:param name="user" value="${user.key}"/>
+                                        </portlet:actionURL>
                                     
-                                    <td class="text-right">
-                                        <a href="${url}">
-                                            <small><op:translate key="REMOVE_USER" /></small>
-                                        </a>
-                                    </td>
-                                </tr>
+                                        <tr>
+                                            <td>
+                                                <span><ttc:user name="${user.key}" linkable="false" /></span>
+                                            </td>
+                                            
+                                            <td class="text-right">
+                                                <a href="${url}">
+                                                    <small><op:translate key="REMOVE_USER" /></small>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </c:when>
+                                    
+                                    <c:otherwise>
+                                        <portlet:actionURL name="restore-user" var="url">
+                                            <portlet:param name="user" value="${user.key}"/>
+                                        </portlet:actionURL>
+                                    
+                                        <tr>
+                                            <td>
+                                                <s class="text-muted"><ttc:user name="${user.key}" linkable="false" /></s>
+                                            </td>
+                                            
+                                            <td class="text-right">
+                                                <a href="${url}">
+                                                    <small><op:translate key="RESTORE_USER" /></small>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </c:otherwise>
+                                </c:choose>
                             </c:forEach>
                         </tbody>
                     </table>

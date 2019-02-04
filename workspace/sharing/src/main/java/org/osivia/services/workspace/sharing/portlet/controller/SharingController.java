@@ -149,6 +149,25 @@ public class SharingController {
 
 
     /**
+     * Restore user permission action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param user restored user request parameter
+     * @param form form model attribute
+     * @throws PortletException
+     */
+    @ActionMapping("restore-user")
+    public void restoreUser(ActionRequest request, ActionResponse response, @RequestParam("user") String user, @ModelAttribute("form") SharingForm form)
+            throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.restoreUser(portalControllerContext, form, user);
+    }
+
+
+    /**
      * Close modal action mapping.
      * 
      * @param request action request

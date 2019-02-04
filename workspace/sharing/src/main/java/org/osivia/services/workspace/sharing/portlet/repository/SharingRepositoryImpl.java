@@ -1,12 +1,13 @@
 package org.osivia.services.workspace.sharing.portlet.repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.portlet.PortletException;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.workspace.sharing.common.repository.SharingCommonRepositoryImpl;
@@ -108,28 +109,40 @@ public class SharingRepositoryImpl extends SharingCommonRepositoryImpl implement
      * {@inheritDoc}
      */
     @Override
-    public List<String> getUsers(PortalControllerContext portalControllerContext, String path) throws PortletException {
+    public SortedMap<String, Boolean> getUsers(PortalControllerContext portalControllerContext, String path) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(GetSharingPermissionsCommand.class, path);
-        Object result = nuxeoController.executeNuxeoCommand(command);
+        // Document context
+        NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
+        documentContext.reload();
+        // Document
+        Document document = documentContext.getDocument();
 
         // Users
-        List<String> users;
+        SortedMap<String, Boolean> users = new TreeMap<>();
 
+
+        // Banned users
+        PropertyList bannedUsers = document.getProperties().getList(SHARING_BANNED_USERS_PROPERTY);
+        if ((bannedUsers != null) && !bannedUsers.isEmpty()) {
+            for (int i = 0; i < bannedUsers.size(); i++) {
+                String bannedUser = bannedUsers.getString(i);
+                users.put(bannedUser, false);
+            }
+        }
+
+        // Get sharing permissions Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(GetSharingPermissionsCommand.class, path);
+        Object result = nuxeoController.executeNuxeoCommand(command);
         if ((result != null) && (result instanceof JSONArray)) {
             JSONArray array = (JSONArray) result;
-            users = new ArrayList<>(array.size());
 
             for (int i = 0; i < array.size(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 String user = object.getString("user");
-                users.add(user);
+                users.put(user, true);
             }
-        } else {
-            users = null;
         }
 
         return users;

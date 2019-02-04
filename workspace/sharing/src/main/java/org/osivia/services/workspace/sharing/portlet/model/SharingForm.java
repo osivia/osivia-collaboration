@@ -1,6 +1,6 @@
 package org.osivia.services.workspace.sharing.portlet.model;
 
-import java.util.List;
+import java.util.SortedMap;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -20,7 +20,7 @@ public class SharingForm {
     /** Link. */
     private SharingLink link;
     /** Users. */
-    private List<String> users;
+    private SortedMap<String, Boolean> users;
 
     /** Enabled indicator initial value. */
     private boolean initialEnabled;
@@ -74,19 +74,17 @@ public class SharingForm {
 
     /**
      * Getter for users.
-     * 
      * @return the users
      */
-    public List<String> getUsers() {
+    public SortedMap<String, Boolean> getUsers() {
         return users;
     }
 
     /**
      * Setter for users.
-     * 
      * @param users the users to set
      */
-    public void setUsers(List<String> users) {
+    public void setUsers(SortedMap<String, Boolean> users) {
         this.users = users;
     }
 
