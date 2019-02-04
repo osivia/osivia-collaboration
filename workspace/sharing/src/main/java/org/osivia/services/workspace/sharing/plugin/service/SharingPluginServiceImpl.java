@@ -126,10 +126,9 @@ public class SharingPluginServiceImpl implements SharingPluginService {
             Bundle bundle = this.bundleFactory.getBundle(servletRequest.getLocale());
 
             // Menubar item
-            MenubarItem item = new MenubarItem("SHARED", null, MenubarGroup.CMS, -1, "label label-default");
+            MenubarItem item = new MenubarItem("SHARED", bundle.getString("SHARED_MENUBAR_ITEM_TOOLTIP"), MenubarGroup.CMS, -1, "label label-default");
             item.setGlyphicon("glyphicons glyphicons-group");
             item.setState(true);
-            item.setTooltip(bundle.getString("SHARED_MENUBAR_ITEM_TOOLTIP"));
 
             menubar.add(item);
         }
