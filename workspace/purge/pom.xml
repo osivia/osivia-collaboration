@@ -7,7 +7,7 @@
 	</parent>
 
 	<artifactId>osivia-services-workspace-purge</artifactId>
-	<name>OSIVIA SERVICES -Workspace - purge des espaces de travail collaboratif</name>
+	<name>OSIVIA Services - Workspace - Purge</name>
 	<packaging>war</packaging>
 
 	<properties>
