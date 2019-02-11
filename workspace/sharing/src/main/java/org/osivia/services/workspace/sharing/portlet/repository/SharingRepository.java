@@ -17,13 +17,6 @@ import org.osivia.services.workspace.sharing.portlet.model.SharingPermission;
  */
 public interface SharingRepository extends SharingCommonRepository {
 
-    /** Sharing link identifier Nuxeo document property. */
-    String SHARING_LINK_ID_PROPERTY = "sharing:linkId";
-    /** Sharing link permission Nuxeo document property. */
-    String SHARING_LINK_PERMISSION_PROPERTY = "sharing:linkPermission";
-    /** Sharing banned users Nuxeo document property. */
-    String SHARING_BANNED_USERS_PROPERTY = "sharing:bannedUsers";
-
     /** Elasticsearch synchronized operation flag. */
     String ES_SYNC_FLAG = "nx_es_sync";
 

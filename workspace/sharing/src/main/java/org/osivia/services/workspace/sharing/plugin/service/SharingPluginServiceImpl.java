@@ -6,12 +6,16 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.customization.CustomizationContext;
+import org.osivia.portal.api.directory.v2.DirServiceFactory;
+import org.osivia.portal.api.directory.v2.model.Person;
+import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.menubar.IMenubarService;
@@ -89,8 +93,7 @@ public class SharingPluginServiceImpl implements SharingPluginService {
     @Override
     public void addMenubarItems(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext documentContext)
             throws PortalException {
-        if ((documentContext != null) && (documentContext instanceof NuxeoDocumentContext)
-                && ContextualizationHelper.isCurrentDocContextualized(portalControllerContext)) {
+        if ((documentContext != null) && (documentContext instanceof NuxeoDocumentContext)) {
             // Nuxeo document context
             NuxeoDocumentContext nuxeoDocumentContext = (NuxeoDocumentContext) documentContext;
             // Document
@@ -116,21 +119,39 @@ public class SharingPluginServiceImpl implements SharingPluginService {
      */
     private void addIndicatorMenubarItem(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, NuxeoDocumentContext documentContext)
             throws PortalException {
-        // Enabled indicator
-        boolean enabled = this.repository.isSharingEnabled(portalControllerContext, documentContext);
+        // Sharing root
+        Document sharingRoot = this.repository.getSharingRoot(portalControllerContext, documentContext);
 
-        if (enabled) {
+        if (sharingRoot != null) {
             // HTTP servlet request
             HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
             // Bundle
             Bundle bundle = this.bundleFactory.getBundle(servletRequest.getLocale());
 
-            // Menubar item
-            MenubarItem item = new MenubarItem("SHARED", bundle.getString("SHARED_MENUBAR_ITEM_TOOLTIP"), MenubarGroup.CMS, -1, "label label-default");
-            item.setGlyphicon("glyphicons glyphicons-group");
-            item.setState(true);
+            // Sharing author
+            String author = this.repository.getSharingAuthor(portalControllerContext, sharingRoot);
 
-            menubar.add(item);
+            // Label
+            String label;
+            if (StringUtils.isEmpty(author) || StringUtils.equals(servletRequest.getRemoteUser(), author)) {
+                label = bundle.getString("SHARED_MENUBAR_LABEL");
+            } else {
+                PersonService personService = DirServiceFactory.getService(PersonService.class);
+                Person person = personService.getPerson(author);
+                String displayName;
+                if (person == null) {
+                    displayName = author;
+                } else {
+                    displayName = StringUtils.defaultIfBlank(person.getDisplayName(), author);
+                }
+                label = bundle.getString("SHARED_BY_MENUBAR_LABEL", displayName);
+            }
+
+            // Menubar item
+            MenubarItem indicator = new MenubarItem("SHARED", label, MenubarGroup.CMS, -1, "label label-default");
+            indicator.setGlyphicon("glyphicons glyphicons-group");
+            indicator.setState(true);
+            menubar.add(indicator);
         }
     }
 
@@ -145,39 +166,41 @@ public class SharingPluginServiceImpl implements SharingPluginService {
      */
     private void addPortletMenubarItem(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, NuxeoDocumentContext documentContext)
             throws PortalException {
-        // Publication infos
-        NuxeoPublicationInfos publicationInfos = documentContext.getPublicationInfos();
-        // Permissions
-        NuxeoPermissions permissions = documentContext.getPermissions();
+        if (ContextualizationHelper.isCurrentDocContextualized(portalControllerContext)) {
+            // Publication infos
+            NuxeoPublicationInfos publicationInfos = documentContext.getPublicationInfos();
+            // Permissions
+            NuxeoPermissions permissions = documentContext.getPermissions();
 
-        if (publicationInfos.isLiveSpace() && !publicationInfos.isDraft() && permissions.isManageable()) {
-            // HTTP servlet request
-            HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
-            // Bundle
-            Bundle bundle = this.bundleFactory.getBundle(servletRequest.getLocale());
+            if (publicationInfos.isLiveSpace() && !publicationInfos.isDraft() && permissions.isManageable()) {
+                // HTTP servlet request
+                HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
+                // Bundle
+                Bundle bundle = this.bundleFactory.getBundle(servletRequest.getLocale());
 
-            // Path
-            String path = documentContext.getCmsPath();
+                // Path
+                String path = documentContext.getCmsPath();
 
-            // Window properties
-            Map<String, String> properties = new HashMap<String, String>();
-            properties.put(SharingService.DOCUMENT_PATH_WINDOW_PROPERTY, path);
+                // Window properties
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put(SharingService.DOCUMENT_PATH_WINDOW_PROPERTY, path);
 
-            // Menubar item
-            String id = "SHARING";
-            String title = bundle.getString("SHARING_MENUBAR_ITEM");
-            String icon = "glyphicons glyphicons-share-alt";
-            MenubarContainer parent = this.menubarService.getDropdown(portalControllerContext, MenubarDropdown.SHARE_DROPDOWN_MENU_ID);
-            int order = 1;
-            String url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, SHARING_INSTANCE, properties, PortalUrlType.MODAL);
+                // Menubar item
+                String id = "SHARING";
+                String title = bundle.getString("SHARING_MENUBAR_ITEM");
+                String icon = "glyphicons glyphicons-share-alt";
+                MenubarContainer parent = this.menubarService.getDropdown(portalControllerContext, MenubarDropdown.SHARE_DROPDOWN_MENU_ID);
+                int order = 1;
+                String url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, SHARING_INSTANCE, properties, PortalUrlType.MODAL);
 
-            MenubarItem menubarItem = new MenubarItem(id, title, icon, parent, order, "javascript:;", null, null, null);
-            Map<String, String> data = menubarItem.getData();
-            data.put("target", "#osivia-modal");
-            data.put("load-url", url);
-            data.put("backdrop", "static");
+                MenubarItem menubarItem = new MenubarItem(id, title, icon, parent, order, "javascript:;", null, null, null);
+                Map<String, String> data = menubarItem.getData();
+                data.put("target", "#osivia-modal");
+                data.put("load-url", url);
+                data.put("backdrop", "static");
 
-            menubar.add(menubarItem);
+                menubar.add(menubarItem);
+            }
         }
     }
 

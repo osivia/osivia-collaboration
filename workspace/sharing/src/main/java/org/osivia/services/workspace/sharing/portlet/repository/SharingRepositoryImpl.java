@@ -64,8 +64,24 @@ public class SharingRepositoryImpl extends SharingCommonRepositoryImpl implement
 
         // Document context
         NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
+        // Document
+        Document document = documentContext.getDocument();
 
-        return this.isSharingEnabled(portalControllerContext, documentContext);
+        // Facets
+        PropertyList facets = document.getFacets();
+
+        // Enabled indicator
+        boolean enabled = false;
+        if (facets != null) {
+            int i = 0;
+            while (!enabled && (i < facets.size())) {
+                String facet = facets.getString(i);
+                enabled = SHARING_FACET.equals(facet);
+                i++;
+            }
+        }
+
+        return enabled;
     }
 
 

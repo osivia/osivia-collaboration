@@ -5,6 +5,7 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -55,6 +56,17 @@ public class SharingPluginConfiguration {
     @Bean
     public IPortalUrlFactory getPortalUrlFactory() {
         return Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
+    }
+
+
+    /**
+     * Get CMS service locator.
+     * 
+     * @return CMS service locator
+     */
+    @Bean
+    public ICMSServiceLocator getCmsServiceLocator() {
+        return Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
     }
 
 
