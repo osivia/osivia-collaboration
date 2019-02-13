@@ -15,7 +15,9 @@ import javax.portlet.RenderResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.repository.MemberManagementRepository;
 import org.osivia.services.workspace.util.ApplicationContextProvider;
@@ -29,7 +31,7 @@ import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
  * Workspace member requests list template module.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see PrivilegedPortletModule
  */
@@ -41,7 +43,7 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
 
     /**
      * Constructor.
-     * 
+     *
      * @param portletContext portlet context
      */
     public RequestsListTemplateModule(PortletContext portletContext) {
@@ -109,38 +111,36 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
     protected void doView(RenderRequest request, RenderResponse response, PortletContext portletContext) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
-        // Portlet repository
-        MemberManagementRepository repository = this.getRepository();
 
         // Current user
         String user = request.getRemoteUser();
+        // Pending invitations member status
+        Map<String, MemberStatus> pendingStatus = this.getPendingStatus(portalControllerContext, user);
 
-        if (StringUtils.isNotEmpty(user)) {
-            // Workspaces
-            List<?> workspaces = (List<?>) request.getAttribute("documents");
-            // Pending invitations
-            List<Document> pendingInvitations = repository.getPendingInvitations(portalControllerContext, user);
-            // Pending invitations member status
-            Map<String, MemberStatus> pendingStatus = getPendingStatus(pendingInvitations);
+        // Documents DTO
+        List<?> documents = (List<?>) request.getAttribute("documents");
 
-            for (Object object : workspaces) {
-                // Workspace
-                DocumentDTO workspace = (DocumentDTO) object;
+        for (Object object : documents) {
+            // Document DTO
+            DocumentDTO documentDto = (DocumentDTO) object;
+            // Document type
+            DocumentType documentType = documentDto.getType();
+
+            if ((documentType != null) && StringUtils.equals("Workspace", documentType.getName())) {
+                // Workspace Nuxeo document
+                Document workspace = documentDto.getDocument();
                 // Workspace properties
-                Map<String, Object> properties = workspace.getProperties();
-
-                // Workspace identifier
-                String workspaceId = (String) properties.get("webc:url");
+                Map<String, Object> properties = documentDto.getProperties();
 
                 // Workspace type
-                String visibility = (String) properties.get("ttcs:visibility");
+                String visibility = workspace.getString("ttcs:visibility");
                 if (StringUtils.isNotEmpty(visibility)) {
                     WorkspaceType type = WorkspaceType.valueOf(visibility);
                     properties.put("workspaceType", type);
                 }
 
                 // Workspace member status
-                MemberStatus status = pendingStatus.get(workspaceId);
+                MemberStatus status = this.getMemberStatus(workspace, user, pendingStatus);
                 properties.put("memberStatus", status);
             }
         }
@@ -149,39 +149,53 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
 
     /**
      * Get pending invitation member status.
-     * 
+     *
      * @param pendingInvitations pending invitations
      * @return pending invitation member status
+     * @throws PortletException
      */
-    private Map<String, MemberStatus> getPendingStatus(List<Document> pendingInvitations) {
-        Map<String, MemberStatus> pendingStatus = new HashMap<>(pendingInvitations.size());
+    protected Map<String, MemberStatus> getPendingStatus(PortalControllerContext portalControllerContext, String user) throws PortletException {
+        // Pending status
+        Map<String, MemberStatus> pendingStatus;
 
-        for (Document pendingInvitation : pendingInvitations) {
-            // Model webId
-            String modelWebId = pendingInvitation.getString("pi:procedureModelWebId");
-            // Model identifier
-            String modelId = StringUtils.removeStart(modelWebId, IFormsService.FORMS_WEB_ID_PREFIX);
+        if (StringUtils.isEmpty(user)) {
+            pendingStatus = null;
+        } else {
+            // Portlet repository
+            MemberManagementRepository repository = this.getRepository();
 
-            // Member status
-            MemberStatus status;
-            if (MemberManagementRepository.INVITATION_MODEL_ID.equals(modelId)) {
-                status = MemberStatus.INVITATION_PENDING;
-            } else if (MemberManagementRepository.REQUEST_MODEL_ID.equals(modelId)) {
-                status = MemberStatus.REQUEST_PENDING;
-            } else {
-                status = null;
-            }
+            // Pending invitations
+            List<Document> pendingInvitations = repository.getPendingInvitations(portalControllerContext, user);
 
-            if (status != null) {
-                // Variables
-                PropertyMap variables = pendingInvitation.getProperties().getMap("pi:globalVariablesValues");
+            pendingStatus = new HashMap<>(pendingInvitations.size());
 
-                if (variables != null) {
-                    // Workspace identifier
-                    String workspaceId = variables.getString(MemberManagementRepository.WORKSPACE_IDENTIFIER_PROPERTY);
+            for (Document pendingInvitation : pendingInvitations) {
+                // Model webId
+                String modelWebId = pendingInvitation.getString("pi:procedureModelWebId");
+                // Model identifier
+                String modelId = StringUtils.removeStart(modelWebId, IFormsService.FORMS_WEB_ID_PREFIX);
 
-                    if (StringUtils.isNotEmpty(workspaceId)) {
-                        pendingStatus.put(workspaceId, status);
+                // Member status
+                MemberStatus status;
+                if (MemberManagementRepository.INVITATION_MODEL_ID.equals(modelId)) {
+                    status = MemberStatus.INVITATION_PENDING;
+                } else if (MemberManagementRepository.REQUEST_MODEL_ID.equals(modelId)) {
+                    status = MemberStatus.REQUEST_PENDING;
+                } else {
+                    status = null;
+                }
+
+                if (status != null) {
+                    // Variables
+                    PropertyMap variables = pendingInvitation.getProperties().getMap("pi:globalVariablesValues");
+
+                    if (variables != null) {
+                        // Workspace identifier
+                        String workspaceId = variables.getString(MemberManagementRepository.WORKSPACE_IDENTIFIER_PROPERTY);
+
+                        if (StringUtils.isNotEmpty(workspaceId)) {
+                            pendingStatus.put(workspaceId, status);
+                        }
                     }
                 }
             }
@@ -189,7 +203,49 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
 
         return pendingStatus;
     }
-    
+
+
+    /**
+     * Get workspace member status.
+     * 
+     * @param workspace workspace Nuxeo document
+     * @param user user
+     * @param pendingStatus invitations pending status
+     * @return member status
+     */
+    protected MemberStatus getMemberStatus(Document workspace, String user, Map<String, MemberStatus> pendingStatus) {
+        MemberStatus status;
+        if (StringUtils.isEmpty(user)) {
+            status = null;
+        } else {
+            // Workspace identifier
+            String workspaceId = workspace.getString("webc:url");
+
+            status = pendingStatus.get(workspaceId);
+
+            if (status == null) {
+                // Workspace members
+                PropertyList members = workspace.getProperties().getList("ttcs:spaceMembers");
+
+                if ((members != null) && !members.isEmpty()) {
+                    boolean member = false;
+                    int i = 0;
+                    while (!member && (i < members.size())) {
+                        PropertyMap map = members.getMap(i);
+                        member = StringUtils.equals(user, map.getString("login"));
+                        i++;
+                    }
+
+                    if (member) {
+                        status = MemberStatus.MEMBER;
+                    }
+                }
+            }
+        }
+
+        return status;
+    }
+
 
     /**
      * {@inheritDoc}
@@ -221,7 +277,7 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
 
     /**
      * Get portlet repository.
-     * 
+     *
      * @return repository
      */
     private MemberManagementRepository getRepository() {
@@ -243,7 +299,9 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
         /** Workspace invitation pending. */
         INVITATION_PENDING("LIST_TEMPLATE_STATUS_INVITATION_PENDING", "warning", "glyphicons glyphicons-alert"),
         /** Workspace request pending. */
-        REQUEST_PENDING("LIST_TEMPLATE_STATUS_REQUEST_PENDING", "info", "glyphicons glyphicons-hourglass");
+        REQUEST_PENDING("LIST_TEMPLATE_STATUS_REQUEST_PENDING", "info", "glyphicons glyphicons-hourglass"),
+        /** Workspace member. */
+        MEMBER("LIST_TEMPLATE_STATUS_MEMBER", "primary", "glyphicons glyphicons-ok");
 
 
         /** Identifier. */
@@ -277,7 +335,7 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
          * @return the id
          */
         public String getId() {
-            return id;
+            return this.id;
         }
 
         /**
@@ -286,7 +344,7 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
          * @return the key
          */
         public String getKey() {
-            return key;
+            return this.key;
         }
 
         /**
@@ -295,7 +353,7 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
          * @return the color
          */
         public String getColor() {
-            return color;
+            return this.color;
         }
 
         /**
@@ -304,7 +362,7 @@ public class RequestsListTemplateModule extends PrivilegedPortletModule {
          * @return the icon
          */
         public String getIcon() {
-            return icon;
+            return this.icon;
         }
 
     }
