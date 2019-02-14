@@ -37,6 +37,7 @@ import fr.toutatice.portail.cms.nuxeo.api.ContextualizationHelper;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
+import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
 
 /**
  * Sharing plugin service implementation.
@@ -82,8 +83,22 @@ public class SharingPluginServiceImpl implements SharingPluginService {
     @Override
     public void customizeMenubarModules(CustomizationContext customizationContext, List<MenubarModule> menubarModules) {
         // Sharing menubar module
-        MenubarModule menubarModule = this.applicationContext.getBean(SharingMenubarModule.class);
-        menubarModules.add(menubarModule);
+        MenubarModule sharingMenubarModule = this.applicationContext.getBean(SharingMenubarModule.class);
+        menubarModules.add(sharingMenubarModule);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void customizeListTemplates(CustomizationContext customizationContext, Map<String, ListTemplate> listTemplates) {
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(customizationContext.getLocale());
+
+        // Sharing list template
+        ListTemplate sharingListTemplate = new ListTemplate("sharing", bundle.getString("SHARING_LIST_TEMPLATE"), "dublincore, toutatice, ottc-sharing");
+        listTemplates.put(sharingListTemplate.getKey(), sharingListTemplate);
     }
 
 

@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.sharing.plugin.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
+import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
 
 /**
  * Sharing plugin controller.
@@ -75,9 +77,13 @@ public class SharingPluginController extends AbstractPluginPortlet {
      */
     @Override
     protected void customizeCMSProperties(CustomizationContext customizationContext) {
-        // Menubar modules
+        // Customize menubar modules
         List<MenubarModule> menubarModules = this.getMenubarModules(customizationContext);
         this.service.customizeMenubarModules(customizationContext, menubarModules);
+
+        // Customize list templates
+        Map<String, ListTemplate> listTemplates = this.getListTemplates(customizationContext);
+        this.service.customizeListTemplates(customizationContext, listTemplates);
     }
 
 }

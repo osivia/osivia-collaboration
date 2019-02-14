@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.sharing.plugin.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
@@ -8,6 +9,8 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.menubar.MenubarModule;
+
+import fr.toutatice.portail.cms.nuxeo.api.domain.ListTemplate;
 
 /**
  * Sharing plugin service interface.
@@ -30,6 +33,15 @@ public interface SharingPluginService {
      * @param menubarModules menubar modules
      */
     void customizeMenubarModules(CustomizationContext customizationContext, List<MenubarModule> menubarModules);
+
+
+    /**
+     * Customize list templates.
+     * 
+     * @param customizationContext customization context
+     * @param listTemplates list templates
+     */
+    void customizeListTemplates(CustomizationContext customizationContext, Map<String, ListTemplate> listTemplates);
 
 
     /**
