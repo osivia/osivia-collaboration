@@ -3,6 +3,7 @@ package org.osivia.services.workspace.edition.portlet.repository.command;
 import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.Blob;
@@ -80,6 +81,15 @@ public class UpdatePropertiesCommand implements INuxeoCommand {
             documentService.removeBlob(workspace, "ttc:vignette");
         }
        
+        if(!workspace.getTitle().equals(form.getTitle())) {
+        	
+			OperationRequest reindex = nuxeoSession.newRequest("Document.ReIndexES");
+			reindex.set("repositoryName", workspace.getRepository());
+			reindex.set("type", "QUERY");
+			reindex.set("query", "SELECT * FROM Document where ecm:path STARTSWITH '"
+					+ workspace.getPath() + "'");
+			reindex.execute();
+        }        
         
         return null;
     }
