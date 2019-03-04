@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class AddToGroupForm extends AbstractMembersForm {
+public class AddToGroupForm extends AbstractMembersForm<Member> {
 
     /** Local groups. */
     private List<CollabProfile> localGroups;

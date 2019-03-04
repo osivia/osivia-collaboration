@@ -16,7 +16,7 @@
     <!-- Member display name -->
     <div class="portal-table-cell" data-column="display-name">
         <div class="portal-table-cell-inner" data-column="display-name">
-            <portlet:actionURL name="sort" var="url">
+            <portlet:actionURL name="sort" var="url" copyCurrentRenderParameters="true">
                 <portlet:param name="sortId" value="display-name" />
                 <portlet:param name="alt" value="${members.sort.id eq 'display-name' and not members.alt}" />
             </portlet:actionURL>
@@ -34,7 +34,7 @@
     <!-- Acknowledgment date -->
     <div class="portal-table-cell" data-column="date">
         <div class="portal-table-cell-inner" data-column="date">
-            <portlet:actionURL name="sort" var="url">
+            <portlet:actionURL name="sort" var="url" copyCurrentRenderParameters="true">
                 <portlet:param name="sortId" value="date" />
                 <portlet:param name="alt" value="${members.sort.id ne 'date' or not members.alt}" />
             </portlet:actionURL>
@@ -59,7 +59,7 @@
     <!-- Role -->
     <div class="portal-table-cell" data-column="role">
         <div class="portal-table-cell-inner" data-column="role">
-            <portlet:actionURL name="sort" var="url">
+            <portlet:actionURL name="sort" var="url" copyCurrentRenderParameters="true">
                 <portlet:param name="sortId" value="role" />
                 <portlet:param name="alt" value="${members.sort.id eq 'role' and not members.alt}" />
             </portlet:actionURL>

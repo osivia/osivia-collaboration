@@ -16,10 +16,8 @@ import org.springframework.web.context.WebApplicationContext;
 @Component
 @Scope(WebApplicationContext.SCOPE_SESSION)
 @Refreshable
-public class InvitationsForm {
+public class InvitationsForm extends AbstractMembersForm<Invitation> {
 
-    /** Invitations. */
-    private List<Invitation> invitations;
     /** Invitation identifiers. */
     private Set<String> identifiers;
     /** Purge invitations history availability indicator. */
@@ -42,7 +40,7 @@ public class InvitationsForm {
      * @return the invitations
      */
     public List<Invitation> getInvitations() {
-        return invitations;
+        return this.getMembers();
     }
 
     /**
@@ -51,7 +49,7 @@ public class InvitationsForm {
      * @param invitations the invitations to set
      */
     public void setInvitations(List<Invitation> invitations) {
-        this.invitations = invitations;
+        this.setMembers(invitations);
     }
 
     /**

@@ -16,7 +16,7 @@ import org.springframework.web.context.WebApplicationContext;
 @Component
 @Scope(WebApplicationContext.SCOPE_SESSION)
 @Refreshable
-public class MembersForm extends AbstractMembersForm {
+public class MembersForm extends AbstractMembersForm<Member> {
 
     /** Member identifiers. */
     private Set<String> identifiers;

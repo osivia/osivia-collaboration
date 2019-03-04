@@ -53,9 +53,19 @@ public class InvitationComparator implements Comparator<Invitation> {
         } else if (invitation2 == null) {
             result = 1;
         } else if (MembersSort.DATE.equals(this.sort)) {
-            // Date
-            Date date1 = invitation1.getDate();
-            Date date2 = invitation2.getDate();
+            // Dates
+            Date date1;
+            if (invitation1.getResendingDate() == null) {
+                date1 = invitation1.getDate();
+            } else {
+                date1 = invitation1.getResendingDate();
+            }
+            Date date2;
+            if (invitation2.getResendingDate() == null) {
+                date2 = invitation2.getDate();
+            } else {
+                date2 = invitation2.getResendingDate();
+            }
 
             result = date1.compareTo(date2);
         } else if (MembersSort.ROLE.equals(this.sort)) {

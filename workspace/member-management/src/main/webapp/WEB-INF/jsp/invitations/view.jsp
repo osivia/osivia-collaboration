@@ -11,14 +11,18 @@
     <!-- Tabs -->
     <%@ include file="../commons/tabs.jspf" %>
     
-    <div class="portlet-filler">
-        <!-- Invitations creation -->
-        <jsp:include page="creation.jsp" />
-        
-        <!-- Invitations list -->
-        <jsp:include page="list.jsp" />
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="portlet-filler">
+                <!-- Invitations creation -->
+                <%@ include file="creation.jspf" %>
+                    
+                <!-- Invitations list -->
+                <%@ include file="table.jspf" %>
+            </div>
+        </div>
     </div>
     
     <!-- Purge -->
-    <jsp:include page="purge.jsp" />
+    <%@ include file="purge.jspf" %>
 </div>

@@ -57,6 +57,7 @@ import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.Member;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
+import org.osivia.services.workspace.portlet.model.MemberObject;
 import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.model.MembersSort;
 import org.osivia.services.workspace.portlet.model.comparator.InvitationComparator;
@@ -208,7 +209,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
-    public void sortMembers(PortalControllerContext portalControllerContext, AbstractMembersForm form, MembersSort sort, boolean alt) throws PortletException {
+    public void sortMembers(PortalControllerContext portalControllerContext, AbstractMembersForm<? extends MemberObject> form, MembersSort sort, boolean alt)
+            throws PortletException {
         if (CollectionUtils.isNotEmpty(form.getMembers())) {
             // Comparator
             MemberObjectComparator comparator = this.applicationContext.getBean(MemberObjectComparator.class, sort, alt);
@@ -823,6 +825,9 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             form.setIdentifiers(invitationIdentifiers);
             form.setPurgeAvailable(purgeAvailable);
 
+            // Sort
+            this.sortInvitations(portalControllerContext, form, MembersSort.DATE, true);
+
             form.setLoaded(true);
         }
 
@@ -1077,6 +1082,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     public void sortInvitations(PortalControllerContext portalControllerContext, InvitationsForm form, MembersSort sort, boolean alt) throws PortletException {
         InvitationComparator comparator = this.applicationContext.getBean(InvitationComparator.class, sort, alt);
         Collections.sort(form.getInvitations(), comparator);
+
+        // Update model
+        form.setSort(sort);
+        form.setAlt(alt);
     }
 
 

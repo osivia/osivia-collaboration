@@ -23,6 +23,19 @@
 [data-column="role"] {
     width: 110px;
 }
+[data-column="invitation-dates"] {
+    width: 150px;
+}
+[data-column="invitation-state"] {
+    width: 110px;
+}
+[data-column="manage"] {
+    width: 80px;
+    
+    .portal-table-cell-inner& {
+        justify-content: flex-end;
+    }
+}
 
 
 @media (max-width: @screen-xs-max) {
@@ -32,6 +45,12 @@
     [data-column="role"] {
         display: none !important;
     }
+    [data-column="invitation-dates"] {
+        display: none !important;
+    }
+    [data-column="invitation-state"] {
+        display: none !important;
+    }
     [data-column="checkbox"] {
         display: none !important;
     }
@@ -39,6 +58,9 @@
 
 @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
     [data-column="date"] {
+        display: none !important;
+    }
+    [data-column="invitation-dates"] {
         display: none !important;
     }
 }

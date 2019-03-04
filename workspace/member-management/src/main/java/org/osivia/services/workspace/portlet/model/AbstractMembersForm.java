@@ -7,10 +7,10 @@ import java.util.List;
  * 
  * @author Cédric Krommenhoek
  */
-public abstract class AbstractMembersForm {
+public abstract class AbstractMembersForm<T extends MemberObject> {
 
     /** Members. */
-    private List<Member> members;
+    private List<T> members;
     /** Sort. */
     private MembersSort sort;
     /** Alternative sort indicator. */
@@ -30,7 +30,7 @@ public abstract class AbstractMembersForm {
      * 
      * @return the members
      */
-    public List<Member> getMembers() {
+    public List<T> getMembers() {
         return members;
     }
 
@@ -39,7 +39,7 @@ public abstract class AbstractMembersForm {
      * 
      * @param members the members to set
      */
-    public void setMembers(List<Member> members) {
+    public void setMembers(List<T> members) {
         this.members = members;
     }
 

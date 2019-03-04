@@ -113,6 +113,8 @@ public class MemberManagementController {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         this.service.sortMembers(portalControllerContext, form, MembersSort.fromId(sortId), BooleanUtils.toBoolean(alt));
+
+        response.setRenderParameter("tab", "members");
     }
 
 
@@ -225,7 +227,7 @@ public class MemberManagementController {
      * @throws PortletException
      * @throws IOException
      */
-    @ResourceMapping("exportCsv")
+    @ResourceMapping("exportMembersCsv")
     public void exportCsv(ResourceRequest request, ResourceResponse response, @ModelAttribute("members") MembersForm members,
             @ModelAttribute("options") MemberManagementOptions options) throws PortletException, IOException {
         // Portal controller context

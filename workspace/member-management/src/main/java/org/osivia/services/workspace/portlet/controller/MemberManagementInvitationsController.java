@@ -31,6 +31,7 @@ import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
+import org.osivia.services.workspace.portlet.model.MembersSort;
 import org.osivia.services.workspace.portlet.model.converter.InvitationPropertyEditor;
 import org.osivia.services.workspace.portlet.model.converter.LocalGroupPropertyEditor;
 import org.osivia.services.workspace.portlet.model.validator.InvitationsCreationFormValidator;
@@ -99,29 +100,37 @@ public class MemberManagementInvitationsController {
      *
      * @param request render request
      * @param response render response
-     * @param form invitations form model attribute
-     * @param sort sort property request parameter
-     * @param alt alternative sort indicator request parameter
      * @return view path
      * @throws PortletException
      */
     @RenderMapping
-    public String view(RenderRequest request, RenderResponse response, @ModelAttribute("invitations") InvitationsForm form,
-            @RequestParam(value = "sort", defaultValue = "date") String sort, @RequestParam(value = "alt", defaultValue = "true") String alt)
-            throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
+    public String view(RenderRequest request, RenderResponse response) throws PortletException {
         // Tab
         request.setAttribute("tab", "invitations");
 
-        // FIXME
-        // // Sort invitations
-        // this.service.sortInvitations(portalControllerContext, form, sort, BooleanUtils.toBoolean(alt));
-        // request.setAttribute("sort", sort);
-        // request.setAttribute("alt", alt);
-
         return "invitations/view";
+    }
+
+
+    /**
+     * Sort action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param sortId sort identifier request parameter
+     * @param alt alternative sort indicator request parameter
+     * @param form members form model attribute
+     * @throws PortletException
+     */
+    @ActionMapping("sort")
+    public void sort(ActionRequest request, ActionResponse response, @RequestParam("sortId") String sortId, @RequestParam("alt") String alt,
+            @ModelAttribute("invitations") InvitationsForm form) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.sortInvitations(portalControllerContext, form, MembersSort.fromId(sortId), BooleanUtils.toBoolean(alt));
+
+        response.setRenderParameter("tab", "invitations");
     }
 
 
@@ -341,7 +350,7 @@ public class MemberManagementInvitationsController {
      * @param invitations
      * @throws IOException
      */
-    @ResourceMapping("exportCsv")
+    @ResourceMapping("exportInvitationsCsv")
     public void exportCsv(ResourceRequest request, ResourceResponse response, @ModelAttribute("invitations") InvitationsForm invitations, 
     		@ModelAttribute("options") MemberManagementOptions options) throws IOException {
     	

@@ -2,9 +2,8 @@
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
-<portlet:resourceURL id="toolbar" var="toolbarUrl" />
-<portlet:resourceURL id="exportMembersCsv" var="exportCsvUrl">
-    <portlet:param name="tab" value="members" />
+<portlet:resourceURL id="exportInvitationsCsv" var="exportCsvUrl">
+    <portlet:param name="tab" value="invitations" />
 </portlet:resourceURL>
 
 
@@ -15,10 +14,5 @@
             <i class="glyphicons glyphicons-table"></i>
             <span class="hidden-xs"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_EXPORT" /></span>
         </a>
-    </div>
-
-    <!-- Toolbar -->
-    <div class="portal-table-toolbar">
-        <div></div>
     </div>
 </div>

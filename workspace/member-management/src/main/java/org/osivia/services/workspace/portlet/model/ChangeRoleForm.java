@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ChangeRoleForm extends AbstractMembersForm {
+public class ChangeRoleForm extends AbstractMembersForm<Member> {
 
     /** Role. */
     private WorkspaceRole role;

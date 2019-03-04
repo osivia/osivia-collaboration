@@ -16,6 +16,7 @@ import org.osivia.services.workspace.portlet.model.InvitationRequestsForm;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
+import org.osivia.services.workspace.portlet.model.MemberObject;
 import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.model.MembersSort;
 import org.springframework.validation.Errors;
@@ -71,7 +72,8 @@ public interface MemberManagementService {
      * @param alt alternative sort indicator
      * @throws PortletException
      */
-    void sortMembers(PortalControllerContext portalControllerContext, AbstractMembersForm form, MembersSort sort, boolean alt) throws PortletException;
+    void sortMembers(PortalControllerContext portalControllerContext, AbstractMembersForm<? extends MemberObject> form, MembersSort sort, boolean alt)
+            throws PortletException;
 
 
     /**

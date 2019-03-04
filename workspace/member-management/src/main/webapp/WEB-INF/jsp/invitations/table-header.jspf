@@ -1,0 +1,74 @@
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<!-- Column group -->
+<div class="portal-table-column-group">
+    <div class="portal-table-column" data-column="display-name"></div>
+    <div class="portal-table-column" data-column="invitation-dates"></div>
+    <div class="portal-table-column" data-column="invitation-state"></div>
+    <div class="portal-table-column" data-column="manage"></div>
+</div>
+
+<!-- Header -->
+<div class="portal-table-header-group">
+    <!-- Invitation display name -->
+    <div class="portal-table-cell" data-column="display-name">
+        <div class="portal-table-cell-inner" data-column="display-name">
+            <portlet:actionURL name="sort" var="url" copyCurrentRenderParameters="true">
+                <portlet:param name="sortId" value="display-name" />
+                <portlet:param name="alt" value="${invitations.sort.id eq 'display-name' and not invitations.alt}" />
+            </portlet:actionURL>
+        
+            <a href="${url}">
+                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION" /></span>
+                
+                <c:if test="${invitations.sort.id eq 'display-name'}">
+                    <i class="glyphicons glyphicons-arrow-${invitations.alt ? 'up' : 'down'}"></i>
+                </c:if>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Invitation dates -->
+    <div class="portal-table-cell" data-column="invitation-dates">
+        <div class="portal-table-cell-inner" data-column="invitation-dates">
+            <portlet:actionURL name="sort" var="url" copyCurrentRenderParameters="true">
+                <portlet:param name="sortId" value="date" />
+                <portlet:param name="alt" value="${invitations.sort.id ne 'date' or not invitations.alt}" />
+            </portlet:actionURL>
+        
+            <a href="${url}">
+                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_DATE" /></span>
+                
+                <c:if test="${invitations.sort.id eq 'date'}">
+                    <i class="glyphicons glyphicons-arrow-${invitations.alt ? 'up' : 'down'}"></i>
+                </c:if>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Invitation state -->
+    <div class="portal-table-cell" data-column="invitation-state">
+        <div class="portal-table-cell-inner" data-column="invitation-state">
+            <portlet:actionURL name="sort" var="url" copyCurrentRenderParameters="true">
+                <portlet:param name="sortId" value="state" />
+                <portlet:param name="alt" value="${invitations.sort.id eq 'state' and not invitations.alt}" />
+            </portlet:actionURL>
+        
+            <a href="${url}">
+                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_STATE" /></span>
+                
+                <c:if test="${invitations.sort.id eq 'state'}">
+                    <i class="glyphicons glyphicons-arrow-${invitations.alt ? 'up' : 'down'}"></i>
+                </c:if>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Manage -->
+    <div class="portal-table-cell" data-column="manage">
+        <div class="portal-table-cell-inner" data-column="manage"></div>
+    </div>
+</div>
