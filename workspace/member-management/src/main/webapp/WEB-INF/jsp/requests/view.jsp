@@ -9,7 +9,7 @@
 
 <div class="workspace-member-management">
     <!-- Tabs -->
-    <jsp:include page="../commons/tabs.jsp" />
+    <%@ include file="../commons/tabs.jspf" %>
 
     <!-- List -->
     <jsp:include page="list.jsp" />

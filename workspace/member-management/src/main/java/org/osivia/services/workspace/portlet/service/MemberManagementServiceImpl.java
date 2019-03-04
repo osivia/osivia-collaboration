@@ -1,28 +1,53 @@
 package org.osivia.services.workspace.portlet.service;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.MimeResponse;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
+import javax.portlet.PortletURL;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Element;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
+import org.osivia.portal.api.html.AccessibilityRoles;
+import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.services.workspace.portlet.model.AbstractMembersForm;
+import org.osivia.services.workspace.portlet.model.AddToGroupForm;
+import org.osivia.services.workspace.portlet.model.ChangeRoleForm;
 import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
 import org.osivia.services.workspace.portlet.model.InvitationRequest;
@@ -33,6 +58,7 @@ import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.Member;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.MembersForm;
+import org.osivia.services.workspace.portlet.model.MembersSort;
 import org.osivia.services.workspace.portlet.model.comparator.InvitationComparator;
 import org.osivia.services.workspace.portlet.model.comparator.LocalGroupComparator;
 import org.osivia.services.workspace.portlet.model.comparator.MemberObjectComparator;
@@ -72,11 +98,11 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /** Bundle factory. */
     @Autowired
-    protected IBundleFactory bundleFactory;
+    private IBundleFactory bundleFactory;
 
     /** Notifications service. */
     @Autowired
-    protected INotificationsService notificationsService;
+    private INotificationsService notificationsService;
 
     /** Local group comparator. */
     @Autowired
@@ -88,7 +114,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /** Log. */
     private final Log log;
-    
+
+
     /**
      * Constructor.
      */
@@ -97,7 +124,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         // Mail pattern
         this.mailPattern = Pattern.compile(MAIL_REGEX);
-        
+
+        // Log
         this.log = LogFactory.getLog(this.getClass());
     }
 
@@ -150,7 +178,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     public MembersForm getMembersForm(PortalControllerContext portalControllerContext) throws PortletException {
         // Form
         MembersForm form = this.applicationContext.getBean(MembersForm.class);
-        
+
         if (!form.isLoaded()) {
             // Workspace identifier
             String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
@@ -166,9 +194,12 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             }
             form.setIdentifiers(identifiers);
 
+            // Sort
+            this.sortMembers(portalControllerContext, form, MembersSort.DATE, true);
+
             form.setLoaded(true);
         }
-        
+
         return form;
     }
 
@@ -177,15 +208,21 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
-    public void sortMembers(PortalControllerContext portalControllerContext, MembersForm form, String sort, boolean alt) throws PortletException {
-        MemberObjectComparator comparator = this.applicationContext.getBean(MemberObjectComparator.class, sort, alt);
-        try {
-        	Collections.sort(form.getMembers(), comparator);
-        }
-        catch(IllegalArgumentException e) {
-        	// #1718 - catch errors during sort
-        	log.error("Impossible de trier les membres ",e);
-        	
+    public void sortMembers(PortalControllerContext portalControllerContext, AbstractMembersForm form, MembersSort sort, boolean alt) throws PortletException {
+        if (CollectionUtils.isNotEmpty(form.getMembers())) {
+            // Comparator
+            MemberObjectComparator comparator = this.applicationContext.getBean(MemberObjectComparator.class, sort, alt);
+
+            try {
+                Collections.sort(form.getMembers(), comparator);
+            } catch (IllegalArgumentException e) {
+                // #1718 - catch errors during sort
+                this.log.error("Impossible de trier les membres ", e);
+            }
+
+            // Update model
+            form.setSort(sort);
+            form.setAlt(alt);
         }
     }
 
@@ -194,20 +231,36 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
-    public void updateMembers(PortalControllerContext portalControllerContext, MemberManagementOptions options, MembersForm form) throws PortletException {
+    public void removeMembers(PortalControllerContext portalControllerContext, MemberManagementOptions options, MembersForm form, String[] identifiers)
+            throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
+        // Workspace identifier
+        String workspaceId = options.getWorkspaceId();
+
+        // Sorted identifiers
+        Set<String> sortedIdentifiers = new HashSet<>(Arrays.asList(identifiers));
+
+        // Removed members
+        List<Member> removedMembers = new ArrayList<>(sortedIdentifiers.size());
+
         for (Member member : form.getMembers()) {
-            this.repository.updateMember(portalControllerContext, options.getWorkspaceId(), member);
+            if (sortedIdentifiers.contains(member.getId()) && member.isEditable()) {
+                member.setDeleted(true);
+
+                this.repository.updateMember(portalControllerContext, workspaceId, member);
+
+                removedMembers.add(member);
+            }
         }
 
         // Update model
+        form.getMembers().removeAll(removedMembers);
         this.invalidateLoadedForms();
-        this.getMembersForm(portalControllerContext);
 
         // Notification
-        String message = bundle.getString("MESSAGE_WORKSPACE_MEMBERS_UPDATE_SUCCESS");
+        String message = bundle.getString("MESSAGE_WORKSPACE_REMOVE_MEMBERS_SUCCESS");
         this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
     }
 
@@ -218,6 +271,521 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     @Override
     public String getMembersHelp(PortalControllerContext portalControllerContext) throws PortletException {
         return this.repository.getHelp(portalControllerContext, MEMBERS_HELP_LOCATION_PROPERTY);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Element getMembersToolbar(PortalControllerContext portalControllerContext, List<String> indexes) throws PortletException {
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Toolbar container
+        Element container = DOM4JUtils.generateDivElement(null);
+
+        // Toolbar
+        Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
+        container.add(toolbar);
+
+        if (CollectionUtils.isNotEmpty(indexes)) {
+            // Form
+            MembersForm form = this.getMembersForm(portalControllerContext);
+
+            // Members
+            List<Member> members = form.getMembers();
+
+            // Selected members
+            List<Member> selectedMembers = new ArrayList<>(indexes.size());
+            for (String index : indexes) {
+                int i = NumberUtils.toInt(index, -1);
+                if ((i > -1) && (i < members.size())) {
+                    Member member = members.get(i);
+                    selectedMembers.add(member);
+                }
+            }
+
+            if (indexes.size() == selectedMembers.size()) {
+                // All editable indicator
+                boolean allEditable = true;
+                Iterator<Member> iterator = selectedMembers.iterator();
+                while (allEditable && iterator.hasNext()) {
+                    // Selected member
+                    Member member = iterator.next();
+
+                    allEditable &= member.isEditable();
+                }
+                
+                // Selected member identifiers
+                String[] identifiers = new String[selectedMembers.size()];
+                for (int i = 0; i < selectedMembers.size(); i++) {
+                    Member member = selectedMembers.get(i);
+                    identifiers[i] = member.getId();
+                }
+
+
+                // Change role
+                Element changeRole = this.getChangeRoleToolbarButton(portalControllerContext, identifiers, allEditable, bundle);
+                toolbar.add(changeRole);
+
+                // Add to group
+                Element addToGroup = this.getAddToGroupToolbarButton(portalControllerContext, identifiers, bundle);
+                toolbar.add(addToGroup);
+
+                // Remove member
+                Element removeMember = this.getRemoveMemberToolbarButton(portalControllerContext, allEditable, bundle);
+                toolbar.add(removeMember);
+                
+                if (allEditable) {
+                    Element removeMemberConfirmationModal = this.getRemoveMemberConfirmationModal(portalControllerContext, selectedMembers, identifiers,
+                            bundle);
+                    container.add(removeMemberConfirmationModal);
+                }
+            }
+        }
+
+        return container;
+    }
+
+
+    /**
+     * Get change role toolbar button DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param identifiers selected member identifiers
+     * @param allEditable all editable indicator
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getChangeRoleToolbarButton(PortalControllerContext portalControllerContext, String[] identifiers, boolean allEditable,
+            Bundle bundle) {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+        // MIME response
+        MimeResponse mimeResponse;
+        if (portletResponse instanceof MimeResponse) {
+            mimeResponse = (MimeResponse) portletResponse;
+        } else {
+            mimeResponse = null;
+        }
+
+        // HTML classes
+        String htmlClass = "btn btn-default btn-sm";
+        // Text
+        String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_CHANGE_ROLE");
+        // Icon
+        String icon = "glyphicons glyphicons-shield";
+        // URL
+        String url;
+        if (allEditable && (mimeResponse != null)) {
+            // Render URL
+            PortletURL renderUrl = mimeResponse.createRenderURL();
+            renderUrl.setParameter("tab", "members");
+            renderUrl.setParameter("view", "change-role");
+            renderUrl.setParameter("identifiers", identifiers);
+
+            url = renderUrl.toString();
+        } else {
+            url = null;
+        }
+
+        if (StringUtils.isEmpty(url)) {
+            url = "#";
+            htmlClass += " disabled";
+        }
+
+        return DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
+    }
+
+
+    /**
+     * Get add to group toolbar button DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param identifiers selected member identifiers
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getAddToGroupToolbarButton(PortalControllerContext portalControllerContext, String[] identifiers, Bundle bundle) {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+        // MIME response
+        MimeResponse mimeResponse;
+        if (portletResponse instanceof MimeResponse) {
+            mimeResponse = (MimeResponse) portletResponse;
+        } else {
+            mimeResponse = null;
+        }
+
+        // HTML classes
+        String htmlClass = "btn btn-default btn-sm";
+        // Text
+        String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ADD_TO_GROUP");
+        // Icon
+        String icon = "glyphicons glyphicons-group";
+
+        // URL
+        String url;
+        if (mimeResponse != null) {
+            // Render URL
+            PortletURL renderUrl = mimeResponse.createRenderURL();
+            renderUrl.setParameter("tab", "members");
+            renderUrl.setParameter("view", "add-to-group");
+            renderUrl.setParameter("identifiers", identifiers);
+
+            url = renderUrl.toString();
+        } else {
+            url = null;
+        }
+
+        if (StringUtils.isEmpty(url)) {
+            url = "#";
+            htmlClass += " disabled";
+        }
+
+        return DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
+    }
+
+
+    /**
+     * Get remove member toolbar button DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param allEditable all editable indicator
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getRemoveMemberToolbarButton(PortalControllerContext portalControllerContext, boolean allEditable, Bundle bundle) {
+        // Portlet response
+        PortletResponse response = portalControllerContext.getResponse();
+        
+        // URL
+        String url;
+        // HTML classes
+        String htmlClass = "btn btn-default btn-sm no-ajax-link";
+        // Text
+        String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_REMOVE_MEMBER");
+        // Icon
+        String icon = "glyphicons glyphicons-remove";
+
+        if (allEditable) {
+            url = "#" + response.getNamespace() + "-remove";
+        } else {
+            url = "#";
+            htmlClass += " disabled";
+        }
+
+        Element button = DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
+        if (allEditable) {
+            DOM4JUtils.addDataAttribute(button, "toggle", "modal");
+        }
+
+        return button;
+    }
+
+
+    /**
+     * Get remove member confirmation modal DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param selectedMembers selected members
+     * @param identifiers selected member identifiers
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getRemoveMemberConfirmationModal(PortalControllerContext portalControllerContext, List<Member> selectedMembers, String[] identifiers,
+            Bundle bundle) {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+        // MIME response
+        MimeResponse mimeResponse;
+        if (portletResponse instanceof MimeResponse) {
+            mimeResponse = (MimeResponse) portletResponse;
+        } else {
+            mimeResponse = null;
+        }
+
+        // Modal
+        Element modal = DOM4JUtils.generateDivElement("modal fade");
+        DOM4JUtils.addAttribute(modal, "id", portletResponse.getNamespace() + "-remove");
+
+        // Modal dialog
+        Element modalDialog = DOM4JUtils.generateDivElement("modal-dialog");
+        modal.add(modalDialog);
+
+        // Modal content
+        Element modalContent = DOM4JUtils.generateDivElement("modal-content");
+        modalDialog.add(modalContent);
+
+        // Modal header
+        Element modalHeader = DOM4JUtils.generateDivElement("modal-header");
+        modalContent.add(modalHeader);
+
+        // Modal close button
+        Element close = DOM4JUtils.generateElement("button", "close", null, "glyphicons glyphicons-remove", null);
+        DOM4JUtils.addAttribute(close, "type", "button");
+        DOM4JUtils.addDataAttribute(close, "dismiss", "modal");
+        modalHeader.add(close);
+
+        // Modal title
+        Element modalTitle = DOM4JUtils.generateElement("h4", "modal-title", bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_REMOVE_MEMBER"));
+        modalHeader.add(modalTitle);
+
+        // Modal body
+        Element modalBody = DOM4JUtils.generateDivElement("modal-body");
+        modalContent.add(modalBody);
+
+        // Modal message
+        Element message = DOM4JUtils.generateElement("p", null, bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_REMOVE_MEMBER_MODAL_MESSAGE"));
+        modalBody.add(message);
+        Element ul = DOM4JUtils.generateElement("ul", null, null);
+        modalBody.add(ul);
+        for (Member member : selectedMembers) {
+            Element li = DOM4JUtils.generateElement("li", null, null);
+            ul.add(li);
+
+            Element p = DOM4JUtils.generateElement("p", null, null);
+            li.add(p);
+
+            // Avatar
+            String avatarUrl;
+            if (member.getPerson().getAvatar() == null) {
+                avatarUrl = null;
+            } else {
+                avatarUrl = member.getPerson().getAvatar().getUrl();
+            }
+            if (StringUtils.isNotEmpty(avatarUrl)) {
+                Element avatar = DOM4JUtils.generateElement("img", "avatar", null);
+                DOM4JUtils.addAttribute(avatar, "src", avatarUrl);
+                DOM4JUtils.addAttribute(avatar, "alt", StringUtils.EMPTY);
+                p.add(avatar);
+            }
+
+            // Display name
+            Element displayName = DOM4JUtils.generateElement("span", null, member.getDisplayName());
+            p.add(displayName);
+        }
+
+        // Modal footer
+        Element modalFooter = DOM4JUtils.generateDivElement("modal-footer");
+        modalContent.add(modalFooter);
+
+        // Confirmation button
+        String url;
+        if (mimeResponse == null) {
+            url = "#";
+        } else {
+            // Action URL
+            PortletURL actionUrl = mimeResponse.createActionURL();
+            actionUrl.setParameter(ActionRequest.ACTION_NAME, "remove");
+            actionUrl.setParameter("tab", "members");
+            actionUrl.setParameter("identifiers", identifiers);
+
+            url = actionUrl.toString();
+        }
+
+        Element confirm = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-warning no-ajax-link", bundle.getString("CONFIRM"), null);
+        modalFooter.add(confirm);
+
+        // Cancel button
+        Element cancel = DOM4JUtils.generateElement("button", "btn btn-default", bundle.getString("CANCEL"), null, null);
+        DOM4JUtils.addAttribute(cancel, "type", "button");
+        DOM4JUtils.addDataAttribute(cancel, "dismiss", "modal");
+        modalFooter.add(cancel);
+
+        return modal;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void exportMembersCsv(PortalControllerContext portalControllerContext, MembersForm members, OutputStream outputStream)
+            throws PortletException, IOException {
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Writer
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+
+        // Date format
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/YYYY");
+
+        try {
+            // CSV format
+            CSVFormat format = CSVFormat.EXCEL;
+
+            // Headers
+            List<String> headers = new ArrayList<String>();
+            headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER"));
+            headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER_EXTRA"));
+            headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER_ACKNOWLEDGMENT_DATE"));
+            headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ROLE"));
+            headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ID"));
+            format.withHeader(headers.toArray(new String[headers.size()]));
+
+            // CSV printer
+            CSVPrinter printer = format.print(writer);
+
+            try {
+                for (Member member : members.getMembers()) {
+                    // Date
+                    String date;
+                    if (member.getDate() == null) {
+                        date = StringUtils.EMPTY;
+                    } else {
+                        date = dateFormat.format(member.getDate());
+                    }
+
+                    // Role
+                    String role;
+                    if (member.getRole() == null) {
+                        role = StringUtils.EMPTY;
+                    } else {
+                        role = bundle.getString(member.getRole().getKey(), member.getRole().getClassLoader());
+                    }
+
+                    printer.printRecord(member.getDisplayName(), member.getExtra(), date, role, member.getId());
+                }
+            } finally {
+                IOUtils.closeQuietly(printer);
+            }
+        } finally {
+            IOUtils.closeQuietly(writer);
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ChangeRoleForm getChangeRoleForm(PortalControllerContext portalControllerContext, String[] identifiers) throws PortletException {
+        List<Member> selectedMembers = this.getSelectedMembers(portalControllerContext, identifiers);
+
+        // Form
+        ChangeRoleForm form = this.applicationContext.getBean(ChangeRoleForm.class);
+        form.setSelectedMembers(selectedMembers);
+
+        // Sort
+        this.sortMembers(portalControllerContext, form, MembersSort.MEMBER_DISPLAY_NAME, false);
+
+        return form;
+    }
+
+
+    /**
+     * Get selected members.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param identifiers selected member identifiers
+     * @return selected members
+     * @throws PortletException
+     */
+    private List<Member> getSelectedMembers(PortalControllerContext portalControllerContext, String[] identifiers) throws PortletException {
+        // Members
+        List<Member> members = this.getMembersForm(portalControllerContext).getMembers();
+
+        // Selected members
+        List<Member> selectedMembers;
+        if (ArrayUtils.isEmpty(identifiers) || CollectionUtils.isEmpty(members)) {
+            selectedMembers = null;
+        } else {
+            // Sorted members
+            Map<String, Member> sortedMembers = new HashMap<>(members.size());
+            for (Member member : members) {
+                sortedMembers.put(member.getId(), member);
+            }
+            
+            selectedMembers = new ArrayList<>(identifiers.length);
+            for (String identifier : identifiers) {
+                Member member = sortedMembers.get(identifier);
+                if (member != null) {
+                    selectedMembers.add(member);
+                }
+            }
+        }
+        return selectedMembers;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateRole(PortalControllerContext portalControllerContext, MemberManagementOptions options, ChangeRoleForm form) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Updated role
+        WorkspaceRole role = form.getRole();
+        // Workspace identifier
+        String workspaceId = options.getWorkspaceId();
+
+        for (Member member : form.getSelectedMembers()) {
+            if (member.isEditable()) {
+                member.setEdited(true);
+                member.setRole(role);
+
+                this.repository.updateMember(portalControllerContext, workspaceId, member);
+            }
+        }
+
+        // Update model
+        this.invalidateLoadedForms();
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_ROLE_UPDATE_SUCCESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AddToGroupForm getAddToGroupForm(PortalControllerContext portalControllerContext) throws PortletException {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+
+        // Selected member identifiers
+        String[] identifiers = request.getParameterValues("identifiers");
+        // Selected members
+        List<Member> selectedMembers = this.getSelectedMembers(portalControllerContext, identifiers);
+
+        // Form
+        AddToGroupForm form = this.applicationContext.getBean(AddToGroupForm.class);
+        form.setSelectedMembers(selectedMembers);
+
+        return form;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addToGroup(PortalControllerContext portalControllerContext, MemberManagementOptions options, AddToGroupForm form) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Workspace identifier
+        String workspaceId = options.getWorkspaceId();
+        // Selected members
+        List<Member> selectedMembers = form.getSelectedMembers();
+
+        for (CollabProfile localGroup : form.getLocalGroups()) {
+            this.repository.addToGroup(portalControllerContext, workspaceId, selectedMembers, localGroup);
+        }
+
+        // Update model
+        this.invalidateLoadedForms();
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_ADD_TO_GROUP_SUCCESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
     }
 
 
@@ -405,12 +973,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         if (alreadyMember) {
             displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ALREADY_MEMBER_INDICATOR");
             object.put("disabled", true);
-        } 
-        else if (alreadyInvited) {
+        } else if (alreadyInvited) {
             displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ALREADY_INVITED");
             object.put("disabled", true);
-        }
-        else if (existingRequest) {
+        } else if (existingRequest) {
             displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_EXISTING_INVITATION_REQUEST_INDICATOR");
             object.put("disabled", true);
         }
@@ -508,7 +1074,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
-    public void sortInvitations(PortalControllerContext portalControllerContext, InvitationsForm form, String sort, boolean alt) throws PortletException {
+    public void sortInvitations(PortalControllerContext portalControllerContext, InvitationsForm form, MembersSort sort, boolean alt) throws PortletException {
         InvitationComparator comparator = this.applicationContext.getBean(InvitationComparator.class, sort, alt);
         Collections.sort(form.getInvitations(), comparator);
     }
@@ -688,7 +1254,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
-    public void sortInvitationRequests(PortalControllerContext portalControllerContext, InvitationRequestsForm form, String sort, boolean alt)
+    public void sortInvitationRequests(PortalControllerContext portalControllerContext, InvitationRequestsForm form, MembersSort sort, boolean alt)
             throws PortletException {
         MemberObjectComparator comparator = this.applicationContext.getBean(MemberObjectComparator.class, sort, alt);
         Collections.sort(form.getRequests(), comparator);

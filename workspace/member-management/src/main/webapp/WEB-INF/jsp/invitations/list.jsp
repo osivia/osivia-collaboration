@@ -108,7 +108,7 @@
                         <!-- Invitation -->
                         <div class="col-xs-7 col-sm-4 col-md-5 col-lg-6">
                             <c:set var="person" scope="request" value="${invitation}" />
-                            <jsp:include page="../commons/person.jsp" />
+                            <%@ include file="../commons/person.jspf" %>
                         </div>
                         
                         <!-- Dates -->

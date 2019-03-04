@@ -11,10 +11,15 @@
     <!-- Tabs -->
     <%@ include file="../commons/tabs.jspf" %>
     
-    <!-- Members -->
     <div class="panel panel-default">
         <div class="panel-body">
-            <%@ include file="table.jspf" %>
+            <!-- Selected members -->
+            <%@ include file="selected-members.jspf" %>
+            
+            <hr>
+            
+            <!-- Form -->
+            <%@ include file="form.jspf" %>
         </div>
     </div>
 </div>

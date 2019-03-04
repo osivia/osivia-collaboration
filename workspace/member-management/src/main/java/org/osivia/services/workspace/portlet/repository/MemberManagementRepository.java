@@ -148,6 +148,18 @@ public interface MemberManagementRepository {
 
 
     /**
+     * Add members to local group.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspaceId workspace identifier
+     * @param members members
+     * @param group local group
+     * @throws PortletException
+     */
+    void addToGroup(PortalControllerContext portalControllerContext, String workspaceId, List<Member> members, CollabProfile group) throws PortletException;
+
+
+    /**
      * Get invitations.
      * 
      * @param portalControllerContext portal controller context

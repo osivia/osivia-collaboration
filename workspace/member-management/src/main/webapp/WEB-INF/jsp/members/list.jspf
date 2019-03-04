@@ -110,7 +110,7 @@
                                 <!-- Member -->
                                 <div class="col-xs-12 col-sm-4 col-md-5 col-lg-6">
                                     <c:set var="person" scope="request" value="${member}" />
-                                    <jsp:include page="../commons/person.jsp" />
+                                    <%@ include file="../commons/person.jspf" %>
                                 </div>
                                 
                                 <!-- Column reset -->

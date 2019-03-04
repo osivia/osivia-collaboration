@@ -99,7 +99,7 @@
                                 <!-- Invitation request -->
                                 <div class="col-sm-6 col-md-4 col-lg-5">
                                     <c:set var="person" scope="request" value="${invitationRequest}" />
-                                    <jsp:include page="../commons/person.jsp" />
+                                    <%@ include file="../commons/person.jspf" %>
                                 </div>
                                 
                                 <!-- Column reset -->

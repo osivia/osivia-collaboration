@@ -6,6 +6,7 @@ import java.util.Date;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationState;
+import org.osivia.services.workspace.portlet.model.MembersSort;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -21,8 +22,8 @@ import org.springframework.stereotype.Component;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class InvitationComparator implements Comparator<Invitation> {
 
-    /** Comparator sort field. */
-    private final String sort;
+    /** Comparator sort. */
+    private final MembersSort sort;
     /** Comparator alternative sort indicator. */
     private final boolean alt;
 
@@ -30,10 +31,10 @@ public class InvitationComparator implements Comparator<Invitation> {
     /**
      * Constructor.
      * 
-     * @param sort comparator sort field
+     * @param sort comparator sort
      * @param alt comparator alternative sort indicator
      */
-    public InvitationComparator(String sort, boolean alt) {
+    public InvitationComparator(MembersSort sort, boolean alt) {
         super();
         this.sort = sort;
         this.alt = alt;
@@ -51,19 +52,19 @@ public class InvitationComparator implements Comparator<Invitation> {
             result = -1;
         } else if (invitation2 == null) {
             result = 1;
-        } else if ("date".equals(this.sort)) {
+        } else if (MembersSort.DATE.equals(this.sort)) {
             // Date
             Date date1 = invitation1.getDate();
             Date date2 = invitation2.getDate();
 
             result = date1.compareTo(date2);
-        } else if ("role".equals(this.sort)) {
+        } else if (MembersSort.ROLE.equals(this.sort)) {
             // Role
             Integer role1 = invitation1.getRole().getWeight();
             Integer role2 = invitation2.getRole().getWeight();
 
             result = role1.compareTo(role2);
-        } else if ("state".equals(this.sort)) {
+        } else if (MembersSort.INVITATION_STATE.equals(this.sort)) {
             // Invitation state
             InvitationState state1 = invitation1.getState();
             InvitationState state2 = invitation2.getState();
@@ -86,7 +87,7 @@ public class InvitationComparator implements Comparator<Invitation> {
             result = -result;
         }
 
-        if ((result == 0) && (!"date".equals(this.sort))) {
+        if ((result == 0) && (!MembersSort.DATE.equals(this.sort))) {
             // Date
             Date date1 = invitation1.getDate();
             Date date2 = invitation2.getDate();

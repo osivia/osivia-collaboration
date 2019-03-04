@@ -9,7 +9,6 @@ import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.InvitationRequestsForm;
@@ -68,10 +67,11 @@ public class MemberManagementRequestsController {
         // Tab
         request.setAttribute("tab", "requests");
 
-        // Sort member object
-        this.service.sortInvitationRequests(portalControllerContext, form, sort, BooleanUtils.toBoolean(alt));
-        request.setAttribute("sort", sort);
-        request.setAttribute("alt", alt);
+        // FIXME
+        // // Sort member object
+        // this.service.sortInvitationRequests(portalControllerContext, form, sort, BooleanUtils.toBoolean(alt));
+        // request.setAttribute("sort", sort);
+        // request.setAttribute("alt", alt);
 
         return "requests/view";
     }

@@ -10,10 +10,11 @@
         </transaction>
         
         <header-content>
+            <link rel="stylesheet" type="text/css" href="/css/workspace-member-management.min.css" />
             <script type="text/javascript" src="/js/workspace-member-management.js"></script>
         </header-content>
     </portlet>
-    
+
 
     <service>
         <service-name>CustomizationModulesRepository</service-name>

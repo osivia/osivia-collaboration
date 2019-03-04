@@ -30,9 +30,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
-import org.osivia.services.workspace.portlet.model.Member;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
-import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.model.converter.InvitationPropertyEditor;
 import org.osivia.services.workspace.portlet.model.converter.LocalGroupPropertyEditor;
 import org.osivia.services.workspace.portlet.model.validator.InvitationsCreationFormValidator;
@@ -117,10 +115,11 @@ public class MemberManagementInvitationsController {
         // Tab
         request.setAttribute("tab", "invitations");
 
-        // Sort invitations
-        this.service.sortInvitations(portalControllerContext, form, sort, BooleanUtils.toBoolean(alt));
-        request.setAttribute("sort", sort);
-        request.setAttribute("alt", alt);
+        // FIXME
+        // // Sort invitations
+        // this.service.sortInvitations(portalControllerContext, form, sort, BooleanUtils.toBoolean(alt));
+        // request.setAttribute("sort", sort);
+        // request.setAttribute("alt", alt);
 
         return "invitations/view";
     }

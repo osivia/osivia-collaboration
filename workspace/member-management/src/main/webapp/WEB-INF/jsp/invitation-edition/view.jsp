@@ -4,7 +4,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
-<%@ page contentType="text/html" isELIgnored="false"%>
+<%@ page contentType="text/html" isELIgnored="false" %>
 
 
 <portlet:actionURL name="submit" var="submitUrl">
@@ -20,7 +20,7 @@
 
 <div class="workspace-member-management">
     <!-- Tabs -->
-    <jsp:include page="../commons/tabs.jsp" />
+    <%@ include file="../commons/tabs.jspf" %>
     
     <div class="portlet-filler">
         <form:form action="${submitUrl}" method="post" modelAttribute="invitationEditionForm" cssClass="form-horizontal" role="form">
@@ -42,7 +42,7 @@
                     <label class="control-label col-sm-3 col-lg-2"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_RECIPIENT" /></label>
                     <div class="col-sm-9 col-lg-10">
                         <c:set var="person" scope="request" value="${invitationEditionForm.invitation}" />
-                        <jsp:include page="../commons/person.jsp" />
+                        <%@ include file="../commons/person.jspf" %>
                     </div>
                 </div>
                 

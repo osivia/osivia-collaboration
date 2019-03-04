@@ -11,12 +11,15 @@ import javax.portlet.RenderResponse;
 
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
+import org.osivia.services.workspace.portlet.model.AddToGroupForm;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.converter.LocalGroupPropertyEditor;
+import org.osivia.services.workspace.portlet.model.validator.AddToGroupFormValidator;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,14 +31,14 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 /**
- * Member management invitation edition portlet controller.
+ * Add members to group portlet controller.
  * 
  * @author Cédric Krommenhoek
  */
 @Controller
-@RequestMapping(path = "VIEW", params = "view=invitation-edition")
-@SessionAttributes("invitationEditionForm")
-public class MemberManagementInvitationEditionController {
+@RequestMapping(path = "VIEW", params = {"tab=members", "view=add-to-group"})
+@SessionAttributes("addToGroupForm")
+public class MemberManagementAddToGroupController {
 
     /** Portlet context. */
     @Autowired
@@ -45,6 +48,10 @@ public class MemberManagementInvitationEditionController {
     @Autowired
     private MemberManagementService service;
 
+    /** Form validator. */
+    @Autowired
+    private AddToGroupFormValidator validator;
+
     /** Local group property editor. */
     @Autowired
     private LocalGroupPropertyEditor localGroupPropertyEditor;
@@ -53,7 +60,7 @@ public class MemberManagementInvitationEditionController {
     /**
      * Constructor.
      */
-    public MemberManagementInvitationEditionController() {
+    public MemberManagementAddToGroupController() {
         super();
     }
 
@@ -68,13 +75,13 @@ public class MemberManagementInvitationEditionController {
      */
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response) throws PortletException {
-        request.setAttribute("tab", "invitations");
-        request.setAttribute("view", "invitation-edition");
+        request.setAttribute("tab", "members");
+        request.setAttribute("view", "add-to-group");
 
-        return "invitation-edition/view";
+        return "add-to-group/view";
     }
 
-    
+
     /**
      * Redirect tab action mapping.
      * 
@@ -90,116 +97,62 @@ public class MemberManagementInvitationEditionController {
         sessionStatus.setComplete();
         response.setRenderParameter("tab", redirection);
     }
-    
+
 
     /**
-     * Resend invitation action mapping.
+     * Save action mapping.
      * 
      * @param request action request
      * @param response action response
-     * @param form invitation edition form model attribute
-     * @throws PortletException
-     */
-    @ActionMapping(name = "submit", params = "resend")
-    public void resend(ActionRequest request, ActionResponse response, @ModelAttribute("invitationEditionForm") InvitationEditionForm form)
-            throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        this.service.resendInvitation(portalControllerContext, form);
-
-        response.setRenderParameter("view", "invitation-edition");
-        response.setRenderParameter("invitationPath", form.getPath());
-    }
-
-
-    /**
-     * Save modifications action mapping.
-     * 
-     * @param request action request
-     * @param response action response
-     * @param form invitation edition form model attribute
+     * @param options options model attribute
+     * @param form form model attribute
+     * @param result binding result
      * @param sessionStatus session status
      * @throws PortletException
      */
-    @ActionMapping(name = "submit", params = "save")
-    public void save(ActionRequest request, ActionResponse response, @ModelAttribute("invitationEditionForm") InvitationEditionForm form,
-            SessionStatus sessionStatus) throws PortletException {
+    @ActionMapping("save")
+    public void save(ActionRequest request, ActionResponse response, @ModelAttribute("options") MemberManagementOptions options,
+            @Validated @ModelAttribute("addToGroupForm") AddToGroupForm form, BindingResult result, SessionStatus sessionStatus) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.updateInvitation(portalControllerContext, form);
+        response.setRenderParameter("tab", "members");
 
-        sessionStatus.setComplete();
-        response.setRenderParameter("tab", "invitations");
+        if (result.hasErrors()) {
+            response.setRenderParameter("view", "add-to-group");
+        } else {
+            this.service.addToGroup(portalControllerContext, options, form);
+
+            sessionStatus.setComplete();
+        }
     }
 
 
     /**
-     * Cancel modfications action mapping.
-     * 
-     * @param request action request
-     * @param response action response
-     * @param form invitation edition form model attribute
-     * @param sessionStatus session status
-     * @throws PortletException
-     */
-    @ActionMapping(name = "submit", params = "cancel")
-    public void cancel(ActionRequest request, ActionResponse response, @ModelAttribute("invitationEditionForm") InvitationEditionForm form,
-            SessionStatus sessionStatus) throws PortletException {
-        sessionStatus.setComplete();
-        response.setRenderParameter("tab", "invitations");
-    }
-
-
-    /**
-     * Delete invitation action mapping.
-     *
-     * @param request action request
-     * @param response action response
-     * @param form invitation edition form model attribute
-     * @param sessionStatus session status
-     * @throws PortletException
-     */
-    @ActionMapping("delete")
-    public void delete(ActionRequest request, ActionResponse response, @ModelAttribute("invitationEditionForm") InvitationEditionForm form,
-            SessionStatus sessionStatus) throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        this.service.deleteInvitation(portalControllerContext, form);
-
-        sessionStatus.setComplete();
-        response.setRenderParameter("tab", "invitations");
-    }
-
-
-    /**
-     * Get invitation edition form model attribute.
+     * Get form model attribute.
      * 
      * @param request portlet request
      * @param response portlet response
-     * @param path invitation document path request parameter
      * @return form
      * @throws PortletException
      */
-    @ModelAttribute("invitationEditionForm")
-    public InvitationEditionForm getInvitationEditionForm(PortletRequest request, PortletResponse response,
-            @RequestParam(name = "invitationPath", required = false) String path) throws PortletException {
+    @ModelAttribute("addToGroupForm")
+    public AddToGroupForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        return this.service.getInvitationEditionForm(portalControllerContext, path);
+        return this.service.getAddToGroupForm(portalControllerContext);
     }
 
 
     /**
-     * Invitation edition form init binder.
+     * Form init binder.
      *
      * @param binder portlet request data binder
      */
-    @InitBinder("invitationEditionForm")
-    public void invitationEditionFormInitBinder(PortletRequestDataBinder binder) {
+    @InitBinder("addToGroupForm")
+    public void formInitBinder(PortletRequestDataBinder binder) {
+        binder.addValidators(this.validator);
         binder.registerCustomEditor(CollabProfile.class, this.localGroupPropertyEditor);
     }
 

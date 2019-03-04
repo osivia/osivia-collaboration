@@ -6,21 +6,18 @@
 
 
 <c:choose>
-    <c:when test="${view eq 'invitation-edition'}">
-        <portlet:actionURL name="redirectTab" var="membersUrl">
-            <portlet:param name="view" value="invitation-edition"/>
+    <c:when test="${not empty view}">
+        <portlet:actionURL name="redirectTab" var="membersUrl" copyCurrentRenderParameters="true">
+            <portlet:param name="view" value="${view}"/>
             <portlet:param name="redirection" value="members"/>
-            <portlet:param name="invitationPath" value="${invitationEditionForm.path}"/>
         </portlet:actionURL>
-        <portlet:actionURL name="redirectTab" var="invitationsUrl">
-            <portlet:param name="view" value="invitation-edition"/>
+        <portlet:actionURL name="redirectTab" var="invitationsUrl" copyCurrentRenderParameters="true">
+            <portlet:param name="view" value="${view}"/>
             <portlet:param name="redirection" value="invitations"/>
-            <portlet:param name="invitationPath" value="${invitationEditionForm.path}"/>
         </portlet:actionURL>
-        <portlet:actionURL name="redirectTab" var="requestsUrl">
-            <portlet:param name="view" value="invitation-edition"/>
+        <portlet:actionURL name="redirectTab" var="requestsUrl" copyCurrentRenderParameters="true">
+            <portlet:param name="view" value="${view}"/>
             <portlet:param name="redirection" value="requests"/>
-            <portlet:param name="invitationPath" value="${invitationEditionForm.path}"/>
         </portlet:actionURL>
     </c:when>
     

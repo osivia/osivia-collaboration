@@ -350,6 +350,18 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
+    public void addToGroup(PortalControllerContext portalControllerContext, String workspaceId, List<Member> members, CollabProfile group)
+            throws PortletException {
+        for (Member member : members) {
+            this.workspaceService.addMemberToLocalGroup(workspaceId, group.getDn(), member.getPerson().getDn());
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<Invitation> getInvitations(PortalControllerContext portalControllerContext, String workspaceId, Set<String> memberIdentifiers)
             throws PortletException {
         // Nuxeo controller
