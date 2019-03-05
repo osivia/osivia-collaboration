@@ -1,6 +1,6 @@
 package org.osivia.services.workspace.portlet.model.validator;
 
-import org.osivia.services.workspace.portlet.model.ChangeRoleForm;
+import org.osivia.services.workspace.portlet.model.AbstractChangeRoleForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -28,7 +28,7 @@ public class ChangeRoleFormValidator implements Validator {
      */
     @Override
     public boolean supports(Class<?> clazz) {
-        return ChangeRoleForm.class.isAssignableFrom(clazz);
+        return AbstractChangeRoleForm.class.isAssignableFrom(clazz);
     }
 
 

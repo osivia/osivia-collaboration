@@ -21,7 +21,6 @@ import javax.portlet.ResourceResponse;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -119,7 +118,7 @@ public class MemberManagementInvitationsController {
      * @param response action response
      * @param sortId sort identifier request parameter
      * @param alt alternative sort indicator request parameter
-     * @param form members form model attribute
+     * @param form form model attribute
      * @throws PortletException
      */
     @ActionMapping("sort")
@@ -130,6 +129,7 @@ public class MemberManagementInvitationsController {
 
         this.service.sortInvitations(portalControllerContext, form, MembersSort.fromId(sortId), BooleanUtils.toBoolean(alt));
 
+        // Copy render parameter
         response.setRenderParameter("tab", "invitations");
     }
 
@@ -152,7 +152,7 @@ public class MemberManagementInvitationsController {
         this.service.updateInvitations(portalControllerContext, options, form);
 
         // Copy render parameter
-        this.copyRenderParameters(request, response);
+        response.setRenderParameter("tab", "invitations");
     }
 
 
@@ -181,7 +181,7 @@ public class MemberManagementInvitationsController {
         }
 
         // Copy render parameter
-        this.copyRenderParameters(request, response);
+        response.setRenderParameter("tab", "invitations");
     }
 
 
@@ -203,28 +203,7 @@ public class MemberManagementInvitationsController {
         this.service.purgeInvitationsHistory(portalControllerContext, options, form);
         
         // Copy render parameter
-        this.copyRenderParameters(request, response);
-    }
-
-
-    /**
-     * Copy render parameters.
-     *
-     * @param request action request
-     * @param response action response
-     */
-    private void copyRenderParameters(ActionRequest request, ActionResponse response) {
         response.setRenderParameter("tab", "invitations");
-
-        String sortParameter = request.getParameter("sort");
-        if (StringUtils.isNotEmpty(sortParameter)) {
-            response.setRenderParameter("sort", sortParameter);
-        }
-
-        String altParameter = request.getParameter("alt");
-        if (StringUtils.isNotEmpty(altParameter)) {
-            response.setRenderParameter("alt", altParameter);
-        }
     }
 
 
@@ -350,7 +329,7 @@ public class MemberManagementInvitationsController {
      * @param invitations
      * @throws IOException
      */
-    @ResourceMapping("exportInvitationsCsv")
+    @ResourceMapping("export-invitations-csv")
     public void exportCsv(ResourceRequest request, ResourceResponse response, @ModelAttribute("invitations") InvitationsForm invitations, 
     		@ModelAttribute("options") MemberManagementOptions options) throws IOException {
     	
@@ -360,7 +339,7 @@ public class MemberManagementInvitationsController {
     	OutputStreamWriter writer = new OutputStreamWriter(response.getPortletOutputStream());
     	List<String> headers = new ArrayList<String>();
     	
-    	Bundle bundle = bundleFactory.getBundle(null);
+        Bundle bundle = bundleFactory.getBundle(request.getLocale());
     	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION"));
     	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER_EXTRA"));
     	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_DATE"));

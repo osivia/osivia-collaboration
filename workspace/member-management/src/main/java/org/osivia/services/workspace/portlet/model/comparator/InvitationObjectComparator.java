@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.osivia.services.workspace.portlet.model.Invitation;
+import org.osivia.services.workspace.portlet.model.InvitationObject;
 import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.model.MembersSort;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -20,7 +21,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class InvitationComparator implements Comparator<Invitation> {
+public class InvitationObjectComparator implements Comparator<InvitationObject> {
 
     /** Comparator sort. */
     private final MembersSort sort;
@@ -34,7 +35,7 @@ public class InvitationComparator implements Comparator<Invitation> {
      * @param sort comparator sort
      * @param alt comparator alternative sort indicator
      */
-    public InvitationComparator(MembersSort sort, boolean alt) {
+    public InvitationObjectComparator(MembersSort sort, boolean alt) {
         super();
         this.sort = sort;
         this.alt = alt;
@@ -45,7 +46,7 @@ public class InvitationComparator implements Comparator<Invitation> {
      * {@inheritDoc}
      */
     @Override
-    public int compare(Invitation invitation1, Invitation invitation2) {
+    public int compare(InvitationObject invitation1, InvitationObject invitation2) {
         int result;
 
         if (invitation1 == null) {
@@ -54,17 +55,20 @@ public class InvitationComparator implements Comparator<Invitation> {
             result = 1;
         } else if (MembersSort.DATE.equals(this.sort)) {
             // Dates
-            Date date1;
-            if (invitation1.getResendingDate() == null) {
-                date1 = invitation1.getDate();
-            } else {
-                date1 = invitation1.getResendingDate();
-            }
-            Date date2;
-            if (invitation2.getResendingDate() == null) {
-                date2 = invitation2.getDate();
-            } else {
-                date2 = invitation2.getResendingDate();
+            Date date1 = invitation1.getDate();
+            Date date2 = invitation2.getDate();
+            
+            if ((invitation1 instanceof Invitation) && (invitation2 instanceof Invitation)) {
+                Invitation i1 = (Invitation) invitation1;
+                Invitation i2 = (Invitation) invitation2;
+
+                if (i1.getResendingDate() != null) {
+                    date1 = i1.getResendingDate();
+                }
+                
+                if (i2.getResendingDate() != null) {
+                    date2 = i2.getResendingDate();
+                }
             }
 
             result = date1.compareTo(date2);

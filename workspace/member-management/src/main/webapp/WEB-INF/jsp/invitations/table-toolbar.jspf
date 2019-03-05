@@ -2,9 +2,7 @@
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
-<portlet:resourceURL id="exportInvitationsCsv" var="exportCsvUrl">
-    <portlet:param name="tab" value="invitations" />
-</portlet:resourceURL>
+<portlet:resourceURL id="export-invitations-csv" var="exportCsvUrl" />
 
 
 <div class="portal-table-toolbar-container" data-url="${toolbarUrl}">

@@ -2,29 +2,24 @@ package org.osivia.services.workspace.portlet.model;
 
 import java.util.List;
 
-import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * Change role form java-bean.
+ * Change member role form java-bean.
  * 
  * @author Cédric Krommenhoek
- * @see AbstractMembersForm
+ * @see AbstractChangeRoleForm
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ChangeRoleForm extends AbstractMembersForm<Member> {
-
-    /** Role. */
-    private WorkspaceRole role;
-
+public class ChangeMemberRoleForm extends AbstractChangeRoleForm<Member> {
 
     /**
      * Constructor.
      */
-    public ChangeRoleForm() {
+    public ChangeMemberRoleForm() {
         super();
     }
 
@@ -45,25 +40,6 @@ public class ChangeRoleForm extends AbstractMembersForm<Member> {
      */
     public void setSelectedMembers(List<Member> selectedMembers) {
         this.setMembers(selectedMembers);
-    }
-
-
-    /**
-     * Getter for role.
-     * 
-     * @return the role
-     */
-    public WorkspaceRole getRole() {
-        return role;
-    }
-
-    /**
-     * Setter for role.
-     * 
-     * @param role the role to set
-     */
-    public void setRole(WorkspaceRole role) {
-        this.role = role;
     }
 
 }

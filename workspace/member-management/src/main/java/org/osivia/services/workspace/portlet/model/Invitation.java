@@ -3,7 +3,6 @@ package org.osivia.services.workspace.portlet.model;
 import java.util.Date;
 import java.util.List;
 
-import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -14,16 +13,12 @@ import org.springframework.stereotype.Component;
  * Invitation java-bean.
  * 
  * @author Cédric Krommenhoek
- * @see MemberObject
+ * @see InvitationObject
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class Invitation extends MemberObject {
+public class Invitation extends InvitationObject {
 
-    /** Document. */
-    private Document document;
-    /** State. */
-    private InvitationState state;
     /** Acknowledgment date. */
     private Date acknowledgmentDate;
     /** Resending date. */
@@ -57,42 +52,6 @@ public class Invitation extends MemberObject {
         this.unknownUser = true;
     }
 
-
-    /**
-     * Getter for document.
-     * 
-     * @return the document
-     */
-    public Document getDocument() {
-        return document;
-    }
-
-    /**
-     * Setter for document.
-     * 
-     * @param document the document to set
-     */
-    public void setDocument(Document document) {
-        this.document = document;
-    }
-
-    /**
-     * Getter for state.
-     * 
-     * @return the state
-     */
-    public InvitationState getState() {
-        return state;
-    }
-
-    /**
-     * Setter for state.
-     * 
-     * @param state the state to set
-     */
-    public void setState(InvitationState state) {
-        this.state = state;
-    }
 
     /**
      * Getter for acknowledgmentDate.

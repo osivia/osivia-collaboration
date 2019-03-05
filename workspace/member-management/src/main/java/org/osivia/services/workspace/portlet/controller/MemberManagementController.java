@@ -103,7 +103,7 @@ public class MemberManagementController {
      * @param response action response
      * @param sortId sort identifier request parameter
      * @param alt alternative sort indicator request parameter
-     * @param form members form model attribute
+     * @param form form model attribute
      * @throws PortletException
      */
     @ActionMapping("sort")
@@ -114,6 +114,7 @@ public class MemberManagementController {
 
         this.service.sortMembers(portalControllerContext, form, MembersSort.fromId(sortId), BooleanUtils.toBoolean(alt));
 
+        // Copy render parameter
         response.setRenderParameter("tab", "members");
     }
 
@@ -135,6 +136,9 @@ public class MemberManagementController {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         this.service.removeMembers(portalControllerContext, options, form, identifiers);
+
+        // Copy render parameter
+        response.setRenderParameter("tab", "members");
     }
 
 
@@ -191,7 +195,7 @@ public class MemberManagementController {
 
 
     /**
-     * Get toolbar resource mapping.
+     * Get members toolbar resource mapping.
      * 
      * @param request resource request
      * @param response resource response
@@ -199,7 +203,7 @@ public class MemberManagementController {
      * @throws PortletException
      * @throws IOException
      */
-    @ResourceMapping("toolbar")
+    @ResourceMapping("members-toolbar")
     public void getToolbar(ResourceRequest request, ResourceResponse response, @RequestParam(name = "indexes", required = false) String indexes)
             throws PortletException, IOException {
         // Portal controller context
@@ -227,7 +231,7 @@ public class MemberManagementController {
      * @throws PortletException
      * @throws IOException
      */
-    @ResourceMapping("exportMembersCsv")
+    @ResourceMapping("export-members-csv")
     public void exportCsv(ResourceRequest request, ResourceResponse response, @ModelAttribute("members") MembersForm members,
             @ModelAttribute("options") MemberManagementOptions options) throws PortletException, IOException {
         // Portal controller context

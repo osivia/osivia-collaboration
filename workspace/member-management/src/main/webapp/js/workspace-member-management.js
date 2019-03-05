@@ -212,11 +212,11 @@ $JQry(function() {
 			
 			
 			$element.find("select").change(function(event) {
-				var $target = $JQry(event.target),
-					$row = $target.closest(".table-row"),
-					$edited = $row.find("input[type=hidden][id$='.edited']"),
-					$form = $target.closest("form"),
-					$collapse = $form.find(".collapse").not(".invitations-other-options");
+				var $target = $JQry(event.target);
+				var $row = $target.closest(".table-row");
+				var $edited = $row.find("input[type=hidden][id$='.edited']");
+				var $form = $target.closest("form");
+				var $collapse = $form.find(".collapse").not(".invitations-other-options");
 				
 				$edited.val(true);
 				
@@ -224,57 +224,29 @@ $JQry(function() {
 					$collapse.collapse("show");
 				}
 			});
-
-			
-//			$element.find("button.delete").click(function(event) {
-//				var $target = $JQry(event.target),
-//					$fieldset = $target.closest("fieldset"),
-//					$row = $fieldset.closest(".table-row"),
-//					$deleted = $row.find("input[type=hidden][id$='.deleted']"),
-//					$buttons = $row.find("button"),
-//					$form = $fieldset.closest("form"),
-//					$collapse = $form.find(".collapse").not(".invitations-other-options");
-//				
-//				$deleted.val(true);
-//				$buttons.hide();
-//				$fieldset.prop("disabled", true);
-//				
-//				if (!$collapse.hasClass("in")) {
-//					$collapse.collapse("show");
-//				}
-//			});
-//			
-//			
-//			$element.find("button.accept").click(function(event) {
-//				var $target = $JQry(event.target),
-//					$row = $target.closest(".table-row"),
-//					$accepted = $row.find("input[type=hidden][id$='.accepted']"),
-//					$buttons = $row.find("button"),
-//					$acceptedMessage = $row.find(".accepted-message"),
-//					$form = $row.closest("form"),
-//					$collapse = $form.find(".collapse").not(".invitations-other-options");
-//				
-//				$accepted.val(true);
-//				
-//				$buttons.hide();
-//				$acceptedMessage.removeClass("hidden");
-//				$acceptedMessage.show();
-//				
-//				if (!$collapse.hasClass("in")) {
-//					$collapse.collapse("show");
-//				}
-//			});
 			
 			
 			$element.find("button[type=reset]").click(function(event) {
-				var $target = $JQry(event.target),
-					$form = $target.closest("form");
+				var $target = $JQry(event.target);
+				var $form = $target.closest("form");
 				
 				$form.find("fieldset[disabled]").prop("disabled", false);
 				$form.find("input[type=hidden][value=true]").val(false);
 				$form.find("select.select2").val(null).trigger("change");
 				$form.find("button").show();
 				$form.find(".accepted-message").hide();
+			});
+			
+			
+			// Invitation request user message modal
+			$element.find(".modal[id$='-user-message']").on("show.bs.modal", function(event) {
+				var $button = $JQry(event.relatedTarget);
+				var title = $button.data("title");
+				var content = $button.data("content");
+				var $modal = $JQry(this);
+				
+				$modal.find(".modal-title").text(title);
+				$modal.find(".modal-body p").text(content);
 			});
 
 			

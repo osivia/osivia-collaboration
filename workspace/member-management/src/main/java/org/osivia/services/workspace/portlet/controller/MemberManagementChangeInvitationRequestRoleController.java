@@ -10,7 +10,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.workspace.portlet.model.ChangeRoleForm;
+import org.osivia.services.workspace.portlet.model.ChangeInvitationRequestRoleForm;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.validator.ChangeRoleFormValidator;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
@@ -29,14 +29,14 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 /**
- * Member management change role portlet controller.
+ * Change invitation request role portlet controller.
  * 
  * @author Cédric Krommenhoek
  */
 @Controller
-@RequestMapping(path = "VIEW", params = {"tab=members", "view=change-role"})
+@RequestMapping(path = "VIEW", params = {"tab=requests", "view=change-role"})
 @SessionAttributes("changeRoleForm")
-public class MemberManagementChangeRoleController {
+public class MemberManagementChangeInvitationRequestRoleController {
 
     /** Portlet context. */
     @Autowired
@@ -54,7 +54,7 @@ public class MemberManagementChangeRoleController {
     /**
      * Constructor.
      */
-    public MemberManagementChangeRoleController() {
+    public MemberManagementChangeInvitationRequestRoleController() {
         super();
     }
 
@@ -69,10 +69,10 @@ public class MemberManagementChangeRoleController {
      */
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response) throws PortletException {
-        request.setAttribute("tab", "members");
+        request.setAttribute("tab", "requests");
         request.setAttribute("view", "change-role");
 
-        return "change-role/view";
+        return "change-request-role/view";
     }
 
 
@@ -105,16 +105,17 @@ public class MemberManagementChangeRoleController {
      */
     @ActionMapping("save")
     public void save(ActionRequest request, ActionResponse response, @ModelAttribute("options") MemberManagementOptions options,
-            @Validated @ModelAttribute("changeRoleForm") ChangeRoleForm form, BindingResult result, SessionStatus sessionStatus) throws PortletException {
+            @Validated @ModelAttribute("changeRoleForm") ChangeInvitationRequestRoleForm form, BindingResult result, SessionStatus sessionStatus)
+            throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        response.setRenderParameter("tab", "members");
+        response.setRenderParameter("tab", "requests");
 
         if (result.hasErrors()) {
             response.setRenderParameter("view", "change-role");
         } else {
-            this.service.updateRole(portalControllerContext, options, form);
+            this.service.updateInvitationRequestRole(portalControllerContext, options, form);
 
             sessionStatus.setComplete();
         }
@@ -130,12 +131,13 @@ public class MemberManagementChangeRoleController {
      * @throws PortletException
      */
     @ModelAttribute("changeRoleForm")
-    public ChangeRoleForm getForm(PortletRequest request, PortletResponse response, @RequestParam(name = "identifiers", required = false) String[] identifiers)
+    public ChangeInvitationRequestRoleForm getForm(PortletRequest request, PortletResponse response,
+            @RequestParam(name = "identifiers", required = false) String[] identifiers)
             throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        return this.service.getChangeRoleForm(portalControllerContext, identifiers);
+        return this.service.getChangeInvitationRequestRoleForm(portalControllerContext, identifiers);
     }
 
 

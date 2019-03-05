@@ -1,0 +1,16 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
+
+
+<p><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CHANGE_ROLE_SELECTED_INVITATION_REQUESTS" /></p>
+<ul>
+    <c:forEach var="invitationRequest" items="${changeRoleForm.selectedInvitationRequests}">
+        <li>
+            <p>
+                <span><ttc:user name="${invitationRequest.id}" linkable="false" /></span>
+                <small class="text-muted"><op:translate key="${invitationRequest.role.key}" classLoader="${invitationRequest.role.classLoader}" /></small>
+            </p>
+        </li>
+    </c:forEach>
+</ul>

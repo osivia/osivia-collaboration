@@ -1,0 +1,86 @@
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<c:set var="namespace"><portlet:namespace /></c:set>
+
+
+<c:choose>
+    <c:when test="${empty invitationRequests.requests}">
+        <div class="portal-table-row-group">
+            <div class="portal-table-row">
+                <div class="portal-table-cell">
+                    <div class="portal-table-cell-inner">
+                        <span class="text-muted"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_NO_MEMBER" /></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </c:when>
+    
+    <c:otherwise>
+        <div class="portal-table-row-group portal-table-selectable">
+            <c:forEach var="invitationRequest" items="${invitationRequests.requests}">
+                <div class="portal-table-row ${invitationRequest.state.editable ? 'portal-table-selectable-filter' : ''}">
+                    <!-- Invitation request display name -->
+                    <div class="portal-table-cell" data-column="display-name">
+                        <div class="portal-table-cell-inner" data-column="display-name">
+                            <c:set var="person" scope="request" value="${invitationRequest}" />
+                            <%@ include file="../commons/person.jspf" %>
+                            
+                            <!-- User message -->
+                            <c:if test="${not empty invitationRequest.userMessage}">
+                                <c:set var="title"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_REQUEST_USER_MESSAGE_TITLE" args="${invitationRequest.displayName}" /></c:set>
+                                <div>
+                                    <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#${namespace}-user-message" data-title="${title}" data-content="${invitationRequest.userMessage}">
+                                        <i class="glyphicons glyphicons-comments"></i>
+                                        <span class="visible-lg-inline"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_REQUEST_USER_MESSAGE" /></span>
+                                    </button>
+                                </div>
+                            </c:if>
+                        </div>
+                    </div>
+                    
+                    <!-- Invitation request date -->
+                    <div class="portal-table-cell" data-column="date">
+                        <div class="portal-table-cell-inner" data-column="date">
+                            <span><fmt:formatDate value="${invitationRequest.date}" type="date" dateStyle="medium" /></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Rôle -->
+                    <div class="portal-table-cell" data-column="role">
+                        <div class="portal-table-cell-inner" data-column="role">
+                            <span><op:translate key="${invitationRequest.role.key}" classLoader="${invitationRequest.role.classLoader}" /></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Invitation request state -->
+                    <div class="portal-table-cell" data-column="invitation-state">
+                        <div class="portal-table-cell-inner" data-column="invitation-state">
+                            <span class="${invitationRequest.state.htmlClasses}">
+                                <i class="${invitationRequest.state.icon}"></i>
+                                <span><op:translate key="${invitationRequest.state.key}" /></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Checkbox -->
+                    <div class="portal-table-cell" data-column="checkbox">
+                        <div class="portal-table-cell-inner" data-column="checkbox">
+                            <c:if test="${invitationRequest.state.editable}">
+                                <div class="portal-table-checkbox">
+                                    <a href="javascript:;" class="no-ajax-link">
+                                        <i class="glyphicons glyphicons-unchecked"></i>
+                                    </a>
+                                </div>
+                            </c:if>
+                        </div>
+                    </div>
+                </div>
+            </c:forEach>
+        </div>
+    </c:otherwise>
+</c:choose>
