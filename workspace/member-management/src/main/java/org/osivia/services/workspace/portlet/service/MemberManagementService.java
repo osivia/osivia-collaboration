@@ -8,10 +8,9 @@ import javax.portlet.PortletException;
 
 import org.dom4j.Element;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.workspace.portlet.model.AbstractAddToGroupForm;
+import org.osivia.services.workspace.portlet.model.AbstractChangeRoleForm;
 import org.osivia.services.workspace.portlet.model.AbstractMembersForm;
-import org.osivia.services.workspace.portlet.model.AddToGroupForm;
-import org.osivia.services.workspace.portlet.model.ChangeInvitationRequestRoleForm;
-import org.osivia.services.workspace.portlet.model.ChangeMemberRoleForm;
 import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
 import org.osivia.services.workspace.portlet.model.InvitationRequestsForm;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
@@ -20,6 +19,7 @@ import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.MemberObject;
 import org.osivia.services.workspace.portlet.model.MembersForm;
 import org.osivia.services.workspace.portlet.model.MembersSort;
+import org.osivia.services.workspace.portlet.model.ResendInvitationsForm;
 import org.springframework.validation.Errors;
 
 import net.sf.json.JSONObject;
@@ -124,49 +124,6 @@ public interface MemberManagementService {
 
 
     /**
-     * Get change member role form.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param identifiers selected member identifiers
-     * @return form
-     * @throws PortletException
-     */
-    ChangeMemberRoleForm getChangeMemberRoleForm(PortalControllerContext portalControllerContext, String[] identifiers) throws PortletException;
-
-
-    /**
-     * Update member role.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param options options
-     * @param form form
-     * @throws PortletException
-     */
-    void updateMemberRole(PortalControllerContext portalControllerContext, MemberManagementOptions options, ChangeMemberRoleForm form) throws PortletException;
-
-
-    /**
-     * Get add to group form.
-     * 
-     * @param portalControllerContext portal controller context
-     * @return form
-     * @throws PortletException
-     */
-    AddToGroupForm getAddToGroupForm(PortalControllerContext portalControllerContext) throws PortletException;
-
-
-    /**
-     * Add to group.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param options options
-     * @param form form
-     * @throws PortletException
-     */
-    void addToGroup(PortalControllerContext portalControllerContext, MemberManagementOptions options, AddToGroupForm form) throws PortletException;
-
-
-    /**
      * Get invitations form.
      * 
      * @param portalControllerContext portal controller context
@@ -238,6 +195,19 @@ public interface MemberManagementService {
 
 
     /**
+     * Delete invitations.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param options options
+     * @param form form
+     * @param identifiers selected invitation identifiers
+     * @throws PortletException
+     */
+    void deleteInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form, String[] identifiers)
+            throws PortletException;
+
+
+    /**
      * Validate invitations creation form.
      * 
      * @param errors errors
@@ -267,6 +237,17 @@ public interface MemberManagementService {
      * @throws PortletException
      */
     String getInvitationsHelp(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Get invitations toolbar DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param indexes selected items indexes
+     * @return DOM element
+     * @throws PortletException
+     */
+    Element getInvitationsToolbar(PortalControllerContext portalControllerContext, List<String> indexes) throws PortletException;
 
 
     /**
@@ -340,30 +321,6 @@ public interface MemberManagementService {
 
 
     /**
-     * Get change invitation request role form.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param identifiers selected invitation request identifiers
-     * @return form
-     * @throws PortletException
-     */
-    ChangeInvitationRequestRoleForm getChangeInvitationRequestRoleForm(PortalControllerContext portalControllerContext, String[] identifiers)
-            throws PortletException;
-
-
-    /**
-     * Update invitation request role.
-     * 
-     * @param portalControllerContext portal controller context
-     * @param options options
-     * @param form form
-     * @throws PortletException
-     */
-    void updateInvitationRequestRole(PortalControllerContext portalControllerContext, MemberManagementOptions options, ChangeInvitationRequestRoleForm form)
-            throws PortletException;
-
-
-    /**
      * Get invitation edition form.
      * 
      * @param portalControllerContext portal controller context
@@ -402,5 +359,80 @@ public interface MemberManagementService {
      * @throws PortletException
      */
     void deleteInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form) throws PortletException;
+
+
+    /**
+     * Get change role form.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param identifiers selected item identifiers
+     * @param memberType member type
+     * @param formType form type
+     * @return form
+     * @throws PortletException
+     */
+    <M extends MemberObject, F extends AbstractChangeRoleForm<M>> F getChangeRoleForm(PortalControllerContext portalControllerContext, String[] identifiers,
+            Class<M> memberType, Class<F> formType) throws PortletException;
+
+
+    /**
+     * Update role.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param options options
+     * @param form form
+     * @throws PortletException
+     */
+    <M extends MemberObject, F extends AbstractChangeRoleForm<M>> void updateRole(PortalControllerContext portalControllerContext,
+            MemberManagementOptions options, F form) throws PortletException;
     
+
+    /**
+     * Get add to group form.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param identifiers selected item identifiers
+     * @param memberType member type
+     * @param formType form type
+     * @return form
+     * @throws PortletException
+     */
+    <M extends MemberObject, F extends AbstractAddToGroupForm<M>> F getAddToGroupForm(PortalControllerContext portalControllerContext, String[] identifiers,
+            Class<M> memberType, Class<F> formType) throws PortletException;
+
+
+    /**
+     * Add to group.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param options options
+     * @param form form
+     * @throws PortletException
+     */
+    <M extends MemberObject, F extends AbstractAddToGroupForm<M>> void addToGroup(PortalControllerContext portalControllerContext,
+            MemberManagementOptions options, F form) throws PortletException;
+
+
+    /**
+     * Get resend invitations form.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param identifiers selected invitation identifiers
+     * @return form
+     * @throws PortletException
+     */
+    ResendInvitationsForm getResendInvitationsForm(PortalControllerContext portalControllerContext, String[] identifiers) throws PortletException;
+
+
+    /**
+     * Resend invitations.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param options options
+     * @param form form
+     * @throws PortletException
+     */
+    void resendInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, ResendInvitationsForm form)
+            throws PortletException;
+
 }

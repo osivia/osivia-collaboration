@@ -200,7 +200,7 @@ public class MemberManagementRequestsController {
 
 
     /**
-     * Get members toolbar resource mapping.
+     * Get invitation requests toolbar resource mapping.
      * 
      * @param request resource request
      * @param response resource response

@@ -7,8 +7,9 @@
 <div class="portal-table-column-group">
     <div class="portal-table-column" data-column="display-name"></div>
     <div class="portal-table-column" data-column="invitation-dates"></div>
+    <div class="portal-table-column" data-column="role"></div>
     <div class="portal-table-column" data-column="invitation-state"></div>
-    <div class="portal-table-column" data-column="manage"></div>
+    <div class="portal-table-column" data-column="checkbox"></div>
 </div>
 
 <!-- Header -->
@@ -49,6 +50,24 @@
         </div>
     </div>
     
+    <!-- Role -->
+    <div class="portal-table-cell" data-column="role">
+        <div class="portal-table-cell-inner" data-column="role">
+            <portlet:actionURL name="sort" var="url" copyCurrentRenderParameters="true">
+                <portlet:param name="sortId" value="role" />
+                <portlet:param name="alt" value="${invitations.sort.id eq 'role' and not invitations.alt}" />
+            </portlet:actionURL>
+        
+            <a href="${url}">
+                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></span>
+                
+                <c:if test="${invitations.sort.id eq 'role'}">
+                    <i class="glyphicons glyphicons-arrow-${invitations.alt ? 'up' : 'down'}"></i>
+                </c:if>
+            </a>
+        </div>
+    </div>
+    
     <!-- Invitation state -->
     <div class="portal-table-cell" data-column="invitation-state">
         <div class="portal-table-cell-inner" data-column="invitation-state">
@@ -67,8 +86,8 @@
         </div>
     </div>
     
-    <!-- Manage -->
-    <div class="portal-table-cell" data-column="manage">
-        <div class="portal-table-cell-inner" data-column="manage"></div>
+    <!-- Checkbox -->
+    <div class="portal-table-cell" data-column="checkbox">
+        <div class="portal-table-cell-inner" data-column="checkbox"></div>
     </div>
 </div>

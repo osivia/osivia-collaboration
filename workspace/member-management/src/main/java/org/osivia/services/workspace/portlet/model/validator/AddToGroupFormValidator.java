@@ -1,6 +1,6 @@
 package org.osivia.services.workspace.portlet.model.validator;
 
-import org.osivia.services.workspace.portlet.model.AddToGroupForm;
+import org.osivia.services.workspace.portlet.model.AbstractAddToGroupForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -28,7 +28,7 @@ public class AddToGroupFormValidator implements Validator {
      */
     @Override
     public boolean supports(Class<?> clazz) {
-        return AddToGroupForm.class.isAssignableFrom(clazz);
+        return AbstractAddToGroupForm.class.isAssignableFrom(clazz);
     }
 
 

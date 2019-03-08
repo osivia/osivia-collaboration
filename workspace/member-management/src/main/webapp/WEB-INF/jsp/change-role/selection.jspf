@@ -3,9 +3,9 @@
 <%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
 
 
-<p><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CHANGE_ROLE_SELECTED_MEMBERS" /></p>
+<p><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CHANGE_ROLE_SELECTION" /></p>
 <ul>
-    <c:forEach var="member" items="${changeRoleForm.selectedMembers}">
+    <c:forEach var="member" items="${changeRoleForm.members}">
         <li>
             <p>
                 <span><ttc:user name="${member.id}" linkable="false" /></span>

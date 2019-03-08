@@ -13,16 +13,11 @@
     
     <div class="panel panel-default">
         <div class="panel-body">
-            <div class="portlet-filler">
-                <!-- Invitations creation -->
-                <%@ include file="creation.jspf" %>
-                    
-                <!-- Invitations list -->
-                <%@ include file="table.jspf" %>
-            </div>
+            <!-- Invitations creation -->
+            <%@ include file="creation.jspf" %>
+                
+            <!-- Invitations list -->
+            <%@ include file="table.jspf" %>
         </div>
     </div>
-    
-    <!-- Purge -->
-    <%@ include file="purge.jspf" %>
 </div>

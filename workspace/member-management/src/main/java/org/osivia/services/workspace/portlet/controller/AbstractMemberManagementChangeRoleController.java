@@ -9,20 +9,17 @@ import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.workspace.portlet.model.AddToGroupForm;
+import org.osivia.services.workspace.portlet.model.AbstractChangeRoleForm;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
-import org.osivia.services.workspace.portlet.model.converter.LocalGroupPropertyEditor;
-import org.osivia.services.workspace.portlet.model.validator.AddToGroupFormValidator;
+import org.osivia.services.workspace.portlet.model.MemberObject;
+import org.osivia.services.workspace.portlet.model.validator.ChangeRoleFormValidator;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
@@ -31,14 +28,14 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 /**
- * Add members to group portlet controller.
+ * Member management change role portlet controller abstract super-class.
  * 
  * @author Cédric Krommenhoek
+ * @param <M> member type
+ * @param <F> form type
  */
-@Controller
-@RequestMapping(path = "VIEW", params = {"tab=members", "view=add-to-group"})
-@SessionAttributes("addToGroupForm")
-public class MemberManagementAddToGroupController {
+@SessionAttributes("changeRoleForm")
+public abstract class AbstractMemberManagementChangeRoleController<M extends MemberObject, F extends AbstractChangeRoleForm<M>> {
 
     /** Portlet context. */
     @Autowired
@@ -50,17 +47,13 @@ public class MemberManagementAddToGroupController {
 
     /** Form validator. */
     @Autowired
-    private AddToGroupFormValidator validator;
-
-    /** Local group property editor. */
-    @Autowired
-    private LocalGroupPropertyEditor localGroupPropertyEditor;
+    private ChangeRoleFormValidator validator;
 
 
     /**
      * Constructor.
      */
-    public MemberManagementAddToGroupController() {
+    public AbstractMemberManagementChangeRoleController() {
         super();
     }
 
@@ -70,15 +63,16 @@ public class MemberManagementAddToGroupController {
      * 
      * @param request render request
      * @param response render response
+     * @param tab tab request parameter
      * @return view path
      * @throws PortletException
      */
     @RenderMapping
-    public String view(RenderRequest request, RenderResponse response) throws PortletException {
-        request.setAttribute("tab", "members");
-        request.setAttribute("view", "add-to-group");
+    public String view(RenderRequest request, RenderResponse response, @RequestParam("tab") String tab) throws PortletException {
+        request.setAttribute("tab", tab);
+        request.setAttribute("view", "change-role");
 
-        return "add-to-group/view";
+        return "change-role/view";
     }
 
 
@@ -104,24 +98,25 @@ public class MemberManagementAddToGroupController {
      * 
      * @param request action request
      * @param response action response
+     * @param tab tab request parameter
      * @param options options model attribute
      * @param form form model attribute
-     * @param result binding result
      * @param sessionStatus session status
      * @throws PortletException
      */
     @ActionMapping("save")
-    public void save(ActionRequest request, ActionResponse response, @ModelAttribute("options") MemberManagementOptions options,
-            @Validated @ModelAttribute("addToGroupForm") AddToGroupForm form, BindingResult result, SessionStatus sessionStatus) throws PortletException {
+    public void save(ActionRequest request, ActionResponse response, @RequestParam("tab") String tab,
+            @ModelAttribute("options") MemberManagementOptions options, @Validated @ModelAttribute("changeRoleForm") F form, BindingResult result,
+            SessionStatus sessionStatus) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        response.setRenderParameter("tab", "members");
+        response.setRenderParameter("tab", tab);
 
         if (result.hasErrors()) {
-            response.setRenderParameter("view", "add-to-group");
+            response.setRenderParameter("view", "change-role");
         } else {
-            this.service.addToGroup(portalControllerContext, options, form);
+            this.service.updateRole(portalControllerContext, options, form);
 
             sessionStatus.setComplete();
         }
@@ -136,12 +131,13 @@ public class MemberManagementAddToGroupController {
      * @return form
      * @throws PortletException
      */
-    @ModelAttribute("addToGroupForm")
-    public AddToGroupForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
+    @ModelAttribute("changeRoleForm")
+    public F getForm(PortletRequest request, PortletResponse response, @RequestParam(name = "identifiers", required = false) String[] identifiers)
+            throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        return this.service.getAddToGroupForm(portalControllerContext);
+        return this.service.getChangeRoleForm(portalControllerContext, identifiers, this.getMemberType(), this.getFormType());
     }
 
 
@@ -150,10 +146,9 @@ public class MemberManagementAddToGroupController {
      *
      * @param binder portlet request data binder
      */
-    @InitBinder("addToGroupForm")
+    @InitBinder("changeRoleForm")
     public void formInitBinder(PortletRequestDataBinder binder) {
         binder.addValidators(this.validator);
-        binder.registerCustomEditor(CollabProfile.class, this.localGroupPropertyEditor);
     }
 
 
@@ -172,5 +167,21 @@ public class MemberManagementAddToGroupController {
 
         return this.service.getOptions(portalControllerContext);
     }
+
+
+    /**
+     * Get member type.
+     * 
+     * @return member type
+     */
+    public abstract Class<M> getMemberType();
+
+
+    /**
+     * Get form type.
+     * 
+     * @return form type
+     */
+    public abstract Class<F> getFormType();
 
 }

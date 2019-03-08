@@ -9,7 +9,7 @@
 
 <portlet:actionURL name="redirectTab" var="cancelUrl" copyCurrentRenderParameters="true">
     <portlet:param name="view" value="change-role"/>
-    <portlet:param name="redirection" value="requests"/>
+    <portlet:param name="redirection" value="${tab}"/>
 </portlet:actionURL>
 
 

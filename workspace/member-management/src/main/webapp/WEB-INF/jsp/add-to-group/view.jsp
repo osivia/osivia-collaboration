@@ -14,7 +14,7 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <!-- Selected members -->
-            <%@ include file="selected-members.jspf" %>
+            <%@ include file="selection.jspf" %>
             
             <hr>
             

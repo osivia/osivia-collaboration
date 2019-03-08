@@ -5,7 +5,7 @@
 
 <p><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ADD_TO_GROUP_SELECTED_MEMBERS" /></p>
 <ul>
-    <c:forEach var="member" items="${addToGroupForm.selectedMembers}">
+    <c:forEach var="member" items="${addToGroupForm.members}">
         <li>
             <p>
                 <span><ttc:user name="${member.id}" linkable="false" /></span>

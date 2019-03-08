@@ -9,7 +9,7 @@
 
 <portlet:actionURL name="redirectTab" var="cancelUrl" copyCurrentRenderParameters="true">
     <portlet:param name="view" value="add-to-group"/>
-    <portlet:param name="redirection" value="members"/>
+    <portlet:param name="redirection" value="${tab}"/>
 </portlet:actionURL>
 
 

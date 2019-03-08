@@ -1,16 +1,66 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
+<c:set var="namespace"><portlet:namespace /></c:set>
+
+
+<portlet:actionURL name="purge" var="purgeUrl">
+    <portlet:param name="tab" value="invitations" />
+    <portlet:param name="sort" value="${sort}" />
+    <portlet:param name="alt" value="${alt}" />
+</portlet:actionURL>
+
 <portlet:resourceURL id="export-invitations-csv" var="exportCsvUrl" />
+
+<portlet:resourceURL id="invitations-toolbar" var="toolbarUrl" />
 
 
 <div class="portal-table-toolbar-container" data-url="${toolbarUrl}">
-    <!-- Export tools -->
-    <div class="btn-group btn-group-sm">
-        <a class="btn btn-default" href="${exportCsvUrl}">
+    <div>
+        <!-- Export -->
+        <a class="btn btn-default btn-sm" href="${exportCsvUrl}">
             <i class="glyphicons glyphicons-table"></i>
             <span class="hidden-xs"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_EXPORT" /></span>
         </a>
+        
+        <!-- Purge -->
+        <c:if test="${invitations.purgeAvailable}">
+            <a href="#${namespace}-purge-confirmation" class="btn btn-default btn-sm no-ajax-link" data-toggle="modal">
+                <i class="glyphicons glyphicons-cleaning"></i>
+                <span class="hidden-xs"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_PURGE" /></span>
+            </a>
+        </c:if>
     </div>
+    
+    
+    <!-- Toolbar -->
+    <div class="portal-table-toolbar">
+        <div></div>
+    </div>
+    
+    
+    <!-- Purge confirmation modal -->
+    <c:if test="${invitations.purgeAvailable}">
+        <div id="${namespace}-purge-confirmation" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <p class="text-center"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_PURGE_CONFIRMATION_MESSAGE" /></p>
+                    
+                        <p class="text-center">
+                            <a href="${purgeUrl}" class="btn btn-default" data-dismiss="modal">
+                                <span><op:translate key="YES" /></span>
+                            </a>
+                        
+                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                                <span><op:translate key="NO" /></span>
+                            </button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </c:if>
 </div>

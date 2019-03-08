@@ -18,9 +18,9 @@
     </c:when>
     
     <c:otherwise>
-        <div class="portal-table-row-group">
+        <div class="portal-table-row-group portal-table-selectable">
             <c:forEach var="invitation" items="${invitations.invitations}">
-                <div class="portal-table-row">
+                <div class="portal-table-row ${invitation.state.editable ? 'portal-table-selectable-filter' : ''}">
                     <!-- Invitation display name -->
                     <div class="portal-table-cell" data-column="display-name">
                         <div class="portal-table-cell-inner" data-column="display-name">
@@ -45,6 +45,13 @@
                         </div>
                     </div>
                     
+                    <!-- Rôle -->
+                    <div class="portal-table-cell" data-column="role">
+                        <div class="portal-table-cell-inner" data-column="role">
+                            <span><op:translate key="${invitation.role.key}" classLoader="${invitation.role.classLoader}" /></span>
+                        </div>
+                    </div>
+                    
                     <!-- Invitation state -->
                     <div class="portal-table-cell" data-column="role">
                         <div class="portal-table-cell-inner" data-column="role">
@@ -56,17 +63,14 @@
                     </div>
                     
                     <!-- Checkbox -->
-                    <div class="portal-table-cell" data-column="manage">
-                        <div class="portal-table-cell-inner" data-column="manage">
+                    <div class="portal-table-cell" data-column="checkbox">
+                        <div class="portal-table-cell-inner" data-column="checkbox">
                             <c:if test="${invitation.state.editable}">
-                                <portlet:renderURL var="url">
-                                    <portlet:param name="view" value="invitation-edition"/>
-                                    <portlet:param name="invitationPath" value="${invitation.document.path}"/>
-                                </portlet:renderURL>
-                            
-                                <a href="${url}" class="btn btn-default btn-sm">
-                                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_EDIT" /></span>
-                                </a>
+                                <div class="portal-table-checkbox">
+                                    <a href="javascript:;" class="no-ajax-link">
+                                        <i class="glyphicons glyphicons-unchecked"></i>
+                                    </a>
+                                </div>
                             </c:if>
                         </div>
                     </div>

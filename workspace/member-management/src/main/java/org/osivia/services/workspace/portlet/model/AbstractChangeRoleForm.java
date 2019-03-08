@@ -3,13 +3,13 @@ package org.osivia.services.workspace.portlet.model;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 
 /**
- * Change role abstract super-class.
+ * Change role form abstract super-class.
  * 
  * @author Cédric Krommenhoek
- * @param <E> parameterized type
+ * @param <M> member type
  * @see AbstractMembersForm
  */
-public class AbstractChangeRoleForm<E extends MemberObject> extends AbstractMembersForm<E> {
+public abstract class AbstractChangeRoleForm<M extends MemberObject> extends AbstractMembersForm<M> {
 
     /** Role. */
     private WorkspaceRole role;

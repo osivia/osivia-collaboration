@@ -17,6 +17,7 @@ import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
 import org.osivia.services.workspace.portlet.model.InvitationRequest;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.Member;
+import org.osivia.services.workspace.portlet.model.MemberObject;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
@@ -156,7 +157,8 @@ public interface MemberManagementRepository {
      * @param group local group
      * @throws PortletException
      */
-    void addToGroup(PortalControllerContext portalControllerContext, String workspaceId, List<Member> members, CollabProfile group) throws PortletException;
+    void addToGroup(PortalControllerContext portalControllerContext, String workspaceId, List<MemberObject> members, CollabProfile group)
+            throws PortletException;
 
 
     /**
@@ -306,5 +308,18 @@ public interface MemberManagementRepository {
      * @throws PortletException
      */
     void resendInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form, Date resendingDate) throws PortletException;
+
+
+    /**
+     * Resend invitations.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param invitations invitations
+     * @param message invitations resending message
+     * @param date invitations resending date
+     * @return true if the invitations were correctly resent
+     * @throws PortletException
+     */
+    boolean resendInvitations(PortalControllerContext portalControllerContext, List<Invitation> invitations, String message, Date date) throws PortletException;
 
 }

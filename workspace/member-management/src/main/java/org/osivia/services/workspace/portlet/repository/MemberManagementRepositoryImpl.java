@@ -43,6 +43,7 @@ import org.osivia.services.workspace.portlet.model.InvitationRequest;
 import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.Member;
+import org.osivia.services.workspace.portlet.model.MemberObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
@@ -350,9 +351,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public void addToGroup(PortalControllerContext portalControllerContext, String workspaceId, List<Member> members, CollabProfile group)
+    public void addToGroup(PortalControllerContext portalControllerContext, String workspaceId, List<MemberObject> members, CollabProfile group)
             throws PortletException {
-        for (Member member : members) {
+        for (MemberObject member : members) {
             this.workspaceService.addMemberToLocalGroup(workspaceId, group.getDn(), member.getPerson().getDn());
         }
     }
@@ -1081,12 +1082,37 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public void resendInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form, Date resendingDate) throws PortletException {
+    public void resendInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form, Date date) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
+        boolean ok = this.resendInvitation(portalControllerContext, form.getInvitation(), form.getMessage(), date, bundle);
+
+        // Notification
+        if (ok) {
+            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_RESENDING_SUCCESS");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        } else {
+            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_RESENDING_ERROR");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
+        }
+    }
+
+
+    /**
+     * Resend invitation.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param invitation invitation
+     * @param message resending message
+     * @param date resending date
+     * @param bundle internationalization bundle
+     * @return true if the invitation was correctly resent
+     */
+    protected boolean resendInvitation(PortalControllerContext portalControllerContext, Invitation invitation, String message, Date date,
+            Bundle bundle) {
         // Procedure instance Nuxeo document
-        Document procedureInstance = form.getInvitation().getDocument();
+        Document procedureInstance = invitation.getDocument();
         // Procedure instance properties
         PropertyMap procedureInstanceProperties = procedureInstance.getProperties();
 
@@ -1104,26 +1130,42 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             }
         }
         // Update resending date
-        variables.put(INVITATION_RESENDING_DATE, String.valueOf(resendingDate.getTime()));
+        variables.put(INVITATION_RESENDING_DATE, String.valueOf(date.getTime()));
         // Update message
-        variables.put(INVITATION_MESSAGE_PROPERTY, form.getMessage());
+        variables.put(INVITATION_MESSAGE_PROPERTY, message);
 
         // Task properties
         PropertyMap taskProperties = procedureInstanceProperties.getMap("pi:task");
 
+        boolean status;
         try {
             this.formsService.proceed(portalControllerContext, taskProperties, "resend", variables);
-
-            // Notification
-            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_RESENDING_SUCCESS");
-            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+            status = true;
         } catch (PortalException | FormFilterException e) {
-            // Error notification
-            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_RESENDING_ERROR");
-            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
-
-            this.log.error(message, e);
+            String errorMessage = bundle.getString("MESSAGE_WORKSPACE_INVITATION_RESENDING_ERROR");
+            this.log.error(errorMessage, e);
+            status = false;
         }
+        return status;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean resendInvitations(PortalControllerContext portalControllerContext, List<Invitation> invitations, String message, Date date)
+            throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        boolean status = true;
+        for (Invitation invitation : invitations) {
+            boolean result = this.resendInvitation(portalControllerContext, invitation, message, date, bundle);
+            status &= result;
+        }
+
+        return status;
     }
 
 }

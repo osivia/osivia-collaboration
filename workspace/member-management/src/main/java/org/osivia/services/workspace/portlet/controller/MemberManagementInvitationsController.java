@@ -5,6 +5,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.portlet.ActionRequest;
@@ -21,7 +22,10 @@ import javax.portlet.ResourceResponse;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.dom4j.Element;
+import org.dom4j.io.HTMLWriter;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
@@ -208,6 +212,29 @@ public class MemberManagementInvitationsController {
 
 
     /**
+     * Delete invitation action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param identifiers deleted invitation identifiers request parameter
+     * @param options options model attribute
+     * @param form form model attribute
+     * @throws PortletException
+     */
+    @ActionMapping("delete")
+    public void delete(ActionRequest request, ActionResponse response, @RequestParam("identifiers") String[] identifiers,
+            @ModelAttribute("options") MemberManagementOptions options, @ModelAttribute("invitations") InvitationsForm form) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.deleteInvitations(portalControllerContext, options, form, identifiers);
+
+        // Copy render parameter
+        response.setRenderParameter("tab", "invitations");
+    }
+
+
+    /**
      * Search persons resource mapping.
      *
      * @param request resource request
@@ -318,6 +345,34 @@ public class MemberManagementInvitationsController {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         return this.service.getInvitationsHelp(portalControllerContext);
+    }
+
+
+    /**
+     * Get invitations toolbar resource mapping.
+     * 
+     * @param request resource request
+     * @param response resource response
+     * @param indexes selected items indexes
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ResourceMapping("invitations-toolbar")
+    public void getToolbar(ResourceRequest request, ResourceResponse response, @RequestParam(name = "indexes", required = false) String indexes)
+            throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        // Toolbar
+        Element toolbar = this.service.getInvitationsToolbar(portalControllerContext, Arrays.asList(StringUtils.split(StringUtils.trimToEmpty(indexes), ",")));
+
+        // Content type
+        response.setContentType("text/html");
+
+        // Content
+        HTMLWriter htmlWriter = new HTMLWriter(response.getPortletOutputStream());
+        htmlWriter.write(toolbar);
+        htmlWriter.close();
     }
 
 

@@ -13,8 +13,8 @@
     
     <div class="panel panel-default">
         <div class="panel-body">
-            <!-- Selected invitation requests -->
-            <%@ include file="selected-requests.jspf" %>
+            <!-- Selection -->
+            <%@ include file="selection.jspf" %>
             
             <hr>
             
