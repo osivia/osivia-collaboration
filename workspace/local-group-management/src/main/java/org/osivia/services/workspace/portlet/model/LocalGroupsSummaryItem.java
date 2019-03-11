@@ -5,63 +5,42 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * Local group list item java-bean.
+ * Local groups summary item.
  * 
  * @author Cédric Krommenhoek
- * @see LocalGroup
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class LocalGroupListItem extends LocalGroup {
+public class LocalGroupsSummaryItem extends AbstractLocalGroup {
 
     /** Members count. */
     private int membersCount;
-    /** Deleted indicator. */
-    private boolean deleted;
 
 
     /**
      * Constructor.
      */
-    public LocalGroupListItem() {
+    public LocalGroupsSummaryItem() {
         super();
     }
 
 
     /**
      * Getter for membersCount.
-     * 
+     *
      * @return the membersCount
      */
     public int getMembersCount() {
-        return membersCount;
+        return this.membersCount;
     }
 
     /**
      * Setter for membersCount.
-     * 
+     *
      * @param membersCount the membersCount to set
      */
     public void setMembersCount(int membersCount) {
         this.membersCount = membersCount;
-    }
-
-    /**
-     * Getter for deleted.
-     * 
-     * @return the deleted
-     */
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    /**
-     * Setter for deleted.
-     * 
-     * @param deleted the deleted to set
-     */
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
 }

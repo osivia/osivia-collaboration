@@ -27,10 +27,11 @@ import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
  * Workspace local group management configuration.
  *
  * @author Cédric Krommenhoek
+ * @see CMSPortlet
  */
 @Configuration
 @ComponentScan(basePackages = "org.osivia.services.workspace.portlet")
-public class LocalGroupManagementConfiguration extends CMSPortlet{
+public class LocalGroupManagementConfiguration extends CMSPortlet {
 
     /** Application context. */
     @Autowired
@@ -57,17 +58,8 @@ public class LocalGroupManagementConfiguration extends CMSPortlet{
     @PostConstruct
     public void postConstruct() throws PortletException {
         super.init(this.portletConfig);
-        PortletAppUtils.registerApplication(portletConfig, applicationContext);
+        PortletAppUtils.registerApplication(this.portletConfig, this.applicationContext);
     }
-
-
-//    /**
-//     * {@inheritDoc}
-//     */
-//    @Override
-//    public void setPortletContext(PortletContext portletContext) {
-//        portletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
-//    }
 
 
     /**
@@ -126,17 +118,18 @@ public class LocalGroupManagementConfiguration extends CMSPortlet{
      *
      * @return bundle factory
      */
+    @Override
     @Bean
     public IBundleFactory getBundleFactory() {
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
-        return internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        return internationalizationService.getBundleFactory(this.getClass().getClassLoader(), this.applicationContext);
     }
 
 
     /**
      * Get notifications service.
-     * 
+     *
      * @return notification service
      */
     @Bean

@@ -7,9 +7,9 @@
 
 
 <div class="workspace-local-group-management">
-    <!-- Member list -->
-    <jsp:include page="list.jsp" />
-    
-    <!-- Add members -->
-    <jsp:include page="add.jsp" />
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <%@ include file="table.jspf" %>
+        </div>
+    </div>
 </div>

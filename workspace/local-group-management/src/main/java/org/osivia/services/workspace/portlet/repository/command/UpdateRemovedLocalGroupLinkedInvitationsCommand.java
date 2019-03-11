@@ -2,6 +2,7 @@ package org.osivia.services.workspace.portlet.repository.command;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -49,8 +50,8 @@ public class UpdateRemovedLocalGroupLinkedInvitationsCommand implements INuxeoCo
 
     /** Workspace identifier. */
     private final String workspaceId;
-    /** Local group identifier. */
-    private final String localGroupId;
+    /** Local group identifiers. */
+    private final List<String> identifiers;
 
     /** Log. */
     private final Log log;
@@ -60,12 +61,12 @@ public class UpdateRemovedLocalGroupLinkedInvitationsCommand implements INuxeoCo
      * Constructor.
      * 
      * @param workspaceId workspace identifier
-     * @param localGroupId local group identifier
+     * @param identifiers local group identifiers
      */
-    public UpdateRemovedLocalGroupLinkedInvitationsCommand(String workspaceId, String localGroupId) {
+    public UpdateRemovedLocalGroupLinkedInvitationsCommand(String workspaceId, List<String> identifiers) {
         super();
         this.workspaceId = workspaceId;
-        this.localGroupId = localGroupId;
+        this.identifiers = identifiers;
 
         this.log = LogFactory.getLog(this.getClass());
     }
@@ -79,14 +80,16 @@ public class UpdateRemovedLocalGroupLinkedInvitationsCommand implements INuxeoCo
         // Document service
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
         
-        // Invitations
-        Documents invitations = this.getLinkedInvitations(nuxeoSession);
+        for (String identifier : this.identifiers) {
+            // Invitations
+            Documents invitations = this.getLinkedInvitations(nuxeoSession, identifier);
 
-        for (Document invitation : invitations) {
-            updateInvitation(documentService, invitation);
+            for (Document invitation : invitations) {
+                updateInvitation(documentService, invitation, identifier);
+            }
         }
 
-        return invitations;
+        return null;
     }
 
 
@@ -94,10 +97,11 @@ public class UpdateRemovedLocalGroupLinkedInvitationsCommand implements INuxeoCo
      * Get linked invitations.
      * 
      * @param nuxeoSession Nuxeo session
+     * @param local group identifier
      * @return invitations
      * @throws Exception
      */
-    private Documents getLinkedInvitations(Session nuxeoSession) throws Exception {
+    private Documents getLinkedInvitations(Session nuxeoSession, String identifier) throws Exception {
         // Clause
         StringBuilder clause = new StringBuilder();
         clause.append("ecm:primaryType = 'ProcedureInstance' ");
@@ -107,7 +111,7 @@ public class UpdateRemovedLocalGroupLinkedInvitationsCommand implements INuxeoCo
         clause.append("AND ").append(GLOBAL_VARIABLES_PROPERTY).append("/*2/name = '").append(INVITATION_STATE_PROPERTY).append("' ");
         clause.append("AND ").append(GLOBAL_VARIABLES_PROPERTY).append("/*2/value = 'SENT' ");
         clause.append("AND ").append(GLOBAL_VARIABLES_PROPERTY).append("/*3/name = '").append(INVITATION_LOCAL_GROUPS_PROPERTY).append("' ");
-        clause.append("AND ").append(GLOBAL_VARIABLES_PROPERTY).append("/*3/value LIKE '%").append(this.localGroupId).append("%' ");
+        clause.append("AND ").append(GLOBAL_VARIABLES_PROPERTY).append("/*3/value LIKE '%").append(identifier).append("%' ");
 
         // Filtered clause
         String filteredClause = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE, clause.toString());
@@ -126,8 +130,9 @@ public class UpdateRemovedLocalGroupLinkedInvitationsCommand implements INuxeoCo
      * 
      * @param documentService document service
      * @param invitation invitation
+     * @param identifier local group identifier
      */
-    private void updateInvitation(DocumentService documentService, Document invitation) {
+    private void updateInvitation(DocumentService documentService, Document invitation, String identifier) {
         // Global variables
         PropertyList variables = invitation.getProperties().getList(GLOBAL_VARIABLES_PROPERTY);
         // Local groups variable
@@ -148,7 +153,7 @@ public class UpdateRemovedLocalGroupLinkedInvitationsCommand implements INuxeoCo
             // Local groups identifiers
             Set<String> localGroupIds = new HashSet<>(Arrays.asList(StringUtils.split(variables.getMap(index).getString("value"), "|")));
             // Removed local group indicator
-            boolean removed = localGroupIds.remove(this.localGroupId);
+            boolean removed = localGroupIds.remove(identifier);
 
             if (removed) {
                 // XPath
@@ -180,7 +185,7 @@ public class UpdateRemovedLocalGroupLinkedInvitationsCommand implements INuxeoCo
         builder.append("|");
         builder.append(this.workspaceId);
         builder.append("|");
-        builder.append(this.localGroupId);
+        builder.append(StringUtils.join(this.identifiers, ","));
         return builder.toString();
     }
 

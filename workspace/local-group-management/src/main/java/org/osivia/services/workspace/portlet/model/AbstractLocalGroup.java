@@ -1,11 +1,13 @@
 package org.osivia.services.workspace.portlet.model;
 
+import java.util.Objects;
+
 /**
- * Local group java-bean.
+ * Local group abstract super-class.
  *
  * @author Cédric Krommenhoek
  */
-public abstract class LocalGroup {
+public abstract class AbstractLocalGroup {
 
     /** Identifier. */
     private String id;
@@ -15,12 +17,38 @@ public abstract class LocalGroup {
     private String description;
 
 
-
     /**
      * Constructor.
      */
-    public LocalGroup() {
+    public AbstractLocalGroup() {
         super();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        AbstractLocalGroup other = (AbstractLocalGroup) obj;
+        return Objects.equals(this.id, other.id);
     }
 
 
@@ -62,16 +90,16 @@ public abstract class LocalGroup {
 
     /**
      * Getter for description.
-     * 
+     *
      * @return the description
      */
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     /**
      * Setter for description.
-     * 
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {

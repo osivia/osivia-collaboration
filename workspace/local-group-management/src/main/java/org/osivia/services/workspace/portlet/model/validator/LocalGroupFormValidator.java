@@ -1,24 +1,24 @@
 package org.osivia.services.workspace.portlet.model.validator;
 
-import org.osivia.services.workspace.portlet.model.LocalGroup;
+import org.osivia.services.workspace.portlet.model.LocalGroupForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Local group validator.
- *
+ * Local group form validator.
+ * 
  * @author Cédric Krommenhoek
  * @see Validator
  */
 @Component
-public class LocalGroupValidator implements Validator {
+public class LocalGroupFormValidator implements Validator {
 
     /**
      * Constructor.
      */
-    public LocalGroupValidator() {
+    public LocalGroupFormValidator() {
         super();
     }
 
@@ -28,7 +28,7 @@ public class LocalGroupValidator implements Validator {
      */
     @Override
     public boolean supports(Class<?> clazz) {
-        return LocalGroup.class.isAssignableFrom(clazz);
+        return LocalGroupForm.class.isAssignableFrom(clazz);
     }
 
 
