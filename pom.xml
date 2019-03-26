@@ -12,7 +12,7 @@
 
 
     <properties>
-        <toutatice.version>4.7.14-RC1</toutatice.version>
+        <toutatice.version>4.7-SNAPSHOT</toutatice.version>
         <directory.version>4.7.2</directory.version>
     </properties>
 
