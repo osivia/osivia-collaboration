@@ -12,14 +12,13 @@ import org.springframework.web.context.WebApplicationContext;
  * Invitation requests form java-bean.
  * 
  * @author Cédric Krommenhoek
+ * @see AbstractMembersForm
  */
 @Component
 @Scope(WebApplicationContext.SCOPE_SESSION)
 @Refreshable
-public class InvitationRequestsForm {
+public class InvitationRequestsForm extends AbstractMembersForm<InvitationRequest> {
 
-    /** Invitation requests. */
-    private List<InvitationRequest> requests;
     /** Invitation requests identifiers. */
     private Set<String> identifiers;
     /** Loaded indicator. */
@@ -40,7 +39,7 @@ public class InvitationRequestsForm {
      * @return the requests
      */
     public List<InvitationRequest> getRequests() {
-        return requests;
+        return this.getMembers();
     }
 
     /**
@@ -49,7 +48,7 @@ public class InvitationRequestsForm {
      * @param requests the requests to set
      */
     public void setRequests(List<InvitationRequest> requests) {
-        this.requests = requests;
+        this.setMembers(requests);
     }
 
     /**

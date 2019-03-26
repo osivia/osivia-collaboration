@@ -7,13 +7,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.services.workspace.portlet.model.MemberObject;
+import org.osivia.services.workspace.portlet.model.MembersSort;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
  * Member object comparator.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see Comparator
  * @see MemberObject
@@ -22,8 +23,8 @@ import org.springframework.stereotype.Component;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class MemberObjectComparator implements Comparator<MemberObject> {
 
-    /** Comparator sort field. */
-    private final String sort;
+    /** Comparator sort. */
+    private final MembersSort sort;
     /** Comparator alternative sort indicator. */
     private final boolean alt;
 
@@ -32,16 +33,17 @@ public class MemberObjectComparator implements Comparator<MemberObject> {
 
     /**
      * Constructor.
-     * 
-     * @param sort comparator sort field
+     *
+     * @param sort comparator sort
      * @param alt comparator alternative sort indicator
      */
-    public MemberObjectComparator(String sort, boolean alt) {
+    public MemberObjectComparator(MembersSort sort, boolean alt) {
         super();
         this.sort = sort;
         this.alt = alt;
-        
-        this.log = LogFactory.getLog(this.getClass());        
+
+        // Log
+        this.log = LogFactory.getLog(this.getClass());
     }
 
 
@@ -56,30 +58,27 @@ public class MemberObjectComparator implements Comparator<MemberObject> {
             result = -1;
         } else if (memberObject2 == null) {
             result = 1;
-        } else if ("date".equals(this.sort)) {
+        } else if (MembersSort.DATE.equals(this.sort)) {
             // Date
-            result = compareDates(memberObject1, memberObject2);
-        } else if ("role".equals(this.sort)) {
-
-        	// #1718 - catch errors during sort        	
-        	
-        	Integer role1 = 0;
-        	if(memberObject1.getRole() != null) {
-        		role1 = memberObject1.getRole().getWeight();
-        	}
-        	else {
-        		log.error(memberObject1.getId() +" has no role !");
-        	}
-            // Role
-        	Integer role2 = 0;
-        	if(memberObject2.getRole() != null) {
-        		role2 = memberObject2.getRole().getWeight();
-        	}
-        	else {
-        		log.error(memberObject2.getId() +" has no role !");
-        	}
-        	
-            result = role1.compareTo(role2);
+            result = this.compareDates(memberObject1, memberObject2);
+        } else if (MembersSort.ROLE.equals(this.sort)) {
+            // Role weight
+            // #1718 - catch errors during sort
+            Integer roleWeight1;
+            if (memberObject1.getRole() == null) {
+                roleWeight1 = 0;
+                this.log.error(memberObject1.getId() + " has no role !");
+            } else {
+                roleWeight1 = memberObject1.getRole().getWeight();
+            }
+            Integer roleWeight2 = 0;
+            if (memberObject2.getRole() == null) {
+                roleWeight2 = 0;
+                this.log.error(memberObject2.getId() + " has no role !");
+            } else {
+                roleWeight2 = memberObject2.getRole().getWeight();
+            }
+            result = roleWeight1.compareTo(roleWeight2);
         } else {
             // Name
             String name1 = StringUtils.defaultIfBlank(memberObject1.getDisplayName(), memberObject1.getId());
@@ -91,9 +90,9 @@ public class MemberObjectComparator implements Comparator<MemberObject> {
             result = -result;
         }
 
-        if ((result == 0) && (!"date".equals(this.sort))) {
+        if ((result == 0) && (!MembersSort.DATE.equals(this.sort))) {
             // Date
-            result = compareDates(memberObject1, memberObject2);
+            result = this.compareDates(memberObject1, memberObject2);
         }
 
         return result;
@@ -102,7 +101,7 @@ public class MemberObjectComparator implements Comparator<MemberObject> {
 
     /**
      * Compare member object dates.
-     * 
+     *
      * @param memberObject1 member object #1
      * @param memberObject2 member object #2
      * @return date comparison result
@@ -119,6 +118,7 @@ public class MemberObjectComparator implements Comparator<MemberObject> {
         } else {
             result = date1.compareTo(date2);
         }
+
         return result;
     }
 

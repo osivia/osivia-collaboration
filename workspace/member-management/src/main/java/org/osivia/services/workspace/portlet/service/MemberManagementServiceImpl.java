@@ -1,30 +1,60 @@
 package org.osivia.services.workspace.portlet.service;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.MimeResponse;
 import javax.portlet.PortletException;
+import javax.portlet.PortletResponse;
+import javax.portlet.PortletURL;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Element;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
+import org.osivia.portal.api.html.AccessibilityRoles;
+import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.services.workspace.portlet.model.AbstractAddToGroupForm;
+import org.osivia.services.workspace.portlet.model.AbstractChangeRoleForm;
+import org.osivia.services.workspace.portlet.model.AbstractMembersForm;
+import org.osivia.services.workspace.portlet.model.AddInvitationsToGroupForm;
+import org.osivia.services.workspace.portlet.model.AddMembersToGroupForm;
+import org.osivia.services.workspace.portlet.model.ChangeInvitationRequestsRoleForm;
+import org.osivia.services.workspace.portlet.model.ChangeInvitationsRoleForm;
+import org.osivia.services.workspace.portlet.model.ChangeMembersRoleForm;
 import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
+import org.osivia.services.workspace.portlet.model.InvitationObject;
 import org.osivia.services.workspace.portlet.model.InvitationRequest;
 import org.osivia.services.workspace.portlet.model.InvitationRequestsForm;
 import org.osivia.services.workspace.portlet.model.InvitationState;
@@ -32,8 +62,11 @@ import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.Member;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
+import org.osivia.services.workspace.portlet.model.MemberObject;
 import org.osivia.services.workspace.portlet.model.MembersForm;
-import org.osivia.services.workspace.portlet.model.comparator.InvitationComparator;
+import org.osivia.services.workspace.portlet.model.MembersSort;
+import org.osivia.services.workspace.portlet.model.ResendInvitationsForm;
+import org.osivia.services.workspace.portlet.model.comparator.InvitationObjectComparator;
 import org.osivia.services.workspace.portlet.model.comparator.LocalGroupComparator;
 import org.osivia.services.workspace.portlet.model.comparator.MemberObjectComparator;
 import org.osivia.services.workspace.portlet.repository.MemberManagementRepository;
@@ -88,7 +121,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /** Log. */
     private final Log log;
-    
+
+
     /**
      * Constructor.
      */
@@ -97,7 +131,8 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         // Mail pattern
         this.mailPattern = Pattern.compile(MAIL_REGEX);
-        
+
+        // Log
         this.log = LogFactory.getLog(this.getClass());
     }
 
@@ -150,7 +185,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     public MembersForm getMembersForm(PortalControllerContext portalControllerContext) throws PortletException {
         // Form
         MembersForm form = this.applicationContext.getBean(MembersForm.class);
-        
+
         if (!form.isLoaded()) {
             // Workspace identifier
             String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
@@ -166,9 +201,12 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             }
             form.setIdentifiers(identifiers);
 
+            // Sort
+            this.sortMembers(portalControllerContext, form, MembersSort.DATE, true);
+
             form.setLoaded(true);
         }
-        
+
         return form;
     }
 
@@ -177,15 +215,22 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
-    public void sortMembers(PortalControllerContext portalControllerContext, MembersForm form, String sort, boolean alt) throws PortletException {
-        MemberObjectComparator comparator = this.applicationContext.getBean(MemberObjectComparator.class, sort, alt);
-        try {
-        	Collections.sort(form.getMembers(), comparator);
-        }
-        catch(IllegalArgumentException e) {
-        	// #1718 - catch errors during sort
-        	log.error("Impossible de trier les membres ",e);
-        	
+    public void sortMembers(PortalControllerContext portalControllerContext, AbstractMembersForm<? extends MemberObject> form, MembersSort sort, boolean alt)
+            throws PortletException {
+        if (CollectionUtils.isNotEmpty(form.getMembers())) {
+            // Comparator
+            MemberObjectComparator comparator = this.applicationContext.getBean(MemberObjectComparator.class, sort, alt);
+
+            try {
+                Collections.sort(form.getMembers(), comparator);
+            } catch (IllegalArgumentException e) {
+                // #1718 - catch errors during sort
+                this.log.error("Impossible de trier les membres ", e);
+            }
+
+            // Update model
+            form.setSort(sort);
+            form.setAlt(alt);
         }
     }
 
@@ -194,20 +239,36 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
-    public void updateMembers(PortalControllerContext portalControllerContext, MemberManagementOptions options, MembersForm form) throws PortletException {
+    public void removeMembers(PortalControllerContext portalControllerContext, MemberManagementOptions options, MembersForm form, String[] identifiers)
+            throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
+        // Workspace identifier
+        String workspaceId = options.getWorkspaceId();
+
+        // Sorted identifiers
+        Set<String> sortedIdentifiers = new HashSet<>(Arrays.asList(identifiers));
+
+        // Removed members
+        List<Member> removedMembers = new ArrayList<>(sortedIdentifiers.size());
+
         for (Member member : form.getMembers()) {
-            this.repository.updateMember(portalControllerContext, options.getWorkspaceId(), member);
+            if (sortedIdentifiers.contains(member.getId()) && member.isEditable()) {
+                member.setDeleted(true);
+
+                this.repository.updateMember(portalControllerContext, workspaceId, member);
+
+                removedMembers.add(member);
+            }
         }
 
         // Update model
+        form.getMembers().removeAll(removedMembers);
         this.invalidateLoadedForms();
-        this.getMembersForm(portalControllerContext);
 
         // Notification
-        String message = bundle.getString("MESSAGE_WORKSPACE_MEMBERS_UPDATE_SUCCESS");
+        String message = bundle.getString("MESSAGE_WORKSPACE_REMOVE_MEMBERS_SUCCESS");
         this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
     }
 
@@ -218,6 +279,496 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     @Override
     public String getMembersHelp(PortalControllerContext portalControllerContext) throws PortletException {
         return this.repository.getHelp(portalControllerContext, MEMBERS_HELP_LOCATION_PROPERTY);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Element getMembersToolbar(PortalControllerContext portalControllerContext, List<String> indexes) throws PortletException {
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Toolbar container
+        Element container = DOM4JUtils.generateDivElement(null);
+
+        // Toolbar
+        Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
+        container.add(toolbar);
+
+        if (CollectionUtils.isNotEmpty(indexes)) {
+            // Form
+            MembersForm form = this.getMembersForm(portalControllerContext);
+
+            // Members
+            List<Member> members = form.getMembers();
+
+            // Selected members
+            List<Member> selectedMembers = new ArrayList<>(indexes.size());
+            for (String index : indexes) {
+                int i = NumberUtils.toInt(index, -1);
+                if ((i > -1) && (i < members.size())) {
+                    Member member = members.get(i);
+                    selectedMembers.add(member);
+                }
+            }
+
+            if (indexes.size() == selectedMembers.size()) {
+                // All editable indicator
+                boolean allEditable = true;
+                Iterator<Member> iterator = selectedMembers.iterator();
+                while (allEditable && iterator.hasNext()) {
+                    // Selected member
+                    Member member = iterator.next();
+
+                    allEditable &= member.isEditable();
+                }
+                
+                // Selected member identifiers
+                String[] identifiers = new String[selectedMembers.size()];
+                for (int i = 0; i < selectedMembers.size(); i++) {
+                    Member member = selectedMembers.get(i);
+                    identifiers[i] = member.getId();
+                }
+
+                String tab = "members";
+
+
+                // Change role
+                Element changeRole = this.getChangeRoleToolbarButton(portalControllerContext, identifiers, allEditable, tab, bundle);
+                toolbar.add(changeRole);
+
+                // Add to group
+                Element addToGroup = this.getAddToGroupToolbarButton(portalControllerContext, identifiers, tab, bundle);
+                toolbar.add(addToGroup);
+
+                // Remove member
+                Element removeMember = this.getRemoveMemberToolbarButton(portalControllerContext, allEditable, bundle);
+                toolbar.add(removeMember);
+                
+                if (allEditable) {
+                    // Remove member confirmation modal
+                    Element removeMemberConfirmationModal = getRemoveMemberConfirmationModal(portalControllerContext, selectedMembers, identifiers, bundle);
+                    container.add(removeMemberConfirmationModal);
+                }
+            }
+        }
+
+        return container;
+    }
+
+
+    /**
+     * Get change role toolbar button DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param identifiers selected member identifiers
+     * @param allEditable all editable indicator
+     * @param tab tab
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getChangeRoleToolbarButton(PortalControllerContext portalControllerContext, String[] identifiers, boolean allEditable,
+            String tab, Bundle bundle) {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+        // MIME response
+        MimeResponse mimeResponse;
+        if (portletResponse instanceof MimeResponse) {
+            mimeResponse = (MimeResponse) portletResponse;
+        } else {
+            mimeResponse = null;
+        }
+
+        // HTML classes
+        String htmlClass = "btn btn-default btn-sm";
+        // Text
+        String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_CHANGE_ROLE");
+        // Icon
+        String icon = "glyphicons glyphicons-shield";
+        // URL
+        String url;
+        if (allEditable && (mimeResponse != null)) {
+            // Render URL
+            PortletURL renderUrl = mimeResponse.createRenderURL();
+            renderUrl.setParameter("tab", tab);
+            renderUrl.setParameter("view", "change-role");
+            renderUrl.setParameter("identifiers", identifiers);
+
+            url = renderUrl.toString();
+        } else {
+            url = null;
+        }
+
+        if (StringUtils.isEmpty(url)) {
+            url = "#";
+            htmlClass += " disabled";
+        }
+
+        return DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
+    }
+
+
+    /**
+     * Get add to group toolbar button DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param identifiers selected member identifiers
+     * @param tab tab
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getAddToGroupToolbarButton(PortalControllerContext portalControllerContext, String[] identifiers, String tab, Bundle bundle) {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+        // MIME response
+        MimeResponse mimeResponse;
+        if (portletResponse instanceof MimeResponse) {
+            mimeResponse = (MimeResponse) portletResponse;
+        } else {
+            mimeResponse = null;
+        }
+
+        // HTML classes
+        String htmlClass = "btn btn-default btn-sm";
+        // Text
+        String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ADD_TO_GROUP");
+        // Icon
+        String icon = "glyphicons glyphicons-group";
+
+        // URL
+        String url;
+        if (mimeResponse != null) {
+            // Render URL
+            PortletURL renderUrl = mimeResponse.createRenderURL();
+            renderUrl.setParameter("tab", tab);
+            renderUrl.setParameter("view", "add-to-group");
+            renderUrl.setParameter("identifiers", identifiers);
+
+            url = renderUrl.toString();
+        } else {
+            url = null;
+        }
+
+        if (StringUtils.isEmpty(url)) {
+            url = "#";
+            htmlClass += " disabled";
+        }
+
+        return DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
+    }
+
+
+    /**
+     * Get remove member toolbar button DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param allEditable all editable indicator
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getRemoveMemberToolbarButton(PortalControllerContext portalControllerContext, boolean allEditable, Bundle bundle) {
+        // Portlet response
+        PortletResponse response = portalControllerContext.getResponse();
+        
+        // URL
+        String url;
+        // HTML classes
+        String htmlClass = "btn btn-default btn-sm no-ajax-link";
+        // Text
+        String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_REMOVE_MEMBER");
+        // Icon
+        String icon = "glyphicons glyphicons-remove";
+
+        if (allEditable) {
+            url = "#" + response.getNamespace() + "-remove";
+        } else {
+            url = "#";
+            htmlClass += " disabled";
+        }
+
+        Element button = DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
+        if (allEditable) {
+            DOM4JUtils.addDataAttribute(button, "toggle", "modal");
+        }
+
+        return button;
+    }
+
+
+    /**
+     * Get remove member confirmation modal DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param selectedMembers selected members
+     * @param identifiers identifiers
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getRemoveMemberConfirmationModal(PortalControllerContext portalControllerContext, List<Member> selectedMembers, String[] identifiers,
+            Bundle bundle) {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+        // MIME response
+        MimeResponse mimeResponse;
+        if (portletResponse instanceof MimeResponse) {
+            mimeResponse = (MimeResponse) portletResponse;
+        } else {
+            mimeResponse = null;
+        }
+
+        // Modal identifier
+        String modalId = portletResponse.getNamespace() + "-remove";
+        // Modal title
+        String title = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_REMOVE_MEMBER");
+        // Modal body content
+        Element content = DOM4JUtils.generateDivElement(null);
+        Element message = DOM4JUtils.generateElement("p", null, bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_REMOVE_MEMBER_MODAL_MESSAGE"));
+        content.add(message);
+        Element ul = getSelectionModalBodyContent(selectedMembers, bundle);
+        content.add(ul);
+        // Confirmation button
+        String url;
+        if (mimeResponse == null) {
+            url = "#";
+        } else {
+            // Action URL
+            PortletURL actionUrl = mimeResponse.createActionURL();
+            actionUrl.setParameter(ActionRequest.ACTION_NAME, "remove");
+            actionUrl.setParameter("tab", "members");
+            actionUrl.setParameter("identifiers", identifiers);
+
+            url = actionUrl.toString();
+        }
+        Element confirm = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-warning no-ajax-link", bundle.getString("CONFIRM"), null);
+
+        return this.getConfirmationModal(portalControllerContext, modalId, title, content, confirm, bundle);
+    }
+
+
+    /**
+     * Get selection modal body content DOM element.
+     * 
+     * @param selection selection
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getSelectionModalBodyContent(List<? extends MemberObject> selection, Bundle bundle) {
+        Element ul = DOM4JUtils.generateElement("ul", null, null);
+
+        for (MemberObject object : selection) {
+            Element li = DOM4JUtils.generateElement("li", null, null);
+            ul.add(li);
+
+            Element p = DOM4JUtils.generateElement("p", null, null);
+            li.add(p);
+
+            // Avatar
+            String avatarUrl;
+            if (object.getPerson().getAvatar() == null) {
+                avatarUrl = null;
+            } else {
+                avatarUrl = object.getPerson().getAvatar().getUrl();
+            }
+            if (StringUtils.isNotEmpty(avatarUrl)) {
+                Element avatar = DOM4JUtils.generateElement("img", "avatar", null);
+                DOM4JUtils.addAttribute(avatar, "src", avatarUrl);
+                DOM4JUtils.addAttribute(avatar, "alt", StringUtils.EMPTY);
+                p.add(avatar);
+            }
+
+            // Display name
+            Element displayName = DOM4JUtils.generateElement("span", null, object.getDisplayName());
+            p.add(displayName);
+
+            // Role
+            if (object.getRole() != null) {
+                String text = bundle.getString(object.getRole().getKey(), object.getRole().getClassLoader());
+                Element role = DOM4JUtils.generateElement("small", "text-muted", text);
+                p.add(role);
+            }
+
+            // Message
+            String message;
+            if (object instanceof Invitation) {
+                Invitation invitation = (Invitation) object;
+                message = invitation.getMessage();
+            } else if (object instanceof InvitationRequest) {
+                InvitationRequest request = (InvitationRequest) object;
+                message = request.getUserMessage();
+            } else {
+                message = null;
+            }
+            if (StringUtils.isNotBlank(message)) {
+                Element blockquote = DOM4JUtils.generateElement("blockquote", null, null);
+                li.add(blockquote);
+
+                Element userMessage = DOM4JUtils.generateElement("p", "text-pre-wrap", message);
+                blockquote.add(userMessage);
+            }
+        }
+
+        return ul;
+    }
+
+
+    /**
+     * Get confirmation modal DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param modalId modal identifier
+     * @param title modal title
+     * @param content modal body content DOM element
+     * @param confirm confirmation button DOM element
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getConfirmationModal(PortalControllerContext portalControllerContext, String modalId, String title, Element content, Element confirm,
+            Bundle bundle) {
+        // Modal
+        Element modal = DOM4JUtils.generateDivElement("modal fade");
+        DOM4JUtils.addAttribute(modal, "id", modalId);
+
+        // Modal dialog
+        Element modalDialog = DOM4JUtils.generateDivElement("modal-dialog");
+        modal.add(modalDialog);
+
+        // Modal content
+        Element modalContent = DOM4JUtils.generateDivElement("modal-content");
+        modalDialog.add(modalContent);
+
+        // Modal header
+        Element modalHeader = DOM4JUtils.generateDivElement("modal-header");
+        modalContent.add(modalHeader);
+
+        // Modal close button
+        Element close = DOM4JUtils.generateElement("button", "close", null, "glyphicons glyphicons-remove", null);
+        DOM4JUtils.addAttribute(close, "type", "button");
+        DOM4JUtils.addDataAttribute(close, "dismiss", "modal");
+        modalHeader.add(close);
+
+        // Modal title
+        Element modalTitle = DOM4JUtils.generateElement("h4", "modal-title", title);
+        modalHeader.add(modalTitle);
+
+        // Modal body
+        Element modalBody = DOM4JUtils.generateDivElement("modal-body");
+        modalContent.add(modalBody);
+
+        // Modal body content
+        modalBody.add(content);
+
+        // Modal footer
+        Element modalFooter = DOM4JUtils.generateDivElement("modal-footer");
+        modalContent.add(modalFooter);
+
+        // Confirmation button
+        modalFooter.add(confirm);
+
+        // Cancel button
+        Element cancel = DOM4JUtils.generateElement("button", "btn btn-default", bundle.getString("CANCEL"), null, null);
+        DOM4JUtils.addAttribute(cancel, "type", "button");
+        DOM4JUtils.addDataAttribute(cancel, "dismiss", "modal");
+        modalFooter.add(cancel);
+
+        return modal;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void exportMembersCsv(PortalControllerContext portalControllerContext, MembersForm members, OutputStream outputStream)
+            throws PortletException, IOException {
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Writer
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+
+        // Date format
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/YYYY");
+
+        try {
+            // CSV format
+            CSVFormat format = CSVFormat.EXCEL;
+
+            // Headers
+            List<String> headers = new ArrayList<String>();
+            headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER"));
+            headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER_EXTRA"));
+            headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER_ACKNOWLEDGMENT_DATE"));
+            headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ROLE"));
+            headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ID"));
+            format.withHeader(headers.toArray(new String[headers.size()]));
+
+            // CSV printer
+            CSVPrinter printer = format.print(writer);
+
+            try {
+                for (Member member : members.getMembers()) {
+                    // Date
+                    String date;
+                    if (member.getDate() == null) {
+                        date = StringUtils.EMPTY;
+                    } else {
+                        date = dateFormat.format(member.getDate());
+                    }
+
+                    // Role
+                    String role;
+                    if (member.getRole() == null) {
+                        role = StringUtils.EMPTY;
+                    } else {
+                        role = bundle.getString(member.getRole().getKey(), member.getRole().getClassLoader());
+                    }
+
+                    printer.printRecord(member.getDisplayName(), member.getExtra(), date, role, member.getId());
+                }
+            } finally {
+                IOUtils.closeQuietly(printer);
+            }
+        } finally {
+            IOUtils.closeQuietly(writer);
+        }
+    }
+
+
+    /**
+     * Get selected members.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param identifiers selected member identifiers
+     * @return selected members
+     * @throws PortletException
+     */
+    protected List<Member> getSelectedMembers(PortalControllerContext portalControllerContext, String[] identifiers) throws PortletException {
+        // Members
+        List<Member> members = this.getMembersForm(portalControllerContext).getMembers();
+
+        // Selected members
+        List<Member> selectedMembers;
+        if (ArrayUtils.isEmpty(identifiers) || CollectionUtils.isEmpty(members)) {
+            selectedMembers = null;
+        } else {
+            // Sorted members
+            Map<String, Member> sortedMembers = new HashMap<>(members.size());
+            for (Member member : members) {
+                sortedMembers.put(member.getId(), member);
+            }
+            
+            selectedMembers = new ArrayList<>(identifiers.length);
+            for (String identifier : identifiers) {
+                Member member = sortedMembers.get(identifier);
+                if (member != null) {
+                    selectedMembers.add(member);
+                }
+            }
+        }
+
+        return selectedMembers;
     }
 
 
@@ -254,6 +805,9 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             }
             form.setIdentifiers(invitationIdentifiers);
             form.setPurgeAvailable(purgeAvailable);
+
+            // Sort
+            this.sortInvitations(portalControllerContext, form, MembersSort.DATE, true);
 
             form.setLoaded(true);
         }
@@ -405,12 +959,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         if (alreadyMember) {
             displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ALREADY_MEMBER_INDICATOR");
             object.put("disabled", true);
-        } 
-        else if (alreadyInvited) {
+        } else if (alreadyInvited) {
             displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ALREADY_INVITED");
             object.put("disabled", true);
-        }
-        else if (existingRequest) {
+        } else if (existingRequest) {
             displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_EXISTING_INVITATION_REQUEST_INDICATOR");
             object.put("disabled", true);
         }
@@ -508,9 +1060,13 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
-    public void sortInvitations(PortalControllerContext portalControllerContext, InvitationsForm form, String sort, boolean alt) throws PortletException {
-        InvitationComparator comparator = this.applicationContext.getBean(InvitationComparator.class, sort, alt);
+    public void sortInvitations(PortalControllerContext portalControllerContext, InvitationsForm form, MembersSort sort, boolean alt) throws PortletException {
+        InvitationObjectComparator comparator = this.applicationContext.getBean(InvitationObjectComparator.class, sort, alt);
         Collections.sort(form.getInvitations(), comparator);
+
+        // Update model
+        form.setSort(sort);
+        form.setAlt(alt);
     }
 
 
@@ -573,6 +1129,41 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_PURGE_SUCCESS");
             this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
         }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm form, String[] identifiers)
+            throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Sorted identifiers
+        Set<String> sortedIdentifiers = new HashSet<>(Arrays.asList(identifiers));
+
+        // Deleted invitations
+        List<Invitation> deletedInvitations = new ArrayList<>(sortedIdentifiers.size());
+
+        for (Invitation invitation : form.getInvitations()) {
+            if (sortedIdentifiers.contains(invitation.getDocument().getId()) && (invitation.getState() != null) && invitation.getState().isEditable()) {
+                invitation.setDeleted(true);
+
+                deletedInvitations.add(invitation);
+            }
+        }
+
+        this.repository.updateInvitations(portalControllerContext, deletedInvitations);
+
+        // Update model
+        form.getInvitations().removeAll(deletedInvitations);
+        this.invalidateLoadedForms();
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_DELETE_SUCCESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
     }
 
 
@@ -653,6 +1244,362 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
+    public Element getInvitationsToolbar(PortalControllerContext portalControllerContext, List<String> indexes) throws PortletException {
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Toolbar container
+        Element container = DOM4JUtils.generateDivElement(null);
+
+        // Toolbar
+        Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
+        container.add(toolbar);
+
+        if (CollectionUtils.isNotEmpty(indexes)) {
+            // Form
+            InvitationsForm form = this.getInvitationsForm(portalControllerContext);
+
+            // Invitations
+            List<Invitation> invitations = form.getInvitations();
+
+            // Selected members
+            List<Invitation> selectedInvitations = new ArrayList<>(indexes.size());
+            for (String index : indexes) {
+                int i = NumberUtils.toInt(index, -1);
+                if ((i > -1) && (i < invitations.size())) {
+                    Invitation invitation = invitations.get(i);
+                    if (invitation.getDocument() != null) {
+                        selectedInvitations.add(invitation);
+                    }
+                }
+            }
+
+            if (indexes.size() == selectedInvitations.size()) {
+                // All editable indicator
+                boolean allEditable = true;
+                Iterator<Invitation> iterator = selectedInvitations.iterator();
+                while (allEditable && iterator.hasNext()) {
+                    // Selected invitation
+                    Invitation invitation = iterator.next();
+
+                    // Editable indicator
+                    boolean editable = (invitation.getState() != null) && invitation.getState().isEditable();
+
+                    allEditable &= editable;
+                }
+
+                // Selected invitation identifiers
+                String[] identifiers = new String[selectedInvitations.size()];
+                for (int i = 0; i < selectedInvitations.size(); i++) {
+                    Invitation invitation = selectedInvitations.get(i);
+                    identifiers[i] = invitation.getDocument().getId();
+                }
+
+                String tab = "invitations";
+
+
+                // Manage
+                if (selectedInvitations.size() == 1) {
+                    Invitation invitation = selectedInvitations.get(0);
+                    Element manage = this.getManageInvitationToolbarButton(portalControllerContext, invitation, bundle);
+                    toolbar.add(manage);
+                }
+
+                // Resend invitation
+                Element resend = this.getResendInvitationsToolbarButton(portalControllerContext, identifiers, allEditable, bundle);
+                toolbar.add(resend);
+
+                // Change role
+                Element changeRole = this.getChangeRoleToolbarButton(portalControllerContext, identifiers, allEditable, tab, bundle);
+                toolbar.add(changeRole);
+
+                // Add to group
+                Element addToGroup = this.getAddToGroupToolbarButton(portalControllerContext, identifiers, tab, bundle);
+                toolbar.add(addToGroup);
+
+                // Delete
+                Element delete = this.getDeleteInvitationsToolbarButton(portalControllerContext, allEditable, bundle);
+                toolbar.add(delete);
+
+                if (allEditable) {
+                    // Delete confirmation modal
+                    Element deleteConfirmationModal = this.getDeleteInvitationsConfirmationModal(portalControllerContext, selectedInvitations, identifiers,
+                            bundle);
+                    container.add(deleteConfirmationModal);
+                }
+            }
+        }
+
+        return container;
+    }
+
+
+    /**
+     * Get manage invitation toolbar button DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param invitation invitation
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getManageInvitationToolbarButton(PortalControllerContext portalControllerContext, Invitation invitation, Bundle bundle) {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+        // MIME response
+        MimeResponse mimeResponse;
+        if (portletResponse instanceof MimeResponse) {
+            mimeResponse = (MimeResponse) portletResponse;
+        } else {
+            mimeResponse = null;
+        }
+        
+        // HTML classes
+        String htmlClass = "btn btn-default btn-sm";
+        // Text
+        String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_EDIT");
+        // Icon
+        String icon = "glyphicons glyphicons-pencil";
+        // URL
+        String url;
+        if ((invitation.getState() != null) && invitation.getState().isEditable() && (mimeResponse != null)) {
+            // Render URL
+            PortletURL renderUrl = mimeResponse.createRenderURL();
+            renderUrl.setParameter("view", "invitation-edition");
+            renderUrl.setParameter("invitationPath", invitation.getDocument().getPath());
+
+            url = renderUrl.toString();
+        } else {
+            url = null;
+        }
+
+        if (StringUtils.isEmpty(url)) {
+            url = "#";
+            htmlClass += " disabled";
+        }
+
+        return DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
+    }
+
+
+    /**
+     * Get resend invitations toolbar button DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param identifiers selected item identifiers
+     * @param allEditable all editable indicator
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getResendInvitationsToolbarButton(PortalControllerContext portalControllerContext, String[] identifiers, boolean allEditable,
+            Bundle bundle) {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+        // MIME response
+        MimeResponse mimeResponse;
+        if (portletResponse instanceof MimeResponse) {
+            mimeResponse = (MimeResponse) portletResponse;
+        } else {
+            mimeResponse = null;
+        }
+
+        // HTML classes
+        String htmlClass = "btn btn-default btn-sm";
+        // Text
+        String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_EDITION_RESEND");
+        // Icon
+        String icon = "glyphicons glyphicons-message-out";
+        // URL
+        String url;
+        if (allEditable && (mimeResponse != null)) {
+            // Render URL
+            PortletURL renderUrl = mimeResponse.createRenderURL();
+            renderUrl.setParameter("tab", "invitations");
+            renderUrl.setParameter("view", "resend");
+            renderUrl.setParameter("identifiers", identifiers);
+
+            url = renderUrl.toString();
+        } else {
+            url = null;
+        }
+
+        if (StringUtils.isEmpty(url)) {
+            url = "#";
+            htmlClass += " disabled";
+        }
+
+        return DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
+    }
+
+
+    /**
+     * Get delete invitations toolbar button DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param allEditable all editable indicator
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getDeleteInvitationsToolbarButton(PortalControllerContext portalControllerContext, boolean allEditable, Bundle bundle) {
+        // Portlet response
+        PortletResponse response = portalControllerContext.getResponse();
+
+        // URL
+        String url;
+        // HTML classes
+        String htmlClass = "btn btn-default btn-sm no-ajax-link";
+        // Text
+        String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_DELETE");
+        // Icon
+        String icon = "glyphicons glyphicons-bin";
+
+        if (allEditable) {
+            url = "#" + response.getNamespace() + "-delete";
+        } else {
+            url = "#";
+            htmlClass += " disabled";
+        }
+
+        Element button = DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
+        if (allEditable) {
+            DOM4JUtils.addDataAttribute(button, "toggle", "modal");
+        }
+
+        return button;
+    }
+
+
+    /**
+     * Get delete invitations confirmation modal DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param selectedInvitations selected invitation requests
+     * @param identifiers selected invitation request identifiers
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getDeleteInvitationsConfirmationModal(PortalControllerContext portalControllerContext, List<Invitation> selectedInvitations,
+            String[] identifiers, Bundle bundle) {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+        // MIME response
+        MimeResponse mimeResponse;
+        if (portletResponse instanceof MimeResponse) {
+            mimeResponse = (MimeResponse) portletResponse;
+        } else {
+            mimeResponse = null;
+        }
+
+        // Modal identifier
+        String modalId = portletResponse.getNamespace() + "-delete";
+        // Modal title
+        String title = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_DELETE_CONFIRMATION_TITLE");
+        // Modal body content
+        Element content = DOM4JUtils.generateDivElement(null);
+        Element message = DOM4JUtils.generateElement("p", null,
+                bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_DELETE_CONFIRMATION_MESSAGE"));
+        content.add(message);
+        Element ul = getSelectionModalBodyContent(selectedInvitations, bundle);
+        content.add(ul);
+        // Confirmation button
+        String url;
+        if (mimeResponse == null) {
+            url = "#";
+        } else {
+            // Action URL
+            PortletURL actionUrl = mimeResponse.createActionURL();
+            actionUrl.setParameter(ActionRequest.ACTION_NAME, "delete");
+            actionUrl.setParameter("tab", "invitations");
+            actionUrl.setParameter("identifiers", identifiers);
+
+            url = actionUrl.toString();
+        }
+        Element confirm = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-warning no-ajax-link",
+                bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_DELETE"), null);
+
+        return this.getConfirmationModal(portalControllerContext, modalId, title, content, confirm, bundle);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void acceptInvitationRequests(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationRequestsForm form,
+            String[] identifiers) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Workspace identifier
+        String workspaceId = options.getWorkspaceId();
+
+        // Sorted identifiers
+        Set<String> sortedIdentifiers = new HashSet<>(Arrays.asList(identifiers));
+
+        // Invitation requests
+        List<InvitationRequest> requests = form.getRequests();
+
+        for (InvitationRequest request : requests) {
+            if ((request.getDocument() != null) && sortedIdentifiers.contains(request.getDocument().getId()) && (request.getState() != null)
+                    && request.getState().isEditable()) {
+                request.setAccepted(true);
+            }
+        }
+
+        this.repository.updateInvitationRequests(portalControllerContext, workspaceId, requests);
+
+        // Update model
+        this.invalidateLoadedForms();
+        List<InvitationRequest> updatedRequests = this.getInvitationRequestsForm(portalControllerContext).getRequests();
+        form.setRequests(updatedRequests);
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_ACCEPT_REQUEST_INVITATIONS_SUCCESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void declineInvitationRequests(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationRequestsForm form,
+            String[] identifiers) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Workspace identifier
+        String workspaceId = options.getWorkspaceId();
+
+        // Sorted identifiers
+        Set<String> sortedIdentifiers = new HashSet<>(Arrays.asList(identifiers));
+
+        // Invitation requests
+        List<InvitationRequest> requests = form.getRequests();
+
+        for (InvitationRequest request : requests) {
+            if ((request.getDocument() != null) && sortedIdentifiers.contains(request.getDocument().getId()) && (request.getState() != null)
+                    && request.getState().isEditable()) {
+                request.setDeleted(true);
+            }
+        }
+
+        this.repository.updateInvitationRequests(portalControllerContext, workspaceId, requests);
+
+        // Update model
+        this.invalidateLoadedForms();
+        List<InvitationRequest> updatedRequests = this.getInvitationRequestsForm(portalControllerContext).getRequests();
+        form.setRequests(updatedRequests);
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_DECLINE_REQUEST_INVITATIONS_SUCCESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public InvitationRequestsForm getInvitationRequestsForm(PortalControllerContext portalControllerContext) throws PortletException {
         // Form
         InvitationRequestsForm form = this.applicationContext.getBean(InvitationRequestsForm.class);
@@ -677,6 +1624,9 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             }
             form.setIdentifiers(requestIdentifiers);
 
+            // Sort
+            this.sortInvitationRequests(portalControllerContext, form, MembersSort.DATE, true);
+
             form.setLoaded(true);
         }
 
@@ -688,10 +1638,261 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
-    public void sortInvitationRequests(PortalControllerContext portalControllerContext, InvitationRequestsForm form, String sort, boolean alt)
-            throws PortletException {
-        MemberObjectComparator comparator = this.applicationContext.getBean(MemberObjectComparator.class, sort, alt);
-        Collections.sort(form.getRequests(), comparator);
+    public Element getInvitationRequestsToolbar(PortalControllerContext portalControllerContext, List<String> indexes) throws PortletException {
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Toolbar container
+        Element container = DOM4JUtils.generateDivElement(null);
+
+        // Toolbar
+        Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
+        container.add(toolbar);
+
+        if (CollectionUtils.isNotEmpty(indexes)) {
+            // Form
+            InvitationRequestsForm form = this.getInvitationRequestsForm(portalControllerContext);
+
+            // Invitation requests
+            List<InvitationRequest> requests = form.getRequests();
+
+            // Selected invitation requests
+            List<InvitationRequest> selectedRequests = new ArrayList<>(indexes.size());
+            for (String index : indexes) {
+                int i = NumberUtils.toInt(index, -1);
+                if ((i > -1) && (i < requests.size())) {
+                    InvitationRequest request = requests.get(i);
+                    if (request.getDocument() != null) {
+                        selectedRequests.add(request);
+                    }
+                }
+            }
+
+            if (indexes.size() == selectedRequests.size()) {
+                // All editable indicator
+                boolean allEditable = true;
+                Iterator<InvitationRequest> iterator = selectedRequests.iterator();
+                while (allEditable && iterator.hasNext()) {
+                    // Selected invitation request
+                    InvitationRequest request = iterator.next();
+
+                    // Editable indicator
+                    boolean editable = (request.getState() != null) && request.getState().isEditable();
+                    
+                    allEditable &= editable;
+                }
+
+                // Selected invitation request identifiers
+                String[] identifiers = new String[selectedRequests.size()];
+                for (int i = 0; i < selectedRequests.size(); i++) {
+                    InvitationRequest request = selectedRequests.get(i);
+                    identifiers[i] = request.getDocument().getId();
+                }
+
+                // Change role
+                Element changeRole = this.getChangeRoleToolbarButton(portalControllerContext, identifiers, allEditable, "requests", bundle);
+                toolbar.add(changeRole);
+
+                // Accept
+                Element accept = this.getAcceptInvitationRequestToolbarButton(portalControllerContext, allEditable, bundle);
+                toolbar.add(accept);
+                
+                // Decline
+                Element decline = this.getDeclineInvitationRequestToolbarButton(portalControllerContext, allEditable, bundle);
+                toolbar.add(decline);
+
+                if (allEditable) {
+                    // Accept confirmation modal
+                    Element acceptConfirmationModal = this.getAcceptInvitationRequestConfirmationModal(portalControllerContext, selectedRequests, identifiers, bundle);
+                    container.add(acceptConfirmationModal);
+
+                    // Decline confirmation modal
+                    Element declineConfirmationModal = this.getDeclineInvitationRequestConfirmationModal(portalControllerContext, selectedRequests, identifiers,
+                            bundle);
+                    container.add(declineConfirmationModal);
+                }
+            }
+        }
+
+        return container;
+    }
+
+
+    /**
+     * Get accept invitation request toolbar button DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param allEditable all editable indicator
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getAcceptInvitationRequestToolbarButton(PortalControllerContext portalControllerContext, boolean allEditable, Bundle bundle) {
+        // Portlet response
+        PortletResponse response = portalControllerContext.getResponse();
+
+        // URL
+        String url;
+        // HTML classes
+        String htmlClass = "btn btn-success btn-sm no-ajax-link";
+        // Text
+        String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ACCEPT_INVITATION_REQUEST");
+        // Icon
+        String icon = "glyphicons glyphicons-ok-sign";
+
+        if (allEditable) {
+            url = "#" + response.getNamespace() + "-accept";
+        } else {
+            url = "#";
+            htmlClass += " disabled";
+        }
+
+        Element button = DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
+        if (allEditable) {
+            DOM4JUtils.addDataAttribute(button, "toggle", "modal");
+        }
+
+        return button;
+    }
+
+
+    /**
+     * Get decline invitation request toolbar button DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param allEditable all editable indicator
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getDeclineInvitationRequestToolbarButton(PortalControllerContext portalControllerContext, boolean allEditable, Bundle bundle) {
+        // Portlet response
+        PortletResponse response = portalControllerContext.getResponse();
+
+        // URL
+        String url;
+        // HTML classes
+        String htmlClass = "btn btn-danger btn-sm no-ajax-link";
+        // Text
+        String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_DECLINE_INVITATION_REQUEST");
+        // Icon
+        String icon = "glyphicons glyphicons-remove-sign";
+
+        if (allEditable) {
+            url = "#" + response.getNamespace() + "-decline";
+        } else {
+            url = "#";
+            htmlClass += " disabled";
+        }
+
+        Element button = DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
+        if (allEditable) {
+            DOM4JUtils.addDataAttribute(button, "toggle", "modal");
+        }
+
+        return button;
+    }
+
+
+    /**
+     * Get accept invitation request confirmation modal DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param selectedRequests selected invitation requests
+     * @param identifiers selected invitation request identifiers
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getAcceptInvitationRequestConfirmationModal(PortalControllerContext portalControllerContext, List<InvitationRequest> selectedRequests,
+            String[] identifiers, Bundle bundle) {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+        // MIME response
+        MimeResponse mimeResponse;
+        if (portletResponse instanceof MimeResponse) {
+            mimeResponse = (MimeResponse) portletResponse;
+        } else {
+            mimeResponse = null;
+        }
+
+        // Modal identifier
+        String modalId = portletResponse.getNamespace() + "-accept";
+        // Modal title
+        String title = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ACCEPT_INVITATION_REQUEST_CONFIRMATION_MODAL_TITLE");
+        // Modal body content
+        Element content = DOM4JUtils.generateDivElement(null);
+        Element message = DOM4JUtils.generateElement("p", null,
+                bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ACCEPT_INVITATION_REQUEST_CONFIRMATION_MODAL_MESSAGE"));
+        content.add(message);
+        Element ul = getSelectionModalBodyContent(selectedRequests, bundle);
+        content.add(ul);
+        // Confirmation button
+        String url;
+        if (mimeResponse == null) {
+            url = "#";
+        } else {
+            // Action URL
+            PortletURL actionUrl = mimeResponse.createActionURL();
+            actionUrl.setParameter(ActionRequest.ACTION_NAME, "accept");
+            actionUrl.setParameter("tab", "requests");
+            actionUrl.setParameter("identifiers", identifiers);
+
+            url = actionUrl.toString();
+        }
+        Element confirm = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-success no-ajax-link",
+                bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ACCEPT_INVITATION_REQUEST"), null);
+
+        return this.getConfirmationModal(portalControllerContext, modalId, title, content, confirm, bundle);
+    }
+
+
+    /**
+     * Get decline invitation request confirmation modal DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param selectedRequests selected invitation requests
+     * @param identifiers selected invitation request identifiers
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getDeclineInvitationRequestConfirmationModal(PortalControllerContext portalControllerContext, List<InvitationRequest> selectedRequests,
+            String[] identifiers, Bundle bundle) {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+        // MIME response
+        MimeResponse mimeResponse;
+        if (portletResponse instanceof MimeResponse) {
+            mimeResponse = (MimeResponse) portletResponse;
+        } else {
+            mimeResponse = null;
+        }
+
+        // Modal identifier
+        String modalId = portletResponse.getNamespace() + "-decline";
+        // Modal title
+        String title = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_DECLINE_INVITATION_REQUEST_CONFIRMATION_MODAL_TITLE");
+        // Modal body content
+        Element content = DOM4JUtils.generateDivElement(null);
+        Element message = DOM4JUtils.generateElement("p", null,
+                bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_DECLINE_INVITATION_REQUEST_CONFIRMATION_MODAL_MESSAGE"));
+        content.add(message);
+        Element ul = getSelectionModalBodyContent(selectedRequests, bundle);
+        content.add(ul);
+        // Confirmation button
+        String url;
+        if (mimeResponse == null) {
+            url = "#";
+        } else {
+            // Action URL
+            PortletURL actionUrl = mimeResponse.createActionURL();
+            actionUrl.setParameter(ActionRequest.ACTION_NAME, "decline");
+            actionUrl.setParameter("tab", "requests");
+            actionUrl.setParameter("identifiers", identifiers);
+
+            url = actionUrl.toString();
+        }
+        Element confirm = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-danger no-ajax-link",
+                bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_DECLINE_INVITATION_REQUEST"), null);
+
+        return this.getConfirmationModal(portalControllerContext, modalId, title, content, confirm, bundle);
     }
 
 
@@ -699,28 +1900,14 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * {@inheritDoc}
      */
     @Override
-    public void updateInvitationRequests(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationRequestsForm form)
+    public void sortInvitationRequests(PortalControllerContext portalControllerContext, InvitationRequestsForm form, MembersSort sort, boolean alt)
             throws PortletException {
-        // Bundle
-        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-
-        // Workspace identifier
-        String workspaceId = options.getWorkspaceId();
-
-        // Update
-        this.repository.updateInvitationRequests(portalControllerContext, workspaceId, form.getRequests());
-
-        // Invitations count
-        int count = this.repository.getInvitationsCount(portalControllerContext, workspaceId);
+        InvitationObjectComparator comparator = this.applicationContext.getBean(InvitationObjectComparator.class, sort, alt);
+        Collections.sort(form.getRequests(), comparator);
 
         // Update model
-        options.setRequestsCount(count);
-        this.invalidateLoadedForms();
-        this.getInvitationRequestsForm(portalControllerContext);
-
-        // Notification
-        String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_REQUESTS_UPDATE_SUCCESS");
-        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        form.setSort(sort);
+        form.setAlt(alt);
     }
 
 
@@ -816,9 +2003,302 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <M extends MemberObject, F extends AbstractChangeRoleForm<M>> F getChangeRoleForm(PortalControllerContext portalControllerContext,
+            String[] identifiers, Class<M> memberType, Class<F> formType) throws PortletException {
+        // Selection
+        List<M> selection = getSelection(portalControllerContext, identifiers, memberType);
+
+        // Form
+        F form = this.applicationContext.getBean(formType);
+        form.setMembers(selection);
+
+        // Sort
+        this.sortMembers(portalControllerContext, form, MembersSort.MEMBER_DISPLAY_NAME, false);
+
+        return form;
+    }
+
+
+    /**
+     * Get selection.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param identifiers selected item identifiers
+     * @param memberType member type
+     * @return selection
+     * @throws PortletException
+     */
+    protected <M extends MemberObject> List<M> getSelection(PortalControllerContext portalControllerContext, String[] identifiers, Class<M> memberType)
+            throws PortletException {
+        // Parent form
+        AbstractMembersForm<?> parentForm;
+        if (Member.class.isAssignableFrom(memberType)) {
+            parentForm = this.getMembersForm(portalControllerContext);
+        } else if (Invitation.class.isAssignableFrom(memberType)) {
+            parentForm = this.getInvitationsForm(portalControllerContext);
+        } else if (InvitationRequest.class.isAssignableFrom(memberType)) {
+            parentForm = this.getInvitationRequestsForm(portalControllerContext);
+        } else {
+            parentForm = null;
+        }
+
+        // Members
+        List<? extends MemberObject> members;
+        if (parentForm == null) {
+            members = null;
+        } else {
+            members = parentForm.getMembers();
+        }
+
+        // Selection
+        List<M> selection;
+        if (ArrayUtils.isEmpty(identifiers) || CollectionUtils.isEmpty(members)) {
+            selection = null;
+        } else {
+            // Sorted members
+            Map<String, MemberObject> sortedMembers = new HashMap<>(members.size());
+            for (MemberObject member : members) {
+                String id;
+                if (member instanceof InvitationObject) {
+                    InvitationObject invitation = (InvitationObject) member;
+                    if (invitation.getDocument() == null) {
+                        id = null;
+                    } else {
+                        id = invitation.getDocument().getId();
+                    }
+                } else {
+                    id = member.getId();
+                }
+
+                if (StringUtils.isNotEmpty(id)) {
+                    sortedMembers.put(id, member);
+                }
+            }
+
+            selection = new ArrayList<>(identifiers.length);
+            for (String identifier : identifiers) {
+                M member;
+                try {
+                    member = memberType.cast(sortedMembers.get(identifier));
+                } catch (ClassCastException e) {
+                    member = null;
+                }
+
+                if (member != null) {
+                    selection.add(member);
+                }
+            }
+        }
+        return selection;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <M extends MemberObject, F extends AbstractChangeRoleForm<M>> void updateRole(PortalControllerContext portalControllerContext,
+            MemberManagementOptions options, F form) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Updated role
+        WorkspaceRole role = form.getRole();
+        // Workspace identifier
+        String workspaceId = options.getWorkspaceId();
+
+        // Selection
+        List<M> selection = form.getMembers();
+
+        if (form instanceof ChangeMembersRoleForm) {
+            // Members
+            for (MemberObject object : selection) {
+                if (object instanceof Member) {
+                    Member member = (Member) object;
+                    if (member.isEditable()) {
+                        member.setEdited(true);
+                        member.setRole(role);
+
+                        this.repository.updateMember(portalControllerContext, workspaceId, member);
+                    }
+                }
+            }
+        } else if (form instanceof ChangeInvitationsRoleForm) {
+            // Invitations
+            List<Invitation> invitations = new ArrayList<>(selection.size());
+            for (MemberObject object : selection) {
+                if (object instanceof Invitation) {
+                    Invitation invitation = (Invitation) object;
+                    if ((invitation.getState() != null) && invitation.getState().isEditable()) {
+                        invitation.setEdited(true);
+                        invitation.setRole(role);
+
+                        invitations.add(invitation);
+                    }
+                }
+            }
+            this.repository.updateInvitations(portalControllerContext, invitations);
+        } else if (form instanceof ChangeInvitationRequestsRoleForm) {
+            // Invitation requests
+            List<InvitationRequest> requests = new ArrayList<>(selection.size());
+            for (MemberObject object : selection) {
+                if (object instanceof InvitationRequest) {
+                    InvitationRequest request = (InvitationRequest) object;
+                    if ((request.getState() != null) && request.getState().isEditable()) {
+                        request.setEdited(true);
+                        request.setRole(role);
+
+                        requests.add(request);
+                    }
+                }
+            }
+            this.repository.updateInvitationRequests(portalControllerContext, workspaceId, requests);
+        }
+
+
+        // Update model
+        this.invalidateLoadedForms();
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_ROLE_UPDATE_SUCCESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <M extends MemberObject, F extends AbstractAddToGroupForm<M>> F getAddToGroupForm(PortalControllerContext portalControllerContext,
+            String[] identifiers, Class<M> memberType, Class<F> formType) throws PortletException {
+        // Selection
+        List<M> selection = getSelection(portalControllerContext, identifiers, memberType);
+
+        // Form
+        F form = this.applicationContext.getBean(formType);
+        form.setMembers(selection);
+
+        // Sort
+        this.sortMembers(portalControllerContext, form, MembersSort.MEMBER_DISPLAY_NAME, false);
+
+        return form;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <M extends MemberObject, F extends AbstractAddToGroupForm<M>> void addToGroup(PortalControllerContext portalControllerContext,
+            MemberManagementOptions options, F form) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Workspace identifier
+        String workspaceId = options.getWorkspaceId();
+
+        // Selection
+        List<M> selection = form.getMembers();
+
+        if (form instanceof AddMembersToGroupForm) {
+            // Members
+            List<MemberObject> members = new ArrayList<>(form.getMembers().size());
+            for (MemberObject member : form.getMembers()) {
+                members.add(member);
+            }
+            for (CollabProfile localGroup : form.getLocalGroups()) {
+                this.repository.addToGroup(portalControllerContext, workspaceId, members, localGroup);
+            }
+        } else if (form instanceof AddInvitationsToGroupForm) {
+            // Invitations
+            List<Invitation> invitations = new ArrayList<>(selection.size());
+            for (MemberObject object : selection) {
+                if (object instanceof Invitation) {
+                    Invitation invitation = (Invitation) object;
+                    if ((invitation.getState() != null) && invitation.getState().isEditable()) {
+                        // Updated local groups
+                        Set<CollabProfile> updatedLocalGroups = new HashSet<CollabProfile>();
+                        if (CollectionUtils.isNotEmpty(invitation.getLocalGroups())) {
+                            updatedLocalGroups.addAll(invitation.getLocalGroups());
+                        }
+                        if (CollectionUtils.isNotEmpty(form.getLocalGroups())) {
+                            updatedLocalGroups.addAll(form.getLocalGroups());
+                        }
+
+                        invitation.setEdited(true);
+                        invitation.setLocalGroups(new ArrayList<>(updatedLocalGroups));
+
+                        invitations.add(invitation);
+                    }
+                }
+            }
+            this.repository.updateInvitations(portalControllerContext, invitations);
+        }
+
+
+        // Update model
+        this.invalidateLoadedForms();
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_ADD_TO_GROUP_SUCCESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ResendInvitationsForm getResendInvitationsForm(PortalControllerContext portalControllerContext, String[] identifiers) throws PortletException {
+        // Selection
+        List<Invitation> selection = getSelection(portalControllerContext, identifiers, Invitation.class);
+
+        // Form
+        ResendInvitationsForm form = this.applicationContext.getBean(ResendInvitationsForm.class);
+        form.setMembers(selection);
+
+        // Sort
+        this.sortMembers(portalControllerContext, form, MembersSort.MEMBER_DISPLAY_NAME, false);
+
+        return form;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void resendInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, ResendInvitationsForm form)
+            throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Invitations resending date
+        Date date = new Date();
+
+        boolean status = this.repository.resendInvitations(portalControllerContext, form.getMembers(), form.getMessage(), date);
+
+        // Update model
+        this.invalidateLoadedForms();
+
+        // Notification
+        if (status) {
+            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_RESENDING_SUCCESS");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        } else {
+            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_RESENDING_ERROR");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
+        }
+    }
+
+
+    /**
      * Invalidate loaded forms.
      */
-    private void invalidateLoadedForms() {
+    protected void invalidateLoadedForms() {
         MembersForm membersForm = this.applicationContext.getBean(MembersForm.class);
         membersForm.setLoaded(false);
 
@@ -838,14 +2318,5 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         this.applicationContext = applicationContext;
         ApplicationContextProvider.setApplicationContext(applicationContext);
     }
-
-
-    /**
-     * {@inheritDoc}
-     */
-	@Override
-	public void checkIntegrity(PortalControllerContext portalControllerContext, String workspaceId) {
-		this.repository.checkIntegrity(portalControllerContext, workspaceId);
-	}
 
 }

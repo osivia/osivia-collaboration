@@ -62,7 +62,7 @@ public class StatisticsViewController {
      * @param response render response
      * @return view path
      */
-    @RenderMapping
+    @RenderMapping(params = "tab=creations")
     public String viewCreations(RenderRequest request, RenderResponse response) {
         return "view/view-creations";
     }
@@ -75,7 +75,7 @@ public class StatisticsViewController {
      * @param response render response
      * @return view path
      */
-    @RenderMapping(params = "tab=visits")
+    @RenderMapping
     public String viewVisits(RenderRequest request, RenderResponse response) {
         return "view/view-visits";
     }

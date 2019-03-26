@@ -55,7 +55,7 @@
                     <p>
                         <c:choose>
                             <c:when test="${empty memberStatus}">
-                                <button type="button" onclick="$JQry('#${namespace}-confirmation-button').attr('href', '${createRequestUrl}');" class="btn btn-default btn-sm" data-toggle="modal" data-target="#${namespace}-confirmation">
+                                <button type="button" onclick="$JQry('#${namespace}-confirmation-form').attr('action', '${createRequestUrl}');" class="btn btn-default btn-sm" data-toggle="modal" data-target="#${namespace}-confirmation">
                                     <span><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CREATION" /></span>
                                 </button>
                             </c:when>
@@ -85,32 +85,40 @@
 
 
 <div id="${namespace}-confirmation" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">
-                    <i class="glyphicons glyphicons-remove"></i>
-                    <span class="sr-only"><op:translate key="CLOSE" /></span>
-                </button>
-
-                <h4 class="modal-title"><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CONFIRMATION_TITLE" /></h4>
-            </div>
-        
-            <div class="modal-body">
-                <p><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CONFIRMATION_MESSAGE_1" /></p>
-                <p><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CONFIRMATION_MESSAGE_2" /></p>
-            </div>
-            
-            <div class="modal-footer">
-                <a id="${namespace}-confirmation-button" href="#" class="btn btn-primary">
-                    <i class="glyphicons glyphicons-inbox-out"></i>
-                    <span><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CONFIRM" /></span>
-                </a>
-                
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <span><op:translate key="CANCEL" /></span>
-                </button>
-            </div>
-        </div>
-    </div>
+	<form id="${namespace}-confirmation-form" action="#" method="post">
+	
+	    <div class="modal-dialog" role="document">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <button type="button" class="close" data-dismiss="modal">
+	                    <i class="glyphicons glyphicons-remove"></i>
+	                    <span class="sr-only"><op:translate key="CLOSE" /></span>
+	                </button>
+	
+	                <h4 class="modal-title"><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CONFIRMATION_TITLE" /></h4>
+	            </div>
+	        
+	            <div class="modal-body">
+	                <p><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CONFIRMATION_MESSAGE_1" /></p>
+	
+	                <p class="form-group required">
+	                	<label class="control-label" for="userMessage"><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_INPUT_MESSAGE" /></label>
+	                	
+	                	<textarea id="${namespace}-message" class="form-control" name="userMessage" rows="4" onkeyup="if($JQry('#${namespace}-message').val() != '') {$JQry('#${namespace}-confirmation-submit').removeAttr('disabled')} else {$JQry('#${namespace}-confirmation-submit').attr('disabled','disabled')}"></textarea>
+	                </p>
+	            </div>
+	            
+	            <div class="modal-footer">
+	                <button id="${namespace}-confirmation-submit"  type="submit" class="btn btn-primary" disabled="disabled">
+	                    <i class="glyphicons glyphicons-inbox-out"></i>
+	                    <span><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CONFIRM" /></span>
+	                </button>
+	                
+	                <button type="button" class="btn btn-default" data-dismiss="modal">
+	                    <span><op:translate key="CANCEL" /></span>
+	                </button>
+	            </div>
+	        </div>
+	    </div>
+    </form>
 </div>

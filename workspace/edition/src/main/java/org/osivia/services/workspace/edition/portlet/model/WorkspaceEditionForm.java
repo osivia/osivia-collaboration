@@ -23,6 +23,8 @@ public class WorkspaceEditionForm {
 
     /** Workspace title. */
     private String title;
+    /** Workspace welcome title (only for root). */
+    private String welcomeTitle;
     /** Workspace description. */
     private String description;
     /** Workspace template (only for root). */
@@ -39,6 +41,8 @@ public class WorkspaceEditionForm {
     private List<Task> tasks;
     /** Workspace editorial. */
     private Editorial editorial;
+    /** Workspace other tasks. */
+    private List<Task> otherTasks;
 
     /** Initial workspace type (only for root). */
     private WorkspaceType initialWorkspaceType;
@@ -85,6 +89,24 @@ public class WorkspaceEditionForm {
      */
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    /**
+     * Getter for welcomeTitle.
+     * 
+     * @return the welcomeTitle
+     */
+    public String getWelcomeTitle() {
+        return welcomeTitle;
+    }
+
+    /**
+     * Setter for welcomeTitle.
+     * 
+     * @param welcomeTitle the welcomeTitle to set
+     */
+    public void setWelcomeTitle(String welcomeTitle) {
+        this.welcomeTitle = welcomeTitle;
     }
 
     /**
@@ -229,6 +251,24 @@ public class WorkspaceEditionForm {
      */
     public void setEditorial(Editorial editorial) {
         this.editorial = editorial;
+    }
+
+    /**
+     * Getter for otherTasks.
+     * 
+     * @return the otherTasks
+     */
+    public List<Task> getOtherTasks() {
+        return otherTasks;
+    }
+
+    /**
+     * Setter for otherTasks.
+     * 
+     * @param otherTasks the otherTasks to set
+     */
+    public void setOtherTasks(List<Task> otherTasks) {
+        this.otherTasks = otherTasks;
     }
 
     /**

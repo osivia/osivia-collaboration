@@ -1,7 +1,12 @@
 package org.osivia.services.workspace.portlet.controller;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -14,15 +19,22 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.dom4j.Element;
+import org.dom4j.io.HTMLWriter;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.InvitationsForm;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
+import org.osivia.services.workspace.portlet.model.MembersSort;
 import org.osivia.services.workspace.portlet.model.converter.InvitationPropertyEditor;
 import org.osivia.services.workspace.portlet.model.converter.LocalGroupPropertyEditor;
 import org.osivia.services.workspace.portlet.model.validator.InvitationsCreationFormValidator;
@@ -73,6 +85,10 @@ public class MemberManagementInvitationsController {
     @Autowired
     private LocalGroupPropertyEditor localGroupPropertyEditor;
 
+    /** Bundle factory. */
+    @Autowired
+    protected IBundleFactory bundleFactory;
+
 
     /**
      * Constructor.
@@ -87,28 +103,38 @@ public class MemberManagementInvitationsController {
      *
      * @param request render request
      * @param response render response
-     * @param form invitations form model attribute
-     * @param sort sort property request parameter
-     * @param alt alternative sort indicator request parameter
      * @return view path
      * @throws PortletException
      */
     @RenderMapping
-    public String view(RenderRequest request, RenderResponse response, @ModelAttribute("invitations") InvitationsForm form,
-            @RequestParam(value = "sort", defaultValue = "date") String sort, @RequestParam(value = "alt", defaultValue = "true") String alt)
-            throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
+    public String view(RenderRequest request, RenderResponse response) throws PortletException {
         // Tab
         request.setAttribute("tab", "invitations");
 
-        // Sort invitations
-        this.service.sortInvitations(portalControllerContext, form, sort, BooleanUtils.toBoolean(alt));
-        request.setAttribute("sort", sort);
-        request.setAttribute("alt", alt);
-
         return "invitations/view";
+    }
+
+
+    /**
+     * Sort action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param sortId sort identifier request parameter
+     * @param alt alternative sort indicator request parameter
+     * @param form form model attribute
+     * @throws PortletException
+     */
+    @ActionMapping("sort")
+    public void sort(ActionRequest request, ActionResponse response, @RequestParam("sortId") String sortId, @RequestParam("alt") String alt,
+            @ModelAttribute("invitations") InvitationsForm form) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.sortInvitations(portalControllerContext, form, MembersSort.fromId(sortId), BooleanUtils.toBoolean(alt));
+
+        // Copy render parameter
+        response.setRenderParameter("tab", "invitations");
     }
 
 
@@ -130,7 +156,7 @@ public class MemberManagementInvitationsController {
         this.service.updateInvitations(portalControllerContext, options, form);
 
         // Copy render parameter
-        this.copyRenderParameters(request, response);
+        response.setRenderParameter("tab", "invitations");
     }
 
 
@@ -159,7 +185,7 @@ public class MemberManagementInvitationsController {
         }
 
         // Copy render parameter
-        this.copyRenderParameters(request, response);
+        response.setRenderParameter("tab", "invitations");
     }
 
 
@@ -181,28 +207,30 @@ public class MemberManagementInvitationsController {
         this.service.purgeInvitationsHistory(portalControllerContext, options, form);
         
         // Copy render parameter
-        this.copyRenderParameters(request, response);
+        response.setRenderParameter("tab", "invitations");
     }
 
 
     /**
-     * Copy render parameters.
-     *
+     * Delete invitation action mapping.
+     * 
      * @param request action request
      * @param response action response
+     * @param identifiers deleted invitation identifiers request parameter
+     * @param options options model attribute
+     * @param form form model attribute
+     * @throws PortletException
      */
-    private void copyRenderParameters(ActionRequest request, ActionResponse response) {
+    @ActionMapping("delete")
+    public void delete(ActionRequest request, ActionResponse response, @RequestParam("identifiers") String[] identifiers,
+            @ModelAttribute("options") MemberManagementOptions options, @ModelAttribute("invitations") InvitationsForm form) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.deleteInvitations(portalControllerContext, options, form, identifiers);
+
+        // Copy render parameter
         response.setRenderParameter("tab", "invitations");
-
-        String sortParameter = request.getParameter("sort");
-        if (StringUtils.isNotEmpty(sortParameter)) {
-            response.setRenderParameter("sort", sortParameter);
-        }
-
-        String altParameter = request.getParameter("alt");
-        if (StringUtils.isNotEmpty(altParameter)) {
-            response.setRenderParameter("alt", altParameter);
-        }
     }
 
 
@@ -319,4 +347,97 @@ public class MemberManagementInvitationsController {
         return this.service.getInvitationsHelp(portalControllerContext);
     }
 
+
+    /**
+     * Get invitations toolbar resource mapping.
+     * 
+     * @param request resource request
+     * @param response resource response
+     * @param indexes selected items indexes
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ResourceMapping("invitations-toolbar")
+    public void getToolbar(ResourceRequest request, ResourceResponse response, @RequestParam(name = "indexes", required = false) String indexes)
+            throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        // Toolbar
+        Element toolbar = this.service.getInvitationsToolbar(portalControllerContext, Arrays.asList(StringUtils.split(StringUtils.trimToEmpty(indexes), ",")));
+
+        // Content type
+        response.setContentType("text/html");
+
+        // Content
+        HTMLWriter htmlWriter = new HTMLWriter(response.getPortletOutputStream());
+        htmlWriter.write(toolbar);
+        htmlWriter.close();
+    }
+
+
+    /**
+     * Export invitation table (CSV)
+     * 
+     * @param request
+     * @param response
+     * @param invitations
+     * @throws IOException
+     */
+    @ResourceMapping("export-invitations-csv")
+    public void exportCsv(ResourceRequest request, ResourceResponse response, @ModelAttribute("invitations") InvitationsForm invitations, 
+    		@ModelAttribute("options") MemberManagementOptions options) throws IOException {
+    	
+    	response.setContentType("text/csv");
+        response.setProperty("Content-disposition", "attachment; filename=\"" + "invitations_"+options.getWorkspaceId()+".csv" + "\"");
+    	
+    	OutputStreamWriter writer = new OutputStreamWriter(response.getPortletOutputStream());
+    	List<String> headers = new ArrayList<String>();
+    	
+        Bundle bundle = bundleFactory.getBundle(request.getLocale());
+    	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION"));
+    	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER_EXTRA"));
+    	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_DATE"));
+    	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_RESENDING_DATE_EXP"));
+    	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ROLE"));
+    	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_STATE"));
+    	headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ID"));  	
+
+
+    	
+    	CSVPrinter printer = CSVFormat.EXCEL.withHeader(headers.toArray(new String[headers.size()])).print(writer);
+    	
+    	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
+    	
+    	for(Invitation m : invitations.getInvitations()) {
+    		String date = "";
+    		if(m.getDate() != null) {
+				date = sdf.format(m.getDate());
+			}
+    		
+    		String resendingDate = "";
+    		if(m.getResendingDate() != null) {
+    			resendingDate = sdf.format(m.getResendingDate());
+			}
+
+			String role = "";
+			if(m.getRole() != null) { 
+				role = bundle.getString(m.getRole().getKey(), m.getRole().getClassLoader());
+			
+			}
+			String state = "";
+			if(m.getState() != null) { 
+				state = bundle.getString(m.getState().getKey());
+			
+			}
+			
+			printer.printRecord(m.getDisplayName(),m.getExtra(), date, resendingDate, role, state, m.getId());
+
+    	}
+    	
+    	printer.close();
+    	writer.close();
+    }
+    
+    
 }

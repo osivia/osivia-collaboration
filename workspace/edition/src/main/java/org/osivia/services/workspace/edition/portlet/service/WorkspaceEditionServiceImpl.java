@@ -114,6 +114,10 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         form.setTitle(workspace.getTitle());
         form.setDescription(workspace.getString("dc:description"));
 
+        // Welcome title
+        String welcomeTitle = workspace.getString("ttcs:welcomeTitle");
+        form.setWelcomeTitle(welcomeTitle);
+
         // Templates
         if (root) {
             form.setTemplate(StringUtils.trimToEmpty(workspace.getString("ttc:pageTemplate")));
@@ -151,6 +155,10 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         // Editorial
         Editorial editorial = this.repository.getEditorial(portalControllerContext, workspace);
         form.setEditorial(editorial);
+
+        // Other hidden tasks
+        List<Task> otherTasks = this.repository.getOtherTasks(portalControllerContext, workspace);
+        form.setOtherTasks(otherTasks);
 
         return form;
     }
@@ -287,6 +295,9 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
             // Update editorial
             this.repository.updateEditorial(portalControllerContext, form);
             
+            // Update other tasks
+            this.repository.updateOtherTasks(portalControllerContext, form);
+
 
             // Notification
             String message = bundle.getString("MESSAGE_WORKSPACE_EDITION_SUCCESS", fragment);

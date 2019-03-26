@@ -1,6 +1,5 @@
 package org.osivia.services.workspace.portlet.model;
 
-import java.util.List;
 import java.util.Set;
 
 import org.osivia.portal.api.portlet.Refreshable;
@@ -12,14 +11,13 @@ import org.springframework.web.context.WebApplicationContext;
  * Members form java-bean.
  *
  * @author Cédric Krommenhoek
+ * @see AbstractMembersForm
  */
 @Component
 @Scope(WebApplicationContext.SCOPE_SESSION)
 @Refreshable
-public class MembersForm {
+public class MembersForm extends AbstractMembersForm<Member> {
 
-    /** Members. */
-    private List<Member> members;
     /** Member identifiers. */
     private Set<String> identifiers;
     /** Loaded members indicator. */
@@ -35,24 +33,6 @@ public class MembersForm {
 
 
     /**
-     * Getter for members.
-     *
-     * @return the members
-     */
-    public List<Member> getMembers() {
-        return this.members;
-    }
-
-    /**
-     * Setter for members.
-     *
-     * @param members the members to set
-     */
-    public void setMembers(List<Member> members) {
-        this.members = members;
-    }
-
-    /**
      * Getter for identifiers.
      * 
      * @return the identifiers
@@ -60,7 +40,6 @@ public class MembersForm {
     public Set<String> getIdentifiers() {
         return identifiers;
     }
-
 
     /**
      * Setter for identifiers.
@@ -70,7 +49,6 @@ public class MembersForm {
     public void setIdentifiers(Set<String> identifiers) {
         this.identifiers = identifiers;
     }
-
 
     /**
      * Getter for loaded.

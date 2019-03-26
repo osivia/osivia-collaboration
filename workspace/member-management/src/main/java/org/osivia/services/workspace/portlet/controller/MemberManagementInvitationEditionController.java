@@ -184,8 +184,8 @@ public class MemberManagementInvitationEditionController {
      * @throws PortletException
      */
     @ModelAttribute("invitationEditionForm")
-    public InvitationEditionForm getInvitationEditionForm(PortletRequest request, PortletResponse response, @RequestParam("invitationPath") String path)
-            throws PortletException {
+    public InvitationEditionForm getInvitationEditionForm(PortletRequest request, PortletResponse response,
+            @RequestParam(name = "invitationPath", required = false) String path) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 

@@ -9,16 +9,15 @@
 
 <div class="workspace-member-management">
     <!-- Tabs -->
-    <jsp:include page="../commons/tabs.jsp" />
+    <%@ include file="../commons/tabs.jspf" %>
     
-    <div class="portlet-filler">
-        <!-- Invitations creation -->
-        <jsp:include page="creation.jsp" />
-        
-        <!-- Invitations list -->
-        <jsp:include page="list.jsp" />
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <!-- Invitations creation -->
+            <%@ include file="creation.jspf" %>
+                
+            <!-- Invitations list -->
+            <%@ include file="table.jspf" %>
+        </div>
     </div>
-    
-    <!-- Purge -->
-    <jsp:include page="purge.jsp" />
 </div>
