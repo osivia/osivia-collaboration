@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.sharing.plugin.service;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -182,12 +183,15 @@ public class SharingPluginServiceImpl implements SharingPluginService {
     private void addPortletMenubarItem(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, NuxeoDocumentContext documentContext)
             throws PortalException {
         if (ContextualizationHelper.isCurrentDocContextualized(portalControllerContext)) {
+            // Document type
+            DocumentType documentType = documentContext.getDocumentType();
             // Publication infos
             NuxeoPublicationInfos publicationInfos = documentContext.getPublicationInfos();
             // Permissions
             NuxeoPermissions permissions = documentContext.getPermissions();
 
-            if (publicationInfos.isLiveSpace() && !publicationInfos.isDraft() && permissions.isManageable()) {
+            if ((documentType != null) && (documentType.isFile() || StringUtils.equals("Note", documentType.getName())) && publicationInfos.isLiveSpace()
+                    && !publicationInfos.isDraft() && permissions.isManageable()) {
                 // HTTP servlet request
                 HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
                 // Bundle
@@ -215,6 +219,40 @@ public class SharingPluginServiceImpl implements SharingPluginService {
                 data.put("backdrop", "static");
 
                 menubar.add(menubarItem);
+            }
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clearMenubarItems(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext documentContext)
+            throws PortalException {
+        if ((documentContext != null) && (documentContext instanceof NuxeoDocumentContext)) {
+            // Nuxeo document context
+            NuxeoDocumentContext nuxeoDocumentContext = (NuxeoDocumentContext) documentContext;
+
+            // Sharing root
+            Document sharingRoot = this.repository.getSharingRoot(portalControllerContext, nuxeoDocumentContext);
+
+            if (sharingRoot != null) {
+                // HTTP servlet request
+                HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
+
+                // Sharing author
+                String author = this.repository.getSharingAuthor(portalControllerContext, sharingRoot);
+
+                if (!StringUtils.equals(author, servletRequest.getRemoteUser())) {
+                    Iterator<MenubarItem> iterator = menubar.iterator();
+                    while (iterator.hasNext()) {
+                        MenubarItem item = iterator.next();
+                        if (!StringUtils.equals("SHARED", item.getId())) {
+                            iterator.remove();
+                        }
+                    }
+                }
             }
         }
     }

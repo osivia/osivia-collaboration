@@ -11,6 +11,10 @@ import javax.portlet.PortletResponse;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
@@ -52,6 +56,14 @@ public class SharingServiceImpl implements SharingService {
     /** Portal URL factory. */
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
+
+    /** Internationalization bundle factory. */
+    @Autowired
+    private IBundleFactory bundleFactory;
+
+    /** Notifications service. */
+    @Autowired
+    private INotificationsService notificationsService;
 
 
     /**
@@ -126,13 +138,10 @@ public class SharingServiceImpl implements SharingService {
         String path = windowProperties.getPath();
 
         // Sharing link
-        SharingLink link = this.applicationContext.getBean(SharingLink.class);
+        SharingLink link = this.repository.getLink(portalControllerContext, path);
         // Link identifier
         String linkId = this.generateLinkId();
         link.setId(linkId);
-        // Link permission
-        SharingPermission linkPermission = SharingPermission.DEFAULT;
-        link.setPermission(linkPermission);
         // Link URL
         String url = this.portalUrlFactory.getSharingLinkUrl(portalControllerContext, linkId);
         link.setUrl(url);
@@ -232,15 +241,27 @@ public class SharingServiceImpl implements SharingService {
      */
     @Override
     public void updatePermissions(PortalControllerContext portalControllerContext, SharingForm form) throws PortletException {
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
         // Window properties
         SharingWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
         // Document path
         String path = windowProperties.getPath();
 
-        // Link permission
-        SharingPermission permission = form.getLink().getPermission();
+        // Link
+        SharingLink link = form.getLink();
 
-        this.repository.updatePermissions(portalControllerContext, path, permission, null, null);
+        if (link.isLiveEditable()) {
+            // Link permission
+            SharingPermission permission = link.getPermission();
+
+            this.repository.updatePermissions(portalControllerContext, path, permission, null, null);
+
+            // Notification
+            String message = bundle.getString("SAVED_SHARING_LINK_PERMISSION_SUCCESS_MESSAGE");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        }
     }
 
 

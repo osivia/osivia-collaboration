@@ -14,7 +14,7 @@ import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 public interface SharingPluginRepository extends SharingCommonRepository {
 
     /**
-     * Get sharing root Nuxeo document, or null if there is no sharing..
+     * Get sharing root Nuxeo document, or null if there is no sharing.
      * 
      * @param portalControllerContext portal controller context
      * @param documentContext Nuxeo document context

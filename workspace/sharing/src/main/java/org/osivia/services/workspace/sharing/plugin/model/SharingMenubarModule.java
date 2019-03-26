@@ -49,7 +49,7 @@ public class SharingMenubarModule implements MenubarModule {
     @Override
     public void customizeSpace(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext documentContext)
             throws PortalException {
-        // Do nothing
+        this.service.clearMenubarItems(portalControllerContext, menubar, documentContext);
     }
 
 }

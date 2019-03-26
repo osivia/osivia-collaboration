@@ -8,8 +8,10 @@ import javax.portlet.PortletException;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.services.workspace.sharing.common.repository.SharingCommonRepositoryImpl;
 import org.osivia.services.workspace.sharing.portlet.model.SharingLink;
 import org.osivia.services.workspace.sharing.portlet.model.SharingPermission;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Repository;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.liveedit.OnlyofficeLiveEditHelper;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -44,6 +47,10 @@ public class SharingRepositoryImpl extends SharingCommonRepositoryImpl implement
     /** Portal URL factory. */
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
+
+    /** Customization service. */
+    @Autowired
+    private ICustomizationService customizationService;
 
 
     /**
@@ -107,15 +114,40 @@ public class SharingRepositoryImpl extends SharingCommonRepositoryImpl implement
         String id = document.getString(SHARING_LINK_ID_PROPERTY);
         link.setId(id);
 
+        // Live editable indicator
+        boolean liveEditable;
+        if (this.customizationService.isPluginRegistered(OnlyofficeLiveEditHelper.ONLYOFFICE_PLUGIN_NAME)) {
+            // File content
+            PropertyMap fileContent = document.getProperties().getMap("file:content");
+
+            // Document MIME type
+            String mimeType;
+            if (fileContent == null) {
+                mimeType = null;
+            } else {
+                mimeType = fileContent.getString("mime-type");
+            }
+
+            liveEditable = StringUtils.isNotEmpty(mimeType) && OnlyofficeLiveEditHelper.isMimeTypeSupported(mimeType);
+        } else {
+            liveEditable = false;
+        }
+        link.setLiveEditable(liveEditable);
+
+        // Link permission
+        SharingPermission permission;
+        if (liveEditable) {
+            permission = SharingPermission.fromId(document.getString(SHARING_LINK_PERMISSION_PROPERTY));
+        } else {
+            permission = SharingPermission.READ;
+        }
+        link.setPermission(permission);
+
         // Link URL
         if (StringUtils.isNotEmpty(id)) {
             String url = this.portalUrlFactory.getSharingLinkUrl(portalControllerContext, id);
             link.setUrl(url);
         }
-
-        // Link permission
-        SharingPermission permission = SharingPermission.fromId(document.getString(SHARING_LINK_PERMISSION_PROPERTY));
-        link.setPermission(permission);
 
         return link;
     }

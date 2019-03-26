@@ -209,7 +209,7 @@ public class SharingController {
      */
     @InitBinder("form")
     public void editionFormInitBinder(PortletRequestDataBinder binder) {
-        binder.setDisallowedFields("initialEnabled", "close");
+        binder.setDisallowedFields("link.id", "link.liveEditable", "initialEnabled", "close");
     }
 
 

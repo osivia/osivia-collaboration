@@ -54,4 +54,16 @@ public interface SharingPluginService {
      */
     void addMenubarItems(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext documentContext) throws PortalException;
 
+
+    /**
+     * Clear menubar items.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param menubar menubar
+     * @param documentContext document context
+     * @throws PortalException
+     */
+    void clearMenubarItems(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext documentContext) throws PortalException;
+
+
 }

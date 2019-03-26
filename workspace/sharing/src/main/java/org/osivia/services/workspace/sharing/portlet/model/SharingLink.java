@@ -15,9 +15,10 @@ public class SharingLink {
 
     /** Link identifier. */
     private String id;
+    /** Live editable indicator. */
+    private boolean liveEditable;
     /** Link permission. */
     private SharingPermission permission;
-
     /** Link URL. */
     private String url;
 
@@ -46,6 +47,24 @@ public class SharingLink {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    /**
+     * Getter for liveEditable.
+     * 
+     * @return the liveEditable
+     */
+    public boolean isLiveEditable() {
+        return liveEditable;
+    }
+
+    /**
+     * Setter for liveEditable.
+     * 
+     * @param liveEditable the liveEditable to set
+     */
+    public void setLiveEditable(boolean liveEditable) {
+        this.liveEditable = liveEditable;
     }
 
     /**

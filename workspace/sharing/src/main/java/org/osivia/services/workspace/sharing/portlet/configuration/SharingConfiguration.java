@@ -6,8 +6,10 @@ import javax.portlet.PortletException;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.customization.ICustomizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -108,6 +110,28 @@ public class SharingConfiguration extends CMSPortlet implements PortletConfigAwa
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
         return internationalizationService.getBundleFactory(this.getClass().getClassLoader(), this.applicationContext);
+    }
+
+
+    /**
+     * Get notifications service.
+     * 
+     * @return notifications service
+     */
+    @Bean
+    public INotificationsService getNotificationsService() {
+        return Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
+    }
+
+
+    /**
+     * Get customization service.
+     * 
+     * @return customization service
+     */
+    @Bean
+    public ICustomizationService getCustomizationService() {
+        return Locator.findMBean(ICustomizationService.class, ICustomizationService.MBEAN_NAME);
     }
 
 }

@@ -72,12 +72,23 @@
         <!-- Permission -->
         <div class="form-group">
             <form:label path="link.permission" cssClass="control-label"><op:translate key="SHARING_LINK_PERMISSION_LABEL" /></form:label>
-            <form:select path="link.permission" cssClass="form-control" onchange="$JQry('#update-sharing-link-permissions').click();">
-                <c:forEach var="permission" items="${permissions}">
-                    <form:option value="${permission}"><op:translate key="${permission.key}" /></form:option>
-                </c:forEach>
-            </form:select>
-            <input id="update-sharing-link-permissions" type="submit" name="update-permissions" class="hidden">
+            <c:choose>
+                <c:when test="${form.link.liveEditable}">
+                    <form:select path="link.permission" cssClass="form-control" onchange="$JQry('#update-sharing-link-permissions').click();">
+                        <c:forEach var="permission" items="${permissions}">
+                            <form:option value="${permission}"><op:translate key="${permission.key}" /></form:option>
+                        </c:forEach>
+                    </form:select>
+                    <input id="update-sharing-link-permissions" type="submit" name="update-permissions" class="hidden">                
+                </c:when>
+                
+                <c:otherwise>
+                    <form:select path="link.permission" cssClass="form-control" disabled="true">
+                        <form:option value="${form.link.permission}"><op:translate key="${form.link.permission.key}" /></form:option>
+                    </form:select>
+                    <p class="help-block"><op:translate key="SHARING_LINK_PERMISSION_DISABLED_HELP_BLOCK"/></p>
+                </c:otherwise>
+            </c:choose>
         </div>
         
         <!-- Users -->
