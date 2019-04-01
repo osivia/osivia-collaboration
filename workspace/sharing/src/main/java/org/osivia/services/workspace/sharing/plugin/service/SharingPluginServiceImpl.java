@@ -192,33 +192,35 @@ public class SharingPluginServiceImpl implements SharingPluginService {
 
             if ((documentType != null) && (documentType.isFile() || StringUtils.equals("Note", documentType.getName())) && publicationInfos.isLiveSpace()
                     && !publicationInfos.isDraft() && permissions.isManageable()) {
-                // HTTP servlet request
-                HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
-                // Bundle
-                Bundle bundle = this.bundleFactory.getBundle(servletRequest.getLocale());
-
                 // Path
                 String path = documentContext.getCmsPath();
 
-                // Window properties
-                Map<String, String> properties = new HashMap<String, String>();
-                properties.put(SharingService.DOCUMENT_PATH_WINDOW_PROPERTY, path);
+                if (this.repository.isInCurrentUserWorkspace(portalControllerContext, path)) {
+                    // HTTP servlet request
+                    HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
+                    // Bundle
+                    Bundle bundle = this.bundleFactory.getBundle(servletRequest.getLocale());
 
-                // Menubar item
-                String id = "SHARING";
-                String title = bundle.getString("SHARING_MENUBAR_ITEM");
-                String icon = "glyphicons glyphicons-share-alt";
-                MenubarContainer parent = this.menubarService.getDropdown(portalControllerContext, MenubarDropdown.SHARE_DROPDOWN_MENU_ID);
-                int order = 1;
-                String url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, SHARING_INSTANCE, properties, PortalUrlType.MODAL);
+                    // Window properties
+                    Map<String, String> properties = new HashMap<String, String>();
+                    properties.put(SharingService.DOCUMENT_PATH_WINDOW_PROPERTY, path);
 
-                MenubarItem menubarItem = new MenubarItem(id, title, icon, parent, order, "javascript:;", null, null, null);
-                Map<String, String> data = menubarItem.getData();
-                data.put("target", "#osivia-modal");
-                data.put("load-url", url);
-                data.put("backdrop", "static");
+                    // Menubar item
+                    String id = "SHARING";
+                    String title = bundle.getString("SHARING_MENUBAR_ITEM");
+                    String icon = "glyphicons glyphicons-share-alt";
+                    MenubarContainer parent = this.menubarService.getDropdown(portalControllerContext, MenubarDropdown.SHARE_DROPDOWN_MENU_ID);
+                    int order = 1;
+                    String url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, SHARING_INSTANCE, properties, PortalUrlType.MODAL);
 
-                menubar.add(menubarItem);
+                    MenubarItem menubarItem = new MenubarItem(id, title, icon, parent, order, "javascript:;", null, null, null);
+                    Map<String, String> data = menubarItem.getData();
+                    data.put("target", "#osivia-modal");
+                    data.put("load-url", url);
+                    data.put("backdrop", "static");
+
+                    menubar.add(menubarItem);
+                }
             }
         }
     }

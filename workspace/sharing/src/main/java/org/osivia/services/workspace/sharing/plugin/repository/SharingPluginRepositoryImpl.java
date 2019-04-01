@@ -1,6 +1,12 @@
 package org.osivia.services.workspace.sharing.plugin.repository;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
@@ -82,6 +88,38 @@ public class SharingPluginRepositoryImpl extends SharingCommonRepositoryImpl imp
         }
 
         return author;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isInCurrentUserWorkspace(PortalControllerContext portalControllerContext, String path) throws PortalException {
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setPortalControllerContext(portalControllerContext);
+
+        // User workspaces
+        List<CMSItem> userWorkspaces;
+        try {
+            userWorkspaces = cmsService.getWorkspaces(cmsContext, true, false);
+        } catch (CMSException e) {
+            userWorkspaces = null;
+        }
+
+        boolean inUserWorkspace = false;
+        if (CollectionUtils.isNotEmpty(userWorkspaces)) {
+            Iterator<CMSItem> iterator = userWorkspaces.iterator();
+            while (iterator.hasNext() && !inUserWorkspace) {
+                CMSItem cmsItem = iterator.next();
+                inUserWorkspace = StringUtils.startsWith(path, cmsItem.getNavigationPath() + "/");
+            }
+        }
+
+        return inUserWorkspace;
     }
 
 }
