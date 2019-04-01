@@ -4,6 +4,9 @@
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
+<c:set var="checkboxTitle"><op:translate key="TABLE_CHECKBOX_TITLE" /></c:set>
+
+
 <c:choose>
     <c:when test="${empty invitations.invitations}">
         <div class="portal-table-row-group">
@@ -67,7 +70,7 @@
                         <div class="portal-table-cell-inner" data-column="checkbox">
                             <c:if test="${invitation.state.editable}">
                                 <div class="portal-table-checkbox">
-                                    <a href="javascript:;" class="no-ajax-link">
+                                    <a href="javascript:;" class="no-ajax-link" title="${checkboxTitle}">
                                         <i class="glyphicons glyphicons-unchecked"></i>
                                     </a>
                                 </div>

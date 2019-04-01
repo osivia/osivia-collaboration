@@ -26,7 +26,9 @@
                 <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_REQUEST" /></span>
                 
                 <c:if test="${invitationRequests.sort.id eq 'display-name'}">
-                    <i class="glyphicons glyphicons-arrow-${invitationRequests.alt ? 'up' : 'down'}"></i>
+                    <small>
+                        <i class="glyphicons glyphicons-arrow-${invitationRequests.alt ? 'up' : 'down'}"></i>
+                    </small>
                 </c:if>
             </a>
         </div>
@@ -44,7 +46,9 @@
                 <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_REQUEST_DATE" /></span>
                 
                 <c:if test="${invitationRequests.sort.id eq 'date'}">
-                    <i class="glyphicons glyphicons-arrow-${invitationRequests.alt ? 'up' : 'down'}"></i>
+                    <small>
+                        <i class="glyphicons glyphicons-arrow-${invitationRequests.alt ? 'up' : 'down'}"></i>
+                    </small>
                 </c:if>
             </a>
         </div>
@@ -62,7 +66,9 @@
                 <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></span>
                 
                 <c:if test="${invitationRequests.sort.id eq 'role'}">
-                    <i class="glyphicons glyphicons-arrow-${invitationRequests.alt ? 'up' : 'down'}"></i>
+                    <small>
+                        <i class="glyphicons glyphicons-arrow-${invitationRequests.alt ? 'up' : 'down'}"></i>
+                    </small>
                 </c:if>
             </a>
         </div>
@@ -80,7 +86,9 @@
                 <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_STATE" /></span>
                 
                 <c:if test="${invitationRequests.sort.id eq 'state'}">
-                    <i class="glyphicons glyphicons-arrow-${invitationRequests.alt ? 'up' : 'down'}"></i>
+                    <small>
+                        <i class="glyphicons glyphicons-arrow-${invitationRequests.alt ? 'up' : 'down'}"></i>
+                    </small>
                 </c:if>
             </a>
         </div>
@@ -88,6 +96,13 @@
     
     <!-- Checkbox -->
     <div class="portal-table-cell" data-column="checkbox">
-        <div class="portal-table-cell-inner" data-column="checkbox"></div>
+        <div class="portal-table-cell-inner" data-column="checkbox">
+            <div class="portal-table-checkbox">
+                <c:set var="title"><op:translate key="TABLE_SELECT_ALL_CHECKBOX_TITLE" /></c:set>
+                <a href="javascript:;" class="no-ajax-link" title="${title}">
+                    <i class="glyphicons glyphicons-unchecked"></i>
+                </a>
+            </div>
+        </div>
     </div>
 </div>
