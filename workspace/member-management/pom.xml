@@ -14,18 +14,6 @@
     <name>OSIVIA Services - Workspace - Member management</name>
 
 
-	<dependencies>
-    
-        <!-- Commons CSV -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-            <version>1.2</version>
-        </dependency>
-        
-    </dependencies>
-
-
 	<build>
 		<plugins>
 		
