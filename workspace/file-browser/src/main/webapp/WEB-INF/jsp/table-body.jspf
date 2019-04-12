@@ -1,0 +1,100 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
+
+
+<c:choose>
+    <c:when test="${empty form.items}">
+        <div class="portal-table-row-group">
+            <div class="portal-table-row">
+                <div class="portal-table-cell">
+                    <div class="portal-table-cell-inner">
+                        <span class="text-muted"><op:translate key="FILE_BROWSER_EMPTY" /></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </c:when>
+    
+    <c:otherwise>
+        <div class="portal-table-row-group portal-table-selectable">
+            <c:forEach var="item" items="${form.items}">
+                <div class="portal-table-row portal-table-selectable-filter ${item.folderish ? 'file-browser-droppable' : ''}" data-id="${item.document.id}" 
+                        data-type="${item.document.type.name}" data-text="${item.title}" data-accepted-types="${item.acceptedTypes}"
+                        data-double-click-target=".file-browser-draggable a">
+                    <!-- Title -->
+                    <div class="portal-table-cell" data-column="title">
+                        <div class="portal-table-cell-inner" data-column="title">
+                            <span><ttc:icon document="${item.document}" style="${item.folderish ? 'flat' : 'flat-inverse'}" /></span>
+                        
+                            <div class="file-browser-draggable">
+                                <span><ttc:title document="${item.document}" /></span>
+                            </div>
+                            
+                            <c:if test="${not empty item.lock || item.subscription}">
+                                <div>
+                                    <c:if test="${not empty item.lock}">
+                                        <div>
+                                            <i class="${item.lock}"></i>
+                                        </div>
+                                    </c:if>
+                                
+                                    <c:if test="${item.subscription}">
+                                        <div>
+                                            <i class="glyphicons glyphicons-flag"></i>
+                                        </div>
+                                    </c:if>
+                                </div>
+                            </c:if>
+                        </div>
+                    </div>
+                    
+                    <!-- Last modification -->
+                    <div class="portal-table-cell" data-column="last-modification">
+                        <div class="portal-table-cell-inner" data-column="last-modification">
+                            <div>
+                                <span><fmt:formatDate value="${item.lastModification}" type="date" dateStyle="long" /></span>
+                                <span class="visible-lg-inline">
+                                    <span>-</span>
+                                    <span><ttc:user name="${item.lastContributor}" linkable="false" /></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- File size -->
+                    <div class="portal-table-cell" data-column="file-size">
+                        <div class="portal-table-cell-inner" data-column="file-size">
+                            <c:choose>
+                                <c:when test="${item.size gt 0}">
+                                    <span><ttc:fileSize size="${item.size}" /></span>
+                                </c:when>
+                                
+                                <c:otherwise>
+                                    <span>&ndash;</span>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                    </div>
+                    
+                    <!-- Checkbox -->
+                    <div class="portal-table-cell" data-column="checkbox">
+                        <div class="portal-table-cell-inner" data-column="checkbox">
+                            <div class="portal-table-checkbox">
+                                <a href="javascript:;" class="no-ajax-link">
+                                    <i class="glyphicons glyphicons-unchecked"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Draggable -->
+                    <c:if test="${item.document.type.editable}">
+                        <div class="file-browser-draggable file-browser-draggable-shadowbox"></div>
+                    </c:if>
+                </div>
+            </c:forEach>
+        </div>
+    </c:otherwise>
+</c:choose>

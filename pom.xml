@@ -12,8 +12,14 @@
 
 
     <properties>
+        <!-- Toutatice -->
         <toutatice.version>4.7-SNAPSHOT</toutatice.version>
+        
+        <!-- Directory -->
         <directory.version>4.7-SNAPSHOT</directory.version>
+        
+        <!-- JBoss -->
+        <jboss-portal.version>2.7.2</jboss-portal.version>
     </properties>
 
 
@@ -49,6 +55,20 @@
                 <artifactId>toutatice-portail-cms-nuxeo-dependencies-test</artifactId>
                 <version>${toutatice.version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <!-- JBoss -->
+            <dependency>
+                <groupId>org.jboss.portal</groupId>
+                <artifactId>portal-core-lib</artifactId>
+                <version>${jboss-portal.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.portal</groupId>
+                <artifactId>portal-common-lib</artifactId>
+                <version>${jboss-portal.version}</version>
+                <scope>provided</scope>
             </dependency>
 
         </dependencies>

@@ -1,0 +1,45 @@
+.portal-table-selectable-filter {
+    position: relative;
+}
+
+
+.file-browser-draggable-shadowbox {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    visibility: hidden;
+}
+
+.ui-selected {
+    .file-browser-draggable-shadowbox {
+        visibility: visible;
+    }
+}
+
+
+.file-browser-table-row {
+    .transition-property(@transition-property: opacity);
+    .transition-duration(@transition-duration: 200ms);
+    
+    &.file-browser-dragged {
+        opacity: 0.3;
+    }
+}
+
+
+.file-browser-helper {
+    > * {
+        position: relative;
+        z-index: 3;
+        
+        display: flex;
+        align-items: center;
+        
+        height: 40px;
+        
+        padding: 8px;
+    }
+}
