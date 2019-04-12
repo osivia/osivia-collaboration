@@ -1,5 +1,6 @@
 package org.osivia.services.editor.link.portlet.repository;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -8,7 +9,7 @@ import javax.portlet.PortletException;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.osivia.portal.api.cms.DocumentType;
-import org.osivia.portal.api.cms.FileDocumentType;
+import org.osivia.portal.api.cms.FileMimeType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.editor.link.portlet.model.EditorLinkForm;
 
@@ -95,12 +96,13 @@ public interface EditorLinkRepository {
 
 
     /**
-     * Get file document types.
+     * Get file MIME types.
      * 
      * @param portalControllerContext portal controller context
-     * @return file document types
+     * @return file MIME types
      * @throws PortletException
+     * @throws IOException
      */
-    Collection<FileDocumentType> getFileDocumentTypes(PortalControllerContext portalControllerContext) throws PortletException;
+    Map<String, FileMimeType> getFileMimeTypes(PortalControllerContext portalControllerContext) throws PortletException, IOException;
 
 }
