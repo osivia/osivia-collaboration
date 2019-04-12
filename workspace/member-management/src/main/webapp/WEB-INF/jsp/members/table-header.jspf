@@ -25,7 +25,9 @@
                 <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_MEMBER" /></span>
                 
                 <c:if test="${members.sort.id eq 'display-name'}">
-                    <i class="glyphicons glyphicons-arrow-${members.alt ? 'up' : 'down'}"></i>
+                    <small>
+                        <i class="glyphicons glyphicons-arrow-${members.alt ? 'up' : 'down'}"></i>
+                    </small>
                 </c:if>
             </a>
         </div>
@@ -43,7 +45,9 @@
                 <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_MEMBER_ACKNOWLEDGMENT_DATE" /></span>
                 
                 <c:if test="${members.sort.id eq 'date'}">
-                    <i class="glyphicons glyphicons-arrow-${members.alt ? 'up' : 'down'}"></i>
+                    <small>
+                        <i class="glyphicons glyphicons-arrow-${members.alt ? 'up' : 'down'}"></i>
+                    </small>
                 </c:if>
             </a>
             
@@ -68,7 +72,9 @@
                 <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></span>
                 
                 <c:if test="${members.sort.id eq 'role'}">
-                    <i class="glyphicons glyphicons-arrow-${members.alt ? 'up' : 'down'}"></i>
+                    <small>
+                        <i class="glyphicons glyphicons-arrow-${members.alt ? 'up' : 'down'}"></i>
+                    </small>
                 </c:if>
             </a>
         </div>
@@ -76,6 +82,13 @@
     
     <!-- Checkbox -->
     <div class="portal-table-cell" data-column="checkbox">
-        <div class="portal-table-cell-inner" data-column="checkbox"></div>
+        <div class="portal-table-cell-inner" data-column="checkbox">
+            <div class="portal-table-checkbox">
+                <c:set var="title"><op:translate key="TABLE_SELECT_ALL_CHECKBOX_TITLE" /></c:set>
+                <a href="javascript:;" class="no-ajax-link" title="${title}">
+                    <i class="glyphicons glyphicons-unchecked"></i>
+                </a>
+            </div>
+        </div>
     </div>
 </div>

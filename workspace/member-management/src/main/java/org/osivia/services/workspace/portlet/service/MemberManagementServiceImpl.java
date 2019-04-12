@@ -541,7 +541,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
             url = actionUrl.toString();
         }
-        Element confirm = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-warning no-ajax-link", bundle.getString("CONFIRM"), null);
+        Element confirm = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-danger no-ajax-link", bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_REMOVE_MEMBER"), null);
 
         return this.getConfirmationModal(portalControllerContext, modalId, title, content, confirm, bundle);
     }

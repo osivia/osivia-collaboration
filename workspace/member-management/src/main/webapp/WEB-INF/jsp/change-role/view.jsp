@@ -12,14 +12,19 @@
     <%@ include file="../commons/tabs.jspf" %>
     
     <div class="panel panel-default">
-        <div class="panel-body">
-            <!-- Selection -->
-            <%@ include file="selection.jspf" %>
-            
-            <hr>
-            
-            <!-- Form -->
-            <%@ include file="form.jspf" %>
-        </div>
+    	<div class="row">
+    		<div class="col-lg-4 col-md-6 col-sm-12">
+		   		<div class="panel-body">
+		            <!-- Selection -->
+		            <%@ include file="selection.jspf" %>
+		            
+		            <hr>
+		            
+		            <!-- Form -->
+		            <%@ include file="form.jspf" %>
+		        </div>
+    		</div>
+    	</div>
+
     </div>
 </div>

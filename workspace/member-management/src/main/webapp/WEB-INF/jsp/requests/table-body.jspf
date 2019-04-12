@@ -6,6 +6,8 @@
 
 <c:set var="namespace"><portlet:namespace /></c:set>
 
+<c:set var="checkboxTitle"><op:translate key="TABLE_CHECKBOX_TITLE" /></c:set>
+
 
 <c:choose>
     <c:when test="${empty invitationRequests.requests}">
@@ -72,7 +74,7 @@
                         <div class="portal-table-cell-inner" data-column="checkbox">
                             <c:if test="${invitationRequest.state.editable}">
                                 <div class="portal-table-checkbox">
-                                    <a href="javascript:;" class="no-ajax-link">
+                                    <a href="javascript:;" class="no-ajax-link" title="${checkboxTitle}">
                                         <i class="glyphicons glyphicons-unchecked"></i>
                                     </a>
                                 </div>
