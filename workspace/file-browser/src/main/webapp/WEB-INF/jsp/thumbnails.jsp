@@ -5,7 +5,7 @@
 
 
 <div class="file-browser-thumbnails-container file-browser-selectable">
-    <div class="file-browser-filler">
+    <div class="portlet-filler">
         <div class="file-browser-folders">
             <div class="clearfix">
                 <div class="btn-group btn-group-sm pull-right">
@@ -52,10 +52,12 @@
                         <c:set var="count" value="${count + 1}" />
                         
                         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
-                            <div class="file-browser-thumbnail file-browser-selectee file-browser-droppable" data-id="${item.document.id}" data-type="${item.document.type.name}" data-text="${item.title}" data-accepted-types="${item.acceptedTypes}">
+                            <div class="file-browser-thumbnail file-browser-selectable-filter file-browser-droppable" data-id="${item.document.id}" 
+                                    data-type="${item.document.type.name}" data-text="${item.title}" data-accepted-types="${item.acceptedTypes}"
+                                    data-double-click-target=".file-browser-draggable a">
                                 <!-- Title -->
                                 <div class="file-browser-thumbnail-title">
-                                    <div class="file-browser-text file-browser-draggable">
+                                    <div class="text-overflow file-browser-draggable">
                                         <span><ttc:icon document="${item.document}" /></span>
                                         <span><ttc:title document="${item.document}" /></span>
                                     </div>
@@ -89,7 +91,9 @@
                         <c:set var="count" value="${count + 1}" />
                         
                         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2">
-                            <div class="file-browser-thumbnail file-browser-selectee" data-id="${item.document.id}" data-type="${item.document.type.name}" data-text="${item.title}">
+                            <div class="file-browser-thumbnail file-browser-selectable-filter" data-id="${item.document.id}" 
+                                    data-type="${item.document.type.name}" data-text="${item.title}"
+                                    data-double-click-target=".file-browser-draggable a">
                                 <!-- Preview -->
                                 <div class="file-browser-thumbnail-preview-container">
                                     <div class="file-browser-thumbnail-preview">
@@ -115,7 +119,7 @@
                                 
                                 <!-- Title -->
                                 <div class="file-browser-thumbnail-title">
-                                    <div class="file-browser-text file-browser-draggable">
+                                    <div class="text-overflow file-browser-draggable">
                                         <span><ttc:icon document="${item.document}" /></span>
                                         <span><ttc:title document="${item.document}" /></span>
                                     </div>

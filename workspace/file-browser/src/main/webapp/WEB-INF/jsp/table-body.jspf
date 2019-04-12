@@ -4,6 +4,9 @@
 <%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
 
 
+<c:set var="checkboxTitle"><op:translate key="TABLE_CHECKBOX_TITLE" /></c:set>
+
+
 <c:choose>
     <c:when test="${empty form.items}">
         <div class="portal-table-row-group">
@@ -82,7 +85,7 @@
                     <div class="portal-table-cell" data-column="checkbox">
                         <div class="portal-table-cell-inner" data-column="checkbox">
                             <div class="portal-table-checkbox">
-                                <a href="javascript:;" class="no-ajax-link">
+                                <a href="javascript:;" class="no-ajax-link" title="${checkboxTitle}">
                                     <i class="glyphicons glyphicons-unchecked"></i>
                                 </a>
                             </div>

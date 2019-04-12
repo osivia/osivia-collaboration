@@ -1,12 +1,72 @@
-var fileBrowserToolbarXhr;
-
-
 $JQry(function() {
 	var isChromeAndroid = /Chrome/i.test(navigator.userAgent) && /Mobile/i.test(navigator.userAgent) && /Android/i.test(navigator.userAgent);
 	var $browser = $JQry(".file-browser");
 	var previousIndex = -1;
 	
 	if (!isChromeAndroid && !$browser.data("loaded")) {
+		// Selectable
+		$JQry(".file-browser-selectable").selectable({
+			cancel: "a, button, .file-browser-draggable",
+			filter: ".file-browser-selectable-filter",
+			
+			selected: function(event, ui) {
+				var $selected = $JQry(ui.selected);
+				
+				$selected.removeClass("bg-info border-info");
+				$selected.addClass("bg-primary border-primary");
+			},
+			
+			selecting: function(event, ui) {
+				var $selecting = $JQry(ui.selecting);
+				var $selectable = $selecting.closest(".file-browser-selectable");
+				var $selectee = $selectable.find(".file-browser-selectable-filter");
+				var currentIndex = $selectee.index(ui.selecting);
+				
+				if (event.shiftKey && previousIndex > -1) {
+					$selectee.slice(Math.min(previousIndex, currentIndex), Math.max(previousIndex, currentIndex) + 1).addClass("ui-selected bg-primary border-primary");
+				} else {
+					$selecting.addClass("bg-info border-info");
+					previousIndex = currentIndex;
+				}
+			},
+			
+			stop: function(event, ui) {
+				var $target = $JQry(event.target);
+				
+				// Update toolbar
+				updateFileBrowserToolbar($target);
+			},
+			
+			unselected: function(event, ui) {
+				var $unselected = $JQry(ui.unselected);
+				
+				if (!event.shiftKey) {
+					$unselected.removeClass("bg-primary border-primary");
+				}
+			},
+			
+			unselecting: function(event, ui) {
+				var $unselecting = $JQry(ui.unselecting);
+				
+				$unselecting.removeClass("bg-primary border-primary bg-info border-info");
+			}
+		});
+		
+		
+		// Double click
+		$JQry(".file-browser-selectable-filter[data-double-click-target]").dblclick(function(event) {
+			var $target = $JQry(event.target);
+			var $selectee = $target.closest(".file-browser-selectable-filter");
+			var $link = $selectee.find($selectee.data("double-click-target")).first();
+			
+			if ($link.length) {
+				$link.get(0).click();
+			} else {
+				console.error("Double click event failed: link not found.");
+			}
+		});
+		
+		
 		// Draggable
 		$JQry(".file-browser-draggable").draggable({
 			addClasses: false,
@@ -20,8 +80,8 @@ $JQry(function() {
 			helper: function(event) {
 				var $target = $JQry(event.target);
 				var $draggable = $target.closest(".file-browser-draggable");
-				var $selectee = $draggable.closest(".portal-table-selectable-filter");
-				var $selectable = $selectee.closest(".portal-table-selectable");
+				var $selectee = $draggable.closest(".portal-table-selectable-filter, .file-browser-selectable-filter");
+				var $selectable = $selectee.closest(".portal-table-selectable, .file-browser-selectable");
 				var offset = $draggable.offset();
 				var click = {
 					top : event.pageY - offset.top,
@@ -92,27 +152,27 @@ $JQry(function() {
 			
 			start: function(event, ui) {
 				var $target = $JQry(event.target);
-				var $selectee = $target.closest(".portal-table-selectable-filter");
-				var $selectable = $selectee.closest(".portal-table-selectable");
+				var $selectee = $target.closest(".portal-table-selectable-filter, .file-browser-selectable-filter");
+				var $selectable = $selectee.closest(".portal-table-selectable, .file-browser-selectable");
 				var $selected = $selectable.find(".ui-selected");
 				var $browser = $target.closest(".file-browser");
-				var $toolbar = $browser.find(".portal-table-toolbar-container");
+				var $toolbar = $browser.find(".portal-table-toolbar");
 
 				if ($selectee.hasClass("ui-selected")) {
 					$selected.addClass("file-browser-dragged");
 					
 					// Abort previous AJAX request
-					if (fileBrowserToolbarXhr && fileBrowserToolbarXhr.readyState != 4) {
-						fileBrowserToolbarXhr.abort();
+					if (tableToolbarXhr && tableToolbarXhr.readyState != 4) {
+						tableToolbarXhr.abort();
 						
 						// Disable toolbar
 						$toolbar.find("a").addClass("disabled");
 				    }
 				} else {
-					$selectee.addClass("ui-selected file-browser-dragged");
+					$selectee.addClass("ui-selected bg-primary border-primary file-browser-dragged");
 					
 					// Deselect
-					$selected.not($selectee).removeClass("ui-selected");
+					$selected.not($selectee).removeClass("ui-selected bg-primary border-primary");
 					
 					// Disable toolbar
 					$toolbar.find("a").addClass("disabled");
@@ -121,14 +181,14 @@ $JQry(function() {
 			
 			stop: function(event, ui) {
 				var $target = $JQry(event.target);
-				var $selectee = $target.closest(".portal-table-selectable-filter");
-				var $selectable = $selectee.closest(".portal-table-selectable");
+				var $selectee = $target.closest(".portal-table-selectable-filter, .file-browser-selectable-filter");
+				var $selectable = $selectee.closest(".portal-table-selectable, .file-browser-selectable");
 				var $dragged = $selectable.find(".file-browser-dragged");
 			
 				$dragged.removeClass("file-browser-dragged");
 				
 				// Update toolbar
-				updateTableToolbar($target);
+				updateFileBrowserToolbar($target);
 			}
 		});
 		
@@ -136,36 +196,36 @@ $JQry(function() {
 		// Click on draggable shadowbox
 		$JQry(".file-browser-draggable-shadowbox").click(function(event) {
 			var $target = $JQry(event.target);
-			var $selectee = $target.closest(".portal-table-selectable-filter");
-			var $selectable = $selectee.closest(".portal-table-selectable");
+			var $selectee = $target.closest(".portal-table-selectable-filter, .file-browser-selectable-filter");
+			var $selectable = $selectee.closest(".portal-table-selectable, .file-browser-selectable");
 			
 			if (event.ctrlKey) {
-				$selectee.removeClass("ui-selected");
+				$selectee.removeClass("ui-selected bg-primary border-primary");
 			} else {
 				$selectable.find(".ui-selected").each(function(index, element) {
 					var $element = $JQry(element);
 					
 					if (!$element.is($selectee)) {
-						$element.removeClass("ui-selected");
+						$element.removeClass("ui-selected bg-primary border-primary");
 					}
 				});
 			}
 			
 			// Update toolbar
-			updateTableToolbar($target);
+			updateFileBrowserToolbar($target);
 		});
 		
 		
 		// Droppable
 		$JQry(".file-browser-droppable").droppable({
 			addClasses: false,
-			hoverClass: "bg-info border-info",
+			hoverClass: "bg-info",
 			tolerance: "pointer",
 			
 			accept: function($draggable) {
 				var $droppable = $JQry(this);
-				var $selectee = $droppable.closest(".portal-table-selectable-filter");
-				var $selectable = $selectee.closest(".portal-table-selectable");
+				var $selectee = $droppable.closest(".portal-table-selectable-filter, .file-browser-selectable-filter");
+				var $selectable = $selectee.closest(".portal-table-selectable, .file-browser-selectable");
 				var $selected = $selectable.find(".ui-selected");
 				var targetAcceptedTypes = $droppable.data("accepted-types").split(",");
 				var accepted = true;
@@ -203,7 +263,7 @@ $JQry(function() {
 					
 				// Target
 				var $target = $JQry(event.target);
-				var targetId = $target.closest(".portal-table-selectable-filter").data("id");
+				var targetId = $target.closest(".portal-table-selectable-filter, .file-browser-selectable-filter").data("id");
 					
 				// AJAX parameters
 				var container = null;
@@ -362,3 +422,63 @@ $JQry(function() {
 		$browser.data("loaded", true);
 	}
 });
+
+
+function updateFileBrowserToolbar($target) {
+	var $container = $target.closest(".file-browser");
+	var $selectee = $container.find(".portal-table-selectable-filter, .file-browser-selectable-filter");
+	var allSelected = ($selectee.length && ($selectee.length === $container.find(".ui-selected").length));
+	var $selectAll = $container.find(".portal-table-header-group .portal-table-checkbox a");
+	var $toolbarContainer = $container.find(".portal-table-toolbar-container");
+	var $toolbar = $toolbarContainer.find(".portal-table-toolbar");
+	var $rows = $container.find(".portal-table-row, .file-browser-thumbnail");
+	var $selected = $container.find(".ui-selected");
+	var indexes = "";
+	
+	// Disable toolbar
+	$toolbar.find("a").addClass("disabled");
+	
+	// Abort previous AJAX request
+	if (tableToolbarXhr && tableToolbarXhr.readyState != 4) {
+		tableToolbarXhr.abort();
+    }
+	
+	
+	// Build selected indexes 
+	$selected.each(function(index, element) {
+		var $element = $JQry(element);
+		var index = $rows.index($element);
+		
+		if (indexes.length) {
+			indexes += ",";
+		}
+		
+		indexes += index;
+	});
+	
+	
+	// AJAX
+	tableToolbarXhr = jQuery.ajax({
+		url: $toolbarContainer.data("url"),
+		async: true,
+		cache: false,
+		data: {
+			indexes: indexes
+		},
+		dataType: "html",
+		success : function(data, status, xhr) {
+			$toolbar.html(data);
+			
+			// Call jQuery.ready() events
+			$JQry(document).ready();
+		}
+	});
+	
+	
+	// Update "select all" checkbox
+	if ($selectAll.hasClass("checked") && !allSelected) {
+		$selectAll.removeClass("checked");
+	} else if (!$selectAll.hasClass("checked") && allSelected) {
+		$selectAll.addClass("checked");
+	}
+}
