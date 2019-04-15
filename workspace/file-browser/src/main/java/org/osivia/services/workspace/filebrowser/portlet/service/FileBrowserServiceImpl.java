@@ -499,7 +499,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         // Dropdown
         Element dropdownGroup;
         Element dropdownMenu;
-        if (permissions.isEditable() && (documentDto.isLiveEditable() || drive)) {
+        if (permissions.isEditable() && drive) {
             // Dropdown group
             dropdownGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm");
 
@@ -523,51 +523,27 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
         if (documentDto.isLiveEditable()) {
             if (permissions.isEditable()) {
-                String onlyOfficeTitle = bundle.getString("FILE_BROWSER_TOOLBAR_ONLYOFFICE_TITLE");
-                String onlyOfficeWithLockText = bundle.getString("FILE_BROWSER_TOOLBAR_ONLYOFFICE_WITH_LOCK");
-                String onlyOfficeWithoutLockText = bundle.getString("FILE_BROWSER_TOOLBAR_ONLYOFFICE_WITHOUT_LOCK");
-
-                String onlyOfficeWithLockUrl = this.getOnlyOfficeUrl(portalControllerContext, path, onlyOfficeTitle, true);
-                String onlyOfficeWithoutLockUrl = this.getOnlyOfficeUrl(portalControllerContext, path, onlyOfficeWithoutLockText, false);
-
+                String onlyOfficeTitle = bundle.getString("FILE_BROWSER_TOOLBAR_ONLYOFFICE_EDIT_TITLE");
+                String onlyOfficeAction = bundle.getString("FILE_BROWSER_TOOLBAR_ONLYOFFICE_EDIT");
+                String onlyOfficeUrl = this.getOnlyOfficeUrl(portalControllerContext, path, onlyOfficeTitle, false);
 
                 // OnlyOffice (with lock)
-                Element onlyOffice = DOM4JUtils.generateLinkElement(onlyOfficeWithLockUrl, null, null, "btn btn-default no-ajax-link", onlyOfficeTitle,
+                Element onlyOffice = DOM4JUtils.generateLinkElement(onlyOfficeUrl, null, null, "btn btn-default no-ajax-link", onlyOfficeAction,
                         "glyphicons glyphicons-pencil");
                 liveEditionGroup.add(onlyOffice);
-
-                // OnlyOffice (with lock)
-                Element onlyOfficeWithLockDropdownItem = DOM4JUtils.generateElement("li", null, null);
-                dropdownMenu.add(onlyOfficeWithLockDropdownItem);
-                Element onlyOfficeWithLockLink = DOM4JUtils.generateLinkElement(onlyOfficeWithLockUrl, null, null, "no-ajax-link", onlyOfficeWithLockText);
-                onlyOfficeWithLockDropdownItem.add(onlyOfficeWithLockLink);
-
-                // OnlyOffice (without lock)
-                Element onlyOfficeWithoutLockDropdownItem = DOM4JUtils.generateElement("li", null, null);
-                dropdownMenu.add(onlyOfficeWithoutLockDropdownItem);
-                Element onlyOfficeWithoutLockLink = DOM4JUtils.generateLinkElement(onlyOfficeWithoutLockUrl, null, null, "no-ajax-link",
-                        onlyOfficeWithoutLockText);
-                onlyOfficeWithoutLockDropdownItem.add(onlyOfficeWithoutLockLink);
             } else if (StringUtils.isNotEmpty(portletRequest.getRemoteUser())) {
                 String onlyOfficeReadOnlyTitle = bundle.getString("FILE_BROWSER_TOOLBAR_ONLYOFFICE_READ_ONLY_TITLE");
-                String onlyOfficeReadOnlyText = bundle.getString("FILE_BROWSER_TOOLBAR_ONLYOFFICE_READ_ONLY");
-
+                String onlyOfficeReadOnlyAction = bundle.getString("FILE_BROWSER_TOOLBAR_ONLYOFFICE_READ_ONLY");
                 String onlyOfficeReadOnlyUrl = this.getOnlyOfficeUrl(portalControllerContext, path, onlyOfficeReadOnlyTitle, false);
 
                 // OnlyOffice (read only)
                 Element onlyOffice = DOM4JUtils.generateLinkElement(onlyOfficeReadOnlyUrl, null, null, "btn btn-default no-ajax-link",
-                        onlyOfficeReadOnlyText);
+                        onlyOfficeReadOnlyAction);
                 liveEditionGroup.add(onlyOffice);
             }
         }
 
         if (drive) {
-            if (documentDto.isLiveEditable()) {
-                // Divider
-                Element divider = DOM4JUtils.generateElement("li", "divider", StringUtils.EMPTY);
-                dropdownMenu.add(divider);
-            }
-
             if (StringUtils.isNotEmpty(publicationInfos.getDriveEditionUrl())) {
                 // Drive
                 Element driveDropdownItem = DOM4JUtils.generateElement("li", null, null);
