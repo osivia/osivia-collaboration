@@ -3,7 +3,6 @@ package org.osivia.services.calendar.view.portlet.repository;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.portlet.PortletException;
 
@@ -86,6 +85,16 @@ public interface CalendarViewRepository extends CalendarRepository {
      * @throws PortletException
      */
     void saveConfiguration(PortalControllerContext portalControllerContext, CalendarOptions configuration) throws PortletException;
+
+
+    /**
+     * Get calendar path.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return path
+     * @throws PortletException
+     */
+    String getCalendarPath(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**

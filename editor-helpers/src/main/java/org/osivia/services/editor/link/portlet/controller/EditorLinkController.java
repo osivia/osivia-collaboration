@@ -246,9 +246,10 @@ public class EditorLinkController extends CMSPortlet implements PortletConfigAwa
      * @param response portlet response
      * @return filter types
      * @throws PortletException
+     * @throws IOException
      */
     @ModelAttribute("filterTypes")
-    public List<FilterType> getFilterTypes(PortletRequest request, PortletResponse response) throws PortletException {
+    public List<FilterType> getFilterTypes(PortletRequest request, PortletResponse response) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 

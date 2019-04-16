@@ -1,0 +1,66 @@
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<!-- Column group -->
+<div class="portal-table-column-group">
+    <div class="portal-table-column" data-column="local-group"></div>
+    <div class="portal-table-column" data-column="members-count"></div>
+    <div class="portal-table-column" data-column="checkbox"></div>
+</div>
+
+<!-- Header -->
+<div class="portal-table-header-group">
+    <!-- Local group -->
+    <div class="portal-table-cell" data-column="local-group">
+        <div class="portal-table-cell-inner" data-column="local-group">
+            <portlet:actionURL name="sort" var="url" copyCurrentRenderParameters="true">
+                <portlet:param name="sortId" value="display-name" />
+                <portlet:param name="alt" value="${summary.sort.id eq 'display-name' and not summary.alt}" />
+            </portlet:actionURL>
+        
+            <a href="${url}">
+                <span><op:translate key="TABLE_HEADER_LOCAL_GROUP" /></span>
+                
+                <c:if test="${summary.sort.id eq 'display-name'}">
+                    <small>
+                        <i class="glyphicons glyphicons-arrow-${summary.alt ? 'up' : 'down'}"></i>
+                    </small>
+                </c:if>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Members count -->
+    <div class="portal-table-cell" data-column="members-count">
+        <div class="portal-table-cell-inner" data-column="members-count">
+            <portlet:actionURL name="sort" var="url" copyCurrentRenderParameters="true">
+                <portlet:param name="sortId" value="members-count" />
+                <portlet:param name="alt" value="${summary.sort.id eq 'members-count' and not summary.alt}" />
+            </portlet:actionURL>
+        
+            <a href="${url}">
+                <span><op:translate key="TABLE_HEADER_MEMBERS_COUNT" /></span>
+                
+                <c:if test="${summary.sort.id eq 'members-count'}">
+                    <small>
+                        <i class="glyphicons glyphicons-arrow-${summary.alt ? 'up' : 'down'}"></i>
+                    </small>
+                </c:if>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Checkbox -->
+    <div class="portal-table-cell" data-column="checkbox">
+        <div class="portal-table-cell-inner" data-column="checkbox">
+            <div class="portal-table-checkbox">
+                <c:set var="title"><op:translate key="TABLE_SELECT_ALL_CHECKBOX_TITLE" /></c:set>
+                <a href="javascript:;" class="no-ajax-link" title="${title}">
+                    <i class="glyphicons glyphicons-unchecked"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

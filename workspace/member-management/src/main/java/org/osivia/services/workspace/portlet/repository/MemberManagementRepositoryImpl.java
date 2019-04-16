@@ -29,13 +29,11 @@ import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.directory.v2.service.PersonUpdateService;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.PortalException;
-import org.osivia.portal.api.batch.IBatchService;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
-import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.notifications.NotificationsType;
@@ -45,6 +43,7 @@ import org.osivia.services.workspace.portlet.model.InvitationRequest;
 import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.Member;
+import org.osivia.services.workspace.portlet.model.MemberObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
@@ -352,6 +351,18 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
+    public void addToGroup(PortalControllerContext portalControllerContext, String workspaceId, List<MemberObject> members, CollabProfile group)
+            throws PortletException {
+        for (MemberObject member : members) {
+            this.workspaceService.addMemberToLocalGroup(workspaceId, group.getDn(), member.getPerson().getDn());
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<Invitation> getInvitations(PortalControllerContext portalControllerContext, String workspaceId, Set<String> memberIdentifiers)
             throws PortletException {
         // Nuxeo controller
@@ -649,8 +660,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     }
 
                     // Start
-                    String modelWebId = IFormsService.FORMS_WEB_ID_PREFIX + INVITATION_MODEL_ID;
-                    this.formsService.start(portalControllerContext, modelWebId, variables);
+                    this.formsService.start(portalControllerContext, INVITATION_MODEL_ID, variables);
 
                     // Update ACL
                     this.updateInvitationAcl(portalControllerContext, workspaceId, false, uid);
@@ -781,6 +791,10 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         // Invitation state
         InvitationState state = InvitationState.fromName(variables.getString(INVITATION_STATE_PROPERTY));
         request.setState(state);
+        
+        // user message
+        String userMessage = variables.getString(USER_MESSAGE);
+        request.setUserMessage(userMessage);
 
         return request;
     }
@@ -912,16 +926,14 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public void createInvitationRequest(PortalControllerContext portalControllerContext, String workspaceId, String uid) throws PortletException {
+    public void createInvitationRequest(PortalControllerContext portalControllerContext, String workspaceId, String uid, String userMessage)
+    		throws PortletException {
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
         try {
             // Workspace Nuxeo document
             Document workspace = this.getWorkspace(portalControllerContext, workspaceId);
-
-            // WebId
-            String webId = IFormsService.FORMS_WEB_ID_PREFIX + REQUEST_MODEL_ID;
 
             // Variables
             Map<String, String> variables = new HashMap<>();
@@ -930,8 +942,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             variables.put(WORKSPACE_TITLE_PROPERTY, workspace.getTitle());
             variables.put(PERSON_UID_PROPERTY, uid);
             variables.put(INVITATION_STATE_PROPERTY, InvitationState.SENT.name());
+            variables.put(USER_MESSAGE, userMessage);
 
-            this.formsService.start(portalControllerContext, webId, variables);
+            this.formsService.start(portalControllerContext, REQUEST_MODEL_ID, variables);
 
             // Update ACL
             this.updateInvitationAcl(portalControllerContext, workspaceId, true, uid);
@@ -1070,12 +1083,37 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public void resendInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form, Date resendingDate) throws PortletException {
+    public void resendInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form, Date date) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
+        boolean ok = this.resendInvitation(portalControllerContext, form.getInvitation(), form.getMessage(), date, bundle);
+
+        // Notification
+        if (ok) {
+            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_RESENDING_SUCCESS");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+        } else {
+            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_RESENDING_ERROR");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
+        }
+    }
+
+
+    /**
+     * Resend invitation.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param invitation invitation
+     * @param message resending message
+     * @param date resending date
+     * @param bundle internationalization bundle
+     * @return true if the invitation was correctly resent
+     */
+    protected boolean resendInvitation(PortalControllerContext portalControllerContext, Invitation invitation, String message, Date date,
+            Bundle bundle) {
         // Procedure instance Nuxeo document
-        Document procedureInstance = form.getInvitation().getDocument();
+        Document procedureInstance = invitation.getDocument();
         // Procedure instance properties
         PropertyMap procedureInstanceProperties = procedureInstance.getProperties();
 
@@ -1093,42 +1131,42 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             }
         }
         // Update resending date
-        variables.put(INVITATION_RESENDING_DATE, String.valueOf(resendingDate.getTime()));
+        variables.put(INVITATION_RESENDING_DATE, String.valueOf(date.getTime()));
         // Update message
-        variables.put(INVITATION_MESSAGE_PROPERTY, form.getMessage());
+        variables.put(INVITATION_MESSAGE_PROPERTY, message);
 
         // Task properties
         PropertyMap taskProperties = procedureInstanceProperties.getMap("pi:task");
 
+        boolean status;
         try {
             this.formsService.proceed(portalControllerContext, taskProperties, "resend", variables);
-
-            // Notification
-            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_RESENDING_SUCCESS");
-            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+            status = true;
         } catch (PortalException | FormFilterException e) {
-            // Error notification
-            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATION_RESENDING_ERROR");
-            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
-
-            this.log.error(message, e);
+            String errorMessage = bundle.getString("MESSAGE_WORKSPACE_INVITATION_RESENDING_ERROR");
+            this.log.error(errorMessage, e);
+            status = false;
         }
+        return status;
     }
 
 
     /**
      * {@inheritDoc}
      */
-	@Override
-	public void checkIntegrity(PortalControllerContext portalControllerContext, String workspaceId) {
-		IBatchService batchService = Locator.findMBean(IBatchService.class, IBatchService.MBEAN_NAME);
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put("workspaceId", workspaceId);
-		try {
-			batchService.startBatchImmediatly("DirectoryIntegrity", parameters );
-		} catch (PortalException e) {
-            // log.error("Unable to start integrity check"); FIXME
-		}
-	}
+    @Override
+    public boolean resendInvitations(PortalControllerContext portalControllerContext, List<Invitation> invitations, String message, Date date)
+            throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        boolean status = true;
+        for (Invitation invitation : invitations) {
+            boolean result = this.resendInvitation(portalControllerContext, invitation, message, date, bundle);
+            status &= result;
+        }
+
+        return status;
+    }
 
 }

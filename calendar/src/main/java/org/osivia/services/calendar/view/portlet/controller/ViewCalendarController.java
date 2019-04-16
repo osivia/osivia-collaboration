@@ -37,6 +37,7 @@ import org.osivia.services.calendar.view.portlet.model.CalendarEditionMode;
 import org.osivia.services.calendar.view.portlet.model.CalendarViewForm;
 import org.osivia.services.calendar.view.portlet.model.calendar.CalendarData;
 import org.osivia.services.calendar.view.portlet.model.events.Event;
+import org.osivia.services.calendar.view.portlet.service.CalendarIntegrationService;
 import org.osivia.services.calendar.view.portlet.service.CalendarViewService;
 import org.osivia.services.calendar.view.portlet.utils.PeriodTypes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +89,10 @@ public class ViewCalendarController {
     /** Calendar service. */
     @Autowired
     protected CalendarViewService calendarService;
+
+    /** Calendar integration service. */
+    @Autowired
+    private CalendarIntegrationService calendarIntegrationService;
 
     /** Portal URL factory. */
     @Autowired
@@ -463,7 +468,6 @@ public class ViewCalendarController {
      */
     @ActionMapping(value = "synchronize")
     public void synchronize(ActionRequest request, ActionResponse response, PortletSession session) throws PortletException, IOException {
-
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
@@ -471,6 +475,28 @@ public class ViewCalendarController {
 
         // Redirect to refresh the page
         response.sendRedirect(this.urlFactory.getRefreshPageUrl(portalControllerContext));
+    }
+
+
+    /**
+     * Calendar integration resource mapping.
+     * 
+     * @param request resource request
+     * @param response resource response
+     * @param format calendar integration format request parameter
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ResourceMapping("integration")
+    public void integration(ResourceRequest request, ResourceResponse response, @RequestParam(name = "format", required = false) String format)
+            throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        // Content type
+        response.setContentType("text/calendar");
+        
+        this.calendarIntegrationService.integrate(portalControllerContext, response.getPortletOutputStream(), format);
     }
 
 

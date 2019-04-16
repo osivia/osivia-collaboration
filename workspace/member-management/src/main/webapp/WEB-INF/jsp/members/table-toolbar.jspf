@@ -1,0 +1,22 @@
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<portlet:resourceURL id="members-toolbar" var="toolbarUrl" />
+<portlet:resourceURL id="export-members-csv" var="exportCsvUrl" />
+
+
+<div class="portal-table-toolbar-container" data-url="${toolbarUrl}">
+    <!-- Export tools -->
+    <div class="btn-group btn-group-sm">
+        <a class="btn btn-default" href="${exportCsvUrl}">
+            <i class="glyphicons glyphicons-table"></i>
+            <span class="hidden-xs"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_EXPORT" /></span>
+        </a>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="portal-table-toolbar">
+        <div></div>
+    </div>
+</div>

@@ -21,6 +21,8 @@ public class CalendarOptions {
     private String periodTypeName;
     /** Read only indicator. */
     private boolean readOnly;
+    /** Integration indicator. */
+    private boolean integration;
 
 
     /**
@@ -101,6 +103,24 @@ public class CalendarOptions {
      */
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
+    }
+
+    /**
+     * Getter for integration.
+     * 
+     * @return the integration
+     */
+    public boolean isIntegration() {
+        return integration;
+    }
+
+    /**
+     * Setter for integration.
+     * 
+     * @param integration the integration to set
+     */
+    public void setIntegration(boolean integration) {
+        this.integration = integration;
     }
 
 }

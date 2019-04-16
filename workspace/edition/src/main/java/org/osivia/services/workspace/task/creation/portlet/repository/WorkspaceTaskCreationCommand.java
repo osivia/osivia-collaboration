@@ -158,7 +158,7 @@ public class WorkspaceTaskCreationCommand implements INuxeoCommand {
         for (TaskbarItem item : this.items) {
             String type;
             if (TaskbarItemType.CMS.equals(item.getType())) {
-                type = item.getDocumentType();
+                type = StringUtils.defaultIfEmpty(item.getDocumentType(), "Staple");
             } else {
                 type = "Staple";
             }

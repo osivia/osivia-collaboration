@@ -1,5 +1,6 @@
 package org.osivia.services.editor.link.portlet.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.portlet.PortletException;
@@ -88,8 +89,9 @@ public interface EditorLinkService {
      * @param portalControllerContext portal controller context
      * @return filter types
      * @throws PortletException
+     * @throws IOException
      */
-    List<FilterType> getFilterTypes(PortalControllerContext portalControllerContext) throws PortletException;
+    List<FilterType> getFilterTypes(PortalControllerContext portalControllerContext) throws PortletException, IOException;
 
 
     /**

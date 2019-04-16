@@ -1,5 +1,6 @@
 package org.osivia.services.editor.link.portlet.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,7 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.osivia.portal.api.cms.DocumentType;
-import org.osivia.portal.api.cms.FileDocumentType;
+import org.osivia.portal.api.cms.FileMimeType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -224,7 +225,7 @@ public class EditorLinkServiceImpl implements EditorLinkService {
      * {@inheritDoc}
      */
     @Override
-    public List<FilterType> getFilterTypes(PortalControllerContext portalControllerContext) throws PortletException {
+    public List<FilterType> getFilterTypes(PortalControllerContext portalControllerContext) throws PortletException, IOException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
         // Internationalization bundle
@@ -232,11 +233,11 @@ public class EditorLinkServiceImpl implements EditorLinkService {
 
         // Document types
         Collection<DocumentType> documentTypes = this.repository.getDocumentTypes(portalControllerContext);
-        // File document types
-        Collection<FileDocumentType> fileDocumentTypes = this.repository.getFileDocumentTypes(portalControllerContext);
+        // File MIME types
+        Map<String, FileMimeType> fileMimeTypes = this.repository.getFileMimeTypes(portalControllerContext);
 
         // Filter types
-        List<FilterType> filterTypes = new ArrayList<>(documentTypes.size() + fileDocumentTypes.size());
+        List<FilterType> filterTypes = new ArrayList<>(documentTypes.size() + fileMimeTypes.size());
 
         // All types
         FilterType all = this.applicationContext.getBean(FilterType.class);
@@ -256,11 +257,11 @@ public class EditorLinkServiceImpl implements EditorLinkService {
             }
         }
 
-        for (FileDocumentType fileDocumentType : fileDocumentTypes) {
+        for (FileMimeType fileDocumentType : fileMimeTypes.values()) {
             FilterType filterType = this.applicationContext.getBean(FilterType.class);
-            all.setName(fileDocumentType.getName());
+            all.setName(fileDocumentType.getMimeType().getBaseType());
             all.setIcon(fileDocumentType.getIcon());
-            all.setDisplayName(bundle.getString("FILTER_TYPE_FILE_" + StringUtils.upperCase(fileDocumentType.getName())));
+            all.setDisplayName(fileDocumentType.getDescription());
             all.setLevel(2);
             filterTypes.add(filterType);
         }

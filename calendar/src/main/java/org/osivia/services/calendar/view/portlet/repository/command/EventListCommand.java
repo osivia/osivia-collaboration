@@ -32,7 +32,7 @@ public class EventListCommand implements INuxeoCommand {
     private final Date startDate;
     /** End date. */
     private final Date endDate;
-    
+
     private final String sourcesId;
 
 
@@ -44,13 +44,14 @@ public class EventListCommand implements INuxeoCommand {
      * @param startDate start date
      * @param endDate end date
      */
-    public EventListCommand(NuxeoQueryFilterContext queryContext, String contextPath, Date startDate, Date endDate, List<CalendarSynchronizationSource> listSource) {
+    public EventListCommand(NuxeoQueryFilterContext queryContext, String contextPath, Date startDate, Date endDate,
+            List<CalendarSynchronizationSource> listSource) {
         super();
         this.queryContext = queryContext;
         this.contextPath = contextPath;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.sourcesId = getStringValues(listSource);
+        this.sourcesId = this.getStringValues(listSource);
     }
 
 
@@ -59,7 +60,12 @@ public class EventListCommand implements INuxeoCommand {
      */
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
-        String start = DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.format(this.startDate);
+        String start;
+        if (this.startDate == null) {
+            start = null;
+        } else {
+            start = DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.format(this.startDate);
+        }
 
         String end;
         if (this.endDate == null) {
@@ -75,9 +81,13 @@ public class EventListCommand implements INuxeoCommand {
         if (StringUtils.isNotEmpty(end)) {
             clause.append("AND (vevent:dtstart < TIMESTAMP '").append(end).append("') ");
         }
-        clause.append("AND (vevent:dtend > TIMESTAMP '").append(start).append("') ");
-        clause.append("AND (sync:idParentSource is null or sync:idParentSource = '' ");
-        if (this.sourcesId != null && !this.sourcesId.isEmpty()) clause.append(" OR sync:idParentSource IN (").append(this.sourcesId).append(")");
+        if (StringUtils.isNotEmpty(start)) {
+            clause.append("AND (vevent:dtend > TIMESTAMP '").append(start).append("') ");
+        }
+        clause.append("AND (sync:idParentSource IS NULL OR sync:idParentSource = '' ");
+        if ((this.sourcesId != null) && !this.sourcesId.isEmpty()) {
+            clause.append(" OR sync:idParentSource IN (").append(this.sourcesId).append(")");
+        }
         clause.append(") ");
         clause.append("ORDER BY vevent:dtstart");
 
@@ -100,7 +110,7 @@ public class EventListCommand implements INuxeoCommand {
 
     /**
      * Get string values.
-     * 
+     *
      * @param values values
      * @return string
      */

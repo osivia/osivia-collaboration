@@ -1,0 +1,94 @@
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<!-- Column group -->
+<div class="portal-table-column-group">
+    <div class="portal-table-column" data-column="display-name"></div>
+    <div class="portal-table-column" data-column="date"></div>
+    <div class="portal-table-column" data-column="role"></div>
+    <div class="portal-table-column" data-column="checkbox"></div>
+</div>
+
+<!-- Header -->
+<div class="portal-table-header-group">
+    <!-- Member display name -->
+    <div class="portal-table-cell" data-column="display-name">
+        <div class="portal-table-cell-inner" data-column="display-name">
+            <portlet:actionURL name="sort" var="url" copyCurrentRenderParameters="true">
+                <portlet:param name="sortId" value="display-name" />
+                <portlet:param name="alt" value="${members.sort.id eq 'display-name' and not members.alt}" />
+            </portlet:actionURL>
+        
+            <a href="${url}">
+                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_MEMBER" /></span>
+                
+                <c:if test="${members.sort.id eq 'display-name'}">
+                    <small>
+                        <i class="glyphicons glyphicons-arrow-${members.alt ? 'up' : 'down'}"></i>
+                    </small>
+                </c:if>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Acknowledgment date -->
+    <div class="portal-table-cell" data-column="date">
+        <div class="portal-table-cell-inner" data-column="date">
+            <portlet:actionURL name="sort" var="url" copyCurrentRenderParameters="true">
+                <portlet:param name="sortId" value="date" />
+                <portlet:param name="alt" value="${members.sort.id ne 'date' or not members.alt}" />
+            </portlet:actionURL>
+        
+            <a href="${url}">
+                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_MEMBER_ACKNOWLEDGMENT_DATE" /></span>
+                
+                <c:if test="${members.sort.id eq 'date'}">
+                    <small>
+                        <i class="glyphicons glyphicons-arrow-${members.alt ? 'up' : 'down'}"></i>
+                    </small>
+                </c:if>
+            </a>
+            
+            <!-- Help -->
+            <c:set var="help"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_MEMBER_ACKNOWLEDGMENT_DATE_HELP" /></c:set>
+            <button type="button" title="${help}" data-toggle="tooltip" data-placement="top" class="btn btn-link btn-xs">
+                <i class="glyphicons glyphicons-question-sign"></i>
+                <span class="sr-only"><op:translate key="CONTEXTUAL_HELP" /></span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Role -->
+    <div class="portal-table-cell" data-column="role">
+        <div class="portal-table-cell-inner" data-column="role">
+            <portlet:actionURL name="sort" var="url" copyCurrentRenderParameters="true">
+                <portlet:param name="sortId" value="role" />
+                <portlet:param name="alt" value="${members.sort.id eq 'role' and not members.alt}" />
+            </portlet:actionURL>
+        
+            <a href="${url}">
+                <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></span>
+                
+                <c:if test="${members.sort.id eq 'role'}">
+                    <small>
+                        <i class="glyphicons glyphicons-arrow-${members.alt ? 'up' : 'down'}"></i>
+                    </small>
+                </c:if>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Checkbox -->
+    <div class="portal-table-cell" data-column="checkbox">
+        <div class="portal-table-cell-inner" data-column="checkbox">
+            <div class="portal-table-checkbox">
+                <c:set var="title"><op:translate key="TABLE_SELECT_ALL_CHECKBOX_TITLE" /></c:set>
+                <a href="javascript:;" class="no-ajax-link" title="${title}">
+                    <i class="glyphicons glyphicons-unchecked"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

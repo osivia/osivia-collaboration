@@ -64,7 +64,7 @@ public interface WorkspaceEditionRepository {
     List<Task> getTasks(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
 
 
-    /**
+	/**
      * Get workspace editorial.
      * 
      * @param portalControllerContext portal controller context
@@ -73,6 +73,17 @@ public interface WorkspaceEditionRepository {
      * @throws PortletException
      */
     Editorial getEditorial(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
+
+
+	/**
+     * Get other tasks.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspace workspace or room Nuxeo document
+     * @return tasks
+     * @throws PortletException
+     */
+    List<Task> getOtherTasks(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
 
 
     /**
@@ -137,6 +148,16 @@ public interface WorkspaceEditionRepository {
      * @throws PortletException
      */
     void updateEditorial(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
+
+
+    /**
+     * Update workspace or room other tasks.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form workspace edition form
+     * @throws PortletException
+     */
+    void updateOtherTasks(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
 
 
     /**

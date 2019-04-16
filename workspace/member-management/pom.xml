@@ -13,8 +13,11 @@
 
     <name>OSIVIA Services - Workspace - Member management</name>
 
+
 	<build>
 		<plugins>
+
+            <!-- WAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -22,8 +25,14 @@
                     <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
+
+            <!-- LESS -->
+            <plugin>
+                <groupId>org.lesscss</groupId>
+                <artifactId>lesscss-maven-plugin</artifactId>
+            </plugin>
+
         </plugins>
-        
     </build>
     
 </project>

@@ -2,11 +2,9 @@ package org.osivia.services.workspace.portlet.configuration;
 
 import javax.annotation.PostConstruct;
 import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 
 import org.osivia.directory.v2.service.WorkspaceService;
-import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -20,8 +18,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.portlet.context.PortletContextAware;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
@@ -31,6 +27,7 @@ import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
  * Workspace local group management configuration.
  *
  * @author Cédric Krommenhoek
+ * @see CMSPortlet
  */
 @Configuration
 @ComponentScan(basePackages = "org.osivia.services.workspace.portlet")
@@ -122,17 +119,18 @@ public class LocalGroupManagementConfiguration extends CMSPortlet {
      *
      * @return bundle factory
      */
+    @Override
     @Bean
     public IBundleFactory getBundleFactory() {
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
-        return internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        return internationalizationService.getBundleFactory(this.getClass().getClassLoader(), this.applicationContext);
     }
 
 
     /**
      * Get notifications service.
-     * 
+     *
      * @return notification service
      */
     @Bean

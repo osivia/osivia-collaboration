@@ -172,8 +172,6 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         picturebook.setEditable(true);
         picturebook.setMovable(true);
         types.put(picturebook.getName(), picturebook);
-        this.addSubtype(context, "Workspace", picturebook.getName());
-        this.addSubtype(context, "Room", picturebook.getName());
 
         // Audio
         DocumentType audio = DocumentType.createFile("Audio");

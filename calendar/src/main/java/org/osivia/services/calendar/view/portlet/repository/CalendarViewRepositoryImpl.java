@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -62,6 +61,8 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
     private static final String COMPACT_VIEW_WINDOW_PROPERTY = "osivia.calendar.compactView";
     /** Read only indicator window property name. */
     private static final String READ_ONLY_WINDOW_PROPERTY = "osivia.calendar.readOnly";
+    /** Integration indicator window property name. */
+    private static final String INTEGRATION_WINDOW_PROPERTY = "osivia.calendar.integration";
 
     /** Nuxeo document request attribute name. */
     private static final String DOCUMENT_REQUEST_ATTRIBUTE = "osivia.calendar.document";
@@ -95,8 +96,21 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         configuration.setPeriodTypeName(window.getProperty(DEFAULT_VIEW_WINDOW_PROPERTY));
         configuration.setCompactView(BooleanUtils.toBoolean(window.getProperty(COMPACT_VIEW_WINDOW_PROPERTY)));
         configuration.setReadOnly(BooleanUtils.toBoolean(window.getProperty(READ_ONLY_WINDOW_PROPERTY)));
+        configuration.setIntegration(BooleanUtils.toBoolean(window.getProperty(INTEGRATION_WINDOW_PROPERTY)));
 
         return configuration;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCalendarPath(PortalControllerContext portalControllerContext) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        return this.getCMSPath(nuxeoController);
     }
 
 
@@ -183,6 +197,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         window.setProperty(DEFAULT_VIEW_WINDOW_PROPERTY, configuration.getPeriodTypeName());
         window.setProperty(COMPACT_VIEW_WINDOW_PROPERTY, BooleanUtils.toStringTrueFalse(configuration.isCompactView()));
         window.setProperty(READ_ONLY_WINDOW_PROPERTY, BooleanUtils.toStringTrueFalse(configuration.isReadOnly()));
+        window.setProperty(INTEGRATION_WINDOW_PROPERTY, BooleanUtils.toStringTrueFalse(configuration.isIntegration()));
     }
 
 
@@ -248,7 +263,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
      * @param nuxeoController
      * @return event filled
      */
-    private Event fillEvent(Document document, NuxeoController nuxeoController) {
+    protected Event fillEvent(Document document, NuxeoController nuxeoController) {
         String id = document.getId();
         String title = document.getTitle();
         Date startDate = document.getDate(START_DATE_PROPERTY);
@@ -260,7 +275,25 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         String idParentSrc;
         idEventSrc = document.getString(ID_SOURCE_PROPERTY);
         idParentSrc = document.getString(ID_PARENT_SOURCE_PROPERTY);
-        return new Event(id, title, startDate, endDate, allDay, bckgcolor, viewURL, idEventSrc, idParentSrc);
+
+        Event event = this.applicationContext.getBean(Event.class, id, title, startDate, endDate, allDay, bckgcolor, viewURL, idEventSrc, idParentSrc);
+
+        // Last modified date
+        Date lastModified = document.getDate("dc:modified");
+        event.setLastModified(lastModified);
+
+        // Location
+        String location = document.getString("vevent:location");
+        event.setLocation(location);
+
+        // Description
+        String content = document.getString("note:note");
+        if (StringUtils.isNotBlank(content)) {
+            String description = nuxeoController.transformHTMLContent(content);
+            event.setDescription(description);
+        }
+
+        return event;
     }
 
 

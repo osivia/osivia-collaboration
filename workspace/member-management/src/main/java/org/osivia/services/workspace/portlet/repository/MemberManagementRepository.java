@@ -17,6 +17,7 @@ import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
 import org.osivia.services.workspace.portlet.model.InvitationRequest;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
 import org.osivia.services.workspace.portlet.model.Member;
+import org.osivia.services.workspace.portlet.model.MemberObject;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
@@ -36,13 +37,15 @@ public interface MemberManagementRepository {
     /** Workspace identifier property. */
     String WORKSPACE_IDENTIFIER_PROPERTY = "workspaceId";
     /** Workspace path property. */
-    String WORKSPACE_PATH_PROPERTY = "workspacePath";
+    String WORKSPACE_PATH_PROPERTY = "documentPath";
     /** Workspace title property. */
     String WORKSPACE_TITLE_PROPERTY = "workspaceTitle";
     /** Person UID property. */
     String PERSON_UID_PROPERTY = "uid";
     /** Invitation state property. */
     String INVITATION_STATE_PROPERTY = "invitationState";
+    /** Message sent by the user. */
+    String USER_MESSAGE = "userMessage";    
     /** Role property. */
     String ROLE_PROPERTY = "role";
     /** Invitation local groups property. */
@@ -143,6 +146,19 @@ public interface MemberManagementRepository {
      * @throws PortletException
      */
     void updateMember(PortalControllerContext portalControllerContext, String workspaceId, Member member) throws PortletException;
+
+
+    /**
+     * Add members to local group.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param workspaceId workspace identifier
+     * @param members members
+     * @param group local group
+     * @throws PortletException
+     */
+    void addToGroup(PortalControllerContext portalControllerContext, String workspaceId, List<MemberObject> members, CollabProfile group)
+            throws PortletException;
 
 
     /**
@@ -266,12 +282,13 @@ public interface MemberManagementRepository {
      * @param portalControllerContext portal controller context
      * @param workspaceId workspace identifier
      * @param uid user identifier
+     * @param userMessage user message input
      * @throws PortletException
      */
-    void createInvitationRequest(PortalControllerContext portalControllerContext, String workspaceId, String uid) throws PortletException;
+    void createInvitationRequest(PortalControllerContext portalControllerContext, String workspaceId, String uid, String userMessage) throws PortletException;
 
 
-	/**
+    /**
      * Get invitation edition form.
      * 
      * @param portalControllerContext portal controller context
@@ -291,14 +308,18 @@ public interface MemberManagementRepository {
      * @throws PortletException
      */
     void resendInvitation(PortalControllerContext portalControllerContext, InvitationEditionForm form, Date resendingDate) throws PortletException;
-    
+
 
     /**
-     * Check current workspace integrity.
+     * Resend invitations.
      * 
      * @param portalControllerContext portal controller context
-     * @param workspaceId workspace identifier
+     * @param invitations invitations
+     * @param message invitations resending message
+     * @param date invitations resending date
+     * @return true if the invitations were correctly resent
+     * @throws PortletException
      */
-    void checkIntegrity(PortalControllerContext portalControllerContext, String workspaceId);
+    boolean resendInvitations(PortalControllerContext portalControllerContext, List<Invitation> invitations, String message, Date date) throws PortletException;
 
 }

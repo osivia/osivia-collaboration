@@ -3,6 +3,7 @@ package org.osivia.services.workspace.edition.portlet.repository.command;
 import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.Blob;
@@ -56,10 +57,12 @@ public class UpdatePropertiesCommand implements INuxeoCommand {
         // Updated properties
         PropertyMap properties = new PropertyMap();
         properties.set("dc:title", this.form.getTitle());
+        properties.set("ttcs:welcomeTitle", this.form.getWelcomeTitle());
         properties.set("dc:description", this.form.getDescription());
         if (this.form.isRoot()) {
             properties.set("ttc:pageTemplate", StringUtils.trimToNull(this.form.getTemplate()));
         }
+        
         documentService.update(workspace, properties, this.form.isRoot());
 
         // Visual
@@ -80,6 +83,17 @@ public class UpdatePropertiesCommand implements INuxeoCommand {
             documentService.removeBlob(workspace, "ttcn:picture");
         }
 
+       
+        if(!workspace.getTitle().equals(form.getTitle())) {
+        	
+			OperationRequest reindex = nuxeoSession.newRequest("Document.ReIndexES");
+			reindex.set("repositoryName", workspace.getRepository());
+			reindex.set("type", "QUERY");
+			reindex.set("query", "SELECT * FROM Document where ecm:path STARTSWITH '"
+					+ workspace.getPath() + "'");
+			reindex.execute();
+        }        
+        
         return null;
     }
 

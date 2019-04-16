@@ -2,26 +2,23 @@ package fr.toutatice.collaboratif.purgeworkspaces.portlet.configuration;
 
 import javax.annotation.PostConstruct;
 import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.osivia.directory.v2.service.WorkspaceService;
-import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.portlet.context.PortletContextAware;
 import org.springframework.web.portlet.multipart.CommonsPortletMultipartResolver;
 import org.springframework.web.portlet.multipart.PortletMultipartResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -37,7 +34,7 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
  */
 @Configuration
 @ComponentScan(basePackages = {"fr.toutatice.collaboratif.purgeworkspaces.portlet"})
-public class PurgeWorkspacesConfiguration extends CMSPortlet implements PortletContextAware {
+public class PurgeWorkspacesConfiguration extends CMSPortlet {
 
     /** Application context. */
     @Autowired

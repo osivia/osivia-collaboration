@@ -118,7 +118,7 @@
             	<span><op:translate key="CALENDAR_TODAY" /></span>
         	</a>
         
-        <div class="dhx_cal_date hidden-xs"></div>
+        
         
         <div id="btn-period" class="period-button dropdown pull-right">
 		    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
@@ -149,6 +149,8 @@
 		        </li>
 		    </ul>
 		</div>
+		
+		<div class="dhx_cal_date hidden-xs"></div>
         
     </div>
     <div class="dhx_cal_header small"></div>

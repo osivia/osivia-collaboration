@@ -47,6 +47,21 @@
                     </div>
                 </spring:bind>
                 
+                <!-- Welcome title -->
+                <c:set var="placeholder"><op:translate key="WORKSPACE_WELCOME_TITLE_PLACEHOLDER" args="${fragment}" /></c:set>
+                <div class="form-group">
+                    <form:label path="welcomeTitle" cssClass="col-sm-3 control-label"><op:translate key="WORKSPACE_WELCOME_TITLE" /></form:label>
+                    <div class="col-sm-9">
+                        <form:input path="welcomeTitle" cssClass="form-control" placeholder="${placeholder}" />
+                        <c:if test="${status.error}">
+                            <span class="form-control-feedback">
+                                <i class="glyphicons glyphicons-remove"></i>
+                            </span>
+                        </c:if>
+                        <p class="help-block"><op:translate key="WORKSPACE_WELCOME_TITLE_HELP" args="${fragment}" /></p>
+                    </div>
+                </div>
+                
                 <!-- Description -->
                 <c:set var="placeholder"><op:translate key="WORKSPACE_DESCRIPTION_PLACEHOLDER" args="${fragment}" /></c:set>
                 <spring:bind path="description">
@@ -339,6 +354,23 @@
                 </div>
             </div>
         </spring:bind>
+        
+        <!-- Other tasks -->
+        <c:if test="${not empty editionForm.otherTasks}">
+            <div class="form-group">
+                <form:label path="otherTasks" cssClass="col-sm-3 col-lg-2 control-label"><op:translate key="WORKSPACE_OTHER_TASKS" /></form:label>
+                <div class="col-sm-9 col-lg-10">
+                    <c:forEach var="otherTask" items="${editionForm.otherTasks}" varStatus="status">
+                        <div class="checkbox">
+                            <label>
+                                <form:checkbox path="otherTasks[${status.index}].active" />
+                                <span>${otherTask.displayName}</span>
+                            </label>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
+        </c:if>
 
         <!-- Buttons -->
         <div>

@@ -1,0 +1,84 @@
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<c:set var="checkboxTitle"><op:translate key="TABLE_CHECKBOX_TITLE" /></c:set>
+
+
+<c:choose>
+    <c:when test="${empty invitations.invitations}">
+        <div class="portal-table-row-group">
+            <div class="portal-table-row">
+                <div class="portal-table-cell">
+                    <div class="portal-table-cell-inner">
+                        <span class="text-muted"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_NO_INVITATION" /></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </c:when>
+    
+    <c:otherwise>
+        <div class="portal-table-row-group portal-table-selectable">
+            <c:forEach var="invitation" items="${invitations.invitations}">
+                <div class="portal-table-row ${invitation.state.editable ? 'portal-table-selectable-filter' : ''}">
+                    <!-- Invitation display name -->
+                    <div class="portal-table-cell" data-column="display-name">
+                        <div class="portal-table-cell-inner" data-column="display-name">
+                            <c:set var="person" scope="request" value="${invitation}" />
+                            <%@ include file="../commons/person.jspf" %>
+                        </div>
+                    </div>
+                    
+                    <!-- Invitation dates -->
+                    <div class="portal-table-cell" data-column="invitation-dates">
+                        <div class="portal-table-cell-inner" data-column="invitation-dates">
+                            <span>
+                                <span><fmt:formatDate value="${invitation.date}" type="date" dateStyle="medium" /></span>
+                                <c:if test="${not empty invitation.resendingDate}">
+                                    <br>
+                                    <small>
+                                        <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_RESENDING_DATE" /></span>
+                                        <span><fmt:formatDate value="${invitation.resendingDate}" type="date" dateStyle="medium" /></span>
+                                    </small>
+                                </c:if>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Rôle -->
+                    <div class="portal-table-cell" data-column="role">
+                        <div class="portal-table-cell-inner" data-column="role">
+                            <span><op:translate key="${invitation.role.key}" classLoader="${invitation.role.classLoader}" /></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Invitation state -->
+                    <div class="portal-table-cell" data-column="role">
+                        <div class="portal-table-cell-inner" data-column="role">
+                            <span class="${invitation.state.htmlClasses}">
+                                <i class="${invitation.state.icon}"></i>
+                                <span><op:translate key="${invitation.state.key}" /></span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Checkbox -->
+                    <div class="portal-table-cell" data-column="checkbox">
+                        <div class="portal-table-cell-inner" data-column="checkbox">
+                            <c:if test="${invitation.state.editable}">
+                                <div class="portal-table-checkbox">
+                                    <a href="javascript:;" class="no-ajax-link" title="${checkboxTitle}">
+                                        <i class="glyphicons glyphicons-unchecked"></i>
+                                    </a>
+                                </div>
+                            </c:if>
+                        </div>
+                    </div>
+                </div>
+            </c:forEach>
+        </div>
+    </c:otherwise>
+</c:choose>

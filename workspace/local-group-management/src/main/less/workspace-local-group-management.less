@@ -3,20 +3,46 @@
 // --------------------------------------------------
 
 
+@screen-lg-min: 1200px;
+@screen-md-min: 992px;
 @screen-sm-min: 768px;
+
+@screen-md-max: (@screen-lg-min - 1);
+@screen-sm-max: (@screen-md-min - 1);
 @screen-xs-max: (@screen-sm-min - 1);
 
 
 .workspace-local-group-management {
-    
-    .deleted-member {
-        opacity: 0.3;   
+    > .panel {
+        margin-bottom: 0;
     }
     
-    @media screen and (max-width: @screen-xs-max) {
-        .actions {
-            text-align: right;    
+    
+    .portal-table-cell-inner {
+        > .glyphicons-group {
+            top: unset;
+            
+            margin-left: 6px;
+            margin-right: 12px;
+            
+            font-size: 20px;
         }
     }
     
+    
+    
+    
+    [data-column="local-group"] {
+        width: 100%;    
+    }
+    [data-column="members-count"] {
+        width: 90px;
+    }
+    
+    
+    @media (max-width: @screen-xs-max) {
+        [data-column="members-count"] {
+            display: none !important;
+        }
+    }
 }

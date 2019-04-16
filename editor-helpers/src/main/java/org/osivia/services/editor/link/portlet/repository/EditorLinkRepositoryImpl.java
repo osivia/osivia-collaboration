@@ -1,5 +1,6 @@
 package org.osivia.services.editor.link.portlet.repository;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +14,7 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.cms.DocumentType;
-import org.osivia.portal.api.cms.FileDocumentType;
+import org.osivia.portal.api.cms.FileMimeType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.web.IWebIdService;
 import org.osivia.services.editor.link.portlet.model.EditorLinkForm;
@@ -246,11 +247,11 @@ public class EditorLinkRepositoryImpl implements EditorLinkRepository {
      * {@inheritDoc}
      */
     @Override
-    public Collection<FileDocumentType> getFileDocumentTypes(PortalControllerContext portalControllerContext) throws PortletException {
+    public Map<String, FileMimeType> getFileMimeTypes(PortalControllerContext portalControllerContext) throws PortletException, IOException {
         // CMS customizer
         INuxeoCustomizer cmsCustomizer = this.nuxeoService.getCMSCustomizer();
 
-        return cmsCustomizer.getFileDocumentTypes();
+        return cmsCustomizer.getFileMimeTypes();
     }
 
 }

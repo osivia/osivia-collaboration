@@ -1,0 +1,52 @@
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<portlet:renderURL copyCurrentRenderParameters="true" var="callbackUrl" />
+
+<portlet:actionURL name="upload" copyCurrentRenderParameters="true" var="uploadUrl" />
+
+
+<c:set var="replaceWarning"><op:translate key="FILE_BROWSER_UPLOAD_WARNING_REPLACE" /></c:set>
+<c:set var="sizeError"><op:translate key="FILE_BROWSER_UPLOAD_ERROR_SIZE" /></c:set>
+
+    
+<form:form action="${uploadUrl}" method="post" enctype="multipart/form-data" modelAttribute="form" cssClass="file-browser-upload hidden" data-callback-url="${callbackUrl}" data-max-file-size="${form.maxFileSize}" data-warning-replace="${replaceWarning}" data-error-size="${sizeError}">
+    <form:input type="file" path="upload" multiple="multiple" cssClass="hidden" />
+            
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <!-- Buttons -->
+            <div class="form-group fileupload-buttonbar">
+                <button type="button" class="btn btn-primary start">
+                    <span><op:translate key="FILE_BROWSER_UPLOAD_START" /></span>
+                </button>
+                
+                <button type="reset" class="btn btn-default cancel">
+                    <span><op:translate key="FILE_BROWSER_UPLOAD_CANCEL"/></span>
+                </button>
+            </div>
+            
+            <!-- Global progress bar -->
+            <div class="form-group">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar"></div>
+                </div>
+            </div>
+            
+            <!-- Files -->
+            <ul class="list-unstyled file-browser-upload-files files"></ul>
+        </div>
+    </div>
+</form:form>
+
+
+<div class="file-browser-upload-shadowbox">
+    <div>
+        <p><op:translate key="FILE_BROWSER_DROP_ZONE_MESSAGE" /></p>
+        <p><i class="glyphicons glyphicons-drop"></i></p>
+    </div>
+</div>

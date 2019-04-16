@@ -10,6 +10,7 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -210,7 +211,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         List<TaskbarTask> taskbarTasks;
         TaskbarItems taskbarItems;
         try {
-            taskbarTasks = this.taskbarService.getTasks(portalControllerContext, workspace.getPath(), false);
+            taskbarTasks = this.taskbarService.getAllTasks(portalControllerContext, workspace.getPath(), false);
             taskbarItems = this.taskbarService.getItems(portalControllerContext);
         } catch (PortalException e) {
             throw new PortletException(e);
@@ -318,8 +319,73 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
+    public List<Task> getOtherTasks(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Taskbar tasks & taskbar items
+        List<TaskbarTask> taskbarTasks;
+        TaskbarItems taskbarItems;
+        try {
+            taskbarTasks = this.taskbarService.getAllTasks(portalControllerContext, workspace.getPath(), false);
+            taskbarItems = this.taskbarService.getItems(portalControllerContext);
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
+
+        // Other taskbar items
+        List<TaskbarItem> otherItems = new ArrayList<>();
+        List<String> ignored = Arrays.asList(ITaskbarService.SEARCH_TASK_ID, WorkspaceEditionService.WORKSPACE_EDITORIAL_TASK_ID);
+        for (TaskbarItem item : taskbarItems.getAll()) {
+            if (!TaskbarItemType.TRANSVERSAL.equals(item.getType()) && item.isHidden() && !ignored.contains(item.getId())) {
+                otherItems.add(item);
+            }
+        }
+
+        // Tasks
+        List<Task> tasks = new ArrayList<Task>(otherItems.size());
+        for (TaskbarTask taskbarTask : taskbarTasks) {
+            if (otherItems.contains(taskbarTask)) {
+                Task task = this.applicationContext.getBean(Task.class, taskbarTask);
+                task.setPath(taskbarTask.getPath());
+
+                // Display name
+                String displayName;
+                if (taskbarTask.getKey() == null) {
+                    displayName = taskbarTask.getTitle();
+                } else {
+                    displayName = bundle.getString(taskbarTask.getKey(), taskbarTask.getCustomizedClassLoader());
+                }
+                task.setDisplayName(displayName);
+
+                // Active indicator
+                task.setActive(!taskbarTask.isDisabled());
+
+                tasks.add(task);
+            }
+        }
+        for (TaskbarItem item : otherItems) {
+            if (!tasks.contains(item)) {
+                Task task = this.applicationContext.getBean(Task.class, item);
+
+                // Display name
+                String displayName = bundle.getString(item.getKey(), item.getCustomizedClassLoader());
+                task.setDisplayName(displayName);
+
+                tasks.add(task);
+            }
+        }
+
+        return tasks;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Editorial createEditorial(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
-        Task task = getEditorialTask(portalControllerContext, null);
+        Task task = this.getEditorialTask(portalControllerContext, null);
 
         if (task != null) {
             task.setActive(true);
@@ -434,6 +500,24 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
                     this.updateTasks(portalControllerContext, form.getDocument(), tasks);
                 }
             }
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateOtherTasks(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException {
+        // Other tasks
+        List<Task> otherTasks = form.getOtherTasks();
+
+        if (CollectionUtils.isNotEmpty(otherTasks)) {
+            for (Task task : otherTasks) {
+                task.setUpdated(true);
+            }
+
+            this.updateTasks(portalControllerContext, form.getDocument(), otherTasks);
         }
     }
 

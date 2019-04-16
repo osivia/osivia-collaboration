@@ -105,7 +105,7 @@ public class UpdateTasksCommand implements INuxeoCommand {
                 // Type
                 String type;
                 if (TaskbarItemType.CMS.equals(task.getType())) {
-                    type = task.getDocumentType();
+                    type = StringUtils.defaultIfEmpty(task.getDocumentType(), "Staple");
                 } else {
                     type = "Staple";
                 }
@@ -131,7 +131,7 @@ public class UpdateTasksCommand implements INuxeoCommand {
 
 
                 // Created document
-                Document document = documentService.createDocument(this.workspace, type, null, properties);
+                Document document = documentService.createDocument(this.workspace, type, null, properties, true);
 
                 // Update task
                 task.setPath(document.getPath());

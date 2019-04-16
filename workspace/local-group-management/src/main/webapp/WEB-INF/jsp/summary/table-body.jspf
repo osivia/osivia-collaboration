@@ -1,0 +1,61 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+
+<c:set var="checkboxTitle"><op:translate key="TABLE_CHECKBOX_TITLE" /></c:set>
+
+
+<c:choose>
+    <c:when test="${empty summary.groups}">
+        <div class="portal-table-row-group">
+            <div class="portal-table-row">
+                <div class="portal-table-cell">
+                    <div class="portal-table-cell-inner">
+                        <span class="text-muted"><op:translate key="TABLE_BODY_NO_LOCAL_GROUP" /></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </c:when>
+    
+    <c:otherwise>
+        <div class="portal-table-row-group portal-table-selectable">
+            <c:forEach var="group" items="${summary.groups}">
+                <div class="portal-table-row portal-table-selectable-filter">
+                    <!-- Local group -->
+                    <div class="portal-table-cell" data-column="local-group">
+                        <div class="portal-table-cell-inner" data-column="local-group">
+                            <i class="glyphicons glyphicons-group"></i>
+                        
+                            <div>
+                                <div>${group.displayName}</div>
+                                
+                                <c:if test="${not empty group.description}">
+                                    <div class="text-pre-wrap text-muted small">${group.description}</div>
+                                </c:if>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Members count -->
+                    <div class="portal-table-cell" data-column="members-count">
+                        <div class="portal-table-cell-inner" data-column="members-count">
+                            <span ${group.membersCount eq 0 ? 'class="text-muted"' : ''}>${group.membersCount}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Checkbox -->
+                    <div class="portal-table-cell" data-column="checkbox">
+                        <div class="portal-table-cell-inner" data-column="checkbox">
+                            <div class="portal-table-checkbox">
+                                <a href="javascript:;" class="no-ajax-link" title="${checkboxTitle}">
+                                    <i class="glyphicons glyphicons-unchecked"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </c:forEach>
+        </div>
+    </c:otherwise>
+</c:choose>
