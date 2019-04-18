@@ -1,21 +1,78 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd" version="2.0">
+<portlet-app
+    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+    version="2.0">
 
+    <!-- Widgets -->
+    <portlet>
+        <portlet-name>osivia-services-widgets-plugin</portlet-name>
+        <portlet-class>org.osivia.services.widgets.plugin.WidgetsPlugin</portlet-class>
 
-	<portlet>
-		<portlet-name>osivia-services-widgetsPlugin</portlet-name>
-		<portlet-class>org.osivia.services.widgets.plugin.WidgetsPlugin</portlet-class>
-		<expiration-cache>180</expiration-cache>
+        <expiration-cache>180</expiration-cache>
 
-		<supports>
-			<mime-type>text/html</mime-type>
-		</supports>
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
 
-		<portlet-info>
-			<title>Widget plugin</title>
-		</portlet-info>
-	</portlet>    
+        <portlet-info>
+            <title>Widget plugin</title>
+        </portlet-info>
+    </portlet>
     
+    
+    <!-- Issued date -->
+    <portlet>
+        <portlet-name>osivia-services-widgets-issued</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.widgets.issued.portlet.configuration.IssuedConfiguration</value>
+        </init-param>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+
+        <portlet-info>
+            <title>Issued date</title>
+        </portlet-info>
+    </portlet>
+    
+    
+    <!-- Issued date plugin -->
+    <portlet>
+        <portlet-name>osivia-services-widgets-issued-plugin</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.widgets.issued.plugin.configuration.IssuedPluginConfiguration</value>
+        </init-param>
+        
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+
+        <portlet-info>
+            <title>Issued date plugin</title>
+        </portlet-info>
+    </portlet>
+
 </portlet-app>
