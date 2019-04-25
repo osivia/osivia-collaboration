@@ -25,20 +25,21 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.io.HTMLWriter;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.portlet.bind.annotation.ActionMapping;
-import org.springframework.web.portlet.bind.annotation.RenderMapping;
-import org.springframework.web.portlet.bind.annotation.ResourceMapping;
-
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserBulkDownloadContent;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserForm;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserSort;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserView;
 import org.osivia.services.workspace.filebrowser.portlet.service.FileBrowserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.portlet.bind.PortletRequestDataBinder;
+import org.springframework.web.portlet.bind.annotation.ActionMapping;
+import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 /**
  * File browser portlet controller.
@@ -95,18 +96,20 @@ public class FileBrowserController {
      * 
      * @param request action request
      * @param response action response
-     * @param viewId view identifier
+     * @param viewId view identifier request parameter
+     * @param form form model attribute
      * @throws PortletException
      */
     @ActionMapping("change-view")
-    public void changeView(ActionRequest request, ActionResponse response, @RequestParam("view") String viewId) throws PortletException {
+    public void changeView(ActionRequest request, ActionResponse response, @RequestParam("view") String viewId, @ModelAttribute("form") FileBrowserForm form)
+            throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         // View
         FileBrowserView view = FileBrowserView.fromId(viewId);
 
-        this.service.saveView(portalControllerContext, view);
+        this.service.saveView(portalControllerContext, form, view);
 
         // Copy view render parameter
         response.setRenderParameter("view", view.getId());
@@ -145,15 +148,16 @@ public class FileBrowserController {
      * @param response action response
      * @param path document path request parameter
      * @param viewId view identifier request parameter
+     * @param form form model attribute
      * @throws PortletException
      */
     @ActionMapping("duplicate")
     public void duplicate(ActionRequest request, ActionResponse response, @RequestParam("path") String path,
-            @RequestParam(name = "view", required = false) String viewId) throws PortletException {
+            @RequestParam(name = "view", required = false) String viewId, @ModelAttribute("form") FileBrowserForm form) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.duplicate(portalControllerContext, path);
+        this.service.duplicate(portalControllerContext, form, path);
 
         // Copy view render parameter
         FileBrowserView view = this.service.getView(portalControllerContext, viewId);
@@ -239,17 +243,19 @@ public class FileBrowserController {
      * @param response resource response
      * @param indexes selected items indexes
      * @param viewId view identifier request parameter
+     * @param form form model attribute
      * @throws PortletException
      * @throws IOException
      */
     @ResourceMapping("toolbar")
     public void getToolbar(ResourceRequest request, ResourceResponse response, @RequestParam(name = "indexes", required = false) String indexes,
-            @RequestParam(name = "view", required = false) String viewId) throws PortletException, IOException {
+            @RequestParam(name = "view", required = false) String viewId, @ModelAttribute("form") FileBrowserForm form) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         // Toolbar
-        Element toolbar = this.service.getToolbar(portalControllerContext, Arrays.asList(StringUtils.split(StringUtils.trimToEmpty(indexes), ",")), viewId);
+        Element toolbar = this.service.getToolbar(portalControllerContext, form, Arrays.asList(StringUtils.split(StringUtils.trimToEmpty(indexes), ",")),
+                viewId);
 
         // Content type
         response.setContentType("text/html");
@@ -313,6 +319,17 @@ public class FileBrowserController {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         return this.service.getForm(portalControllerContext);
+    }
+
+
+    /**
+     * Form init binder.
+     * 
+     * @param binder data binder
+     */
+    @InitBinder("form")
+    public void formInitBinder(PortletRequestDataBinder binder) {
+        binder.setDisallowedFields("path", "initialized");
     }
 
 

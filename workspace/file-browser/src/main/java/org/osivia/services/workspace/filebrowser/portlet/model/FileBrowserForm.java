@@ -29,6 +29,8 @@ public class FileBrowserForm {
     /** Upload max file size. */
     private Long maxFileSize;
 
+    /** Document path. */
+    private String path;
     /** Initialized indicator. */
     private boolean initialized;
 
@@ -129,6 +131,24 @@ public class FileBrowserForm {
      */
     public void setMaxFileSize(Long maxFileSize) {
         this.maxFileSize = maxFileSize;
+    }
+
+    /**
+     * Getter for path.
+     * 
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * Setter for path.
+     * 
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
     }
 
     /**

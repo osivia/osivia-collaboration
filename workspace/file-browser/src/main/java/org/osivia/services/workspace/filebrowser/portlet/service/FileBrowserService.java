@@ -7,7 +7,6 @@ import javax.portlet.PortletException;
 
 import org.dom4j.Element;
 import org.osivia.portal.api.context.PortalControllerContext;
-
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserBulkDownloadContent;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserForm;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserSort;
@@ -35,10 +34,11 @@ public interface FileBrowserService {
      * Save view.
      * 
      * @param portalControllerContext portal controller context
+     * @param form form
      * @param view view
      * @throws PortletException
      */
-    void saveView(PortalControllerContext portalControllerContext, FileBrowserView view) throws PortletException;
+    void saveView(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserView view) throws PortletException;
 
 
     /**
@@ -67,22 +67,24 @@ public interface FileBrowserService {
      * Get file browser toolbar DOM element.
      * 
      * @param portalControllerContext portal controller context
+     * @param form form
      * @param indexes selected items indexes
      * @param viewId provided view identifier, may be null
      * @return DOM element
      * @throws PortletException
      */
-    Element getToolbar(PortalControllerContext portalControllerContext, List<String> indexes, String viewId) throws PortletException;
+    Element getToolbar(PortalControllerContext portalControllerContext, FileBrowserForm form, List<String> indexes, String viewId) throws PortletException;
 
 
     /**
      * Duplicate document.
      * 
      * @param portalControllerContext portal controller context
+     * @param form form
      * @param path document path
      * @throws PortletException
      */
-    void duplicate(PortalControllerContext portalControllerContext, String path) throws PortletException;
+    void duplicate(PortalControllerContext portalControllerContext, FileBrowserForm form, String path) throws PortletException;
 
 
     /**
