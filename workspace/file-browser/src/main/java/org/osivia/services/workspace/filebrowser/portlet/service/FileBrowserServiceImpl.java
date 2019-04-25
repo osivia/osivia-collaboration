@@ -42,6 +42,8 @@ import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.api.user.UserPreferences;
+import org.osivia.portal.api.windows.PortalWindow;
+import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSBinaryContent;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.context.ControllerContextAdapter;
@@ -120,30 +122,32 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     public FileBrowserView getView(PortalControllerContext portalControllerContext, String viewId) throws PortletException {
         // View
         FileBrowserView view;
-        
+
         if (StringUtils.isEmpty(viewId)) {
+            // Form
+            FileBrowserForm form = this.getForm(portalControllerContext);
+
             // Current document
-            NuxeoDocumentContext documentContext = this.repository.getCurrentDocumentContext(portalControllerContext);
+            NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, form.getPath());
             Document document = documentContext.getDocument();
             // WebId
             String webId = document.getString("ttc:webid");
 
             // User preferences
             UserPreferences userPreferences = this.repository.getUserPreferences(portalControllerContext);
-            
-            if(userPreferences != null) {
-            // 	Saved view
-            	String savedView = userPreferences.getFolderDisplayMode(webId);
+
+            if (userPreferences != null) {
+                // Saved view
+                String savedView = userPreferences.getFolderDisplayMode(webId);
                 view = FileBrowserView.fromId(savedView);
+            } else {
+                view = FileBrowserView.DEFAULT;
             }
-            else {
-            	view = FileBrowserView.DEFAULT;
-            }
-            
+
         } else {
             view = FileBrowserView.fromId(viewId);
         }
-        
+
         return view;
     }
 
@@ -152,9 +156,9 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * {@inheritDoc}
      */
     @Override
-    public void saveView(PortalControllerContext portalControllerContext, FileBrowserView view) throws PortletException {
-        // Current document
-        NuxeoDocumentContext documentContext = this.repository.getCurrentDocumentContext(portalControllerContext);
+    public void saveView(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserView view) throws PortletException {
+        // Document
+        NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, form.getPath());
         Document document = documentContext.getDocument();
         // WebId
         String webId = document.getString("ttc:webid");
@@ -162,8 +166,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         // User preferences
         UserPreferences userPreferences = this.repository.getUserPreferences(portalControllerContext);
 
-        if(userPreferences != null) {
-        	userPreferences.updateFolderDisplayMode(webId, view.getId());
+        if (userPreferences != null) {
+            userPreferences.updateFolderDisplayMode(webId, view.getId());
         }
     }
 
@@ -177,13 +181,23 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         FileBrowserForm form = this.applicationContext.getBean(FileBrowserForm.class);
 
         if (!form.isInitialized()) {
+            // Window
+            PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
+
+            // Document path
+            String path = window.getProperty(Constants.WINDOW_PROP_URI);
+            if (StringUtils.isEmpty(path)) {
+                path = this.repository.getContentPath(portalControllerContext);
+            }
+            form.setPath(path);
+
             // Current document context
-            NuxeoDocumentContext documentContext = this.repository.getCurrentDocumentContext(portalControllerContext);
+            NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, path);
             // Current document type
             DocumentType type = documentContext.getDocumentType();
 
             // Documents
-            List<Document> documents = this.repository.getDocuments(portalControllerContext);
+            List<Document> documents = this.repository.getDocuments(portalControllerContext, path);
 
             // User subscriptions
             Set<String> userSubscriptions = this.repository.getUserSubscriptions(portalControllerContext);
@@ -344,7 +358,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * {@inheritDoc}
      */
     @Override
-    public Element getToolbar(PortalControllerContext portalControllerContext, List<String> indexes, String viewId) throws PortletException {
+    public Element getToolbar(PortalControllerContext portalControllerContext, FileBrowserForm form, List<String> indexes, String viewId)
+            throws PortletException {
         // Toolbar container
         Element container = DOM4JUtils.generateDivElement(null);
 
@@ -355,9 +370,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         if (CollectionUtils.isNotEmpty(indexes)) {
             // Internationalization bundle
             Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-
-            // Form
-            FileBrowserForm form = this.getForm(portalControllerContext);
 
             // File browser items
             List<FileBrowserItem> items = form.getItems();
@@ -432,7 +444,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
 
                     // Single selection
-                    Element singleSelectionGroup = this.getToolbarSingleSelectionGroup(portalControllerContext, view, documentDto, permissions, bundle);
+                    Element singleSelectionGroup = this.getToolbarSingleSelectionGroup(portalControllerContext, form, view, documentDto, permissions, bundle);
                     toolbar.add(singleSelectionGroup);
                 } else {
                     // Bulk download
@@ -451,7 +463,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                 }
 
                 // Multiple selection
-                Element multipleSelectionGroup = this.getToolbarMultipleSelectionGroup(portalControllerContext, view, selection, allEditable, container,
+                Element multipleSelectionGroup = this.getToolbarMultipleSelectionGroup(portalControllerContext, form, view, selection, allEditable, container,
                         bundle);
                 toolbar.add(multipleSelectionGroup);
             }
@@ -577,6 +589,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * Get single selection group DOM element.
      *
      * @param portalControllerContext portal controller context
+     * @param form form
      * @param view view
      * @param documentDto document DTO
      * @param permissions permissions
@@ -584,8 +597,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * @return DOM element
      * @throws PortletException
      */
-    private Element getToolbarSingleSelectionGroup(PortalControllerContext portalControllerContext, FileBrowserView view, DocumentDTO documentDto,
-            NuxeoPermissions permissions, Bundle bundle) throws PortletException {
+    private Element getToolbarSingleSelectionGroup(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserView view,
+            DocumentDTO documentDto, NuxeoPermissions permissions, Bundle bundle) throws PortletException {
         // Nuxeo document
         Document nuxeoDocument = documentDto.getDocument();
         // Document path
@@ -599,7 +612,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         Element rename;
         if (permissions.isEditable()) {
             String title = bundle.getString("FILE_BROWSER_TOOLBAR_RENAME");
-            String url = this.getRenameUrl(portalControllerContext, path);
+            String url = this.getRenameUrl(portalControllerContext, form, path);
             rename = DOM4JUtils.generateLinkElement("javascript:;", null, null, "btn btn-default no-ajax-link", null, "glyphicons glyphicons-edit");
             DOM4JUtils.addAttribute(rename, "title", title);
             DOM4JUtils.addDataAttribute(rename, "target", "#osivia-modal");
@@ -641,6 +654,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * Get toolbar multiple selection group DOM element.
      *
      * @param portalControllerContext portal controller context
+     * @param form form
      * @param view view
      * @param selection selected documents
      * @param allEditable all editable indicator
@@ -649,8 +663,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * @return DOM element
      * @throws PortletException
      */
-    private Element getToolbarMultipleSelectionGroup(PortalControllerContext portalControllerContext, FileBrowserView view, List<DocumentDTO> selection,
-            boolean allEditable, Element container, Bundle bundle) throws PortletException {
+    private Element getToolbarMultipleSelectionGroup(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserView view,
+            List<DocumentDTO> selection, boolean allEditable, Element container, Bundle bundle) throws PortletException {
         // Namespace
         String namespace = portalControllerContext.getResponse().getNamespace();
 
@@ -709,7 +723,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         Element move;
         if (allEditable && !unknownType) {
             String title = bundle.getString("FILE_BROWSER_TOOLBAR_MOVE");
-            String url = this.getMoveUrl(portalControllerContext, identifiers, paths, acceptedTypes);
+            String url = this.getMoveUrl(portalControllerContext, form, identifiers, paths, acceptedTypes);
             move = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-default fancyframe_refresh no-ajax-link", null, "glyphicons glyphicons-move");
             DOM4JUtils.addAttribute(move, "title", title);
         } else {
@@ -772,15 +786,16 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * Get rename URL.
      *
      * @param portalControllerContext portal controller context
+     * @param form form
      * @param path document path
      * @return URL
      * @throws PortletException
      */
-    private String getRenameUrl(PortalControllerContext portalControllerContext, String path) throws PortletException {
+    private String getRenameUrl(PortalControllerContext portalControllerContext, FileBrowserForm form, String path) throws PortletException {
         // Window properties
         Map<String, String> properties = new HashMap<>();
         properties.put(Constants.WINDOW_PROP_URI, path);
-        properties.put("osivia.rename.document.redirect.path", this.repository.getCurrentPath(portalControllerContext));
+        properties.put("osivia.rename.document.redirect.path", form.getPath());
 
         // URL
         String url;
@@ -870,17 +885,18 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * Get move URL.
      *
      * @param portalControllerContext portal controller context
+     * @param form form
      * @param identifiers selected document identifiers
      * @param paths selected document paths
      * @param acceptedTypes selected document types
      * @return URL
      * @throws PortletException
      */
-    private String getMoveUrl(PortalControllerContext portalControllerContext, List<String> identifiers, List<String> paths, Set<String> acceptedTypes)
-            throws PortletException {
+    private String getMoveUrl(PortalControllerContext portalControllerContext, FileBrowserForm form, List<String> identifiers, List<String> paths,
+            Set<String> acceptedTypes) throws PortletException {
         // Window properties
         Map<String, String> properties = new HashMap<>();
-        properties.put("osivia.move.documentPath", this.repository.getCurrentPath(portalControllerContext));
+        properties.put("osivia.move.documentPath", form.getPath());
         properties.put("osivia.move.documentsIdentifiers", StringUtils.join(identifiers, ","));
         properties.put("osivia.move.ignoredPaths", StringUtils.join(paths, ","));
         properties.put("osivia.move.cmsBasePath", this.repository.getBasePath(portalControllerContext));
@@ -1003,7 +1019,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * {@inheritDoc}
      */
     @Override
-    public void duplicate(PortalControllerContext portalControllerContext, String path) throws PortletException {
+    public void duplicate(PortalControllerContext portalControllerContext, FileBrowserForm form, String path) throws PortletException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
         // Internationalization bundle
@@ -1011,7 +1027,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
         try {
             // Duplicate
-            this.repository.duplicate(portalControllerContext, path);
+            this.repository.duplicate(portalControllerContext, path, form.getPath());
 
             // Notification
             String message = bundle.getString("FILE_BROWSER_DUPLICATE_SUCCESS_MESSAGE");
@@ -1139,7 +1155,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         if (CollectionUtils.isNotEmpty(upload)) {
             try {
                 // Import
-                this.repository.importFiles(portalControllerContext, upload);
+                this.repository.importFiles(portalControllerContext, form.getPath(), upload);
 
                 // Notification
                 String message = bundle.getString("FILE_BROWSER_UPLOAD_SUCCESS_MESSAGE");
@@ -1161,7 +1177,10 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      */
     @Override
     public void updateMenubar(PortalControllerContext portalControllerContext) throws PortletException {
-        this.repository.updateMenubar(portalControllerContext);
+        // Form
+        FileBrowserForm form = this.getForm(portalControllerContext);
+
+        this.repository.updateMenubar(portalControllerContext, form.getPath());
     }
 
 }

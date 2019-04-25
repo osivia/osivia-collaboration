@@ -24,16 +24,6 @@ import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
 public interface FileBrowserRepository {
 
     /**
-     * Get current path.
-     * 
-     * @param portalControllerContext portal controller context
-     * @return path
-     * @throws PortletException
-     */
-    String getCurrentPath(PortalControllerContext portalControllerContext) throws PortletException;
-
-
-    /**
      * Get base path.
      * 
      * @param portalControllerContext portal controller context
@@ -44,23 +34,35 @@ public interface FileBrowserRepository {
 
 
     /**
-     * Get current document context.
+     * Get content path.
      * 
      * @param portalControllerContext portal controller context
+     * @return path
+     * @throws PortletException
+     */
+    String getContentPath(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Get document context.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param path document path
      * @return document context
      * @throws PortletException
      */
-    NuxeoDocumentContext getCurrentDocumentContext(PortalControllerContext portalControllerContext) throws PortletException;
+    NuxeoDocumentContext getDocumentContext(PortalControllerContext portalControllerContext, String path) throws PortletException;
 
 
     /**
      * Get documents.
      * 
      * @param portalControllerContext portal controller context
+     * @param path parent document path
      * @return documents
      * @throws PortletException
      */
-    List<Document> getDocuments(PortalControllerContext portalControllerContext) throws PortletException;
+    List<Document> getDocuments(PortalControllerContext portalControllerContext, String path) throws PortletException;
 
 
     /**
@@ -120,10 +122,11 @@ public interface FileBrowserRepository {
      * Duplicate document.
      * 
      * @param portalControllerContext portal controller context
-     * @param path document path
+     * @param sourcePath source document path
+     * @param targetPath target document path
      * @throws PortletException
      */
-    void duplicate(PortalControllerContext portalControllerContext, String path) throws PortletException;
+    void duplicate(PortalControllerContext portalControllerContext, String sourcePath, String targetPath) throws PortletException;
 
 
     /**
@@ -163,19 +166,21 @@ public interface FileBrowserRepository {
      * Import files.
      * 
      * @param portalControllerContext portal controller context
+     * @param path document path
      * @param upload upload multipart files
      * @throws PortletException
      * @throws IOException
      */
-    void importFiles(PortalControllerContext portalControllerContext, List<MultipartFile> upload) throws PortletException, IOException;
+    void importFiles(PortalControllerContext portalControllerContext, String path, List<MultipartFile> upload) throws PortletException, IOException;
 
 
     /**
      * Update menubar.
      * 
      * @param portalControllerContext portal controller context
+     * @param path document path
      * @throws PortletException
      */
-    void updateMenubar(PortalControllerContext portalControllerContext) throws PortletException;
+    void updateMenubar(PortalControllerContext portalControllerContext, String path) throws PortletException;
 
 }
