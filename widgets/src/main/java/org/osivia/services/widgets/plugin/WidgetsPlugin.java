@@ -155,7 +155,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
 
         // Picture
         DocumentType picture = DocumentType.createFile("Picture");
-        picture.setIcon("glyphicons glyphicons-picture");
+        picture.setIcon("glyphicons glyphicons-basic-picture");
         picture.setEditable(true);
         picture.setMovable(true);
         types.put(picture.getName(), picture);
@@ -167,7 +167,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         // Picture book
         DocumentType picturebook = DocumentType.createNode("PictureBook");
         picturebook.addSubtypes(picturebook.getName(), picture.getName());
-        picturebook.setIcon("glyphicons glyphicons-pictures");
+        picturebook.setIcon("glyphicons glyphicons-filetypes-folder-image");
         picturebook.setOrdered(true);
         picturebook.setEditable(true);
         picturebook.setMovable(true);
@@ -175,7 +175,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
 
         // Audio
         DocumentType audio = DocumentType.createFile("Audio");
-        audio.setIcon("glyphicons glyphicons-music");
+        audio.setIcon("glyphicons glyphicons-basic-music");
         audio.setEditable(true);
         audio.setMovable(true);
         types.put(audio.getName(), audio);
@@ -186,7 +186,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
 
         // Video
         DocumentType video = DocumentType.createFile("Video");
-        video.setIcon("glyphicons glyphicons-film");
+        video.setIcon("glyphicons glyphicons-basic-film");
         video.setEditable(true);
         video.setMovable(true);
         types.put(video.getName(), video);
@@ -197,7 +197,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
 
         // Annonce
         DocumentType annonce = DocumentType.createLeaf("Annonce");
-        annonce.setIcon("glyphicons glyphicons-newspaper");
+        annonce.setIcon("glyphicons glyphicons-basic-newspaper");
         annonce.setEditable(true);
         annonce.setMovable(true);
         types.put(annonce.getName(), annonce);
@@ -207,7 +207,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         // Annonce folder
         DocumentType annonceFolder = DocumentType.createNode("AnnonceFolder");
         annonceFolder.addSubtypes(annonce.getName());
-        annonceFolder.setIcon("glyphicons glyphicons-newspaper");
+        annonceFolder.setIcon("glyphicons glyphicons-basic-newspaper");
         annonceFolder.setBrowsable(false);
         annonceFolder.setEditable(true);
         types.put(annonceFolder.getName(), annonceFolder);
@@ -215,7 +215,7 @@ public class WidgetsPlugin extends AbstractPluginPortlet {
         // Document URL container
         DocumentType urlContainer = DocumentType.createNode("DocumentUrlContainer");
         urlContainer.addSubtypes(urlContainer.getName(), "ContextualLink");
-        urlContainer.setIcon("glyphicons glyphicons-bookmark");
+        urlContainer.setIcon("glyphicons glyphicons-basic-bookmark");
         urlContainer.setOrdered(true);
         urlContainer.setEditable(true);
         urlContainer.setMovable(true);
