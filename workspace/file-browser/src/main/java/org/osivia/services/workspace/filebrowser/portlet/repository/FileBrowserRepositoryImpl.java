@@ -26,28 +26,25 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
-import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.Link;
 import org.osivia.portal.api.user.UserPreferences;
-import org.osivia.portal.api.windows.PortalWindow;
-import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSBinaryContent;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.services.workspace.filebrowser.portlet.repository.command.CopyDocumentCommand;
+import org.osivia.services.workspace.filebrowser.portlet.repository.command.GetFileBrowserDocumentsCommand;
+import org.osivia.services.workspace.filebrowser.portlet.repository.command.ImportFilesCommand;
+import org.osivia.services.workspace.filebrowser.portlet.repository.command.MoveDocumentsCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
-import org.osivia.services.workspace.filebrowser.portlet.repository.command.CopyDocumentCommand;
-import org.osivia.services.workspace.filebrowser.portlet.repository.command.GetFileBrowserDocumentsCommand;
-import org.osivia.services.workspace.filebrowser.portlet.repository.command.ImportFilesCommand;
-import org.osivia.services.workspace.filebrowser.portlet.repository.command.MoveDocumentsCommand;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
@@ -95,18 +92,6 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
      * {@inheritDoc}
      */
     @Override
-    public String getCurrentPath(PortalControllerContext portalControllerContext) throws PortletException {
-        // Window
-        PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
-
-        return window.getProperty(Constants.WINDOW_PROP_URI);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getBasePath(PortalControllerContext portalControllerContext) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
@@ -119,13 +104,22 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
      * {@inheritDoc}
      */
     @Override
-    public NuxeoDocumentContext getCurrentDocumentContext(PortalControllerContext portalControllerContext) throws PortletException {
+    public String getContentPath(PortalControllerContext portalControllerContext) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        // Current path
-        String path = this.getCurrentPath(portalControllerContext);
-        
+        return nuxeoController.getContentPath();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NuxeoDocumentContext getDocumentContext(PortalControllerContext portalControllerContext, String path) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
         return nuxeoController.getDocumentContext(path);
     }
 
@@ -134,12 +128,9 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Document> getDocuments(PortalControllerContext portalControllerContext) throws PortletException {
+    public List<Document> getDocuments(PortalControllerContext portalControllerContext, String path) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-
-        // Current path
-        String path = this.getCurrentPath(portalControllerContext);
 
         // Document context
         NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
@@ -286,13 +277,10 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
      * {@inheritDoc}
      */
     @Override
-    public void duplicate(PortalControllerContext portalControllerContext, String sourcePath) throws PortletException {
+    public void duplicate(PortalControllerContext portalControllerContext, String sourcePath, String targetPath) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        // Target path
-        String targetPath = this.getCurrentPath(portalControllerContext);
-        
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(CopyDocumentCommand.class, sourcePath, targetPath);
         nuxeoController.executeNuxeoCommand(command);
@@ -479,12 +467,9 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
      * {@inheritDoc}
      */
     @Override
-    public void importFiles(PortalControllerContext portalControllerContext, List<MultipartFile> upload) throws PortletException, IOException {
+    public void importFiles(PortalControllerContext portalControllerContext, String path, List<MultipartFile> upload) throws PortletException, IOException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-
-        // Current path
-        String path = this.getCurrentPath(portalControllerContext);
 
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(ImportFilesCommand.class, path, upload);
@@ -496,12 +481,9 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
      * {@inheritDoc}
      */
     @Override
-    public void updateMenubar(PortalControllerContext portalControllerContext) throws PortletException {
+    public void updateMenubar(PortalControllerContext portalControllerContext, String path) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-
-        // Current path
-        String path = this.getCurrentPath(portalControllerContext);
 
         // Document context
         NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
