@@ -26,7 +26,7 @@
         <module>sets</module>
         <module>sharing</module>
         <module>trash</module>
-	    <module>purge</module>
+	    <!-- <module>purge</module> -->
     </modules>
 
 
