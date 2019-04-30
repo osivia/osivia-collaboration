@@ -128,7 +128,7 @@ $JQry(function() {
 				
 				// Helper content
 				var $content = $JQry(document.createElement("div"));
-				$content.addClass("bg-primary border-primary");
+				$content.addClass("bg-primary border-primary text-white");
 				$content.appendTo($helper);
 				
 				// Helper content animation
@@ -297,7 +297,7 @@ $JQry(function() {
 				var messageWarningReplace = $target.data("warning-replace");
 				var messageErrorSize = $target.data("error-size");
 
-				$target.removeClass("hidden");
+				$target.removeClass("d-none");
 				
 				data.context = $JQry(document.createElement("li"));
 				data.context.appendTo($files);
@@ -334,7 +334,7 @@ $JQry(function() {
 							// Start
 							var $start = $JQry(document.createElement("button"));
 							$start.attr("type", "button");
-							$start.addClass("start hidden");
+							$start.addClass("start d-none");
 							$start.click(function() {
 								data.submit(event);
 							});
@@ -360,7 +360,7 @@ $JQry(function() {
 				var $target = $JQry(event.target);
 				var url = $target.data("callback-url");
 				
-				$target.addClass("hidden");
+				$target.addClass("d-none");
 				
 				// Refresh
 				updatePortletContent(this, url);
@@ -376,7 +376,7 @@ $JQry(function() {
 			var $target = $JQry(event.target);
 			var $form = $target.closest(".file-browser-upload");
 			
-			$form.addClass("hidden");
+			$form.addClass("d-none");
 		})
 		
 		

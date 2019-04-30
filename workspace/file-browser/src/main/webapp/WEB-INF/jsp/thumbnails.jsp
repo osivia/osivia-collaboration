@@ -7,10 +7,12 @@
 <div class="file-browser-thumbnails-container file-browser-selectable">
     <div class="portlet-filler">
         <div class="file-browser-folders">
-            <div class="clearfix">
-                <div class="btn-group btn-group-sm pull-right">
-                    <div class="btn-group btn-group-sm">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <div class="d-flex">
+                <h3 class="h4 flex-grow-1"><op:translate key="FILE_BROWSER_FOLDERS" /></h3>
+
+                <div class="btn-group">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-dark dropdown-toggle" data-toggle="dropdown">
                             <span><op:translate key="${form.criteria.sort.key}" /></span>
                             <span class="caret"></span>
                         </button>
@@ -36,12 +38,10 @@
                         <portlet:param name="alt" value="${not form.criteria.alt}" />
                     </portlet:actionURL>
                                 
-                    <a href="${url}" class="btn btn-default">
+                    <a href="${url}" class="btn btn-outline-dark">
                         <i class="glyphicons glyphicons-arrow-${form.criteria.alt ? 'up' : 'down'}"></i>
                     </a>
                 </div>
-            
-                <h3 class="h4"><op:translate key="FILE_BROWSER_FOLDERS" /></h3>
             </div>
             
             <c:set var="count" value="0" />
