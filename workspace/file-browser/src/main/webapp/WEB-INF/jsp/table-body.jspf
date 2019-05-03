@@ -4,7 +4,7 @@
 <%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
 
 
-<c:set var="checkboxTitle"><op:translate key="TABLE_CHECKBOX_TITLE" /></c:set>
+<c:set var="checkboxTitle"><op:translate key="TABLE_CHECKBOX_TITLE"/></c:set>
 
 
 <c:choose>
@@ -13,28 +13,31 @@
             <div class="portal-table-row">
                 <div class="portal-table-cell">
                     <div class="portal-table-cell-inner">
-                        <span class="text-muted"><op:translate key="FILE_BROWSER_EMPTY" /></span>
+                        <span class="text-muted"><op:translate key="FILE_BROWSER_EMPTY"/></span>
                     </div>
                 </div>
             </div>
         </div>
     </c:when>
-    
+
     <c:otherwise>
         <div class="portal-table-row-group portal-table-selectable">
             <c:forEach var="item" items="${form.items}">
-                <div class="portal-table-row portal-table-selectable-filter ${item.folderish ? 'file-browser-droppable' : ''}" data-id="${item.document.id}" 
-                        data-type="${item.document.type.name}" data-text="${item.title}" data-accepted-types="${item.acceptedTypes}"
-                        data-double-click-target=".file-browser-draggable a">
+                <div class="portal-table-row portal-table-selectable-filter ${item.folderish ? 'file-browser-droppable' : ''}"
+                     data-id="${item.document.id}"
+                     data-type="${item.document.type.name}" data-text="${item.title}"
+                     data-accepted-types="${item.acceptedTypes}"
+                     data-double-click-target=".file-browser-draggable a">
                     <!-- Title -->
                     <div class="portal-table-cell" data-column="title">
                         <div class="portal-table-cell-inner" data-column="title">
-                            <span><ttc:icon document="${item.document}" style="${item.folderish ? 'flat' : 'flat-inverse'}" /></span>
-                        
+                            <span><ttc:icon document="${item.document}"
+                                            style="${item.folderish ? 'flat' : 'flat-inverse'}"/></span>
+
                             <div class="file-browser-draggable">
-                                <span><ttc:title document="${item.document}" /></span>
+                                <span><ttc:title document="${item.document}"/></span>
                             </div>
-                            
+
                             <c:if test="${not empty item.lock || item.subscription}">
                                 <div>
                                     <c:if test="${not empty item.lock}">
@@ -42,7 +45,7 @@
                                             <i class="${item.lock}"></i>
                                         </div>
                                     </c:if>
-                                
+
                                     <c:if test="${item.subscription}">
                                         <div>
                                             <i class="glyphicons glyphicons-flag"></i>
@@ -52,46 +55,45 @@
                             </c:if>
                         </div>
                     </div>
-                    
+
                     <!-- Last modification -->
                     <div class="portal-table-cell" data-column="last-modification">
                         <div class="portal-table-cell-inner" data-column="last-modification">
-                            <div>
-                                <span><fmt:formatDate value="${item.lastModification}" type="date" dateStyle="long" /></span>
-                                <span class="visible-lg-inline">
-                                    <span>-</span>
-                                    <span><ttc:user name="${item.lastContributor}" linkable="false" /></span>
-                                </span>
+                            <div class="d-flex flex-wrap overflow-hidden">
+                                <span class="text-truncate mr-3"><fmt:formatDate value="${item.lastModification}"
+                                                                                 type="date" dateStyle="long"/></span>
+                                <span class="text-truncate"><ttc:user name="${item.lastContributor}"
+                                                                      linkable="false"/></span>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- File size -->
                     <div class="portal-table-cell" data-column="file-size">
                         <div class="portal-table-cell-inner" data-column="file-size">
                             <c:choose>
                                 <c:when test="${item.size gt 0}">
-                                    <span><ttc:fileSize size="${item.size}" /></span>
+                                    <span><ttc:fileSize size="${item.size}"/></span>
                                 </c:when>
-                                
+
                                 <c:otherwise>
                                     <span>&ndash;</span>
                                 </c:otherwise>
                             </c:choose>
                         </div>
                     </div>
-                    
+
                     <!-- Checkbox -->
                     <div class="portal-table-cell" data-column="checkbox">
                         <div class="portal-table-cell-inner" data-column="checkbox">
                             <div class="portal-table-checkbox">
                                 <a href="javascript:;" class="no-ajax-link" title="${checkboxTitle}">
-                                    <i class="glyphicons glyphicons-unchecked"></i>
+                                    <i class="glyphicons glyphicons-basic-square-empty"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Draggable -->
                     <c:if test="${item.document.type.editable}">
                         <div class="file-browser-draggable file-browser-draggable-shadowbox"></div>

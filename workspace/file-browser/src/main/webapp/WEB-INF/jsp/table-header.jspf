@@ -25,7 +25,7 @@
                 <span><op:translate key="FILE_BROWSER_SORT_TITLE" /></span>
                 
                 <c:if test="${form.criteria.sort.id eq 'title'}">
-                    <small>
+                    <small class="d-inline-block align-text-bottom">
                         <i class="glyphicons glyphicons-arrow-${form.criteria.alt ? 'up' : 'down'}"></i>
                     </small>
                 </c:if>
@@ -45,7 +45,7 @@
                 <span><op:translate key="FILE_BROWSER_SORT_LAST_MODIFICATION" /></span>
                 
                 <c:if test="${form.criteria.sort.id eq 'last-modification'}">
-                    <small>
+                    <small class="d-inline-block align-text-bottom">
                         <i class="glyphicons glyphicons-arrow-${form.criteria.alt ? 'up' : 'down'}"></i>
                     </small>
                 </c:if>
@@ -65,7 +65,7 @@
                 <span><op:translate key="FILE_BROWSER_SORT_FILE_SIZE" /></span>
                 
                 <c:if test="${form.criteria.sort.id eq 'file-size'}">
-                    <small>
+                    <small class="d-inline-block align-text-bottom">
                         <i class="glyphicons glyphicons-arrow-${form.criteria.alt ? 'up' : 'down'}"></i>
                     </small>
                 </c:if>
@@ -79,7 +79,7 @@
             <div class="portal-table-checkbox">
                 <c:set var="title"><op:translate key="TABLE_SELECT_ALL_CHECKBOX_TITLE" /></c:set>
                 <a href="javascript:;" class="no-ajax-link" title="${title}">
-                    <i class="glyphicons glyphicons-unchecked"></i>
+                    <i class="glyphicons glyphicons-basic-square-empty"></i>
                 </a>
             </div>
         </div>

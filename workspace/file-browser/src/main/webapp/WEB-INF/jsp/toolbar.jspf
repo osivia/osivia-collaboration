@@ -15,7 +15,7 @@
             </portlet:actionURL>
             <c:set var="title"><op:translate key="${item.key}" /></c:set>
         
-            <a href="${url}" class="btn btn-default ${item.id eq view ? 'active' : ''}" title="${title}">
+            <a href="${url}" class="btn btn-outline-secondary ${item.id eq view ? 'active' : ''}" title="${title}">
                 <i class="${item.icon}"></i>
             </a>
         </c:forEach>

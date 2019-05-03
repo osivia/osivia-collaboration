@@ -85,7 +85,7 @@ public class FileBrowserController {
         request.setAttribute("view", view.getId());
 
         // Update menubar
-        this.service.updateMenubar(portalControllerContext);
+        //this.service.updateMenubar(portalControllerContext);
 
         return "view";
     }
