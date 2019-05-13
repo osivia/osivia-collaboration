@@ -11,7 +11,7 @@
 <portlet:resourceURL id="toolbar" var="toolbarUrl"/>
 
 
-<div class="file-browser ${form.uploadable ? 'file-browser-drop-zone' : ''}" data-drop-url="${dropUrl}"
+<div class="file-browser position-relative ${form.uploadable ? 'file-browser-drop-zone' : ''}" data-drop-url="${dropUrl}"
      data-toolbar-url="${toolbarUrl}">
     <%@ include file="toolbar.jspf" %>
 

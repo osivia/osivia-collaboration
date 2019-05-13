@@ -62,8 +62,18 @@
                             <div class="d-flex flex-wrap overflow-hidden">
                                 <span class="text-truncate mr-3"><fmt:formatDate value="${item.lastModification}"
                                                                                  type="date" dateStyle="long"/></span>
-                                <span class="text-truncate"><ttc:user name="${item.lastContributor}"
-                                                                      linkable="false"/></span>
+                                <span class="text-truncate">
+                                    <c:choose>
+                                        <c:when test="${item.lastContributor eq pageContext.request.remoteUser}">
+                                            <span class="text-muted"><op:translate
+                                                    key="FILE_BROWSER_CONTRIBUTOR_CURRENT_USER"/></span>
+                                        </c:when>
+
+                                        <c:otherwise>
+                                            <span><ttc:user name="${item.lastContributor}" linkable="false"/></span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </span>
                             </div>
                         </div>
                     </div>

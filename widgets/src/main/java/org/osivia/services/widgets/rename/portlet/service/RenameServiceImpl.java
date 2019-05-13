@@ -1,11 +1,6 @@
 package org.osivia.services.widgets.rename.portlet.service;
 
-import java.io.IOException;
-
-import javax.portlet.ActionResponse;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -22,34 +17,47 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import java.io.IOException;
 
 /**
  * Rename portlet service implementation.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see RenameService
  */
 @Service
 public class RenameServiceImpl implements RenameService {
 
-    /** Application context. */
+    /**
+     * Application context.
+     */
     @Autowired
     private ApplicationContext applicationContext;
 
-    /** Portlet repository. */
+    /**
+     * Portlet repository.
+     */
     @Autowired
     private RenameRepository repository;
 
-    /** Portal URL factory. */
+    /**
+     * Portal URL factory.
+     */
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
 
-    /** Internationalization bundle factory. */
+    /**
+     * Internationalization bundle factory.
+     */
     @Autowired
     private IBundleFactory bundleFactory;
 
-    /** Notifications service. */
+    /**
+     * Notifications service.
+     */
     @Autowired
     private INotificationsService notificationsService;
 
@@ -93,12 +101,8 @@ public class RenameServiceImpl implements RenameService {
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
-        // Current document path
-        String path = this.getCurrentPath(portalControllerContext);
-        // Current document context
-        NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, path);
         // Current document
-        Document document = documentContext.getDocument();
+        Document document = this.getCurrentDocument(portalControllerContext);
 
         // Old document title
         String oldTitle = document.getTitle();
@@ -107,7 +111,7 @@ public class RenameServiceImpl implements RenameService {
 
         if (!StringUtils.equals(oldTitle, newTitle)) {
             // Rename
-            this.repository.rename(portalControllerContext, path, newTitle);
+            this.repository.rename(portalControllerContext, document.getPath(), newTitle);
 
             // Notification
             String message = bundle.getString("RENAME_MESSAGE_SUCCESS");
@@ -115,7 +119,8 @@ public class RenameServiceImpl implements RenameService {
         }
 
         // Redirection
-        String url = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, path, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null,
+        String redirectionPath = this.getRedirectionPath(portalControllerContext);
+        String url = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, redirectionPath, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null,
                 null);
         response.sendRedirect(url);
     }
@@ -123,10 +128,9 @@ public class RenameServiceImpl implements RenameService {
 
     /**
      * Get current Nuxeo document.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return Nuxeo document
-     * @throws PortletException
      */
     private Document getCurrentDocument(PortalControllerContext portalControllerContext) throws PortletException {
         // Current document path
@@ -141,18 +145,48 @@ public class RenameServiceImpl implements RenameService {
 
     /**
      * Get current document path.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return path
-     * @throws PortletException
      */
-    private String getCurrentPath(PortalControllerContext portalControllerContext) throws PortletException {
-        // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();
-        // Current window
-        PortalWindow window = WindowFactory.getWindow(request);
+    private String getCurrentPath(PortalControllerContext portalControllerContext) {
+        // Window
+        PortalWindow window = getWindow(portalControllerContext);
 
         return window.getProperty(DOCUMENT_PATH_WINDOW_PROPERTY);
+    }
+
+
+    /**
+     * Get redirection path.
+     *
+     * @param portalControllerContext portal controller context
+     * @return path
+     */
+    private String getRedirectionPath(PortalControllerContext portalControllerContext) {
+        // Window
+        PortalWindow window = getWindow(portalControllerContext);
+
+        String path = window.getProperty(REDIRECTION_PATH_WINDOW_PROPERTY);
+        if (StringUtils.isEmpty(path)) {
+            path = this.getCurrentPath(portalControllerContext);
+        }
+
+        return path;
+    }
+
+
+    /**
+     * Get current window.
+     *
+     * @param portalControllerContext portal controller context
+     * @return window
+     */
+    private PortalWindow getWindow(PortalControllerContext portalControllerContext) {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+
+        return WindowFactory.getWindow(request);
     }
 
 }

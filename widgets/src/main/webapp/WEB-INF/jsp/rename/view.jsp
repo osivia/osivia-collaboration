@@ -17,7 +17,7 @@
 <form:form action="${url}" method="post" modelAttribute="form">
     <fieldset>
         <legend>
-            <i class="glyphicons glyphicons-edit"></i>
+            <i class="glyphicons glyphicons-basic-square-edit"></i>
             <span><op:translate key="RENAME_LEGEND" /></span>
         </legend>
 
@@ -25,7 +25,7 @@
         <c:set var="placeholder"><op:translate key="TITLE_PLACEHOLDER" /></c:set>
         <spring:bind path="title">
             <div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
-                <form:label path="title" cssClass="control-label"><op:translate key="TITLE_LABEL" /></form:label>
+                <form:label path="title"><op:translate key="TITLE_LABEL" /></form:label>
                 <form:input path="title" cssClass="form-control" placeholder="${placeholder}" />
                 <c:if test="${status.error}">
                     <span class="form-control-feedback">
@@ -39,12 +39,12 @@
         <!-- Buttons -->
         <div>
             <!-- Save -->
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary mr-2">
                 <span><op:translate key="RENAME_ACTION" /></span>
             </button>
             
             <!-- Cancel -->
-            <button type="button" class="btn btn-default" data-dismiss="modal">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
                 <span><op:translate key="CANCEL" /></span>
             </button>
         </div>

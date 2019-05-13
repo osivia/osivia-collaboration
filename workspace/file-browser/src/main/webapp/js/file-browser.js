@@ -143,7 +143,7 @@ $JQry(function() {
 				
 				// Text
 				var $text = $JQry(document.createElement("div"));
-				$text.addClass("text-overflow");
+				$text.addClass("text-truncate p-3");
 				$text.text(text);
 				$text.appendTo($content);
 				
@@ -396,15 +396,15 @@ $JQry(function() {
 			}
 
 			if ($hoveredDropZone.length) {
-				$hoveredDropZone.find(".file-browser-upload-shadowbox").addClass("bg-info border-info");
+				$hoveredDropZone.find(".file-browser-upload-shadowbox").addClass("bg-info");
 			} else {
-				$dropZone.find(".file-browser-upload-shadowbox").removeClass("bg-info border-info");
+				$dropZone.find(".file-browser-upload-shadowbox").removeClass("bg-info");
 			}
 			
 			window.dropZoneTimeout = setTimeout(function() {
 				window.dropZoneTimeout = null;
 				$dropZone.removeClass("in");
-				$dropZone.find(".file-browser-upload-shadowbox").removeClass("bg-info border-info");
+				$dropZone.find(".file-browser-upload-shadowbox").removeClass("bg-info");
 			}, 1000);
 		});
 		
@@ -414,7 +414,7 @@ $JQry(function() {
 			var $dropZone = $JQry(".file-browser-drop-zone");
 			
 			$dropZone.removeClass("in");
-			$dropZone.find(".file-browser-upload-shadowbox").removeClass("bg-info border-info");
+			$dropZone.find(".file-browser-upload-shadowbox").removeClass("bg-info");
 		});
 		
 		

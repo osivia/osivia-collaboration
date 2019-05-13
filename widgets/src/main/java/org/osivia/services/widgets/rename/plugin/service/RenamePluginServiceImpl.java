@@ -90,7 +90,7 @@ public class RenamePluginServiceImpl implements RenamePluginService {
                 Bundle bundle = this.bundleFactory.getBundle(servletRequest.getLocale());
 
                 // Window properties
-                Map<String, String> properties = new HashMap<String, String>();
+                Map<String, String> properties = new HashMap<>();
                 properties.put(RenameService.DOCUMENT_PATH_WINDOW_PROPERTY, documentContext.getCmsPath());
 
                 // Menubar item
