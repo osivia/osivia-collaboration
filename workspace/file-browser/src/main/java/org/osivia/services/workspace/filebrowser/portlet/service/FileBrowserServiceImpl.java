@@ -429,12 +429,12 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                     if (allFile) {
                         String title = bundle.getString("FILE_BROWSER_TOOLBAR_DOWNLOAD");
                         String url = this.getBulkDownloadUrl(portalControllerContext, selection);
-                        bulkDownload = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-secondary btn-sm mr-2 no-ajax-link", null,
-                                "glyphicons glyphicons-download-alt");
+                        bulkDownload = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-primary btn-sm mr-2 no-ajax-link", null,
+                                "glyphicons glyphicons-basic-square-download");
                         DOM4JUtils.addAttribute(bulkDownload, "title", title);
                     } else {
-                        bulkDownload = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-secondary btn-sm mr-2 disabled", null,
-                                "glyphicons glyphicons-download-alt");
+                        bulkDownload = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary btn-sm mr-2 disabled", null,
+                                "glyphicons glyphicons-basic-square-download");
                     }
                     toolbar.add(bulkDownload);
                 }
@@ -492,7 +492,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             dropdownGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm");
 
             // Dropdown button
-            Element dropdownButton = DOM4JUtils.generateElement("button", "btn btn-secondary dropdown-toggle", null);
+            Element dropdownButton = DOM4JUtils.generateElement("button", "btn btn-primary dropdown-toggle", null);
             DOM4JUtils.addAttribute(dropdownButton, "type", "button");
             DOM4JUtils.addDataAttribute(dropdownButton, "toggle", "dropdown");
             dropdownGroup.add(dropdownButton);
@@ -516,7 +516,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                 String onlyOfficeUrl = this.getOnlyOfficeUrl(portalControllerContext, path, onlyOfficeTitle);
 
                 // OnlyOffice (with lock)
-                Element onlyOffice = DOM4JUtils.generateLinkElement(onlyOfficeUrl, null, null, "btn btn-secondary no-ajax-link", onlyOfficeAction,
+                Element onlyOffice = DOM4JUtils.generateLinkElement(onlyOfficeUrl, null, null, "btn btn-primary no-ajax-link", onlyOfficeAction,
                         "glyphicons glyphicons-pencil");
                 liveEditionGroup.add(onlyOffice);
             } else if (StringUtils.isNotEmpty(portletRequest.getRemoteUser())) {
@@ -525,7 +525,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                 String onlyOfficeReadOnlyUrl = this.getOnlyOfficeUrl(portalControllerContext, path, onlyOfficeReadOnlyTitle);
 
                 // OnlyOffice (read only)
-                Element onlyOffice = DOM4JUtils.generateLinkElement(onlyOfficeReadOnlyUrl, null, null, "btn btn-secondary no-ajax-link",
+                Element onlyOffice = DOM4JUtils.generateLinkElement(onlyOfficeReadOnlyUrl, null, null, "btn btn-primary no-ajax-link",
                         onlyOfficeReadOnlyAction);
                 liveEditionGroup.add(onlyOffice);
             }
@@ -588,12 +588,12 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         if (permissions.isEditable()) {
             String title = bundle.getString("FILE_BROWSER_TOOLBAR_RENAME");
             String url = this.getRenameUrl(portalControllerContext, form, path);
-            rename = DOM4JUtils.generateLinkElement("javascript:;", null, null, "btn btn-secondary no-ajax-link", null, "glyphicons glyphicons-edit");
+            rename = DOM4JUtils.generateLinkElement("javascript:", null, null, "btn btn-primary no-ajax-link", null, "glyphicons glyphicons-basic-square-edit");
             DOM4JUtils.addAttribute(rename, "title", title);
             DOM4JUtils.addDataAttribute(rename, "target", "#osivia-modal");
             DOM4JUtils.addDataAttribute(rename, "load-url", url);
         } else {
-            rename = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-secondary disabled", null, "glyphicons glyphicons-edit");
+            rename = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-basic-square-edit");
         }
         group.add(rename);
 
@@ -602,10 +602,10 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         if ((documentDto.getType() != null) && documentDto.getType().isFile()) {
             String title = bundle.getString("FILE_BROWSER_TOOLBAR_DOWNLOAD");
             String url = this.repository.getDownloadUrl(portalControllerContext, nuxeoDocument);
-            download = DOM4JUtils.generateLinkElement(url, "_blank", null, "btn btn-secondary no-ajax-link", null, "glyphicons glyphicons-download-alt");
+            download = DOM4JUtils.generateLinkElement(url, "_blank", null, "btn btn-primary no-ajax-link", null, "glyphicons glyphicons-basic-square-download");
             DOM4JUtils.addAttribute(download, "title", title);
         } else {
-            download = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-secondary disabled", null, "glyphicons glyphicons-download-alt");
+            download = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-basic-square-download");
         }
         group.add(download);
 
@@ -614,10 +614,10 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         if (permissions.canBeCopied()) {
             String title = bundle.getString("FILE_BROWSER_TOOLBAR_DUPLICATE");
             String url = this.getDuplicateUrl(portalControllerContext, path, view);
-            duplicate = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-secondary", null, "glyphicons glyphicons-duplicate");
+            duplicate = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-primary", null, "glyphicons glyphicons-duplicate");
             DOM4JUtils.addAttribute(duplicate, "title", title);
         } else {
-            duplicate = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-secondary disabled", null, "glyphicons glyphicons-duplicate");
+            duplicate = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-duplicate");
         }
         group.add(duplicate);
 
@@ -698,10 +698,10 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         if (allEditable && !unknownType) {
             String title = bundle.getString("FILE_BROWSER_TOOLBAR_MOVE");
             String url = this.getMoveUrl(portalControllerContext, form, identifiers, paths, acceptedTypes);
-            move = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-secondary fancyframe_refresh no-ajax-link", null, "glyphicons glyphicons-move");
+            move = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-primary fancyframe_refresh no-ajax-link", null, "glyphicons glyphicons-move");
             DOM4JUtils.addAttribute(move, "title", title);
         } else {
-            move = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-secondary disabled", null, "glyphicons glyphicons-move");
+            move = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-move");
         }
         group.add(move);
 
@@ -710,7 +710,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         Element delete;
         if (allEditable) {
             String title = bundle.getString("FILE_BROWSER_TOOLBAR_DELETE");
-            delete = DOM4JUtils.generateLinkElement("#" + deleteId, null, null, "btn btn-secondary no-ajax-link", null, "glyphicons glyphicons-bin");
+            delete = DOM4JUtils.generateLinkElement("#" + deleteId, null, null, "btn btn-primary no-ajax-link", null, "glyphicons glyphicons-bin");
             DOM4JUtils.addAttribute(delete, "title", title);
             DOM4JUtils.addDataAttribute(delete, "toggle", "modal");
 
@@ -718,7 +718,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             Element modal = this.getToolbarDeleteModal(portalControllerContext, identifiers, view, deleteId, bundle);
             container.add(modal);
         } else {
-            delete = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-secondary disabled", null, "glyphicons glyphicons-bin");
+            delete = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-bin");
         }
         group.add(delete);
 
@@ -973,7 +973,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         modalFooter.add(confirm);
 
         // Cancel button
-        Element cancel = DOM4JUtils.generateElement("button", "btn btn-secondary", bundle.getString("CANCEL"), null, null);
+        Element cancel = DOM4JUtils.generateElement("button", "btn btn-primary", bundle.getString("CANCEL"), null, null);
         DOM4JUtils.addAttribute(cancel, "type", "button");
         DOM4JUtils.addDataAttribute(cancel, "dismiss", "modal");
         modalFooter.add(cancel);
