@@ -2,6 +2,7 @@ package org.osivia.services.workspace.portlet.model;
 
 import java.util.Date;
 
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -15,61 +16,18 @@ import org.springframework.stereotype.Component;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class TrashedDocument extends ObjectDocument {
 
-    /** Document deletion date. */
-    private Date deletionDate;
-    /** Document last contributor. */
-    private String lastContributor;
     /** Document location. */
     private ParentDocument location;
-    /** Document selected indicator. */
-    private boolean selected;
 
 
     /**
      * Constructor.
-     * 
-     * @param path document path
+     * @param document document DTO
      */
-    public TrashedDocument(String path) {
-        super(path);
+    public TrashedDocument(DocumentDTO document) {
+        super(document);
     }
 
-
-    /**
-     * Getter for deletionDate.
-     * 
-     * @return the deletionDate
-     */
-    public Date getDeletionDate() {
-        return deletionDate;
-    }
-
-    /**
-     * Setter for deletionDate.
-     * 
-     * @param deletionDate the deletionDate to set
-     */
-    public void setDeletionDate(Date deletionDate) {
-        this.deletionDate = deletionDate;
-    }
-
-    /**
-     * Getter for lastContributor.
-     * 
-     * @return the lastContributor
-     */
-    public String getLastContributor() {
-        return lastContributor;
-    }
-
-    /**
-     * Setter for lastContributor.
-     * 
-     * @param lastContributor the lastContributor to set
-     */
-    public void setLastContributor(String lastContributor) {
-        this.lastContributor = lastContributor;
-    }
 
     /**
      * Getter for location.
@@ -87,24 +45,6 @@ public class TrashedDocument extends ObjectDocument {
      */
     public void setLocation(ParentDocument location) {
         this.location = location;
-    }
-
-    /**
-     * Getter for selected.
-     * 
-     * @return the selected
-     */
-    public boolean isSelected() {
-        return selected;
-    }
-
-    /**
-     * Setter for selected.
-     * 
-     * @param selected the selected to set
-     */
-    public void setSelected(boolean selected) {
-        this.selected = selected;
     }
 
 }

@@ -19,6 +19,10 @@ public class TrashForm {
 
     /** Trashed documents. */
     private List<TrashedDocument> trashedDocuments;
+    /** Sort property. */
+    private TrashFormSort sort;
+    /** Alternative sort indicator. */
+    private boolean alt;
     /** Loaded indicator. */
     private boolean loaded;
 
@@ -47,6 +51,22 @@ public class TrashForm {
      */
     public void setTrashedDocuments(List<TrashedDocument> trashedDocuments) {
         this.trashedDocuments = trashedDocuments;
+    }
+
+    public TrashFormSort getSort() {
+        return sort;
+    }
+
+    public void setSort(TrashFormSort sort) {
+        this.sort = sort;
+    }
+
+    public boolean isAlt() {
+        return alt;
+    }
+
+    public void setAlt(boolean alt) {
+        this.alt = alt;
     }
 
     /**

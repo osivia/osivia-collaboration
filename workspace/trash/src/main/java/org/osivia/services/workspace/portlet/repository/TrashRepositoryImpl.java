@@ -1,65 +1,56 @@
 package org.osivia.services.workspace.portlet.repository;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.portlet.PortletException;
-
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCustomizer;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
-import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.directory.v2.service.PersonService;
-import org.osivia.portal.core.cms.CMSException;
-import org.osivia.portal.core.cms.CMSItem;
-import org.osivia.portal.core.cms.CMSObjectPath;
-import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.ICMSService;
-import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.cms.*;
 import org.osivia.services.workspace.portlet.model.ParentDocument;
 import org.osivia.services.workspace.portlet.model.TrashedDocument;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCustomizer;
+import javax.portlet.PortletException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Trash repository implementation.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see TrashRepository
  */
 @Repository
-public class TrashRepositoryImpl implements TrashRepository, ApplicationContextAware {
+public class TrashRepositoryImpl implements TrashRepository {
 
-    /** CMS service locator. */
+    /**
+     * Application context.
+     */
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    /**
+     * CMS service locator.
+     */
     @Autowired
     private ICMSServiceLocator cmsServiceLocator;
 
-    /** Nuxeo customizer. */
+    /**
+     * Document DAO.
+     */
     @Autowired
-    private INuxeoCustomizer nuxeoCustomizer;
-
-    /** Person service. */
-    @Autowired
-    private PersonService personService;
-
-
-    /** Application context. */
-    private ApplicationContext applicationContext;
+    private DocumentDAO documentDao;
 
 
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
     public TrashRepositoryImpl() {
         super();
@@ -70,10 +61,10 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
      * {@inheritDoc}
      */
     @Override
-    public List<TrashedDocument> getTrashedDocuments(PortalControllerContext portalControllerContext) throws PortletException {
+    public List<TrashedDocument> getTrashedDocuments(PortalControllerContext portalControllerContext) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-        
+
         // Base path
         String basePath = nuxeoController.getBasePath();
 
@@ -85,7 +76,7 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
         List<TrashedDocument> trashedDocuments = new ArrayList<>(documents.size());
         // Previous path
         String previousPath = null;
-        
+
         for (Document document : documents.list()) {
             // Path
             String path = document.getPath();
@@ -111,11 +102,10 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
 
     /**
      * Get trashed document.
-     * 
+     *
      * @param nuxeoController Nuxeo controller
-     * @param document Nuxeo document
+     * @param document        Nuxeo document
      * @return trashed document
-     * @throws CMSException
      */
     private TrashedDocument getTrashedDocument(NuxeoController nuxeoController, Document document) throws CMSException {
         // CMS service
@@ -128,40 +118,6 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
         // Document path
         String path = document.getPath();
 
-
-        // Title
-        String title = document.getTitle();
-
-        // Type
-        Map<String, DocumentType> types = this.nuxeoCustomizer.getCMSItemTypes();
-        DocumentType type = types.get(document.getType());
-
-        // Icon
-        String icon;
-        if (type == null) {
-            icon = null;
-        } else {
-            icon = type.getIcon();
-        }
-
-        // Deletion date
-        Date deletionDate = document.getDate("dc:modified");
-
-        // Last contributor
-        String lastContributorId = document.getString("dc:lastContributor");
-        Person lastContributorPerson;
-        if (lastContributorId == null) {
-            lastContributorPerson = null;
-        } else {
-            lastContributorPerson = this.personService.getPerson(lastContributorId);
-        }
-        String lastContributorDisplayName;
-        if (lastContributorPerson == null) {
-            lastContributorDisplayName = lastContributorId;
-        } else {
-            lastContributorDisplayName = StringUtils.defaultIfBlank(lastContributorPerson.getDisplayName(), lastContributorId);
-        }
-
         // Location
         CMSObjectPath objectPath = CMSObjectPath.parse(path);
         CMSObjectPath parentObjectPath = objectPath.getParent();
@@ -172,24 +128,17 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
             location = null;
         } else {
             Document parentDocument = (Document) parentNavigationItem.getNativeItem();
-            location = this.applicationContext.getBean(ParentDocument.class, parentDocument.getPath());
-            location.setTitle(parentDocument.getTitle());
-            if (parentNavigationItem.getType() != null) {
-                location.setIcon(parentNavigationItem.getType().getIcon());
-            }
+            DocumentDTO parentDocumentDto = this.documentDao.toDTO(parentDocument);
+            location = this.applicationContext.getBean(ParentDocument.class, parentDocumentDto);
         }
-
 
         // Trashed document
         TrashedDocument trashedDocument;
         if (location == null) {
             trashedDocument = null;
         } else {
-            trashedDocument = this.applicationContext.getBean(TrashedDocument.class, path);
-            trashedDocument.setTitle(title);
-            trashedDocument.setIcon(icon);
-            trashedDocument.setDeletionDate(deletionDate);
-            trashedDocument.setLastContributor(lastContributorDisplayName);
+            DocumentDTO documentDto = this.documentDao.toDTO(document);
+            trashedDocument = this.applicationContext.getBean(TrashedDocument.class, documentDto);
             trashedDocument.setLocation(location);
         }
 
@@ -235,15 +184,14 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
 
     /**
      * Execute trash Nuxeo command.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param clazz trash command class
-     * @param selectedPaths selected item paths, may be null
+     * @param clazz                   trash command class
+     * @param selectedPaths           selected item paths, may be null
      * @return rejected documents
-     * @throws PortletException
      */
     private List<TrashedDocument> executeTrashCommand(PortalControllerContext portalControllerContext, Class<? extends TrashCommand> clazz,
-            List<String> selectedPaths) throws PortletException {
+                                                      List<String> selectedPaths) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -292,7 +240,7 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
      * {@inheritDoc}
      */
     @Override
-    public List<ParentDocument> getLocationParents(PortalControllerContext portalControllerContext, String path) throws PortletException {
+    public List<ParentDocument> getLocationParents(PortalControllerContext portalControllerContext, String path) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -318,19 +266,17 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
                     continue;
                 }
 
-                // Document
+                // Nuxeo document
                 Document document = (Document) navigationItem.getNativeItem();
+                // Document DTO
+                DocumentDTO documentDto = this.documentDao.toDTO(document);
 
                 // Parent document
-                ParentDocument parent = this.applicationContext.getBean(ParentDocument.class, document.getPath());
-                parent.setTitle(document.getTitle());
-                if (navigationItem.getType() != null) {
-                    parent.setIcon(navigationItem.getType().getIcon());
-                }
+                ParentDocument parent = this.applicationContext.getBean(ParentDocument.class, documentDto);
 
                 parents.add(0, parent);
             } catch (CMSException e) {
-                continue;
+                // Do nothing
             } finally {
                 // Loop on parent path
                 CMSObjectPath objectPath = CMSObjectPath.parse(parentPath);
@@ -340,15 +286,6 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
         }
 
         return parents;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
     }
 
 }
