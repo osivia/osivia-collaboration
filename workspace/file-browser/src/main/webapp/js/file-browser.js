@@ -128,7 +128,7 @@ $JQry(function() {
 				
 				// Helper content
 				var $content = $JQry(document.createElement("div"));
-				$content.addClass("bg-primary border-primary text-white");
+				$content.addClass("text-white bg-primary border-primary rounded");
 				$content.appendTo($helper);
 				
 				// Helper content animation
