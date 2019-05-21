@@ -28,7 +28,7 @@
                     <div class="portal-table-cell" data-column="document">
                         <div class="portal-table-cell-inner" data-column="document">
                             <div class="d-flex align-items-center">
-                                <span class="mr-2"><ttc:icon document="${trashedDocument.document}"/></span>
+                                <span class="mr-2"><ttc:icon document="${trashedDocument.document}" style="flat"/></span>
                                 <span><ttc:title document="${trashedDocument.document}" linkable="false"/></span>
                             </div>
                         </div>
