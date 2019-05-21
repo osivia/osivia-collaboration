@@ -698,10 +698,12 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         if (allEditable && !unknownType) {
             String title = bundle.getString("FILE_BROWSER_TOOLBAR_MOVE");
             String url = this.getMoveUrl(portalControllerContext, form, identifiers, paths, acceptedTypes);
-            move = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-primary fancyframe_refresh no-ajax-link", null, "glyphicons glyphicons-move");
+            move = DOM4JUtils.generateLinkElement("javascript:", null, null, "btn btn-primary no-ajax-link", null, "glyphicons glyphicons-basic-block-move");
             DOM4JUtils.addAttribute(move, "title", title);
+            DOM4JUtils.addDataAttribute(move, "target", "#osivia-modal");
+            DOM4JUtils.addDataAttribute(move, "load-url", url);
         } else {
-            move = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-move");
+            move = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-basic-block-move");
         }
         group.add(move);
 
@@ -710,7 +712,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         Element delete;
         if (allEditable) {
             String title = bundle.getString("FILE_BROWSER_TOOLBAR_DELETE");
-            delete = DOM4JUtils.generateLinkElement("#" + deleteId, null, null, "btn btn-primary no-ajax-link", null, "glyphicons glyphicons-bin");
+            delete = DOM4JUtils.generateLinkElement("#" + deleteId, null, null, "btn btn-primary no-ajax-link", null, "glyphicons glyphicons-basic-bin");
             DOM4JUtils.addAttribute(delete, "title", title);
             DOM4JUtils.addDataAttribute(delete, "toggle", "modal");
 
@@ -718,7 +720,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             Element modal = this.getToolbarDeleteModal(portalControllerContext, identifiers, view, deleteId, bundle);
             container.add(modal);
         } else {
-            delete = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-bin");
+            delete = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-basic-bin");
         }
         group.add(delete);
 
@@ -865,17 +867,17 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             Set<String> acceptedTypes) throws PortletException {
         // Window properties
         Map<String, String> properties = new HashMap<>();
-        properties.put("osivia.move.documentPath", form.getPath());
-        properties.put("osivia.move.documentsIdentifiers", StringUtils.join(identifiers, ","));
-        properties.put("osivia.move.ignoredPaths", StringUtils.join(paths, ","));
-        properties.put("osivia.move.cmsBasePath", this.repository.getBasePath(portalControllerContext));
-        properties.put("osivia.move.acceptedTypes", StringUtils.join(acceptedTypes, ","));
+        properties.put("osivia.move.path", form.getPath());
+        properties.put("osivia.move.identifiers", StringUtils.join(identifiers, ","));
+        properties.put("osivia.move.ignored-paths", StringUtils.join(paths, ","));
+        properties.put("osivia.move.base-path", this.repository.getBasePath(portalControllerContext));
+        properties.put("osivia.move.accepted-types", StringUtils.join(acceptedTypes, ","));
 
         // URL
         String url;
         try {
-            url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, "toutatice-portail-cms-nuxeo-move-portlet-instance", properties,
-                    PortalUrlType.POPUP);
+            url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-widgets-move-instance", properties,
+                    PortalUrlType.MODAL);
         } catch (PortalException e) {
             throw new PortletException(e);
         }
@@ -973,7 +975,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         modalFooter.add(confirm);
 
         // Cancel button
-        Element cancel = DOM4JUtils.generateElement("button", "btn btn-primary", bundle.getString("CANCEL"), null, null);
+        Element cancel = DOM4JUtils.generateElement("button", "btn btn-secondary", bundle.getString("CANCEL"), null, null);
         DOM4JUtils.addAttribute(cancel, "type", "button");
         DOM4JUtils.addDataAttribute(cancel, "dismiss", "modal");
         modalFooter.add(cancel);

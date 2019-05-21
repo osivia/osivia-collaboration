@@ -1,9 +1,9 @@
-package org.osivia.services.widgets.rename.portlet.controller;
+package org.osivia.services.widgets.move.portlet.controller;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.widgets.rename.portlet.model.RenameForm;
-import org.osivia.services.widgets.rename.portlet.model.validation.RenameFormValidator;
-import org.osivia.services.widgets.rename.portlet.service.RenameService;
+import org.osivia.services.widgets.move.portlet.model.MoveForm;
+import org.osivia.services.widgets.move.portlet.model.validation.MoveFormValidator;
+import org.osivia.services.widgets.move.portlet.service.MoveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -16,19 +16,21 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.portlet.bind.PortletRequestDataBinder;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 import javax.portlet.*;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
- * Rename portlet controller.
+ * Move portlet controller.
  *
  * @author Cédric Krommenhoek
  */
 @Controller
 @RequestMapping("VIEW")
 @SessionAttributes("form")
-public class RenameController {
+public class MoveController {
 
     /**
      * Portlet context.
@@ -40,19 +42,19 @@ public class RenameController {
      * Portlet service.
      */
     @Autowired
-    private RenameService service;
+    private MoveService service;
 
     /**
-     * Rename form validator.
+     * Move form validator.
      */
     @Autowired
-    private RenameFormValidator validator;
+    private MoveFormValidator validator;
 
 
     /**
      * Constructor.
      */
-    public RenameController() {
+    public MoveController() {
         super();
     }
 
@@ -60,52 +62,69 @@ public class RenameController {
     /**
      * View render mapping.
      *
-     * @param request  render request
-     * @param response render response
      * @return view path
-     * @throws PortletException
      */
     @RenderMapping
-    public String view(RenderRequest request, RenderResponse response) throws PortletException {
+    public String view() {
         return "view";
     }
 
 
     /**
-     * Save action mapping.
+     * Move action mapping.
      *
      * @param request       action request
      * @param response      action response
-     * @param form          form model attribute
+     * @param form          move form model attribute
      * @param result        binding result
      * @param sessionStatus session status
-     * @throws PortletException
-     * @throws IOException
      */
-    @ActionMapping("save")
-    public void save(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("form") RenameForm form, BindingResult result,
-                     SessionStatus sessionStatus) throws PortletException, IOException {
+    @ActionMapping("move")
+    public void move(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("form") MoveForm form, BindingResult result, SessionStatus sessionStatus) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         if (!result.hasErrors()) {
             sessionStatus.setComplete();
 
-            this.service.save(portalControllerContext, form);
+            this.service.move(portalControllerContext, form);
         }
     }
 
 
     /**
-     * Get rename form model attribute.
+     * Browse resource mapping.
+     *
+     * @param request  resource request
+     * @param response resource response
+     */
+    @ResourceMapping("browse")
+    public void browse(ResourceRequest request, ResourceResponse response) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        // Browse
+        String data = this.service.browse(portalControllerContext);
+
+        // Content type
+        response.setContentType("application/json");
+
+        // Content
+        PrintWriter printWriter = new PrintWriter(response.getPortletOutputStream());
+        printWriter.write(data);
+        printWriter.close();
+    }
+
+
+    /**
+     * Get move form model attribute.
      *
      * @param request  portlet request
      * @param response portlet response
      * @return form
-     * @throws PortletException
      */
     @ModelAttribute("form")
-    public RenameForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
+    public MoveForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 

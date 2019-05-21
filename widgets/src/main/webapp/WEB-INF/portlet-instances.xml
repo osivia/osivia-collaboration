@@ -6,6 +6,29 @@
     <deployment>
         <if-exists>overwrite</if-exists>
         <instance>
+            <display-name xml:lang="en">OSIVIA - Move</display-name>
+            <display-name xml:lang="fr">OSIVIA - Déplacer</display-name>
+            <instance-id>osivia-services-widgets-move-instance</instance-id>
+            <portlet-ref>osivia-services-widgets-move</portlet-ref>
+            <security-constraint>
+                <policy-permission>
+                    <action-name>view</action-name>
+                    <unchecked />
+                </policy-permission>
+            </security-constraint>
+            <preferences>
+                <preference>
+                    <name>hide</name>
+                    <value>true</value>
+                </preference>
+            </preferences>
+        </instance>
+    </deployment>
+
+
+    <deployment>
+        <if-exists>overwrite</if-exists>
+        <instance>
             <display-name xml:lang="en">OSIVIA - Rename</display-name>
             <display-name xml:lang="fr">OSIVIA - Renommer</display-name>
             <instance-id>osivia-services-widgets-rename-instance</instance-id>

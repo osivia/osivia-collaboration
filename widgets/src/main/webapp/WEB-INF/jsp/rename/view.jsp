@@ -21,29 +21,22 @@
             <span><op:translate key="RENAME_LEGEND" /></span>
         </legend>
 
-        <!-- Title -->
+        <%--Title--%>
         <c:set var="placeholder"><op:translate key="TITLE_PLACEHOLDER" /></c:set>
         <spring:bind path="title">
-            <div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
+            <div class="form-group required">
                 <form:label path="title"><op:translate key="TITLE_LABEL" /></form:label>
-                <form:input path="title" cssClass="form-control" placeholder="${placeholder}" />
-                <c:if test="${status.error}">
-                    <span class="form-control-feedback">
-                        <i class="glyphicons glyphicons-remove"></i>
-                    </span>
-                </c:if>
-                <form:errors path="title" cssClass="help-block" />
+                <form:input path="title" cssClass="form-control ${status.error ? 'is-invalid' : ''}" placeholder="${placeholder}" />
+                <form:errors path="title" cssClass="invalid-feedback" />
             </div>
         </spring:bind>
         
-        <!-- Buttons -->
+        <%--Buttons--%>
         <div>
-            <!-- Save -->
-            <button type="submit" class="btn btn-primary mr-2">
+            <button type="submit" class="btn btn-primary">
                 <span><op:translate key="RENAME_ACTION" /></span>
             </button>
             
-            <!-- Cancel -->
             <button type="button" class="btn btn-secondary" data-dismiss="modal">
                 <span><op:translate key="CANCEL" /></span>
             </button>

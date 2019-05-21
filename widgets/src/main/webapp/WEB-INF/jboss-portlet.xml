@@ -4,6 +4,15 @@
 <portlet-app>
 
     <portlet>
+        <portlet-name>osivia-services-widgets-move</portlet-name>
+
+        <transaction>
+            <trans-attribute>Required</trans-attribute>
+        </transaction>
+    </portlet>
+
+
+    <portlet>
         <portlet-name>osivia-services-widgets-rename</portlet-name>
 
         <transaction>
