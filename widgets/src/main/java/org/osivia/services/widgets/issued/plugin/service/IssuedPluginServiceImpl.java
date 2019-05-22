@@ -95,7 +95,7 @@ public class IssuedPluginServiceImpl implements IssuedPluginService {
             String title = bundle.getString("UPDATE_ISSUED_DATE_MENUBAR_ITEM");
             String icon = "glyphicons glyphicons-calendar";
             MenubarContainer parent = this.menubarService.getDropdown(portalControllerContext, MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID);
-            int order = 0;
+            int order = 13;
             String url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, INSTANCE, properties, PortalUrlType.MODAL);
 
             MenubarItem menubarItem = new MenubarItem(id, title, icon, parent, order, "javascript:;", null, null, null);
