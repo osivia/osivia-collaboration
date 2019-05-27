@@ -31,7 +31,15 @@
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
-        
+
+        <!-- Document edition -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-document-edition</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+
         <!-- Editor helpers -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -183,6 +191,13 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>osivia-services-contact</artifactId>
                             <contextRoot>/osivia-services-contact</contextRoot>
+                        </webModule>
+
+                        <!-- Document edition -->
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-document-edition</artifactId>
+                            <contextRoot>/osivia-services-document-edition</contextRoot>
                         </webModule>
                         
                         <!-- Editor helpers -->

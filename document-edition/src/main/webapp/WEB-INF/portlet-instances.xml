@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE deployments PUBLIC "-//JBoss Portal//DTD Portlet Instances 2.6//EN" "http://www.jboss.org/portal/dtd/portlet-instances_2_6.dtd">
+
+<deployments>
+
+    <deployment>
+        <if-exists>overwrite</if-exists>
+        <instance>
+            <display-name>OSIVIA - Document edition</display-name>
+            <instance-id>osivia-services-document-edition-instance</instance-id>
+            <portlet-ref>osivia-services-document-edition</portlet-ref>
+            <security-constraint>
+                <policy-permission>
+                    <action-name>view</action-name>
+                    <unchecked />
+                </policy-permission>
+            </security-constraint>
+            <preferences>
+                <preference>
+                    <name>hide</name>
+                    <value>true</value>
+                </preference>
+            </preferences>
+        </instance>
+    </deployment>
+    
+</deployments>
