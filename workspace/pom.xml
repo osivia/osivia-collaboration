@@ -24,6 +24,7 @@
         <module>acl-management</module>
         <module>participants</module>
         <module>trash</module>
+        <module>quota</module>		
     </modules>
 
 
