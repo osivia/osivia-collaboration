@@ -2,15 +2,20 @@
 <!DOCTYPE deployments PUBLIC "-//JBoss Portal//DTD Portlet Instances 2.6//EN" "http://www.jboss.org/portal/dtd/portlet-instances_2_6.dtd">
 
 <deployments>
-    
+
     <deployment>
         <if-exists>overwrite</if-exists>
         <instance>
-            <display-name xml:lang="en">Widget plugin</display-name>
-            <display-name xml:lang="fr">Widget plugin</display-name>
-            <instance-id>osivia-services-widgetsPlugin-instance</instance-id>
-            <portlet-ref>osivia-services-widgetsPlugin</portlet-ref>
-            
+            <display-name xml:lang="en">OSIVIA - Issued date</display-name>
+            <display-name xml:lang="fr">OSIVIA - Date de publication</display-name>
+            <instance-id>osivia-services-widgets-issued-instance</instance-id>
+            <portlet-ref>osivia-services-widgets-issued</portlet-ref>
+            <security-constraint>
+                <policy-permission>
+                    <action-name>view</action-name>
+                    <unchecked />
+                </policy-permission>
+            </security-constraint>
             <preferences>
                 <preference>
                     <name>hide</name>
@@ -18,6 +23,6 @@
                 </preference>
             </preferences>
         </instance>
-    </deployment>    
+    </deployment>
     
 </deployments>
