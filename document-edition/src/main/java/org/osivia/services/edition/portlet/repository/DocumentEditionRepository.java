@@ -4,6 +4,7 @@ import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
+import org.springframework.validation.Errors;
 
 import javax.portlet.PortletException;
 import java.io.IOException;
@@ -44,6 +45,33 @@ public interface DocumentEditionRepository<T extends AbstractDocumentEditionForm
      * @throws PortletException
      */
     String getViewPath(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Validate document edition form.
+     *
+     * @param form   document edition form
+     * @param errors errors
+     */
+    void validate(T form, Errors errors);
+
+
+    /**
+     * Upload document file.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     */
+    void upload(PortalControllerContext portalControllerContext, T form) throws PortletException, IOException;
+
+
+    /**
+     * Restore document file.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     */
+    void restore(PortalControllerContext portalControllerContext, T form) throws PortletException, IOException;
 
 
     /**

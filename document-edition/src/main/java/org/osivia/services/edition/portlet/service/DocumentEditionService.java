@@ -3,6 +3,7 @@ package org.osivia.services.edition.portlet.service;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
+import org.osivia.services.edition.portlet.repository.DocumentEditionRepository;
 
 import javax.portlet.PortletException;
 import java.io.IOException;
@@ -49,21 +50,55 @@ public interface DocumentEditionService {
 
 
     /**
-     * Get view path.
+     * Get portlet repository.
      *
-     * @param portalControllerContext portal controller context
-     * @param form                    document edition form
-     * @return view path
+     * @param name repository name
+     * @return repository
      */
-    String getViewPath(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException;
+    DocumentEditionRepository getRepository(String name);
 
 
     /**
-     * Save document.
+     * Get view path.
+     *
+     * @param portalControllerContext portal controller context
+     * @return view path
+     */
+    String getViewPath(PortalControllerContext portalControllerContext) throws PortletException, IOException;
+
+
+    /**
+     * Upload document file.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     */
+    void upload(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+
+
+    /**
+     * Restore document file.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     */
+    void restore(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+
+
+    /**
+     * Save document edition.
      *
      * @param portalControllerContext portal controller context
      * @param form                    document edition form
      */
     void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+
+
+    /**
+     * Cancel document edition.
+     *
+     * @param portalControllerContext portal controller context
+     */
+    void cancel(PortalControllerContext portalControllerContext) throws PortletException, IOException;
 
 }
