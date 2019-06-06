@@ -35,7 +35,7 @@ import java.util.Map;
  * @author Cédric Krommenhoek
  * @see DocumentEditionRepository
  */
-abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDocumentEditionForm> implements DocumentEditionRepository<T> {
+public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDocumentEditionForm> implements DocumentEditionRepository<T> {
 
     /**
      * Title Nuxeo document property.

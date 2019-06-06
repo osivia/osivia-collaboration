@@ -41,7 +41,7 @@ public abstract class AbstractDocumentEditionForm {
     /**
      * Constructor.
      */
-    AbstractDocumentEditionForm() {
+    protected AbstractDocumentEditionForm() {
         super();
     }
 

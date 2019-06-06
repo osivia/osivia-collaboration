@@ -53,7 +53,6 @@ public class ImportFileCommand implements INuxeoCommand {
         operationRequest.setInput(this.binary);
         operationRequest.setHeader("nx_es_sync", String.valueOf(true));
         operationRequest.setContextProperty("currentDocument", this.parentPath);
-        operationRequest.set("overwite", true);
 
         return operationRequest.execute();
     }

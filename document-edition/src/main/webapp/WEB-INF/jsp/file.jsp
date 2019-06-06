@@ -13,22 +13,14 @@
 
 
 <form:form action="${url}" method="post" enctype="multipart/form-data" modelAttribute="form">
-    <fieldset>
-        <legend>
-            <c:choose>
-                <c:when test="${form.creation}"><op:translate
-                        key="DOCUMENT_EDITION_FORM_LEGEND_FILE_CREATION"/></c:when>
-                <c:otherwise><op:translate key="DOCUMENT_EDITION_FORM_LEGEND_FILE_EDITION"/></c:otherwise>
-            </c:choose>
-        </legend>
-
-            <%--Title--%>
+    <c:if test="${not form.creation}">
+        <%--Title--%>
         <%@include file="fragments/title.jspf" %>
+    </c:if>
 
-            <%--File--%>
-        <%@include file="fragments/file.jspf" %>
+    <%--File--%>
+    <%@include file="fragments/file.jspf" %>
 
-            <%--Buttons--%>
-        <%@include file="fragments/buttons.jspf" %>
-    </fieldset>
+    <%--Buttons--%>
+    <%@include file="fragments/buttons.jspf" %>
 </form:form>
