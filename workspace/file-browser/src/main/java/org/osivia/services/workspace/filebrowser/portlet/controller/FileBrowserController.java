@@ -329,7 +329,7 @@ public class FileBrowserController {
      */
     @InitBinder("form")
     public void formInitBinder(PortletRequestDataBinder binder) {
-        binder.setDisallowedFields("path", "initialized");
+        binder.setDisallowedFields("path", "initialized", "selectors");
     }
 
 

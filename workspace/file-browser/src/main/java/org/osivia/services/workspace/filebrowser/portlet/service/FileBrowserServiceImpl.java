@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.filebrowser.portlet.service;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
+import fr.toutatice.portail.cms.nuxeo.api.PageSelectors;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
@@ -8,6 +9,7 @@ import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.liveedit.OnlyofficeLiveEditHelper;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
@@ -56,31 +58,45 @@ import java.util.*;
 @Service
 public class FileBrowserServiceImpl implements FileBrowserService {
 
-    /** Sort criteria attribute. */
+    /**
+     * Sort criteria attribute.
+     */
     private static final String SORT_CRITERIA_ATTRIBUTE = "file-browser.criteria";
 
 
-    /** Application context. */
+    /**
+     * Application context.
+     */
     @Autowired
     private ApplicationContext applicationContext;
 
-    /** Portlet repository. */
+    /**
+     * Portlet repository.
+     */
     @Autowired
     private FileBrowserRepository repository;
 
-    /** Portal URL factory. */
+    /**
+     * Portal URL factory.
+     */
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
 
-    /** Internationalization bundle factory. */
+    /**
+     * Internationalization bundle factory.
+     */
     @Autowired
     private IBundleFactory bundleFactory;
 
-    /** Notifications service. */
+    /**
+     * Notifications service.
+     */
     @Autowired
     private INotificationsService notificationsService;
 
-    /** Document DAO. */
+    /**
+     * Document DAO.
+     */
     @Autowired
     private DocumentDAO documentDao;
 
@@ -90,6 +106,51 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      */
     public FileBrowserServiceImpl() {
         super();
+    }
+
+
+    @Override
+    public FileBrowserWindowProperties getWindowProperties(PortalControllerContext portalControllerContext) {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+        // Window
+        PortalWindow window = WindowFactory.getWindow(request);
+
+
+        // Window properties
+        FileBrowserWindowProperties windowProperties = this.applicationContext.getBean(FileBrowserWindowProperties.class);
+
+        // Document path
+        String path = window.getProperty(PATH_WINDOW_PROPERTY);
+        windowProperties.setPath(path);
+
+        // NXQL request
+        String nxql = window.getProperty(NXQL_WINDOW_PROPERTY);
+        windowProperties.setNxql(nxql);
+
+        // BeanShell indicator
+        boolean beanShell = BooleanUtils.toBoolean(window.getProperty(BEANSHELL_WINDOW_PROPERTY));
+        windowProperties.setBeanShell(beanShell);
+
+        return windowProperties;
+    }
+
+
+    @Override
+    public void setWindowProperties(PortalControllerContext portalControllerContext, FileBrowserWindowProperties windowProperties) {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+        // Window
+        PortalWindow window = WindowFactory.getWindow(request);
+
+
+        // NXQL request
+        String nxql = StringUtils.trimToNull(windowProperties.getNxql());
+        window.setProperty(NXQL_WINDOW_PROPERTY, nxql);
+
+        // BeanShell indicator
+        String beanShell = BooleanUtils.toStringTrueFalse(windowProperties.getBeanShell());
+        window.setProperty(BEANSHELL_WINDOW_PROPERTY, beanShell);
     }
 
 
@@ -105,23 +166,26 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             // Form
             FileBrowserForm form = this.getForm(portalControllerContext);
 
-            // Current document
-            NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, form.getPath());
-            Document document = documentContext.getDocument();
-            // WebId
-            String webId = document.getString("ttc:webid");
-
-            // User preferences
-            UserPreferences userPreferences = this.repository.getUserPreferences(portalControllerContext);
-
-            if (userPreferences != null) {
-                // Saved view
-                String savedView = userPreferences.getFolderDisplayMode(webId);
-                view = FileBrowserView.fromId(savedView);
-            } else {
+            if (StringUtils.isEmpty(form.getPath())) {
                 view = FileBrowserView.DEFAULT;
-            }
+            } else {
+                // Current document
+                NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, form.getPath());
+                Document document = documentContext.getDocument();
+                // WebId
+                String webId = document.getString("ttc:webid");
 
+                // User preferences
+                UserPreferences userPreferences = this.repository.getUserPreferences(portalControllerContext);
+
+                if (userPreferences != null) {
+                    // Saved view
+                    String savedView = userPreferences.getFolderDisplayMode(webId);
+                    view = FileBrowserView.fromId(savedView);
+                } else {
+                    view = FileBrowserView.DEFAULT;
+                }
+            }
         } else {
             view = FileBrowserView.fromId(viewId);
         }
@@ -135,17 +199,19 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      */
     @Override
     public void saveView(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserView view) throws PortletException {
-        // Document
-        NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, form.getPath());
-        Document document = documentContext.getDocument();
-        // WebId
-        String webId = document.getString("ttc:webid");
+        if (StringUtils.isNotEmpty(form.getPath())) {
+            // Document
+            NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, form.getPath());
+            Document document = documentContext.getDocument();
+            // WebId
+            String webId = document.getString("ttc:webid");
 
-        // User preferences
-        UserPreferences userPreferences = this.repository.getUserPreferences(portalControllerContext);
+            // User preferences
+            UserPreferences userPreferences = this.repository.getUserPreferences(portalControllerContext);
 
-        if (userPreferences != null) {
-            userPreferences.updateFolderDisplayMode(webId, view.getId());
+            if (userPreferences != null) {
+                userPreferences.updateFolderDisplayMode(webId, view.getId());
+            }
         }
     }
 
@@ -155,27 +221,37 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      */
     @Override
     public FileBrowserForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+
+        // Selectors
+        String selectors = request.getParameter("selectors");
+
+
         // Form
         FileBrowserForm form = this.applicationContext.getBean(FileBrowserForm.class);
 
-        if (!form.isInitialized()) {
-            // Window
-            PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
+        if (!form.isInitialized() || !StringUtils.equals(selectors, form.getSelectors())) {
+            // Window properties
+            FileBrowserWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
 
-            // Document path
-            String path = window.getProperty(Constants.WINDOW_PROP_URI);
-            if (StringUtils.isEmpty(path)) {
-                path = this.repository.getContentPath(portalControllerContext);
-            }
+            // Current document path
+            String path = StringUtils.defaultIfEmpty(windowProperties.getPath(), this.repository.getContentPath(portalControllerContext));
             form.setPath(path);
 
-            // Current document context
-            NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, path);
             // Current document type
-            DocumentType type = documentContext.getDocumentType();
+            DocumentType type;
+            if (StringUtils.isEmpty(path)) {
+                type = null;
+            } else {
+                // Current document context
+                NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, path);
+
+                type = documentContext.getDocumentType();
+            }
 
             // Documents
-            List<Document> documents = this.repository.getDocuments(portalControllerContext, path);
+            List<Document> documents = this.repository.getDocuments(portalControllerContext, windowProperties, path);
 
             // User subscriptions
             Set<String> userSubscriptions = this.repository.getUserSubscriptions(portalControllerContext);
@@ -211,6 +287,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
             // Initialized indicator
             form.setInitialized(true);
+            // Selectors
+            form.setSelectors(selectors);
         }
 
         return form;
@@ -221,7 +299,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * Create file browser item.
      *
      * @param portalControllerContext portal controller context
-     * @param nuxeoDocument Nuxeo document
+     * @param nuxeoDocument           Nuxeo document
      * @return item
      */
     private FileBrowserItem createItem(PortalControllerContext portalControllerContext, Document nuxeoDocument) {
@@ -454,13 +532,13 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * Get toolbar live edition group DOM element.
      *
      * @param portalControllerContext portal controller context
-     * @param documentDto document DTO
-     * @param permissions permissions
-     * @param bundle internationalization bundle
+     * @param documentDto             document DTO
+     * @param permissions             permissions
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     private Element getToolbarLiveEditionGroup(PortalControllerContext portalControllerContext, DocumentDTO documentDto, NuxeoPermissions permissions,
-            Bundle bundle) throws PortletException {
+                                               Bundle bundle) throws PortletException {
         // Portlet request
         PortletRequest portletRequest = portalControllerContext.getRequest();
 
@@ -565,15 +643,15 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * Get single selection group DOM element.
      *
      * @param portalControllerContext portal controller context
-     * @param form form
-     * @param view view
-     * @param documentDto document DTO
-     * @param permissions permissions
-     * @param bundle internationalization bundle
+     * @param form                    form
+     * @param view                    view
+     * @param documentDto             document DTO
+     * @param permissions             permissions
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     private Element getToolbarSingleSelectionGroup(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserView view,
-            DocumentDTO documentDto, NuxeoPermissions permissions, Bundle bundle) throws PortletException {
+                                                   DocumentDTO documentDto, NuxeoPermissions permissions, Bundle bundle) throws PortletException {
         // Nuxeo document
         Document nuxeoDocument = documentDto.getDocument();
         // Document path
@@ -629,16 +707,16 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * Get toolbar multiple selection group DOM element.
      *
      * @param portalControllerContext portal controller context
-     * @param form form
-     * @param view view
-     * @param selection selected documents
-     * @param allEditable all editable indicator
-     * @param container toolbar container DOM element
-     * @param bundle internationalization bundle
+     * @param form                    form
+     * @param view                    view
+     * @param selection               selected documents
+     * @param allEditable             all editable indicator
+     * @param container               toolbar container DOM element
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     private Element getToolbarMultipleSelectionGroup(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserView view,
-            List<DocumentDTO> selection, boolean allEditable, Element container, Bundle bundle) throws PortletException {
+                                                     List<DocumentDTO> selection, boolean allEditable, Element container, Bundle bundle) throws PortletException {
         // Namespace
         String namespace = portalControllerContext.getResponse().getNamespace();
 
@@ -732,8 +810,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * Get OnlyOffice URL.
      *
      * @param portalControllerContext portal controller context
-     * @param path document path
-     * @param title title
+     * @param path                    document path
+     * @param title                   title
      * @return URL
      */
     private String getOnlyOfficeUrl(PortalControllerContext portalControllerContext, String path, String title) throws PortletException {
@@ -760,8 +838,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * Get rename URL.
      *
      * @param portalControllerContext portal controller context
-     * @param form form
-     * @param path document path
+     * @param form                    form
+     * @param path                    document path
      * @return URL
      */
     private String getRenameUrl(PortalControllerContext portalControllerContext, FileBrowserForm form, String path) throws PortletException {
@@ -787,8 +865,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * Get duplicate URL.
      *
      * @param portalControllerContext portal controller context
-     * @param path document path
-     * @param view view
+     * @param path                    document path
+     * @param view                    view
      * @return URL
      */
     private String getDuplicateUrl(PortalControllerContext portalControllerContext, String path, FileBrowserView view) {
@@ -817,9 +895,9 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
     /**
      * Get bulk download URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param selection selected documents
+     * @param selection               selected documents
      * @return URL
      */
     private String getBulkDownloadUrl(PortalControllerContext portalControllerContext, List<DocumentDTO> selection) {
@@ -857,14 +935,14 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * Get move URL.
      *
      * @param portalControllerContext portal controller context
-     * @param form form
-     * @param identifiers selected document identifiers
-     * @param paths selected document paths
-     * @param acceptedTypes selected document types
+     * @param form                    form
+     * @param identifiers             selected document identifiers
+     * @param paths                   selected document paths
+     * @param acceptedTypes           selected document types
      * @return URL
      */
     private String getMoveUrl(PortalControllerContext portalControllerContext, FileBrowserForm form, List<String> identifiers, List<String> paths,
-            Set<String> acceptedTypes) throws PortletException {
+                              Set<String> acceptedTypes) throws PortletException {
         // Window properties
         Map<String, String> properties = new HashMap<>();
         properties.put("osivia.move.path", form.getPath());
@@ -890,8 +968,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * Get delete URL.
      *
      * @param portalControllerContext portal controller context
-     * @param identifiers selected document identifiers
-     * @param view view
+     * @param identifiers             selected document identifiers
+     * @param view                    view
      * @return URL
      */
     private String getDeleteUrl(PortalControllerContext portalControllerContext, List<String> identifiers, FileBrowserView view) {
@@ -922,14 +1000,14 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * Get toolbar delete modal confirmation DOM element.
      *
      * @param portalControllerContext portal controller context
-     * @param identifiers selected document identifiers
-     * @param view view
-     * @param id modal identifier
-     * @param bundle internationalization bundle
+     * @param identifiers             selected document identifiers
+     * @param view                    view
+     * @param id                      modal identifier
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     private Element getToolbarDeleteModal(PortalControllerContext portalControllerContext, List<String> identifiers, FileBrowserView view, String id,
-            Bundle bundle) {
+                                          Bundle bundle) {
         // Modal
         Element modal = DOM4JUtils.generateDivElement("modal fade");
         DOM4JUtils.addAttribute(modal, "id", id);

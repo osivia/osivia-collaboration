@@ -1,16 +1,16 @@
 package org.osivia.services.workspace.filebrowser.portlet.model;
 
-import java.util.List;
-
 import org.osivia.portal.api.portlet.Refreshable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 /**
  * File browser form java-bean.
- * 
+ *
  * @author Cédric Krommenhoek
  */
 @Component
@@ -18,21 +18,39 @@ import org.springframework.web.multipart.MultipartFile;
 @Refreshable
 public class FileBrowserForm {
 
-    /** File browser items. */
+    /**
+     * File browser items.
+     */
     private List<FileBrowserItem> items;
-    /** File browser sort criteria. */
+    /**
+     * File browser sort criteria.
+     */
     private FileBrowserSortCriteria criteria;
-    /** Uploadable indicator. */
+    /**
+     * Uploadable indicator.
+     */
     private boolean uploadable;
-    /** Upload multipart files. */
+    /**
+     * Upload multipart files.
+     */
     private List<MultipartFile> upload;
-    /** Upload max file size. */
+    /**
+     * Upload max file size.
+     */
     private Long maxFileSize;
 
-    /** Document path. */
+    /**
+     * Document path.
+     */
     private String path;
-    /** Initialized indicator. */
+    /**
+     * Initialized indicator.
+     */
     private boolean initialized;
+    /**
+     * Selectors.
+     */
+    private String selectors;
 
 
     /**
@@ -45,7 +63,7 @@ public class FileBrowserForm {
 
     /**
      * Getter for items.
-     * 
+     *
      * @return the items
      */
     public List<FileBrowserItem> getItems() {
@@ -54,7 +72,7 @@ public class FileBrowserForm {
 
     /**
      * Setter for items.
-     * 
+     *
      * @param items the items to set
      */
     public void setItems(List<FileBrowserItem> items) {
@@ -63,7 +81,7 @@ public class FileBrowserForm {
 
     /**
      * Getter for criteria.
-     * 
+     *
      * @return the criteria
      */
     public FileBrowserSortCriteria getCriteria() {
@@ -72,7 +90,7 @@ public class FileBrowserForm {
 
     /**
      * Setter for criteria.
-     * 
+     *
      * @param criteria the criteria to set
      */
     public void setCriteria(FileBrowserSortCriteria criteria) {
@@ -81,7 +99,7 @@ public class FileBrowserForm {
 
     /**
      * Getter for uploadable.
-     * 
+     *
      * @return the uploadable
      */
     public boolean isUploadable() {
@@ -90,7 +108,7 @@ public class FileBrowserForm {
 
     /**
      * Setter for uploadable.
-     * 
+     *
      * @param uploadable the uploadable to set
      */
     public void setUploadable(boolean uploadable) {
@@ -99,7 +117,7 @@ public class FileBrowserForm {
 
     /**
      * Getter for upload.
-     * 
+     *
      * @return the upload
      */
     public List<MultipartFile> getUpload() {
@@ -108,7 +126,7 @@ public class FileBrowserForm {
 
     /**
      * Setter for upload.
-     * 
+     *
      * @param upload the upload to set
      */
     public void setUpload(List<MultipartFile> upload) {
@@ -117,7 +135,7 @@ public class FileBrowserForm {
 
     /**
      * Getter for maxFileSize.
-     * 
+     *
      * @return the maxFileSize
      */
     public Long getMaxFileSize() {
@@ -126,7 +144,7 @@ public class FileBrowserForm {
 
     /**
      * Setter for maxFileSize.
-     * 
+     *
      * @param maxFileSize the maxFileSize to set
      */
     public void setMaxFileSize(Long maxFileSize) {
@@ -135,7 +153,7 @@ public class FileBrowserForm {
 
     /**
      * Getter for path.
-     * 
+     *
      * @return the path
      */
     public String getPath() {
@@ -144,7 +162,7 @@ public class FileBrowserForm {
 
     /**
      * Setter for path.
-     * 
+     *
      * @param path the path to set
      */
     public void setPath(String path) {
@@ -153,7 +171,7 @@ public class FileBrowserForm {
 
     /**
      * Getter for initialized.
-     * 
+     *
      * @return the initialized
      */
     public boolean isInitialized() {
@@ -162,11 +180,19 @@ public class FileBrowserForm {
 
     /**
      * Setter for initialized.
-     * 
+     *
      * @param initialized the initialized to set
      */
     public void setInitialized(boolean initialized) {
         this.initialized = initialized;
+    }
+
+    public String getSelectors() {
+        return selectors;
+    }
+
+    public void setSelectors(String selectors) {
+        this.selectors = selectors;
     }
 
 }

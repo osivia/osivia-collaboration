@@ -1,0 +1,51 @@
+<p>Implicits variables :</p>
+<dl>
+    <dt>navigationPath</dt>
+    <dd>current navigation folder path</dd>
+
+    <dt>navigationPubInfos</dt>
+    <dd>current navigation publication infos ; navigationPubInfos.getLiveId() to get folder's live ID</dd>
+
+    <dt>basePath</dt>
+    <dd>page folder path</dd>
+
+    <dt>contentPath</dt>
+    <dd>current item path</dd>
+
+    <dt>request</dt>
+    <dd>portlet request</dd>
+
+    <dt>params</dt>
+    <dd>public selectors (shared parameters)</dd>
+
+    <dt>spaceId</dt>
+    <dd>space's (workspace or published space) live ID</dd>
+</dl>
+
+<pre class="bg-light mb-0 p-3">
+StringBuilder nuxeoRequest = new StringBuilder();
+
+nuxeoRequest.append("ecm:path STARTSWITH '").append(navigationPath).append("' ");
+
+// Format search by title
+if (params.get("title") != null) {
+    nuxeoRequest.append("AND ").append(NXQLFormater.formatTextSearch("dc:title", params.get("title"))).append(" ");
+}
+
+// Format search by dates
+if (params.get("datesId") != null) {
+    nuxeoRequest.append("AND ").append(NXQLFormater.formatDateSearch("dc:created", params.get("datesId"))).append(" ");
+}
+
+// Format search by nature
+if (params.get("nature") != null) {
+    nuxeoRequest.append("AND ").append(NXQLFormater.formatVocabularySearch("dc:nature", params.get("nature"))).append(" ");
+}
+
+// Get childrens
+nuxeoRequest.append("AND ecm:parentId = '").append(navigationPubInfos.getLiveId()).append("' ");
+
+nuxeoRequest.append("ORDER BY dc:modified DESC");
+
+return nuxeoRequest.toString();
+</pre>

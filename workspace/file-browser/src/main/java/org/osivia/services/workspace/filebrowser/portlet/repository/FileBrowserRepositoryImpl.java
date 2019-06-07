@@ -1,5 +1,40 @@
 package org.osivia.services.workspace.filebrowser.portlet.repository;
 
+import bsh.EvalError;
+import bsh.Interpreter;
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.PageSelectors;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.io.output.CountingOutputStream;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.EcmDocument;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.urls.Link;
+import org.osivia.portal.api.user.UserPreferences;
+import org.osivia.portal.core.cms.*;
+import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserWindowProperties;
+import org.osivia.services.workspace.filebrowser.portlet.repository.command.CopyDocumentCommand;
+import org.osivia.services.workspace.filebrowser.portlet.repository.command.GetFileBrowserDocumentsCommand;
+import org.osivia.services.workspace.filebrowser.portlet.repository.command.ImportFilesCommand;
+import org.osivia.services.workspace.filebrowser.portlet.repository.command.MoveDocumentsCommand;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,71 +45,35 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.CRC32;
-import java.util.zip.CheckedInputStream;
-import java.util.zip.Deflater;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.portlet.PortletException;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.commons.io.output.CountingOutputStream;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.Documents;
-import org.osivia.portal.api.PortalException;
-import org.osivia.portal.api.cms.EcmDocument;
-import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.urls.Link;
-import org.osivia.portal.api.user.UserPreferences;
-import org.osivia.portal.core.cms.CMSBinaryContent;
-import org.osivia.portal.core.cms.CMSException;
-import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.ICMSService;
-import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.services.workspace.filebrowser.portlet.repository.command.CopyDocumentCommand;
-import org.osivia.services.workspace.filebrowser.portlet.repository.command.GetFileBrowserDocumentsCommand;
-import org.osivia.services.workspace.filebrowser.portlet.repository.command.ImportFilesCommand;
-import org.osivia.services.workspace.filebrowser.portlet.repository.command.MoveDocumentsCommand;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Repository;
-import org.springframework.web.multipart.MultipartFile;
-
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
+import java.util.zip.*;
 
 /**
  * File browser portlet repository implementation.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see FileBrowserRepository
  */
 @Repository
 public class FileBrowserRepositoryImpl implements FileBrowserRepository {
 
-    /** Zip file name RegEx. */
+    /**
+     * Zip file name RegEx.
+     */
     private static final String ZIP_FILE_NAME_REGEX = "(.+) \\(([0-9]+)\\)";
-
-
-    /** Application context. */
+    /**
+     * Zip file name pattern.
+     */
+    private final Pattern zipFileNamePattern;
+    /**
+     * Application context.
+     */
     @Autowired
     private ApplicationContext applicationContext;
-
-    /** CMS service locator. */
+    /**
+     * CMS service locator.
+     */
     @Autowired
     private ICMSServiceLocator cmsServiceLocator;
-
-
-    /** Zip file name pattern. */
-    private final Pattern zipFileNamePattern;
 
 
     /**
@@ -128,22 +127,47 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Document> getDocuments(PortalControllerContext portalControllerContext, String path) throws PortletException {
+    public List<Document> getDocuments(PortalControllerContext portalControllerContext, FileBrowserWindowProperties windowProperties, String parentPath) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        // Document context
-        NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
-        // Document
-        Document document = documentContext.getDocument();
-        
+        // Parent document context
+        NuxeoDocumentContext parentDocumentContext;
+        if (parentPath == null) {
+            parentDocumentContext = null;
+        } else {
+            parentDocumentContext = nuxeoController.getDocumentContext(parentPath);
+        }
+
+        // NXQL request
+        String nxql;
+        if (StringUtils.isEmpty(windowProperties.getNxql())) {
+            nxql = null;
+        } else if (BooleanUtils.isTrue(windowProperties.getBeanShell())) {
+            try {
+                nxql = this.beanShellInterpretation(nuxeoController, parentDocumentContext, windowProperties.getNxql());
+            } catch (EvalError e) {
+                throw new PortletException(e);
+            }
+        } else {
+            nxql = windowProperties.getNxql();
+        }
+
+        // Parent document identifier
+        String parentId;
+        if (StringUtils.isEmpty(nxql) && (parentDocumentContext != null)) {
+            parentId = parentDocumentContext.getPublicationInfos().getLiveId();
+        } else {
+            parentId = null;
+        }
+
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(GetFileBrowserDocumentsCommand.class, document.getId());
+        INuxeoCommand command = this.applicationContext.getBean(GetFileBrowserDocumentsCommand.class, nxql, parentId);
         Object result = nuxeoController.executeNuxeoCommand(command);
 
         // Documents
         List<Document> documents;
-        if ((result != null) && (result instanceof Documents)) {
+        if (result instanceof Documents) {
             Documents resultDocuments = (Documents) result;
             documents = resultDocuments.list();
         } else {
@@ -151,6 +175,38 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         }
 
         return documents;
+    }
+
+
+    /**
+     * BeanShell interpretation.
+     *
+     * @param nuxeoController       Nuxeo controller
+     * @param parentDocumentContext parent document context
+     * @param nxql                  NXQL request
+     * @return interpreted NXQL request
+     */
+    private String beanShellInterpretation(NuxeoController nuxeoController, NuxeoDocumentContext parentDocumentContext, String nxql) throws EvalError {
+        // Request
+        PortletRequest request = nuxeoController.getRequest();
+
+        // BeanShell interpreter
+        Interpreter interpreter = new Interpreter();
+        // Request parameters
+        interpreter.set("request", request);
+        interpreter.set("params", PageSelectors.decodeProperties(request.getParameter("selectors")));
+        // Nuxeo controller parameters
+        interpreter.set("basePath", nuxeoController.getBasePath());
+        interpreter.set("domainPath", nuxeoController.getDomainPath());
+        interpreter.set("spacePath", nuxeoController.getSpacePath());
+        interpreter.set("navigationPath", nuxeoController.getNavigationPath());
+        interpreter.set("contentPath", nuxeoController.getContentPath());
+        // Parent document context parameters
+        if (parentDocumentContext != null) {
+            interpreter.set("navigationPubInfos", parentDocumentContext.getPublicationInfos());
+        }
+
+        return (String) interpreter.eval(nxql);
     }
 
 
@@ -192,7 +248,7 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         // CMS context
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setPortalControllerContext(portalControllerContext);
-        
+
         // User subscription documents
         List<EcmDocument> ecmDocuments;
         try {
@@ -200,14 +256,14 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         } catch (CMSException e) {
             ecmDocuments = null;
         }
-        
+
         // User subscription document identifiers
         Set<String> identifiers;
         if (CollectionUtils.isEmpty(ecmDocuments)) {
             identifiers = new HashSet<>(0);
         } else {
             identifiers = new HashSet<>(ecmDocuments.size());
-            
+
             for (EcmDocument ecmDocument : ecmDocuments) {
                 if (ecmDocument instanceof Document) {
                     Document nuxeoDocument = (Document) ecmDocument;
