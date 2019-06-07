@@ -5,6 +5,7 @@ import java.util.List;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.workspace.quota.portlet.model.QuotaInformations;
 import org.osivia.services.workspace.quota.portlet.model.QuotaItem;
 
 /**
@@ -21,7 +22,7 @@ public interface QuotaRepository {
      * @return trashed documents
      * @throws PortletException
      */
-    List<QuotaItem> getQuotaItems(PortalControllerContext portalControllerContext) throws PortletException;
+	QuotaInformations getQuotaItems(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**

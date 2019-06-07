@@ -37,7 +37,7 @@ public class UpdateQuotaCommand implements INuxeoCommand {
     }
 
     public Document getUserProfile(Session automationSession, String userId) throws Exception {
-
+     	
         OperationRequest newRequest = automationSession.newRequest("Services.GetToutaticeUserProfile");
         newRequest.set("username", userId);
 
@@ -56,17 +56,19 @@ public class UpdateQuotaCommand implements INuxeoCommand {
      */
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
-        // Query
+        // Espace perso
+/*    	
         Document userProfile = getUserProfile(nuxeoSession,  userId);
+        String workspacePath = userProfile.getPath(); 
+        workspacePath = workspacePath.substring(0, workspacePath.lastIndexOf('/'));
+*/       
         // TODO : check not null
+    	String workspacePath = "/default-domain/workspaces/espace-11";
 
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
-        
-        String workspacePath = userProfile.getPath();
-        workspacePath = workspacePath.substring(0, workspacePath.lastIndexOf('/'));
         Document docRoot = documentService.getDocument(new PathRef(workspacePath)); 
 
-        documentService.setProperty(docRoot, "qt:maxSize", "200000");
+        documentService.setProperty(docRoot, "qt:maxSize", "250000");
 
         return null;
     }

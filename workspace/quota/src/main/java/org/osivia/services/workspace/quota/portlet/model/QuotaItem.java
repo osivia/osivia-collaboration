@@ -8,7 +8,13 @@ public class QuotaItem {
     /** The value. */
     private long value;
     
-    /**
+    public QuotaItem(String source, long value) {
+		super();
+		this.source = source;
+		this.value = value;
+	}
+
+	/**
      * Getter for source.
      * @return the source
      */

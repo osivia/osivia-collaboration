@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.quota.portlet.service;
 
+import java.util.List;
 import java.util.Locale;
 
 import javax.portlet.PortletException;
@@ -9,6 +10,8 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.services.workspace.quota.portlet.model.QuotaForm;
+import org.osivia.services.workspace.quota.portlet.model.QuotaInformations;
+import org.osivia.services.workspace.quota.portlet.model.QuotaItem;
 import org.osivia.services.workspace.quota.portlet.repository.QuotaRepository;
 import org.osivia.services.workspace.quota.util.ApplicationContextProvider;
 import org.springframework.beans.BeansException;
@@ -69,11 +72,20 @@ public class QuotaServiceImpl implements QuotaService, ApplicationContextAware {
         QuotaForm form = this.applicationContext.getBean(QuotaForm.class);
 
         if (!form.isLoaded()) {
-            // Trashed documents
-//            List<TrashedDocument> trashedDocuments = this.repository.getTrashedDocuments(portalControllerContext);
-//            form.setTrashedDocuments(trashedDocuments);
-//            
-//            form.setLoaded(true);
+        	
+            QuotaInformations infos = this.repository.getQuotaItems(portalControllerContext);
+            
+            /* Compute global quota */
+            
+            long globalQuota = 0;
+            for (QuotaItem quota: infos.getQuotaItems())	{
+            	globalQuota += quota.getValue();
+            }
+            
+            form.setGlobalQuota(globalQuota);
+            form.setInfos(infos);            
+         
+            form.setLoaded(true);
         }
 
         return form;

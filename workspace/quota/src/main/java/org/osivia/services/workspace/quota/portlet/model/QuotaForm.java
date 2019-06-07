@@ -7,21 +7,69 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+
 /**
  * Quota form java-bean.
  * 
- * @author Cédric Krommenhoek
+ * @author Jean-Sébastien Steux
  */
 @Component
 @Scope(WebApplicationContext.SCOPE_SESSION)
 @Refreshable
 public class QuotaForm {
 
-    /** Trashed documents. */
-    private List<QuotaItem> quotaItems;
-    /** Sort property. */
+   
+    /**  global quota. */
+    private long globalQuota;
+    
+    /**  Service informations. */
+    private QuotaInformations infos;
+    
 
-    /** Loaded indicator. */
+    /**
+     * Gets the infos.
+     *
+     * @return the infos
+     */
+    public QuotaInformations getInfos() {
+		return infos;
+	}
+
+
+
+	/**
+	 * Sets the infos.
+	 *
+	 * @param infos the new infos
+	 */
+	public void setInfos(QuotaInformations infos) {
+		this.infos = infos;
+	}
+
+
+
+	/**
+     * Gets the global quota.
+     *
+     * @return the global quota
+     */
+    public long getGlobalQuota() {
+		return globalQuota;
+	}
+
+
+
+	/**
+	 * Sets the global quota.
+	 *
+	 * @param globalQuota the new global quota
+	 */
+    
+	public void setGlobalQuota(long globalQuota) {
+		this.globalQuota = globalQuota;
+	}
+
+	/** Loaded indicator. */
     private boolean loaded;
 
 
@@ -32,24 +80,6 @@ public class QuotaForm {
         super();
     }
 
-
-    /**
-     * Getter for trashedDocuments.
-     * 
-     * @return the trashedDocuments
-     */
-    public List<QuotaItem> getQuotaItems() {
-        return quotaItems;
-    }
-
-    /**
-     * Setter for trashedDocuments.
-     * 
-     * @param trashedDocuments the trashedDocuments to set
-     */
-    public void setQuotasItems(List<QuotaItem> quotaItems) {
-        this.quotaItems = quotaItems;
-    }
 
 
 
