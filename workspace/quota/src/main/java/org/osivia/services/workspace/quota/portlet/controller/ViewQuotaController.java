@@ -94,7 +94,7 @@ public class ViewQuotaController extends CMSPortlet {
      * @param form     trash form model attribute
      */
     @ActionMapping("update-quota")
-    public void updateQuota(ActionRequest request, ActionResponse response, @ModelAttribute("trashForm") QuotaForm form) throws PortletException {
+    public void updateQuota(ActionRequest request, ActionResponse response, @ModelAttribute("quotaForm") QuotaForm form) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
