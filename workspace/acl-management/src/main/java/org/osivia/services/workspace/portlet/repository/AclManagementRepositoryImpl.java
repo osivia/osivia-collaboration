@@ -295,14 +295,20 @@ public class AclManagementRepositoryImpl implements AclManagementRepository, App
                         type = RecordType.GROUP;
 
                         CollabProfile group = groupMap.get(id);
-                        if (WorkspaceGroupType.space_group.equals(group.getType())) {
-                            displayName = bundle.getString("ALL");
-                            extra = bundle.getString("ALL_WORKSPACE_MEMBERS");
-                        } else if (WorkspaceGroupType.local_group.equals(group.getType())) {
-                            displayName = group.getDisplayName();
-                            extra = group.getDescription();
+                        if(group != null) {
+                            if (WorkspaceGroupType.space_group.equals(group.getType())) {
+                                displayName = bundle.getString("ALL");
+                                extra = bundle.getString("ALL_WORKSPACE_MEMBERS");
+                            } else if (WorkspaceGroupType.local_group.equals(group.getType())) {
+                                displayName = group.getDisplayName();
+                                extra = group.getDescription();
+                            }
+                            else {
+                                // Hide other workspace groups
+                                continue;
+                            }
                         } else {
-                            // Hide other workspace groups
+                            // Hide other groups
                             continue;
                         }
 
