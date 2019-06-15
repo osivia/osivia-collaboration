@@ -1,10 +1,23 @@
 package org.osivia.services.workspace.quota.portlet.controller;
 
-import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
-import org.dom4j.io.HTMLWriter;
+import java.io.IOException;
+
+import javax.annotation.PostConstruct;
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletRequestDispatcher;
+import javax.portlet.PortletResponse;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.quota.portlet.model.QuotaForm;
 import org.osivia.services.workspace.quota.portlet.service.QuotaService;
@@ -12,15 +25,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
-import javax.annotation.PostConstruct;
-import javax.portlet.*;
-import java.io.IOException;
-import java.util.Arrays;
+import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 
 /**
  * View quota portlet controller.
@@ -49,13 +61,22 @@ public class ViewQuotaController extends CMSPortlet {
      */
     @Autowired
     private QuotaService service;
+    
+    
+    @Autowired
+    private InternalResourceViewResolver viewResolver;
 
-
+    /** Log. */
+    private final Log log;
+    
+    
     /**
      * Constructor.
      */
     public ViewQuotaController() {
         super();
+        
+        this.log = LogFactory.getLog(this.getClass());        
     }
 
 
@@ -117,5 +138,33 @@ public class ViewQuotaController extends CMSPortlet {
         return this.service.getQuotaForm(portalControllerContext);
     }
 
+    
+
+    /**
+     * Refresh resource mapping.
+     * 
+     * @param request resource request
+     * @param response resource response
+     * @param QuotaForm form model attribute
+     * @throws Exception 
+     */
+    @ResourceMapping("refresh")
+    public void refresh(ResourceRequest request, ResourceResponse response,  @ModelAttribute("quotaForm") QuotaForm form)
+            throws Exception {
+    	
+    	
+    	View view = this.viewResolver.resolveViewName("refresh", null); 
+    	JstlView jstlView = (JstlView) view;
+    	String path = jstlView.getUrl();
+    	PortletRequestDispatcher dispatcher = this.portletContext.getRequestDispatcher(path);
+    	
+    	request.setAttribute("quotaForm", form);
+    	
+    	dispatcher.include(request, response);   
+    	
+    	response.setContentType("text/html");
+
+    }
+    
 
 }

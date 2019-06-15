@@ -8,97 +8,134 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 
+// TODO: Auto-generated Javadoc
 /**
  * Quota form java-bean.
  * 
  * @author Jean-Sébastien Steux
  */
+/**
+ * @author Jean-Sébastien
+ *
+ */
 @Component
-@Scope(WebApplicationContext.SCOPE_SESSION)
-@Refreshable
+
 public class QuotaForm {
 
-   
-    /**  global quota. */
-    private long globalQuota;
+	/** The asynchronous. */
+	private boolean asynchronous = false;
+	
+	
+	   /** The asynchronous. */
+    private long ts = 0;
     
-    /**  Service informations. */
-    private QuotaInformations infos;
     
+    
+	
+    public long getTs() {
+        return ts;
+    }
+
+    
+    public void setTs(long ts) {
+        this.ts = ts;
+    }
 
     /**
-     * Gets the infos.
-     *
-     * @return the infos
-     */
-    public QuotaInformations getInfos() {
-		return infos;
+	 * Checks if is asynchronous.
+	 *
+	 * @return true, if is asynchronous
+	 */
+	public boolean isAsynchronous() {
+		return asynchronous;
+	}
+
+	/**
+	 * Sets the asynchronous.
+	 *
+	 * @param asynchronous the new asynchronous
+	 */
+	public void setAsynchronous(boolean asynchronous) {
+		this.asynchronous = asynchronous;
 	}
 
 
+	/** The size message. */
+	private String sizeMessage = "";
+
+	/**
+	 * Gets the size message.
+	 *
+	 * @return the size message
+	 */
+	public String getSizeMessage() {
+		return sizeMessage;
+	}
+
+	/**
+	 * Sets the size message.
+	 *
+	 * @param sizeMessage the new size message
+	 */
+	public void setSizeMessage(String sizeMessage) {
+		this.sizeMessage = sizeMessage;
+	}
+	
+	
+	/** The ratio. */
+	private int ratio=0;
+	
+	
+
+	/**
+	 * Gets the ratio.
+	 *
+	 * @return the ratio
+	 */
+	public int getRatio() {
+		return ratio;
+	}
+
+	/**
+	 * Sets the ratio.
+	 *
+	 * @param ratio the new ratio
+	 */
+	public void setRatio(int ratio) {
+		this.ratio = ratio;
+	}
+
+
+	/** Service informations. */
+	private QuotaInformations infos;
+
+	/**
+	 * Gets the infos.
+	 *
+	 * @return the infos
+	 */
+	public QuotaInformations getInfos() {
+		return infos;
+	}
 
 	/**
 	 * Sets the infos.
 	 *
-	 * @param infos the new infos
+	 * @param infos
+	 *            the new infos
 	 */
 	public void setInfos(QuotaInformations infos) {
 		this.infos = infos;
 	}
 
 
-
 	/**
-     * Gets the global quota.
-     *
-     * @return the global quota
-     */
-    public long getGlobalQuota() {
-		return globalQuota;
-	}
-
-
-
-	/**
-	 * Sets the global quota.
-	 *
-	 * @param globalQuota the new global quota
+	 * Constructor.
 	 */
-    
-	public void setGlobalQuota(long globalQuota) {
-		this.globalQuota = globalQuota;
+	public QuotaForm() {
+		super();
 	}
 
-	/** Loaded indicator. */
-    private boolean loaded;
 
-
-    /**
-     * Constructor.
-     */
-    public QuotaForm() {
-        super();
-    }
-
-
-
-
-    /**
-     * Getter for loaded.
-     * 
-     * @return the loaded
-     */
-    public boolean isLoaded() {
-        return loaded;
-    }
-
-    /**
-     * Setter for loaded.
-     * 
-     * @param loaded the loaded to set
-     */
-    public void setLoaded(boolean loaded) {
-        this.loaded = loaded;
-    }
 
 }

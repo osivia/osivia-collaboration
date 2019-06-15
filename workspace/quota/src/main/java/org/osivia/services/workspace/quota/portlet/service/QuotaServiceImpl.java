@@ -1,17 +1,20 @@
 package org.osivia.services.workspace.quota.portlet.service;
 
-import java.util.List;
 import java.util.Locale;
 
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
+import org.apache.commons.lang.StringUtils;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.html.HtmlFormatter;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
-import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.services.workspace.quota.portlet.model.QuotaForm;
 import org.osivia.services.workspace.quota.portlet.model.QuotaInformations;
-import org.osivia.services.workspace.quota.portlet.model.QuotaItem;
 import org.osivia.services.workspace.quota.portlet.repository.QuotaRepository;
 import org.osivia.services.workspace.quota.util.ApplicationContextProvider;
 import org.springframework.beans.BeansException;
@@ -42,18 +45,11 @@ public class QuotaServiceImpl implements QuotaService, ApplicationContextAware {
     @Autowired
     private IBundleFactory bundleFactory;
 
-    /**
-     * Notifications service.
-     */
-    @Autowired
-    private INotificationsService notificationsService;
-
 
     /**
      * Application context.
      */
     private ApplicationContext applicationContext;
-
 
     /**
      * Constructor.
@@ -62,59 +58,75 @@ public class QuotaServiceImpl implements QuotaService, ApplicationContextAware {
         super();
     }
 
-
     /**
      * {@inheritDoc}
      */
     @Override
     public QuotaForm getQuotaForm(PortalControllerContext portalControllerContext) throws PortletException {
-        // Trash form
+
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+
+
+        // Internationalization bundle
+        Locale locale = portalControllerContext.getRequest().getLocale();
+        Bundle bundle = this.bundleFactory.getBundle(locale);
+
+        // quota form
         QuotaForm form = this.applicationContext.getBean(QuotaForm.class);
 
-        if (!form.isLoaded()) {
-        	
-            QuotaInformations infos = this.repository.getQuotaItems(portalControllerContext);
-            
-            /* Compute global quota */
-            
-            long globalQuota = 0;
-            for (QuotaItem quota: infos.getQuotaItems())	{
-            	globalQuota += quota.getValue();
+        QuotaInformations infos = this.repository.getQuotaItems(portalControllerContext);
+        String sizeMessage = HtmlFormatter.formatSize(locale, bundle, infos.getTreeSize());
+        int ratio = 0;
+
+        if (infos.getQuota() != -1) {
+            sizeMessage += " " + bundle.getString("QUOTA_OVER") + " " + HtmlFormatter.formatSize(locale, bundle, infos.getQuota());
+
+            ratio = (int) ((infos.getTreeSize() * 100) / infos.getQuota());
+        }
+
+        form.setSizeMessage(sizeMessage);
+        form.setRatio(ratio);
+
+        form.setInfos(infos);
+
+        Long updateNav = (Long) request.getAttribute(Constants.PORTLET_ATTR_UPDATE_SPACE_DATA_TS);
+
+        form.setAsynchronous(false);
+        form.setTs(System.currentTimeMillis());
+
+        if (request instanceof RenderRequest) {
+            if (updateNav != null) {
+
+                // On considère que pendant 10s. après l'évènement d'update la valeur de quota peut changer
+                // (La mise à jour depuis la corbeille est par exemple asynchrone)
+                // On joue donc un chargement asynchrone
+                
+                if (System.currentTimeMillis() - updateNav < 10000) {
+
+                    form.setAsynchronous(true);
+
+                    // Ne pas stocker dans le cache partagé
+                    request.setAttribute("osivia.invalidateSharedCache", "1");
+                }
             }
-            
-            form.setGlobalQuota(globalQuota);
-            form.setInfos(infos);            
-         
-            form.setLoaded(true);
         }
 
         return form;
     }
-
-
-
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void updateQuota(PortalControllerContext portalControllerContext, QuotaForm form) throws PortletException {
-        // Internationalization bundle
-        Locale locale = portalControllerContext.getRequest().getLocale();
-        Bundle bundle = this.bundleFactory.getBundle(locale);
-        
-        this.repository.updateQuota(portalControllerContext);
 
-        // Service invocation
-//        List<TrashedDocument> rejected = this.repository.updateQuota(portalControllerContext);
-//
-//        // Update model
-//        this.updateModel(portalControllerContext, form, null, rejected, bundle, "TRASH_RESTORE_ALL_MESSAGE_");
+
+       // TODO : à spécifier
+       this.repository.updateQuota(portalControllerContext);
+
+
     }
-
-
-
-
 
     /**
      * {@inheritDoc}

@@ -29,8 +29,15 @@
 		<portlet-info>
 			<title>Quota</title>
 		</portlet-info>
+         <supported-public-render-parameter>dnd-update</supported-public-render-parameter>			
 	</portlet>
     
-    
+	   
+
+    <public-render-parameter>
+        <identifier>dnd-update</identifier>
+        <name>dnd-update</name>
+    </public-render-parameter>    
+
    	
 </portlet-app>

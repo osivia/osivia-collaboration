@@ -1,7 +1,6 @@
 package org.osivia.services.workspace.quota.portlet.model;
 
 import java.util.List;
-
 /**
  * The Class Quota Informations.
  */
@@ -10,8 +9,35 @@ public class QuotaInformations {
 	/** The tree size. */
 	private long treeSize;
 	
+	/**  The quota. */
+	private long quota;
 	
-    /**
+	
+    public QuotaInformations(long treeSize, long quota) {
+		super();
+		this.treeSize = treeSize;
+		this.quota = quota;
+	}
+
+	/**
+     * Gets the quota.
+     *
+     * @return the quota
+     */
+    public long getQuota() {
+		return quota;
+	}
+
+	/**
+	 * Sets the quota.
+	 *
+	 * @param quota the new quota
+	 */
+	public void setQuota(long quota) {
+		this.quota = quota;
+	}
+
+	/**
      * Gets the tree size.
      *
      * @return the tree size
@@ -29,32 +55,7 @@ public class QuotaInformations {
 		this.treeSize = treeSize;
 	}
 
-	/** Quota detail. */
-    private List<QuotaItem> quotaItems;
 
-    /**
-     * Getter for trashedDocuments.
-     * 
-     * @return the trashedDocuments
-     */
-    public List<QuotaItem> getQuotaItems() {
-        return quotaItems;
-    }
-
-    /**
-     * Setter for trashedDocuments.
-     *
-     * @param quotaItems the new quotas items
-     */
-    public void setQuotasItems(List<QuotaItem> quotaItems) {
-        this.quotaItems = quotaItems;
-    }
-
-	public QuotaInformations(long treeSize, List<QuotaItem> quotaItems) {
-		super();
-		this.treeSize = treeSize;
-		this.quotaItems = quotaItems;
-	}
 
 
 }

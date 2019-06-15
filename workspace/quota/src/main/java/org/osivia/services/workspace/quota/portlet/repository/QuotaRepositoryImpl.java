@@ -61,10 +61,9 @@ public class QuotaRepositoryImpl implements QuotaRepository {
         String path = nuxeoController.getBasePath();
         INuxeoCommand command = this.applicationContext.getBean(GetQuotaCommand.class, path);
 
-        @SuppressWarnings("unchecked")
-		List<QuotaItem> quotaItems = new ArrayList<>(); 
 		long treeSize = 0;
-        
+		long quota = 0;
+       
         
 		Blob quotaInfos =  (Blob) nuxeoController.executeNuxeoCommand(command);        
 		
@@ -80,9 +79,10 @@ public class QuotaRepositoryImpl implements QuotaRepository {
             JSONObject quotaContent = JSONObject.fromObject(quotaInfosContent);
             
             treeSize = quotaContent.getLong("treesize");
+            quota = quotaContent.getLong("quota");
          }
         
-        QuotaInformations infos = new QuotaInformations(treeSize, quotaItems);
+        QuotaInformations infos = new QuotaInformations(treeSize, quota);
         return infos;
     }
 

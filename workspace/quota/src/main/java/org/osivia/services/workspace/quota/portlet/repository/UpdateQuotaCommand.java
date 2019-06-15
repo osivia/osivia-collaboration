@@ -68,7 +68,7 @@ public class UpdateQuotaCommand implements INuxeoCommand {
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
         Document docRoot = documentService.getDocument(new PathRef(workspacePath)); 
 
-        documentService.setProperty(docRoot, "qt:maxSize", "250000");
+        documentService.setProperty(docRoot, "qt:maxSize", "5");
 
         return null;
     }
