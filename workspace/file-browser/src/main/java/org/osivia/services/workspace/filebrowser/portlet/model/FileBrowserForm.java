@@ -40,17 +40,21 @@ public class FileBrowserForm {
     private Long maxFileSize;
 
     /**
+     * Document base path.
+     */
+    private String basePath;
+    /**
      * Document path.
      */
     private String path;
     /**
+     * List mode indicator.
+     */
+    private boolean listMode;
+    /**
      * Initialized indicator.
      */
     private boolean initialized;
-    /**
-     * Selectors.
-     */
-    private String selectors;
 
 
     /**
@@ -61,138 +65,76 @@ public class FileBrowserForm {
     }
 
 
-    /**
-     * Getter for items.
-     *
-     * @return the items
-     */
     public List<FileBrowserItem> getItems() {
         return items;
     }
 
-    /**
-     * Setter for items.
-     *
-     * @param items the items to set
-     */
     public void setItems(List<FileBrowserItem> items) {
         this.items = items;
     }
 
-    /**
-     * Getter for criteria.
-     *
-     * @return the criteria
-     */
     public FileBrowserSortCriteria getCriteria() {
         return criteria;
     }
 
-    /**
-     * Setter for criteria.
-     *
-     * @param criteria the criteria to set
-     */
     public void setCriteria(FileBrowserSortCriteria criteria) {
         this.criteria = criteria;
     }
 
-    /**
-     * Getter for uploadable.
-     *
-     * @return the uploadable
-     */
     public boolean isUploadable() {
         return uploadable;
     }
 
-    /**
-     * Setter for uploadable.
-     *
-     * @param uploadable the uploadable to set
-     */
     public void setUploadable(boolean uploadable) {
         this.uploadable = uploadable;
     }
 
-    /**
-     * Getter for upload.
-     *
-     * @return the upload
-     */
     public List<MultipartFile> getUpload() {
         return upload;
     }
 
-    /**
-     * Setter for upload.
-     *
-     * @param upload the upload to set
-     */
     public void setUpload(List<MultipartFile> upload) {
         this.upload = upload;
     }
 
-    /**
-     * Getter for maxFileSize.
-     *
-     * @return the maxFileSize
-     */
     public Long getMaxFileSize() {
         return maxFileSize;
     }
 
-    /**
-     * Setter for maxFileSize.
-     *
-     * @param maxFileSize the maxFileSize to set
-     */
     public void setMaxFileSize(Long maxFileSize) {
         this.maxFileSize = maxFileSize;
     }
 
-    /**
-     * Getter for path.
-     *
-     * @return the path
-     */
+    public String getBasePath() {
+        return basePath;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
+    }
+
     public String getPath() {
         return path;
     }
 
-    /**
-     * Setter for path.
-     *
-     * @param path the path to set
-     */
     public void setPath(String path) {
         this.path = path;
     }
 
-    /**
-     * Getter for initialized.
-     *
-     * @return the initialized
-     */
+    public boolean isListMode() {
+        return listMode;
+    }
+
+    public void setListMode(boolean listMode) {
+        this.listMode = listMode;
+    }
+
     public boolean isInitialized() {
         return initialized;
     }
 
-    /**
-     * Setter for initialized.
-     *
-     * @param initialized the initialized to set
-     */
     public void setInitialized(boolean initialized) {
         this.initialized = initialized;
-    }
-
-    public String getSelectors() {
-        return selectors;
-    }
-
-    public void setSelectors(String selectors) {
-        this.selectors = selectors;
     }
 
 }

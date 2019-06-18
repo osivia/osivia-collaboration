@@ -17,6 +17,10 @@ import java.util.List;
 public interface FileBrowserService {
 
     /**
+     * Document base path window property.
+     */
+    String BASE_PATH_WINDOW_PROPERTY = "osivia.file-browser.base-path";
+    /**
      * Document path window property.
      */
     String PATH_WINDOW_PROPERTY = Constants.WINDOW_PROP_URI;
@@ -28,6 +32,10 @@ public interface FileBrowserService {
      * BeanShell indicator window property.
      */
     String BEANSHELL_WINDOW_PROPERTY = "osivia.file-browser.beanshell";
+    /**
+     * List mode indicator window property.
+     */
+    String LIST_MODE_WINDOW_PROPERTY = "osivia.file-browser.list-mode";
 
 
     /**

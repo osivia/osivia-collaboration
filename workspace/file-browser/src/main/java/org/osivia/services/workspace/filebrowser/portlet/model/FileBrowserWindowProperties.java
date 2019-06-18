@@ -14,6 +14,10 @@ import org.springframework.stereotype.Component;
 public class FileBrowserWindowProperties {
 
     /**
+     * Document base path.
+     */
+    private String basePath;
+    /**
      * Document path.
      */
     private String path;
@@ -25,6 +29,10 @@ public class FileBrowserWindowProperties {
      * BeanShell indicator.
      */
     private Boolean beanShell;
+    /**
+     * List mode indicator.
+     */
+    private Boolean listMode;
 
 
     /**
@@ -34,6 +42,14 @@ public class FileBrowserWindowProperties {
         super();
     }
 
+
+    public String getBasePath() {
+        return basePath;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
+    }
 
     public String getPath() {
         return path;
@@ -57,6 +73,14 @@ public class FileBrowserWindowProperties {
 
     public void setBeanShell(Boolean beanShell) {
         this.beanShell = beanShell;
+    }
+
+    public Boolean getListMode() {
+        return listMode;
+    }
+
+    public void setListMode(Boolean listMode) {
+        this.listMode = listMode;
     }
 
 }

@@ -73,7 +73,7 @@ public class MoveRepositoryImpl implements MoveRepository {
 
         // Navigation item
         CMSItem navigationItem;
-        if (documentPath == null) {
+        if (StringUtils.isEmpty(documentPath)) {
             navigationItem = null;
         } else {
             try {

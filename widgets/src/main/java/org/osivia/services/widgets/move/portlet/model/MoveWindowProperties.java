@@ -35,6 +35,10 @@ public class MoveWindowProperties {
      * Accepted types.
      */
     private List<String> acceptedTypes;
+    /**
+     * Redirection URL.
+     */
+    private String redirectionUrl;
 
 
     /**
@@ -85,4 +89,11 @@ public class MoveWindowProperties {
         this.acceptedTypes = acceptedTypes;
     }
 
+    public String getRedirectionUrl() {
+        return redirectionUrl;
+    }
+
+    public void setRedirectionUrl(String redirectionUrl) {
+        this.redirectionUrl = redirectionUrl;
+    }
 }

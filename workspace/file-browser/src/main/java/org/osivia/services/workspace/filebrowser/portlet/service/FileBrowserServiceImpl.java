@@ -1,7 +1,6 @@
 package org.osivia.services.workspace.filebrowser.portlet.service;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
-import fr.toutatice.portail.cms.nuxeo.api.PageSelectors;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
@@ -120,6 +119,10 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         // Window properties
         FileBrowserWindowProperties windowProperties = this.applicationContext.getBean(FileBrowserWindowProperties.class);
 
+        // Document base path
+        String basePath = window.getProperty(BASE_PATH_WINDOW_PROPERTY);
+        windowProperties.setBasePath(basePath);
+
         // Document path
         String path = window.getProperty(PATH_WINDOW_PROPERTY);
         windowProperties.setPath(path);
@@ -131,6 +134,10 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         // BeanShell indicator
         boolean beanShell = BooleanUtils.toBoolean(window.getProperty(BEANSHELL_WINDOW_PROPERTY));
         windowProperties.setBeanShell(beanShell);
+
+        // List mode indicator
+        boolean listMode = BooleanUtils.toBoolean(window.getProperty(LIST_MODE_WINDOW_PROPERTY));
+        windowProperties.setListMode(listMode);
 
         return windowProperties;
     }
@@ -144,6 +151,10 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         PortalWindow window = WindowFactory.getWindow(request);
 
 
+        // Document base path
+        String basePath = StringUtils.trimToNull(windowProperties.getBasePath());
+        window.setProperty(BASE_PATH_WINDOW_PROPERTY, basePath);
+
         // NXQL request
         String nxql = StringUtils.trimToNull(windowProperties.getNxql());
         window.setProperty(NXQL_WINDOW_PROPERTY, nxql);
@@ -151,6 +162,10 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         // BeanShell indicator
         String beanShell = BooleanUtils.toStringTrueFalse(windowProperties.getBeanShell());
         window.setProperty(BEANSHELL_WINDOW_PROPERTY, beanShell);
+
+        // List mode indicator
+        String listMode = BooleanUtils.toStringTrueFalse(windowProperties.getListMode());
+        window.setProperty(LIST_MODE_WINDOW_PROPERTY, listMode);
     }
 
 
@@ -221,23 +236,24 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      */
     @Override
     public FileBrowserForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
-        // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();
-
-        // Selectors
-        String selectors = request.getParameter("selectors");
-
-
         // Form
         FileBrowserForm form = this.applicationContext.getBean(FileBrowserForm.class);
 
-        if (!form.isInitialized() || !StringUtils.equals(selectors, form.getSelectors())) {
+        if (!form.isInitialized()) {
             // Window properties
             FileBrowserWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
 
-            // Current document path
-            String path = StringUtils.defaultIfEmpty(windowProperties.getPath(), this.repository.getContentPath(portalControllerContext));
+            // Document base path
+            String basePath = this.repository.getBasePath(portalControllerContext, windowProperties);
+            form.setBasePath(basePath);
+
+            // Document path
+            String path = this.repository.getContentPath(portalControllerContext, windowProperties);
             form.setPath(path);
+
+            // List mode indicator
+            boolean listMode = BooleanUtils.isTrue(windowProperties.getListMode());
+            form.setListMode(listMode);
 
             // Current document type
             DocumentType type;
@@ -275,20 +291,20 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             }
             form.setItems(items);
 
-            // Sort
-            this.sortItems(portalControllerContext, form, FileBrowserSort.TITLE, false);
+            if (!listMode) {
+                // Sort
+                this.sortItems(portalControllerContext, form, FileBrowserSort.TITLE, false);
 
-            // Uploadable indicator
-            boolean uploadable = (type != null) && CollectionUtils.isNotEmpty(type.getSubtypes());
-            form.setUploadable(uploadable);
+                // Uploadable indicator
+                boolean uploadable = (type != null) && CollectionUtils.isNotEmpty(type.getSubtypes());
+                form.setUploadable(uploadable);
 
-            // Max file size
-            form.setMaxFileSize(FileBrowserConfiguration.MAX_UPLOAD_SIZE_PER_FILE);
+                // Max file size
+                form.setMaxFileSize(FileBrowserConfiguration.MAX_UPLOAD_SIZE_PER_FILE);
+            }
 
             // Initialized indicator
             form.setInitialized(true);
-            // Selectors
-            form.setSelectors(selectors);
         }
 
         return form;
@@ -373,7 +389,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     public void sortItems(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserSort sort, boolean alt) {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
-
 
         // Sort criteria
         FileBrowserSortCriteria criteria;
@@ -688,16 +703,18 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         group.add(download);
 
         // Duplicate
-        Element duplicate;
-        if (permissions.canBeCopied()) {
-            String title = bundle.getString("FILE_BROWSER_TOOLBAR_DUPLICATE");
-            String url = this.getDuplicateUrl(portalControllerContext, path, view);
-            duplicate = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-primary", null, "glyphicons glyphicons-duplicate");
-            DOM4JUtils.addAttribute(duplicate, "title", title);
-        } else {
-            duplicate = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-duplicate");
+        if (!form.isListMode()) {
+            Element duplicate;
+            if (permissions.canBeCopied()) {
+                String title = bundle.getString("FILE_BROWSER_TOOLBAR_DUPLICATE");
+                String url = this.getDuplicateUrl(portalControllerContext, path, view);
+                duplicate = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-primary", null, "glyphicons glyphicons-duplicate");
+                DOM4JUtils.addAttribute(duplicate, "title", title);
+            } else {
+                duplicate = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-duplicate");
+            }
+            group.add(duplicate);
         }
-        group.add(duplicate);
 
         return group;
     }
@@ -723,6 +740,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         // Delete modal identifier
         String deleteId = namespace + "-delete";
 
+        // Base path
+        String basePath = form.getBasePath();
         // Selected identifiers
         List<String> identifiers;
         // Selected paths
@@ -772,18 +791,20 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
 
         // Move
-        Element move;
-        if (allEditable && !unknownType) {
-            String title = bundle.getString("FILE_BROWSER_TOOLBAR_MOVE");
-            String url = this.getMoveUrl(portalControllerContext, form, identifiers, paths, acceptedTypes);
-            move = DOM4JUtils.generateLinkElement("javascript:", null, null, "btn btn-primary no-ajax-link", null, "glyphicons glyphicons-basic-block-move");
-            DOM4JUtils.addAttribute(move, "title", title);
-            DOM4JUtils.addDataAttribute(move, "target", "#osivia-modal");
-            DOM4JUtils.addDataAttribute(move, "load-url", url);
-        } else {
-            move = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-basic-block-move");
+        if (StringUtils.isNotEmpty(basePath)) {
+            Element move;
+            if (allEditable && !unknownType) {
+                String title = bundle.getString("FILE_BROWSER_TOOLBAR_MOVE");
+                String url = this.getMoveUrl(portalControllerContext, form, basePath, identifiers, paths, acceptedTypes);
+                move = DOM4JUtils.generateLinkElement("javascript:", null, null, "btn btn-primary no-ajax-link", null, "glyphicons glyphicons-basic-block-move");
+                DOM4JUtils.addAttribute(move, "title", title);
+                DOM4JUtils.addDataAttribute(move, "target", "#osivia-modal");
+                DOM4JUtils.addDataAttribute(move, "load-url", url);
+            } else {
+                move = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-basic-block-move");
+            }
+            group.add(move);
         }
-        group.add(move);
 
 
         // Delete
@@ -936,19 +957,24 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      *
      * @param portalControllerContext portal controller context
      * @param form                    form
+     * @param basePath                base path
      * @param identifiers             selected document identifiers
      * @param paths                   selected document paths
      * @param acceptedTypes           selected document types
      * @return URL
      */
-    private String getMoveUrl(PortalControllerContext portalControllerContext, FileBrowserForm form, List<String> identifiers, List<String> paths,
+    private String getMoveUrl(PortalControllerContext portalControllerContext, FileBrowserForm form, String basePath, List<String> identifiers, List<String> paths,
                               Set<String> acceptedTypes) throws PortletException {
         // Window properties
         Map<String, String> properties = new HashMap<>();
-        properties.put("osivia.move.path", form.getPath());
+        if (form.isListMode()) {
+            properties.put("osivia.move.redirection-url", this.portalUrlFactory.getRefreshPageUrl(portalControllerContext));
+        } else {
+            properties.put("osivia.move.path", form.getPath());
+        }
         properties.put("osivia.move.identifiers", StringUtils.join(identifiers, ","));
         properties.put("osivia.move.ignored-paths", StringUtils.join(paths, ","));
-        properties.put("osivia.move.base-path", this.repository.getBasePath(portalControllerContext));
+        properties.put("osivia.move.base-path", basePath);
         properties.put("osivia.move.accepted-types", StringUtils.join(acceptedTypes, ","));
 
         // URL

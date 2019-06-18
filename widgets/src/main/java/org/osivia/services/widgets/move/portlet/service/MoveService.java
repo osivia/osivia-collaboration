@@ -33,6 +33,10 @@ public interface MoveService {
      * Accepted types window property.
      */
     String ACCEPTED_TYPES_WINDOW_PROPERTY = "osivia.move.accepted-types";
+    /**
+     * Redirection URL window property.
+     */
+    String REDIRECTION_URL_WINDOW_PROPERTY = "osivia.move.redirection-url";
 
 
     /**

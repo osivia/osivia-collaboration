@@ -23,21 +23,23 @@ import java.util.Set;
 public interface FileBrowserRepository {
 
     /**
-     * Get base path.
+     * Get document base path.
      *
      * @param portalControllerContext portal controller context
+     * @param windowProperties        window properties
      * @return path
      */
-    String getBasePath(PortalControllerContext portalControllerContext) throws PortletException;
+    String getBasePath(PortalControllerContext portalControllerContext, FileBrowserWindowProperties windowProperties) throws PortletException;
 
 
     /**
      * Get content path.
      *
      * @param portalControllerContext portal controller context
+     * @param windowProperties        window properties
      * @return path
      */
-    String getContentPath(PortalControllerContext portalControllerContext) throws PortletException;
+    String getContentPath(PortalControllerContext portalControllerContext, FileBrowserWindowProperties windowProperties) throws PortletException;
 
 
     /**

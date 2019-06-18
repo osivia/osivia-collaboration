@@ -83,7 +83,7 @@ public class RenamePluginServiceImpl implements RenamePluginService {
             // Permissions
             Permissions permissions = documentContext.getPermissions();
 
-            if ((type != null) && type.isEditable() && permissions.isEditable()) {
+            if ((type != null) && type.isEditable() && !type.isFile() && permissions.isEditable()) {
                 // HTTP servlet request
                 HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
                 // Bundle

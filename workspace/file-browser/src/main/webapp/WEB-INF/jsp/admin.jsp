@@ -15,6 +15,13 @@
 
 
 <form:form action="${url}" method="post" modelAttribute="windowProperties">
+    <%--Base path--%>
+    <c:set var="placeholder"><op:translate key="FILE_BROWSER_ADMIN_FORM_BASE_PATH_PLACEHOLDER"/></c:set>
+    <div class="form-group">
+        <form:label path="basePath"><op:translate key="FILE_BROWSER_ADMIN_FORM_BASE_PATH_LABEL"/></form:label>
+        <form:input path="basePath" cssClass="form-control" placeholder="${placeholder}" />
+    </div>
+
     <%--NXQL request--%>
     <c:set var="placeholder"><op:translate key="FILE_BROWSER_ADMIN_FORM_NXQL_PLACEHOLDER"/></c:set>
     <div class="form-group">
@@ -43,6 +50,15 @@
             <form:checkbox path="beanShell" cssClass="form-check-input"/>
             <form:label path="beanShell"><op:translate key="FILE_BROWSER_ADMIN_FORM_BEANSHELL_LABEL"/></form:label>
         </div>
+    </div>
+
+    <%--List mode indicator--%>
+    <div class="form-group">
+        <div class="form-check">
+            <form:checkbox path="listMode" cssClass="form-check-input"/>
+            <form:label path="listMode"><op:translate key="FILE_BROWSER_ADMIN_FORM_LIST_MODE_LABEL"/></form:label>
+        </div>
+        <p class="form-text text-muted small"><op:translate key="FILE_BROWSER_ADMIN_FORM_LIST_MODE_HELP"/></p>
     </div>
 
     <%--Buttons--%>

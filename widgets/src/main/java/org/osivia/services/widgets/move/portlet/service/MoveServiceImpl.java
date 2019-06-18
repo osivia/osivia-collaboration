@@ -158,6 +158,10 @@ public class MoveServiceImpl implements MoveService {
         List<String> acceptedTypes = this.getWindowPropertyList(window, ACCEPTED_TYPES_WINDOW_PROPERTY);
         properties.setAcceptedTypes(acceptedTypes);
 
+        // Redirection URL
+        String redirectionUrl = window.getProperty(REDIRECTION_URL_WINDOW_PROPERTY);
+        properties.setRedirectionUrl(redirectionUrl);
+
         return properties;
     }
 
@@ -224,8 +228,14 @@ public class MoveServiceImpl implements MoveService {
 
 
         // Redirection
-        String url = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, redirectionPath, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null,
-                null);
+        String url;
+        if (StringUtils.isEmpty(redirectionPath)) {
+            url = windowProperties.getRedirectionUrl();
+        } else {
+            url = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, redirectionPath, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null,
+                    null);
+
+        }
         response.sendRedirect(url);
     }
 

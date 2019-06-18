@@ -87,35 +87,42 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String getBasePath(PortalControllerContext portalControllerContext) throws PortletException {
+    public String getBasePath(PortalControllerContext portalControllerContext, FileBrowserWindowProperties windowProperties) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        return nuxeoController.getBasePath();
+        // Path
+        String path;
+        if (StringUtils.isEmpty(windowProperties.getBasePath())) {
+            path = nuxeoController.getBasePath();
+        } else {
+            path = nuxeoController.getComputedPath(windowProperties.getBasePath());
+        }
+
+        return path;
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String getContentPath(PortalControllerContext portalControllerContext) throws PortletException {
+    public String getContentPath(PortalControllerContext portalControllerContext, FileBrowserWindowProperties windowProperties) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        return nuxeoController.getContentPath();
+        // Path
+        String path;
+        if (StringUtils.isEmpty(windowProperties.getPath())) {
+            path = nuxeoController.getContentPath();
+        } else {
+            path = nuxeoController.getComputedPath(windowProperties.getPath());
+        }
+
+        return path;
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public NuxeoDocumentContext getDocumentContext(PortalControllerContext portalControllerContext, String path) throws PortletException {
+    public NuxeoDocumentContext getDocumentContext(PortalControllerContext portalControllerContext, String path) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -123,9 +130,6 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<Document> getDocuments(PortalControllerContext portalControllerContext, FileBrowserWindowProperties windowProperties, String parentPath) throws PortletException {
         // Nuxeo controller
@@ -210,11 +214,8 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public NuxeoPublicationInfos getPublicationInfos(PortalControllerContext portalControllerContext, Document document) throws PortletException {
+    public NuxeoPublicationInfos getPublicationInfos(PortalControllerContext portalControllerContext, Document document) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         // Nuxeo document context
@@ -224,11 +225,8 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public NuxeoPermissions getPermissions(PortalControllerContext portalControllerContext, Document document) throws PortletException {
+    public NuxeoPermissions getPermissions(PortalControllerContext portalControllerContext, Document document) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         // Nuxeo document context
@@ -238,11 +236,8 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Set<String> getUserSubscriptions(PortalControllerContext portalControllerContext) throws PortletException {
+    public Set<String> getUserSubscriptions(PortalControllerContext portalControllerContext) {
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         // CMS context
@@ -277,9 +272,6 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public UserPreferences getUserPreferences(PortalControllerContext portalControllerContext) throws PortletException {
         // CMS service
@@ -300,11 +292,8 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String getDownloadUrl(PortalControllerContext portalControllerContext, Document document) throws PortletException {
+    public String getDownloadUrl(PortalControllerContext portalControllerContext, Document document) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -329,11 +318,8 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void duplicate(PortalControllerContext portalControllerContext, String sourcePath, String targetPath) throws PortletException {
+    public void duplicate(PortalControllerContext portalControllerContext, String sourcePath, String targetPath) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -343,9 +329,6 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void delete(PortalControllerContext portalControllerContext, List<String> identifiers) throws PortletException {
         // CMS service
@@ -364,11 +347,8 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public CMSBinaryContent getBinaryContent(PortalControllerContext portalControllerContext, List<String> paths) throws PortletException, IOException {
+    public CMSBinaryContent getBinaryContent(PortalControllerContext portalControllerContext, List<String> paths) throws IOException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setStreamingSupport(true);
@@ -505,11 +485,8 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void move(PortalControllerContext portalControllerContext, List<String> sourceIdentifiers, String targetIdentifier) throws PortletException {
+    public void move(PortalControllerContext portalControllerContext, List<String> sourceIdentifiers, String targetIdentifier) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -519,11 +496,8 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void importFiles(PortalControllerContext portalControllerContext, String path, List<MultipartFile> upload) throws PortletException, IOException {
+    public void importFiles(PortalControllerContext portalControllerContext, String path, List<MultipartFile> upload) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -533,11 +507,8 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void updateMenubar(PortalControllerContext portalControllerContext, String path) throws PortletException {
+    public void updateMenubar(PortalControllerContext portalControllerContext, String path) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
