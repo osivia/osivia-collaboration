@@ -1,7 +1,7 @@
 $JQry(function() {
 
 	$JQry(".trash button.location").popover({
-		container: ".popover-container",
+		container: ".trash",
 		content: function() {
 			var $this = $JQry(this);
 			var $row = $this.closest(".portal-table-row");
@@ -28,7 +28,8 @@ $JQry(function() {
 		},
 		html: true,
 		placement: "bottom",
-		trigger: "manual"
+		trigger: "manual",
+		boundary: "viewport"
 	});
 	
 	

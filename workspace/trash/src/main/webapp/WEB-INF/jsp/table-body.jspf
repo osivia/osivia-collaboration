@@ -28,7 +28,7 @@
                     <div class="portal-table-cell" data-column="document">
                         <div class="portal-table-cell-inner" data-column="document">
                             <div class="d-flex align-items-center">
-                                <span class="mr-2"><ttc:icon document="${trashedDocument.document}" style="flat"/></span>
+                                <span class="mr-2"><ttc:icon document="${trashedDocument.document}" style="flat-inverse"/></span>
                                 <span><ttc:title document="${trashedDocument.document}" linkable="false"/></span>
                             </div>
                         </div>
@@ -37,7 +37,7 @@
                         <%--Date--%>
                     <div class="portal-table-cell" data-column="date">
                         <div class="portal-table-cell-inner" data-column="date">
-                            <div>
+                            <div class="d-flex flex-wrap overflow-hidden">
                                 <div class="text-truncate">
                                     <span><op:formatRelativeDate
                                             value="${trashedDocument.document.properties['dc:modified']}"/></span>
@@ -55,7 +55,7 @@
                         <%--Location--%>
                     <div class="portal-table-cell" data-column="location">
                         <div class="portal-table-cell-inner" data-column="location">
-                            <button type="button" class="btn btn-outline-dark text-truncate location">
+                            <button type="button" class="btn btn-secondary text-truncate location">
                                 <span><ttc:icon document="${trashedDocument.location.document}"/></span>
                                 <span><ttc:title document="${trashedDocument.location.document}"
                                                  linkable="false"/></span>
