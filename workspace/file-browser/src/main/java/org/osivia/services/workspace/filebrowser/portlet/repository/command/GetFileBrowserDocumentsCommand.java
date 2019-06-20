@@ -53,12 +53,13 @@ public class GetFileBrowserDocumentsCommand implements INuxeoCommand {
         // Nuxeo request
         StringBuilder nuxeoRequest = new StringBuilder();
 
+        nuxeoRequest.append("NOT ecm:primaryType IN ('Workspace', 'WorkspaceRoot', 'PortalSite', 'Favorites') ");
         if (StringUtils.isEmpty(this.nxql)) {
-            nuxeoRequest.append("ecm:parentId = '").append(this.parentId).append("' ");
+            nuxeoRequest.append("AND ecm:parentId = '").append(this.parentId).append("' ");
         } else {
+            nuxeoRequest.append("AND ");
             nuxeoRequest.append(this.nxql);
         }
-        nuxeoRequest.append("AND NOT ecm:primaryType IN ('Workspace', 'WorkspaceRoot', 'PortalSite', 'Favorites') ");
 
         // Query filter
         NuxeoQueryFilterContext queryFilterContext = new NuxeoQueryFilterContext(NuxeoQueryFilterContext.STATE_LIVE,
