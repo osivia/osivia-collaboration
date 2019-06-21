@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
@@ -127,9 +128,11 @@ public class IssuedPluginServiceImpl implements IssuedPluginService {
                 if (this.isLive(portalControllerContext, documentContext)) {
                     // Live
                     accept = true;
-                } else if (StringUtils.equals(publicationInfos.getPath(), documentContext.getCmsPath())) {
-                    // Remote proxy
-                    accept = false;
+                } else if (documentContext instanceof NuxeoDocumentContext) {
+                    NuxeoDocumentContext nuxeoDocumentContext = (NuxeoDocumentContext) documentContext;
+
+                    // Don't accept remote proxies
+                    accept = !nuxeoDocumentContext.isRemoteProxy();
                 } else {
                     accept = true;
                 }
