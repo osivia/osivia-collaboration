@@ -12,7 +12,7 @@
 
     <properties>
         <!-- Toutatice -->
-        <toutatice.version>4.7.14-RC4</toutatice.version>
+        <toutatice.version>4.7-SNAPSHOT</toutatice.version>
 
         <!-- Directory -->
         <directory.version>4.7.14-RC2</directory.version>
@@ -194,17 +194,6 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>
-
-                <!-- Disable strict javadoc checking since java8 -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <configuration>
-                        <additionalOptions>
-                            <additionalOption>-Xdoclint:none</additionalOption>
-                        </additionalOptions>
-                    </configuration>
                 </plugin>
 
                 <!-- Javadocs -->
