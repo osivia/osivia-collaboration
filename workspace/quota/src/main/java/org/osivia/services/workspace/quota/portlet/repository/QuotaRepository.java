@@ -19,7 +19,7 @@ public interface QuotaRepository {
      * Get quota items
      * 
      * @param portalControllerContext portal controller context
-     * @return trashed documents
+     * @return quota items
      * @throws PortletException
      */
 	QuotaInformations getQuotaItems(PortalControllerContext portalControllerContext) throws PortletException;
@@ -32,7 +32,7 @@ public interface QuotaRepository {
      * @return rejected documents
      * @throws PortletException
      */
-    List<QuotaItem> updateQuota(PortalControllerContext portalControllerContext) throws PortletException;
+    List<QuotaItem> updateQuota(PortalControllerContext portalControllerContext, long size) throws PortletException;
 
 
 }

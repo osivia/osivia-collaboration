@@ -89,13 +89,13 @@ public class QuotaRepositoryImpl implements QuotaRepository {
     
     
 	@Override
-	public List<QuotaItem> updateQuota(PortalControllerContext portalControllerContext) throws PortletException {
+	public List<QuotaItem> updateQuota(PortalControllerContext portalControllerContext, long size) throws PortletException {
 		// Nuxeo controller
 		NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        String path = nuxeoController.getBasePath();
 
 		// Nuxeo command
-		INuxeoCommand command = this.applicationContext.getBean(UpdateQuotaCommand.class,
-				portalControllerContext.getRequest().getRemoteUser());
+		INuxeoCommand command = this.applicationContext.getBean(UpdateQuotaCommand.class, path, size);
 
 		nuxeoController.executeNuxeoCommand(command);
 

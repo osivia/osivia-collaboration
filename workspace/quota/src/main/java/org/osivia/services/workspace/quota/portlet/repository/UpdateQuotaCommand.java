@@ -13,17 +13,21 @@ import org.springframework.stereotype.Component;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
 /**
- * Get trashed documents Nuxeo command.
+ * Get quota update Nuxeo command.
  * 
- * @author Cédric Krommenhoek
+ * @author Jean-Sébastien Steux
  * @see INuxeoCommand
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class UpdateQuotaCommand implements INuxeoCommand {
 
-    /** User Id */
-    private final String userId;
+
+    /** Quota size*/
+    private long size;
+    
+    /** Workspace path size*/
+    private String path;
 
 
     /**
@@ -31,24 +35,14 @@ public class UpdateQuotaCommand implements INuxeoCommand {
      * 
      * @param basePath base path
      */
-    public UpdateQuotaCommand(String userId) {
+    public UpdateQuotaCommand(String path,long size) {
         super();
-        this.userId = userId;
+
+        this.size = size;
+        this.path = path;
     }
 
-    public Document getUserProfile(Session automationSession, String userId) throws Exception {
-     	
-        OperationRequest newRequest = automationSession.newRequest("Services.GetToutaticeUserProfile");
-        newRequest.set("username", userId);
 
-        Document refDoc = (Document) newRequest.execute();
-
-        Document doc = (Document) automationSession.newRequest("Document.FetchLiveDocument").setHeader(Constants.HEADER_NX_SCHEMAS, "*").set("value", refDoc)
-                .execute();
-
-        return doc;
-
-    }
     
     
     /**
@@ -56,19 +50,10 @@ public class UpdateQuotaCommand implements INuxeoCommand {
      */
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
-        // Espace perso
-/*    	
-        Document userProfile = getUserProfile(nuxeoSession,  userId);
-        String workspacePath = userProfile.getPath(); 
-        workspacePath = workspacePath.substring(0, workspacePath.lastIndexOf('/'));
-*/       
-        // TODO : check not null
-    	String workspacePath = "/default-domain/workspaces/espace-11";
-
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
-        Document docRoot = documentService.getDocument(new PathRef(workspacePath)); 
+        Document docRoot = documentService.getDocument(new PathRef(path)); 
 
-        documentService.setProperty(docRoot, "qt:maxSize", "5");
+        documentService.setProperty(docRoot, "qt:maxSize", Long.toString(size));
 
         return null;
     }
@@ -82,7 +67,7 @@ public class UpdateQuotaCommand implements INuxeoCommand {
         StringBuilder builder = new StringBuilder();
         builder.append(this.getClass().getName());
         builder.append("/");
-        builder.append(this.userId);
+        builder.append(this.path);
         return builder.toString();
     }
 

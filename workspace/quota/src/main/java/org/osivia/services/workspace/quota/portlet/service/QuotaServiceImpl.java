@@ -15,6 +15,8 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.services.workspace.quota.portlet.model.QuotaForm;
 import org.osivia.services.workspace.quota.portlet.model.QuotaInformations;
+import org.osivia.services.workspace.quota.portlet.model.UpdateForm;
+import org.osivia.services.workspace.quota.portlet.model.UpdateOptions;
 import org.osivia.services.workspace.quota.portlet.repository.QuotaRepository;
 import org.osivia.services.workspace.quota.util.ApplicationContextProvider;
 import org.springframework.beans.BeansException;
@@ -119,13 +121,8 @@ public class QuotaServiceImpl implements QuotaService, ApplicationContextAware {
      * {@inheritDoc}
      */
     @Override
-    public void updateQuota(PortalControllerContext portalControllerContext, QuotaForm form) throws PortletException {
-
-
-       // TODO : à spécifier
-       this.repository.updateQuota(portalControllerContext);
-
-
+    public void updateQuota(PortalControllerContext portalControllerContext, UpdateForm form) throws PortletException {
+       this.repository.updateQuota(portalControllerContext, Long.parseLong(form.getSize()) );
     }
 
     /**
@@ -135,6 +132,23 @@ public class QuotaServiceImpl implements QuotaService, ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
         ApplicationContextProvider.setApplicationContext(applicationContext);
+    }
+
+    @Override
+    public UpdateForm getUpdateForm(PortalControllerContext portalControllerContext) throws PortletException {
+
+        UpdateForm form = this.applicationContext.getBean(UpdateForm.class);
+        return form;
+    }
+
+    @Override
+    public UpdateOptions updateOptions(PortalControllerContext portalControllerContext) {
+        UpdateOptions  options = new UpdateOptions();
+        options.getSizes().add("1");
+        options.getSizes().add("10");        
+        options.getSizes().add("100");
+        options.getSizes().add("1000");      
+        return options;
     }
 
 }

@@ -9,6 +9,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,7 +19,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 /**
- * Trash portlet configuration.
+ * Quota portlet configuration.
  *
  * @author Jean-Sébastien Steux
  */
@@ -152,4 +153,17 @@ public class QuotaConfiguration {
         return DirServiceFactory.getService(PersonService.class);
     }
 
+    
+    /**
+     * Get taskbar service.
+     *
+     * @return notifications service
+     */
+    @Bean
+    public ITaskbarService getTaskbarService() {
+        return Locator.findMBean(ITaskbarService.class, ITaskbarService.MBEAN_NAME);
+    }
+    
+
+    
 }

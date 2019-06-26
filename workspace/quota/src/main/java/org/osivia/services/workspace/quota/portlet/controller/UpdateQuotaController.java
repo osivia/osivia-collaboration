@@ -51,7 +51,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
  */
 @Controller
 @RequestMapping("VIEW")
-public class ViewQuotaController extends CMSPortlet {
+public class UpdateQuotaController extends CMSPortlet {
 
     /**
      * Portlet config.
@@ -89,7 +89,7 @@ public class ViewQuotaController extends CMSPortlet {
     /**
      * Constructor.
      */
-    public ViewQuotaController() {
+    public UpdateQuotaController() {
         super();
 
         
@@ -113,79 +113,94 @@ public class ViewQuotaController extends CMSPortlet {
      * @param response render response
      * @return view path
      */
-    @RenderMapping
+    @RenderMapping(params = {"tab=update"})
     public String view(RenderRequest request, RenderResponse response) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);        
-
-        try {
-            TaskbarTask task = this.taskbarService.getTask(portalControllerContext,nuxeoController.getBasePath(),"TRASH");
-            if( task == null)   {
-                request.setAttribute("osivia.emptyResponse", "1");
-                return "empty";
-            }
-        } catch (PortalException e) {
-            throw new PortletException(e);
-        }      
-        
-        return "view";
+      
+        return "update";
     }
 
 
 
+    /**
+     * Update quota
+     *
+     * @param request  action request
+     * @param response action response
+     * @param form     update form model attribute
+     */
+    @ActionMapping("save-quota")
+    public void updateQuota(ActionRequest request, ActionResponse response, @ModelAttribute("updateForm") UpdateForm form) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
+        this.service.updateQuota(portalControllerContext, form);
 
+    }
+  
 
     /**
-     * Get quota form model attribute.
+     * Cancel quota
+     *
+     * @param request  action request
+     * @param response action response
+     * @param form     update form model attribute
+     */
+    @ActionMapping("cancel-quota")
+    public void cancelQuota(ActionRequest request, ActionResponse response) throws PortletException {
+   }
+    
+    
+    /**
+     * Redirect tab action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param redirection redirection request parameter
+     * @param sessionStatus session status
+     * @throws PortletException
+     */
+    @ActionMapping("redirect-update")
+    public void redirectTab(ActionRequest request, ActionResponse response, SessionStatus sessionStatus)
+            throws PortletException {
+        sessionStatus.setComplete();        
+        response.setRenderParameter("tab", "update");
+    }
+
+    
+    
+    /**
+     * Get options model attribute.
+     *
+     * @param request portlet request
+     * @param response portlet response
+     * @return options
+     * @throws PortletException
+     */
+    @ModelAttribute("options")
+    public UpdateOptions getOptions(PortletRequest request, PortletResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        return this.service.updateOptions(portalControllerContext);
+    }
+    
+
+    /**
+     * Get update form model attribute.
      *
      * @param request  portlet request
      * @param response portlet response
      * @return quota form
      */
-    @ModelAttribute("quotaForm")
-    public QuotaForm getQuotaForm(PortletRequest request, PortletResponse response) throws PortletException {
+    @ModelAttribute("updateForm")
+    public UpdateForm getUpdateForm(PortletRequest request, PortletResponse response) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 
-        return this.service.getQuotaForm(portalControllerContext);
-    }
-
-    
-
-    /**
-     * Refresh resource mapping.
-     * 
-     * @param request resource request
-     * @param response resource response
-     * @param QuotaForm form model attribute
-     * @throws Exception 
-     */
-    @ResourceMapping("refresh")
-    public void refresh(ResourceRequest request, ResourceResponse response,  @ModelAttribute("quotaForm") QuotaForm form)
-            throws Exception {
-    	
-    	
-    	View view = this.viewResolver.resolveViewName("refresh", null); 
-    	JstlView jstlView = (JstlView) view;
-    	String path = jstlView.getUrl();
-    	PortletRequestDispatcher dispatcher = this.portletContext.getRequestDispatcher(path);
-    	
-    	request.setAttribute("quotaForm", form);
-    	
-    	dispatcher.include(request, response);   
-    	
-    	response.setContentType("text/html");
-
+        return this.service.getUpdateForm(portalControllerContext);
     }
     
-
-
-
-    
-
-
 }
