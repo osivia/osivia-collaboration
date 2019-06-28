@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.portlet.PortletException;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.widgets.issued.portlet.repository.command.UpdateIssuedCommand;
@@ -44,7 +45,7 @@ public class IssuedRepositoryImpl implements IssuedRepository {
     @Override
     public Date getIssuedDate(PortalControllerContext portalControllerContext, String path) throws PortletException {
         // Document context
-        NuxeoDocumentContext documentContext = this.getDocumentContext(portalControllerContext, path);
+        NuxeoDocumentContext documentContext = this.getDocumentContext(portalControllerContext, path, true);
         documentContext.reload();
 
         // Document
@@ -53,7 +54,13 @@ public class IssuedRepositoryImpl implements IssuedRepository {
         // Issued date
         Date date = document.getDate(ISSUED_DATE_TOUTATICE_PROPERTY);
         if (date == null) {
-            date = document.getDate(ISSUED_DATE_DUBLIN_CORE_PROPERTY);
+            try {
+                NuxeoDocumentContext proxyDocumentContext = this.getDocumentContext(portalControllerContext, path, false);
+                Document proxy = proxyDocumentContext.getDocument();
+                date = proxy.getDate(ISSUED_DATE_DUBLIN_CORE_PROPERTY);
+            } catch (NuxeoException e) {
+                // Do nothing: proxy does not exists
+            }
         }
 
         return date;
@@ -69,7 +76,7 @@ public class IssuedRepositoryImpl implements IssuedRepository {
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // Document context
-        NuxeoDocumentContext documentContext = this.getDocumentContext(portalControllerContext, path);
+        NuxeoDocumentContext documentContext = this.getDocumentContext(portalControllerContext, path, true);
         // Publication infos
         NuxeoPublicationInfos publicationInfos = documentContext.getPublicationInfos();
         // Document
@@ -90,13 +97,16 @@ public class IssuedRepositoryImpl implements IssuedRepository {
      * 
      * @param portalControllerContext portal controller context
      * @param path document path
+     * @param live live indicator
      * @return document context
      * @throws PortletException
      */
-    private NuxeoDocumentContext getDocumentContext(PortalControllerContext portalControllerContext, String path) throws PortletException {
+    private NuxeoDocumentContext getDocumentContext(PortalControllerContext portalControllerContext, String path, boolean live) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-        nuxeoController.setDisplayLiveVersion("1");
+        if (live) {
+            nuxeoController.setDisplayLiveVersion("1");
+        }
 
         return nuxeoController.getDocumentContext(path);
     }
