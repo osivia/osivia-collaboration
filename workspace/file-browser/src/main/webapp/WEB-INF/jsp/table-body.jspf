@@ -35,12 +35,12 @@
                             <span><ttc:icon document="${item.document}"
                                             style="${item.folderish ? 'flat' : 'flat-inverse'}"/></span>
 
-                            <div class="file-browser-draggable">
+                            <div class="file-browser-draggable text-truncate">
                                 <span><ttc:title document="${item.document}"/></span>
                             </div>
 
                             <c:if test="${not empty item.lock || item.subscription}">
-                                <div>
+                                <div class="ml-auto">
                                     <c:if test="${not empty item.lock}">
                                         <div>
                                             <i class="${item.lock}"></i>

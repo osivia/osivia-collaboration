@@ -8,7 +8,7 @@
 
 <div class="portal-table-toolbar-container" data-url="${toolbarUrl}">
     <!-- View -->
-    <div class="btn-group btn-group-sm">
+    <div class="btn-group btn-group-sm align-self-start">
         <c:forEach var="item" items="${views}">
             <portlet:actionURL name="change-view" var="url">
                 <portlet:param name="view" value="${item.id}"/>
