@@ -190,9 +190,22 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
      * @param nxql                  NXQL request
      * @return interpreted NXQL request
      */
-    private String beanShellInterpretation(NuxeoController nuxeoController, NuxeoDocumentContext parentDocumentContext, String nxql) throws EvalError {
+    private String beanShellInterpretation(NuxeoController nuxeoController, NuxeoDocumentContext parentDocumentContext, String nxql) throws PortletException, EvalError {
         // Request
         PortletRequest request = nuxeoController.getRequest();
+
+        // CMS service
+        ICMSService cmsService = NuxeoController.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = nuxeoController.getCMSCtx();
+
+        // User workspace
+        CMSItem userWorkspace = null;
+        try {
+            userWorkspace = cmsService.getUserWorkspace(cmsContext);
+        } catch (CMSException e) {
+            throw new PortletException(e);
+        }
 
         // BeanShell interpreter
         Interpreter interpreter = new Interpreter();
@@ -208,6 +221,10 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         // Parent document context parameters
         if (parentDocumentContext != null) {
             interpreter.set("navigationPubInfos", parentDocumentContext.getPublicationInfos());
+        }
+        // User workspace
+        if (userWorkspace != null) {
+            interpreter.set("userWorkspacePath", userWorkspace.getCmsPath());
         }
 
         return (String) interpreter.eval(nxql);
