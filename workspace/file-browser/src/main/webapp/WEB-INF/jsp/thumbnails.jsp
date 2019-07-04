@@ -10,38 +10,38 @@
             <div class="d-flex">
                 <h3 class="h4 flex-grow-1"><op:translate key="FILE_BROWSER_FOLDERS" /></h3>
 
-                <div class="btn-group">
+                <c:if test="${not form.listMode}">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-outline-dark dropdown-toggle" data-toggle="dropdown">
-                            <span><op:translate key="${form.criteria.sort.key}" /></span>
-                            <span class="caret"></span>
-                        </button>
-                        
-                        <ul class="dropdown-menu dropdown-menu-right">
-                            <c:forEach var="sort" items="${sorts}">
-                                <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
-                                    <portlet:param name="sort" value="${sort.id}" />
-                                    <portlet:param name="alt" value="${form.criteria.sort.id eq sort.id and not form.criteria.alt}" />
-                                </portlet:actionURL>
-                            
-                                <li ${form.criteria.sort eq sort ? 'class="active"' : ''}>
-                                    <a href="${url}">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-dark dropdown-toggle" data-toggle="dropdown">
+                                <span><op:translate key="${form.criteria.sort.key}" /></span>
+                                <span class="caret"></span>
+                            </button>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <c:forEach var="sort" items="${sorts}">
+                                    <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
+                                        <portlet:param name="sort" value="${sort.id}" />
+                                        <portlet:param name="alt" value="${form.criteria.sort.id eq sort.id and not form.criteria.alt}" />
+                                    </portlet:actionURL>
+
+                                    <a href="${url}" class="dropdown-item ${form.criteria.sort eq sort ? 'active' : ''}">
                                         <span><op:translate key="${sort.key}" /></span>
                                     </a>
-                                </li>                            
-                            </c:forEach>
-                        </ul>
-                    </div>
+                                </c:forEach>
+                            </div>
+                        </div>
 
-                    <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
-                        <portlet:param name="sort" value="${form.criteria.sort.id}" />
-                        <portlet:param name="alt" value="${not form.criteria.alt}" />
-                    </portlet:actionURL>
-                                
-                    <a href="${url}" class="btn btn-outline-dark">
-                        <i class="glyphicons glyphicons-arrow-${form.criteria.alt ? 'up' : 'down'}"></i>
-                    </a>
-                </div>
+                        <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
+                            <portlet:param name="sort" value="${form.criteria.sort.id}" />
+                            <portlet:param name="alt" value="${not form.criteria.alt}" />
+                        </portlet:actionURL>
+
+                        <a href="${url}" class="btn btn-outline-dark">
+                            <i class="glyphicons glyphicons-arrow-${form.criteria.alt ? 'up' : 'down'}"></i>
+                        </a>
+                    </div>
+                </c:if>
             </div>
             
             <c:set var="count" value="0" />
@@ -57,7 +57,7 @@
                                     data-double-click-target=".file-browser-draggable a">
                                 <!-- Title -->
                                 <div class="file-browser-thumbnail-title">
-                                    <div class="text-overflow file-browser-draggable">
+                                    <div class="text-truncate file-browser-draggable">
                                         <span><ttc:icon document="${item.document}" /></span>
                                         <span><ttc:title document="${item.document}" /></span>
                                     </div>
@@ -119,7 +119,7 @@
                                 
                                 <!-- Title -->
                                 <div class="file-browser-thumbnail-title">
-                                    <div class="text-overflow file-browser-draggable">
+                                    <div class="text-truncate file-browser-draggable">
                                         <span><ttc:icon document="${item.document}" /></span>
                                         <span><ttc:title document="${item.document}" /></span>
                                     </div>
