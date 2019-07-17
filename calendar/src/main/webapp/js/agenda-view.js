@@ -13,40 +13,48 @@
 function dataLoading()
 {
 	var divScheduler = $JQry("div#scheduler_here");
-	var urLoad = divScheduler.data("url");
-	//console.log("Scroll before dataLoading : "+scheduler.config.scroll_hour);
-	//la méthode init supprime la classe portlet-filler du div dhx_cal_data. il faut donc le remettre pour que le composant s'affiche sur la hauteur disponible
-	//on ajoute des class flexbox aux composants parents uniquement si div#maximized est présent
-	var $body = $JQry("body");
-	
-	if ($body.hasClass("fixed-layout")) {
-		var maximized = $JQry("div#maximized");
-	
-		if (maximized.length > 0 ) $JQry("div.dhx_cal_data").parentsUntil(".flexbox").addClass("flexbox");
-		scheduler.updateView();
-		setScrollPosition();
-		//la méthode updateView supprime la classe portlet-filler du div dhx_cal_data. il faut donc le remettre pour que le composant s'affiche sur la hauteur disponible
-		if (maximized.length > 0) $JQry("div.dhx_cal_data").parentsUntil(".flexbox").addClass("flexbox");
-	}
-		
-	jQuery.ajax({
-		url: urLoad,
-		data: {
-			start: scheduler.getState().min_date.getTime(),
-			end: scheduler.getState().max_date.getTime()
-		},
-		cache: false,
-		dataType: "json",
-		success : function(data, status, xhr) {
-			scheduler.clearAll();
-			scheduler.parse(data, "json");
+
+	if (!divScheduler.data("loaded")) {
+		var urLoad = divScheduler.data("url");
+		//console.log("Scroll before dataLoading : "+scheduler.config.scroll_hour);
+		//la méthode init supprime la classe portlet-filler du div dhx_cal_data. il faut donc le remettre pour que le composant s'affiche sur la hauteur disponible
+		//on ajoute des class flexbox aux composants parents uniquement si div#maximized est présent
+		var $body = $JQry("body");
+
+		if ($body.hasClass("fixed-layout")) {
+			var maximized = $JQry("div#maximized");
+
+			if (maximized.length > 0 ) $JQry("div.dhx_cal_data").parentsUntil(".flexbox").addClass("flexbox");
 			scheduler.updateView();
 			setScrollPosition();
-		},
-		error : function(data, status, xhr) {
-			console.log( "Erreur lors de l'appel Ajax, status: "+status+ ", data: "+data);
+			//la méthode updateView supprime la classe portlet-filler du div dhx_cal_data. il faut donc le remettre pour que le composant s'affiche sur la hauteur disponible
+			if (maximized.length > 0) $JQry("div.dhx_cal_data").parentsUntil(".flexbox").addClass("flexbox");
 		}
-	});
+
+		jQuery.ajax({
+			url: urLoad,
+			data: {
+				start: scheduler.getState().min_date.getTime(),
+				end: scheduler.getState().max_date.getTime()
+			},
+			cache: false,
+			dataType: "json",
+			success : function(data, status, xhr) {
+				scheduler.clearAll();
+				scheduler.parse(data, "json");
+				scheduler.updateView();
+				setScrollPosition();
+
+				// jQuery events
+				$JQry(document).ready();
+			},
+			error : function(data, status, xhr) {
+				console.log( "Erreur lors de l'appel Ajax, status: "+status+ ", data: "+data);
+			}
+		});
+
+		divScheduler.data("loaded", true);
+	}
 }
 
 function setScrollPosition()

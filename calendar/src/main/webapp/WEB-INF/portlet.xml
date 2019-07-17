@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <portlet-app
-    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
-    version="2.0">
+        xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+        version="2.0">
 
     <portlet>
         <portlet-name>osivia-services-calendar</portlet-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 
-		<init-param>
+        <init-param>
             <name>contextClass</name>
             <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
         </init-param>
@@ -26,7 +26,7 @@
             <portlet-mode>view</portlet-mode>
             <portlet-mode>admin</portlet-mode>
         </supports>
-        
+
         <portlet-info>
             <title>Calendar</title>
         </portlet-info>
@@ -52,13 +52,13 @@
             <mime-type>text/html</mime-type>
             <portlet-mode>view</portlet-mode>
         </supports>
-        
+
         <portlet-info>
             <title>Calendar edition</title>
         </portlet-info>
     </portlet>
-    
-    
+
+
     <portlet>
         <portlet-name>osivia-services-calendar-synchronization-edition</portlet-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
@@ -78,18 +78,18 @@
             <mime-type>text/html</mime-type>
             <portlet-mode>view</portlet-mode>
         </supports>
-        
+
         <portlet-info>
             <title>Calendar synchronization edition</title>
         </portlet-info>
     </portlet>
 
 
-	<portlet>
+    <portlet>
         <portlet-name>osivia-services-calendar-event-edition</portlet-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 
-		<init-param>
+        <init-param>
             <name>contextClass</name>
             <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
         </init-param>
@@ -104,17 +104,17 @@
             <mime-type>text/html</mime-type>
             <portlet-mode>view</portlet-mode>
         </supports>
-        
+
         <portlet-info>
             <title>Calendar event edition</title>
         </portlet-info>
     </portlet>
-    
+
     <portlet>
         <portlet-name>osivia-services-calendar-event-view</portlet-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 
-		<init-param>
+        <init-param>
             <name>contextClass</name>
             <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
         </init-param>
@@ -129,26 +129,52 @@
             <mime-type>text/html</mime-type>
             <portlet-mode>view</portlet-mode>
         </supports>
-        
+
         <portlet-info>
-            <title>Calendar event edition</title>
+            <title>Calendar event view</title>
         </portlet-info>
     </portlet>
 
 
-	<portlet>
-		<portlet-name>osivia-services-calendarPlugin</portlet-name>
-		<portlet-class>org.osivia.services.calendar.plugin.CalendarPlugin</portlet-class>
-		
+    <portlet>
+        <portlet-name>osivia-services-calendar-event-preview</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.calendar.event.preview.portlet.configuration.CalendarEventPreviewConfiguration</value>
+        </init-param>
+
         <expiration-cache>180</expiration-cache>
 
-		<supports>
-			<mime-type>text/html</mime-type>
-		</supports>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
 
-		<portlet-info>
-			<title>Calendar plugin</title>
-		</portlet-info>
-	</portlet>
-    
+        <portlet-info>
+            <title>Calendar event preview</title>
+        </portlet-info>
+    </portlet>
+
+
+    <portlet>
+        <portlet-name>osivia-services-calendarPlugin</portlet-name>
+        <portlet-class>org.osivia.services.calendar.plugin.CalendarPlugin</portlet-class>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+
+        <portlet-info>
+            <title>Calendar plugin</title>
+        </portlet-info>
+    </portlet>
+
 </portlet-app>

@@ -85,7 +85,8 @@
             </preferences>
         </instance>
     </deployment>
-    
+
+
     <deployment>
         <if-exists>overwrite</if-exists>
         <instance>
@@ -105,5 +106,26 @@
             </preferences>
         </instance>
     </deployment>
-    
+
+
+    <deployment>
+        <if-exists>overwrite</if-exists>
+        <instance>
+            <instance-id>osivia-services-calendar-event-preview-instance</instance-id>
+            <portlet-ref>osivia-services-calendar-event-preview</portlet-ref>
+            <security-constraint>
+                <policy-permission>
+                    <action-name>view</action-name>
+                    <unchecked />
+                </policy-permission>
+            </security-constraint>
+            <preferences>
+                <preference>
+                    <name>hide</name>
+                    <value>true</value>
+                </preference>
+            </preferences>
+        </instance>
+    </deployment>
+
 </deployments>
