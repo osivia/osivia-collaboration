@@ -72,6 +72,10 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         // Window properties
         DocumentEditionWindowProperties properties = this.applicationContext.getBean(DocumentEditionWindowProperties.class);
 
+        // Base path
+        String basePath = window.getProperty(BASE_PATH_WINDOW_PROPERTY);
+        properties.setBasePath(basePath);
+
         // Document path
         String documentPath = window.getProperty(DOCUMENT_PATH_WINDOW_PROPERTY);
         properties.setDocumentPath(documentPath);

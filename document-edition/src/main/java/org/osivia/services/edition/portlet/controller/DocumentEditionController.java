@@ -170,7 +170,7 @@ public class DocumentEditionController {
     @InitBinder("form")
     public void editionFormInitBinder(WebDataBinder binder) {
         binder.addValidators(this.validator);
-        binder.setDisallowedFields("name", "creation", "path", "originalTitle");
+        binder.setDisallowedFields("name", "creation", "path", "originalTitle", "breadcrumb");
     }
 
 }

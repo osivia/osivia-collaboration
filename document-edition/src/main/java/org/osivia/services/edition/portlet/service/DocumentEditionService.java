@@ -16,6 +16,11 @@ import java.io.IOException;
 public interface DocumentEditionService {
 
     /**
+     * Base path window property.
+     */
+    String BASE_PATH_WINDOW_PROPERTY = "osivia.document.edition.base-path";
+
+    /**
      * Document path window property.
      */
     String DOCUMENT_PATH_WINDOW_PROPERTY = "osivia.document.edition.path";

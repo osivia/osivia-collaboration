@@ -1,0 +1,14 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="op" uri="http://www.osivia.org/jsp/taglib/osivia-portal" %>
+
+
+<c:if test="${form.creation}">
+    <div class="form-group">
+        <label><op:translate key="DOCUMENT_EDITION_FORM_LOCATION_LABEL"/></label>
+        <ol class="breadcrumb bg-light">
+            <c:forEach var="item" items="${form.breadcrumb}">
+                <li class="breadcrumb-item">${item}</li>
+            </c:forEach>
+        </ol>
+    </div>
+</c:if>

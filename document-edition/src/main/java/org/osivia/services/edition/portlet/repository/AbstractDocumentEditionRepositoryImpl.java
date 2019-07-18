@@ -11,6 +11,7 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.core.cms.*;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
 import org.osivia.services.edition.portlet.repository.command.CheckTitleAvailabilityCommand;
@@ -25,7 +26,9 @@ import org.springframework.validation.ValidationUtils;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,6 +65,11 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
      */
     @Autowired
     private DocumentEditionService service;
+    /**
+     * CMS service locator.
+     */
+    @Autowired
+    private ICMSServiceLocator cmsServiceLocator;
 
 
     /**
@@ -109,9 +117,60 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
 
             // Customization
             this.customizeForm(portalControllerContext, document, form);
+        } else if (StringUtils.isNotEmpty(windowProperties.getBasePath()) && StringUtils.isNotEmpty(windowProperties.getParentDocumentPath())) {
+            // Breadcrumb
+            List<String> breadcrumb = this.getBreadcrumb(portalControllerContext, windowProperties.getBasePath(), windowProperties.getParentDocumentPath());
+            form.setBreadcrumb(breadcrumb);
         }
 
         return form;
+    }
+
+
+    /**
+     * Get breadcrumb.
+     *
+     * @param portalControllerContext portal controller context
+     * @param basePath                base path
+     * @param parentPath              parent path
+     * @return breadcrumb
+     */
+    private List<String> getBreadcrumb(PortalControllerContext portalControllerContext, String basePath, String parentPath) {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = nuxeoController.getCMSCtx();
+
+        // Breadcrumb
+        List<String> breadcrumb = new ArrayList<>();
+
+        while (StringUtils.startsWith(parentPath, basePath)) {
+            try {
+                // Navigation item
+                CMSItem navigationItem = cmsService.getPortalNavigationItem(cmsContext, basePath, parentPath);
+
+                if (navigationItem == null) {
+                    continue;
+                }
+
+                // Nuxeo document
+                Document document = (Document) navigationItem.getNativeItem();
+
+                breadcrumb.add(0, document.getTitle());
+            } catch (CMSException e) {
+                // Do nothing
+            } finally {
+                // Loop on parent path
+                CMSObjectPath objectPath = CMSObjectPath.parse(parentPath);
+                CMSObjectPath parentObjectPath = objectPath.getParent();
+                parentPath = parentObjectPath.toString();
+            }
+        }
+
+        return breadcrumb;
     }
 
 

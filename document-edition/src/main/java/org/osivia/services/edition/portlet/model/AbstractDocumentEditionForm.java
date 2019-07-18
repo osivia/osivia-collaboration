@@ -1,5 +1,7 @@
 package org.osivia.services.edition.portlet.model;
 
+import java.util.List;
+
 /**
  * Document edition form abstract super-class.
  *
@@ -32,6 +34,10 @@ public abstract class AbstractDocumentEditionForm {
      * Original title.
      */
     private String originalTitle;
+    /**
+     * Breadcrumb.
+     */
+    private List<String> breadcrumb;
     /**
      * Description.
      */
@@ -92,6 +98,14 @@ public abstract class AbstractDocumentEditionForm {
 
     public void setOriginalTitle(String originalTitle) {
         this.originalTitle = originalTitle;
+    }
+
+    public List<String> getBreadcrumb() {
+        return breadcrumb;
+    }
+
+    public void setBreadcrumb(List<String> breadcrumb) {
+        this.breadcrumb = breadcrumb;
     }
 
     public String getDescription() {
