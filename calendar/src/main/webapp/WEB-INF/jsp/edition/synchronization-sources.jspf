@@ -40,7 +40,7 @@
                             <portlet:resourceURL id="synchronization-source-edition-url" var="url">
                                 <portlet:param name="sourceId" value="${source.id}" />
                             </portlet:resourceURL>
-                            <button type="button" class="btn btn-default btn-sm" data-url="${url}">
+                            <button type="button" class="btn btn-secondary btn-sm" data-url="${url}">
                                 <span><op:translate key="CALENDAR_SYNCHRONIZATION_SOURCE_EDIT"/></span>
                             </button>
                         
@@ -48,7 +48,7 @@
                             <portlet:actionURL name="remove-synchronization-source" var="url">
                                 <portlet:param name="sourceId" value="${source.id}" />
                             </portlet:actionURL>
-                            <a href="${url}" class="btn btn-default btn-sm">
+                            <a href="${url}" class="btn btn-secondary btn-sm">
                                 <span><op:translate key="CALENDAR_SYNCHRONIZATION_SOURCE_REMOVE"/></span>
                             </a>
                         </div>
@@ -65,7 +65,7 @@
         
             <!-- Add -->
             <portlet:resourceURL id="synchronization-source-edition-url" var="url" />
-            <button type="button" class="btn btn-default btn-sm" data-url="${url}">
+            <button type="button" class="btn btn-secondary btn-sm" data-url="${url}">
                 <span><op:translate key="CALENDAR_SYNCHRONIZATION_SOURCE_ADD"/></span>
             </button>
         </div>

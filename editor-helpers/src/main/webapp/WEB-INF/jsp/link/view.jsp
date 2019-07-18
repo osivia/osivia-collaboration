@@ -79,7 +79,7 @@
                                                     </form:select>
                                                     
                                                     <span class="input-group-btn">
-                                                        <button type="button" title="${popoverTitle}" class="btn btn-default" data-filter data-url="${filtersUrl}">
+                                                        <button type="button" title="${popoverTitle}" class="btn btn-secondary" data-filter data-url="${filtersUrl}">
                                                             <i class="glyphicons glyphicons-filter"></i>
                                                             <span><op:translate key="EDITOR_DOCUMENT_FILTER"/></span>
                                                         </button>
@@ -125,12 +125,12 @@
                     </button>
     
                     <!-- Remove -->
-                    <a href="${unlinkUrl}" class="btn btn-default" ${empty form.url ? 'disabled' : ''}>
+                    <a href="${unlinkUrl}" class="btn btn-secondary" ${empty form.url ? 'disabled' : ''}>
                         <span><op:translate key="EDITOR_UNLINK" /></span>
                     </a>
                     
                     <!-- Cancel -->
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
                         <span><op:translate key="CANCEL" /></span>
                     </button>
                 </div>

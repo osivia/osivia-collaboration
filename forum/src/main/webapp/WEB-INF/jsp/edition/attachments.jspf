@@ -30,7 +30,7 @@
         </c:if>
 
         <!-- Upload -->
-        <label class="btn btn-default btn-file">
+        <label class="btn btn-secondary btn-file">
             <i class="glyphicons glyphicons-plus"></i>
             <span><op:translate key="FORUM_ATTACHMENT_UPLOAD"/></span>
             <input type="file" name="attachments.upload" multiple>

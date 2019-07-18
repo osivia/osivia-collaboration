@@ -36,7 +36,7 @@
                             <c:if test="${not empty invitationRequest.userMessage}">
                                 <c:set var="title"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_REQUEST_USER_MESSAGE_TITLE" args="${invitationRequest.displayName}" /></c:set>
                                 <div>
-                                    <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#${namespace}-user-message" data-title="${title}" data-content="${invitationRequest.userMessage}">
+                                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#${namespace}-user-message" data-title="${title}" data-content="${invitationRequest.userMessage}">
                                         <i class="glyphicons glyphicons-comments"></i>
                                         <span class="visible-lg-inline"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_REQUEST_USER_MESSAGE" /></span>
                                     </button>
@@ -52,7 +52,7 @@
                         </div>
                     </div>
                     
-                    <!-- Rôle -->
+                    <!-- Rï¿½le -->
                     <div class="portal-table-cell" data-column="role">
                         <div class="portal-table-cell-inner" data-column="role">
                             <span><op:translate key="${invitationRequest.role.key}" classLoader="${invitationRequest.role.classLoader}" /></span>

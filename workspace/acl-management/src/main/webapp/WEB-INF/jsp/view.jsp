@@ -24,7 +24,7 @@
     
     <div>
         <!-- Close -->
-        <a href="${closeUrl}" class="btn btn-default no-ajax-link">
+        <a href="${closeUrl}" class="btn btn-secondary no-ajax-link">
             <span><op:translate key="CLOSE" /></span>
         </a>
     </div>

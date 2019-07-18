@@ -37,7 +37,7 @@
                 </div>
                 
                 <div class="col-sm-12">
-                    <input type="submit" value="Envoyer" class="btn btn-default"/>
+                    <input type="submit" value="Envoyer" class="btn btn-secondary"/>
                 </div>
         </form:form>
     </c:otherwise>

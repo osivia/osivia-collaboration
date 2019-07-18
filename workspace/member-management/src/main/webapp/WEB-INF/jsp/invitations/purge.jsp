@@ -14,7 +14,7 @@
 
 <c:if test="${invitations.purgeAvailable}">
     <p>
-        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#${namespace}-purge-confirmation">
+        <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#${namespace}-purge-confirmation">
             <i class="glyphicons glyphicons-cleaning"></i>
             <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_PURGE" /></span>
         </button>
@@ -28,11 +28,11 @@
                     <p class="text-center"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_PURGE_CONFIRMATION_MESSAGE" /></p>
                 
                     <p class="text-center">
-                        <a href="${purgeUrl}" class="btn btn-default" data-dismiss="modal">
+                        <a href="${purgeUrl}" class="btn btn-secondary" data-dismiss="modal">
                             <span><op:translate key="YES" /></span>
                         </a>
                     
-                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
                             <span><op:translate key="NO" /></span>
                         </button>
                     </p>

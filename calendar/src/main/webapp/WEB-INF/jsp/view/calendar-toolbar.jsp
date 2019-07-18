@@ -27,7 +27,7 @@
 <div class="btn-toolbar" role="toolbar">
 
     <div id="btn-period" class="btn-group dropdown pull-right" data-period="${calendarData.periodType.name}" data-startdate="${startDate}">
-    	<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+    	<button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">
 	        <span><op:translate key="CALENDAR_PLANNING" /></span>
 	        <span class="caret"></span>
 	    </button>

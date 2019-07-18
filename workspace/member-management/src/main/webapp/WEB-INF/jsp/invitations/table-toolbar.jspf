@@ -20,14 +20,14 @@
 <div class="portal-table-toolbar-container" data-url="${toolbarUrl}">
     <div>
         <!-- Export -->
-        <a class="btn btn-default btn-sm" href="${exportCsvUrl}">
+        <a class="btn btn-secondary btn-sm" href="${exportCsvUrl}">
             <i class="glyphicons glyphicons-table"></i>
             <span class="hidden-xs"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_EXPORT" /></span>
         </a>
         
         <!-- Purge -->
         <c:if test="${invitations.purgeAvailable}">
-            <a href="#${namespace}-purge-confirmation" class="btn btn-default btn-sm no-ajax-link" data-toggle="modal">
+            <a href="#${namespace}-purge-confirmation" class="btn btn-secondary btn-sm no-ajax-link" data-toggle="modal">
                 <i class="glyphicons glyphicons-cleaning"></i>
                 <span class="hidden-xs"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_PURGE" /></span>
             </a>
@@ -50,11 +50,11 @@
                         <p class="text-center"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_PURGE_CONFIRMATION_MESSAGE" /></p>
                     
                         <p class="text-center">
-                            <a href="${purgeUrl}" class="btn btn-default" data-dismiss="modal">
+                            <a href="${purgeUrl}" class="btn btn-secondary" data-dismiss="modal">
                                 <span><op:translate key="YES" /></span>
                             </a>
                         
-                            <button type="button" class="btn btn-default" data-dismiss="modal">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
                                 <span><op:translate key="NO" /></span>
                             </button>
                         </p>

@@ -29,7 +29,7 @@
                     <!-- Back to list -->
                     <div class="form-group">
                         <div class="col-xs-12">
-                            <button type="submit" name="cancel" class="btn btn-default">
+                            <button type="submit" name="cancel" class="btn btn-secondary">
                                 <i class="glyphicons glyphicons-arrow-left"></i>
                                 <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_BACK_TO_LIST"/></span>
                             </button>
@@ -92,7 +92,7 @@
                         <div class="form-group">
                             <div class="col-sm-offset-3 col-sm-9 col-lg-offset-2 col-lg-10">
                                 <!-- Delete -->                    
-                                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#${namespace}-delete-confirmation">
+                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#${namespace}-delete-confirmation">
                                     <i class="glyphicons glyphicons-bin"></i>
                                     <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_DELETE"/></span>
                                 </button>
@@ -163,7 +163,7 @@
                                 </button>
                                 
                                 <!-- Cancel -->
-                                <button type="submit" name="cancel" class="btn btn-default">
+                                <button type="submit" name="cancel" class="btn btn-secondary">
                                     <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_EDITION_CANCEL"/></span>
                                 </button>
                             </div>
@@ -193,7 +193,7 @@
                                         <span><op:translate key="DELETE"/></span>
                                     </a>
                                     
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
                                         <span><op:translate key="CANCEL" /></span>
                                     </button>
                                 </div>

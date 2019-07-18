@@ -13,7 +13,7 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <div>
-                <a href="${cancelUrl}" class="btn btn-default btn-sm">
+                <a href="${cancelUrl}" class="btn btn-secondary btn-sm">
                     <i class="glyphicons glyphicons-arrow-left"></i>
                     <span><op:translate key="BACK_TO_SUMMARY" /></span>
                 </a>

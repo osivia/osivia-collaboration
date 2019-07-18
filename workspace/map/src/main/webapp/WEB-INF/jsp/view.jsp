@@ -34,7 +34,7 @@
                 <input type="text" class="form-control" placeholder="${filterLabel}" data-expand="true">
                 
                 <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
+                    <button type="button" class="btn btn-secondary" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
                         <i class="halflings halflings-erase"></i>
                         <span class="sr-only">${clearFilterLabel}</span>
                     </button>

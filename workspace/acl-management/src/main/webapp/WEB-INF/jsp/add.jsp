@@ -60,7 +60,7 @@
                         </button>
                         
                         <!-- Cancel -->
-                        <button type="submit" name="cancel" class="btn btn-default">
+                        <button type="submit" name="cancel" class="btn btn-secondary">
                             <span><op:translate key="CANCEL" /></span>
                         </button>
                     </div>

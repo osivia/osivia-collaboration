@@ -31,7 +31,7 @@
                 
                 <div class="btn-group btn-group-sm" role="group">
                		<!-- Delete -->
-					<button type="submit" id="putInTrash" class="btn btn-default navbar-btn">
+					<button type="submit" id="putInTrash" class="btn btn-secondary navbar-btn">
 						<i class="glyphicons glyphicons-bin"></i> <span><op:translate key="PUT_IN_TRASH" /></span>
 					</button>
                 </div>

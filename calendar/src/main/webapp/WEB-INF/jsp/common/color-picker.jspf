@@ -6,7 +6,7 @@
 <form:hidden path="color"/>
         
 <div class="color-picker dropdown">
-    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
         <span class="calendar-color-container ${empty form.color.backgroundClass ? 'bg-primary' : form.color.backgroundClass}">
             <span class="sr-only"><op:translate key="${form.color.key}" /></span>
         </span>

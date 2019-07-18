@@ -75,7 +75,7 @@
         </div>
         
         <div class="form-group hidden">
-            <button type="submit" class="btn btn-default"><op:translate key="SAVE"/></button>
+            <button type="submit" class="btn btn-secondary"><op:translate key="SAVE"/></button>
         </div>
     </form:form>
     

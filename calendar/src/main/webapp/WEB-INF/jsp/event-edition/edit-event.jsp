@@ -99,7 +99,7 @@
 	        </button>
 	
 	        <!-- Cancel -->
-	        <a href="${cancelUrl}" class="btn btn-default">
+	        <a href="${cancelUrl}" class="btn btn-secondary">
 	            <span><op:translate key="CANCEL"/></span>
 	        </a>
 	    </div>

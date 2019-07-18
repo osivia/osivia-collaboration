@@ -75,7 +75,7 @@
     
     <c:if test="${not empty help}">
         <div class="text-right">
-            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-help">
+            <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#${namespace}-help">
                 <i class="glyphicons glyphicons-question-sign"></i>
                 <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_DISPLAY_HELP" /></span>
             </button>
