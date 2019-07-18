@@ -28,4 +28,7 @@
 
     <%--Buttons--%>
     <%@include file="fragments/buttons.jspf" %>
+
+    <%--File footer--%>
+    <%@include file="fragments/file-footer.jspf"%>
 </form:form>

@@ -36,6 +36,5 @@
             </c:if>
         </div>
         <form:errors path="upload" cssClass="invalid-feedback"/>
-        <input id="${namespace}-file-upload-submit" type="submit" name="upload" class="hidden">
     </div>
 </spring:bind>

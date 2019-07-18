@@ -1,0 +1,8 @@
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+
+<c:set var="namespace"><portlet:namespace/></c:set>
+
+
+<input id="${namespace}-file-upload-submit" type="submit" name="upload" class="d-none">
