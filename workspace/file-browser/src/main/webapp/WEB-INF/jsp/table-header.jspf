@@ -1,6 +1,7 @@
-<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="op" uri="http://www.osivia.org/jsp/taglib/osivia-portal" %>
 
 
 <!-- Column group -->
@@ -18,7 +19,13 @@
         <div class="portal-table-cell-inner" data-column="title">
             <c:choose>
                 <c:when test="${form.listMode}">
-                    <span><op:translate key="FILE_BROWSER_SORT_TITLE"/></span>
+                    <strong class="text-dark">
+                        <c:choose>
+                            <c:when test="${empty form.items}"><op:translate key="FILE_BROWSER_SORT_TITLE_NO_ITEM"/></c:when>
+                            <c:when test="${fn:length(form.items) eq 1}"><op:translate key="FILE_BROWSER_SORT_TITLE_ONE_ITEM"/></c:when>
+                            <c:otherwise><op:translate key="FILE_BROWSER_SORT_TITLE_N_ITEMS" args="${fn:length(form.items)}"/></c:otherwise>
+                        </c:choose>
+                    </strong>
                 </c:when>
 
                 <c:otherwise>
