@@ -28,8 +28,7 @@
         <module>trash</module>
         <module>file-browser</module>
 	    <!--  <module>purge</module> -->
-        <module>quota</module>		
-	    
+        <module>quota</module>			    
     </modules>
 
 
