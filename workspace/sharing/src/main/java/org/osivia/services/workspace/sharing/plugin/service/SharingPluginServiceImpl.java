@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import fr.toutatice.portail.cms.nuxeo.api.portlet.IPortletModule;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.PortalException;
@@ -27,6 +28,7 @@ import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
+import org.osivia.services.workspace.sharing.plugin.model.SharingListTemplateModule;
 import org.osivia.services.workspace.sharing.plugin.model.SharingMenubarModule;
 import org.osivia.services.workspace.sharing.plugin.repository.SharingPluginRepository;
 import org.osivia.services.workspace.sharing.portlet.service.SharingService;
@@ -99,6 +101,8 @@ public class SharingPluginServiceImpl implements SharingPluginService {
 
         // Sharing list template
         ListTemplate sharingListTemplate = new ListTemplate("sharing", bundle.getString("SHARING_LIST_TEMPLATE"), "dublincore, toutatice, ottc-sharing");
+        IPortletModule sharingListTemplateModule = this.applicationContext.getBean(SharingListTemplateModule.class);
+        sharingListTemplate.setModule(sharingListTemplateModule);
         listTemplates.put(sharingListTemplate.getKey(), sharingListTemplate);
     }
 

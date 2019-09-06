@@ -177,4 +177,15 @@ public interface FileBrowserService {
      */
     void updateMenubar(PortalControllerContext portalControllerContext) throws PortletException;
 
+    
+    /**
+     * end upload.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form form
+     * @throws PortletException
+     * @throws IOException
+     */
+    void endUpload(PortalControllerContext portalControllerContext) throws PortletException;
+    
 }

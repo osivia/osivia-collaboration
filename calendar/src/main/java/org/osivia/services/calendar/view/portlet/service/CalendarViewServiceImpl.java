@@ -1,6 +1,7 @@
 package org.osivia.services.calendar.view.portlet.service;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -259,7 +260,7 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
      * @throws PortletException
      */
     @SuppressWarnings("unchecked")
-    private void addIntegrationMenubarItem(PortalControllerContext portalControllerContext) throws PortletException {
+    protected void addIntegrationMenubarItem(PortalControllerContext portalControllerContext) throws PortletException {
         // Calendar options
         CalendarOptions options = this.repository.getConfiguration(portalControllerContext);
 
@@ -415,28 +416,18 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
         HashMap<EventKey, EventToSync> mapEvents = new HashMap<EventKey, EventToSync>();
         try {
             for (CalendarSynchronizationSource source : listUrlSource) {
+                // URL
                 URL url = new URL(source.getUrl());
-                URLConnection conn = url.openConnection();
+                // URL connection
+                URLConnection connection = url.openConnection();
 
-                
-                CalendarParser parser = CalendarParserFactory.getInstance().createParser();
-                
-                PropertyFactoryRegistry propertyFactoryRegistry = new PropertyFactoryRegistry();
-                
-                ParameterFactoryRegistry parameterFactoryRegistry = new ParameterFactoryRegistry();
-                
-                TimeZoneRegistry tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry();
-                
-                
-                CalendarBuilder builder = new CalendarBuilder(parser, propertyFactoryRegistry, parameterFactoryRegistry, tzRegistry);
-                BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                // Calendar builder
+                CalendarBuilder calendarBuilder = new CalendarBuilder();
+                // Calendar
+                net.fortuna.ical4j.model.Calendar calendar = calendarBuilder.build(connection.getInputStream());
 
-                net.fortuna.ical4j.model.Calendar calendar;
-                List<VEvent> listEvent = new ArrayList<VEvent>();
-
-                calendar = builder.build(rd);
                 ComponentList listComponent = calendar.getComponents();
-                listEvent = listComponent.getComponents(Component.VEVENT);
+                List<VEvent> listEvent = listComponent.getComponents(Component.VEVENT);
                 VTimeZone vTimeZoneAllEvent = (VTimeZone) calendar.getComponent(Component.VTIMEZONE);
                 TimeZone timeZoneAllEvent = null;
 

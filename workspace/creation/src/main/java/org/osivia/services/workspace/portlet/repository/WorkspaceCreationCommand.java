@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.portlet.repository;
 
 import java.text.Normalizer;
+import java.util.Date;
 import java.util.SortedSet;
 
 import org.apache.commons.lang.StringUtils;
@@ -183,7 +184,12 @@ public class WorkspaceCreationCommand implements INuxeoCommand {
      */
     @Override
     public String getId() {
-        return null;
-    }
+    	StringBuilder builder = new StringBuilder();
+        builder.append(this.getClass().getSimpleName());
+        builder.append("/");
+        builder.append(new Date().getTime());
+        builder.append("/");
+        builder.append(form.getTitle());
+        return builder.toString();    }
 
 }
