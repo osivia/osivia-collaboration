@@ -103,6 +103,32 @@
     </portlet>
 
 
+    <!-- Move plugin -->
+    <portlet>
+        <portlet-name>osivia-services-widgets-move-plugin</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.widgets.move.plugin.configuration.MovePluginConfiguration</value>
+        </init-param>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+
+        <portlet-info>
+            <title>Move plugin</title>
+        </portlet-info>
+    </portlet>
+
+
     <!-- Rename -->
     <portlet>
         <portlet-name>osivia-services-widgets-rename</portlet-name>
@@ -151,7 +177,7 @@
         </supports>
 
         <portlet-info>
-            <title>Sharing plugin</title>
+            <title>Rename plugin</title>
         </portlet-info>
     </portlet>
 
