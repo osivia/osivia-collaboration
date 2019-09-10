@@ -32,13 +32,13 @@
         </spring:bind>
         
         <%--Buttons--%>
-        <div>
-            <button type="submit" class="btn btn-primary">
-                <span><op:translate key="RENAME_ACTION" /></span>
-            </button>
-            
+        <div class="text-right">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">
                 <span><op:translate key="CANCEL" /></span>
+            </button>
+
+            <button type="submit" class="btn btn-primary">
+                <span><op:translate key="RENAME_ACTION" /></span>
             </button>
         </div>
     </fieldset>

@@ -21,7 +21,7 @@
             <span><op:translate key="UPDATE_ISSUED_DATE_LEGEND" /></span>
         </legend>
 
-        <!-- Issued date -->
+        <%--Issued date--%>
         <c:set var="placeholder"><op:translate key="ISSUED_DATE_PLACEHOLDER" /></c:set>
         <spring:bind path="date">
             <div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
@@ -36,16 +36,14 @@
             </div>
         </spring:bind>
         
-        <!-- Buttons -->
-        <div>
-            <!-- Save -->
-            <button type="submit" class="btn btn-primary">
-                <span><op:translate key="UPDATE_ACTION" /></span>
-            </button>
-            
-            <!-- Cancel -->
+        <%--Buttons--%>
+        <div class="text-right">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">
                 <span><op:translate key="CANCEL" /></span>
+            </button>
+
+            <button type="submit" class="btn btn-primary">
+                <span><op:translate key="UPDATE_ACTION" /></span>
             </button>
         </div>
     </fieldset>

@@ -29,8 +29,7 @@
             <span><op:translate key="MOVE_LEGEND"/></span>
         </legend>
 
-
-            <%--Target path--%>
+        <%--Target path--%>
         <spring:bind path="targetPath">
             <div class="form-group required selector">
                 <form:label path="targetPath"><op:translate key="MOVE_TARGET_PATH_LABEL"/></form:label>
@@ -40,14 +39,14 @@
             </div>
         </spring:bind>
 
-            <%--Buttons--%>
-        <div>
-            <button type="submit" class="btn btn-primary">
-                <span><op:translate key="MOVE_ACTION"/></span>
-            </button>
-
+        <%--Buttons--%>
+        <div class="text-right">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">
                 <span><op:translate key="CANCEL"/></span>
+            </button>
+
+            <button type="submit" class="btn btn-primary">
+                <span><op:translate key="MOVE_ACTION"/></span>
             </button>
         </div>
     </fieldset>

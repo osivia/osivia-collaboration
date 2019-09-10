@@ -1072,17 +1072,17 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         Element modalFooter = DOM4JUtils.generateDivElement("modal-footer");
         modalContent.add(modalFooter);
 
-        // Confirmation button
-        String url = this.getDeleteUrl(portalControllerContext, identifiers, view);
-        Element confirm = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-warning no-ajax-link", bundle.getString("FILE_BROWSER_TOOLBAR_DELETE"),
-                "glyphicons glyphicons-basic-bin");
-        modalFooter.add(confirm);
-
         // Cancel button
         Element cancel = DOM4JUtils.generateElement("button", "btn btn-secondary", bundle.getString("CANCEL"), null, null);
         DOM4JUtils.addAttribute(cancel, "type", "button");
         DOM4JUtils.addDataAttribute(cancel, "dismiss", "modal");
         modalFooter.add(cancel);
+
+        // Confirmation button
+        String url = this.getDeleteUrl(portalControllerContext, identifiers, view);
+        Element confirm = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-warning no-ajax-link", bundle.getString("FILE_BROWSER_TOOLBAR_DELETE"),
+                "glyphicons glyphicons-basic-bin");
+        modalFooter.add(confirm);
 
         return modal;
     }
