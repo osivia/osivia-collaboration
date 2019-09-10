@@ -121,15 +121,20 @@ public class ViewQuotaController extends CMSPortlet {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);        
 
-        try {
-            TaskbarTask task = this.taskbarService.getTask(portalControllerContext,nuxeoController.getBasePath(),"TRASH");
-            if( task == null)   {
-                request.setAttribute("osivia.emptyResponse", "1");
-                return "empty";
-            }
-        } catch (PortalException e) {
-            throw new PortletException(e);
-        }      
+        if( "trash".equals(System.getProperty("osivia.quota.displayPolicy")))   {
+            try {
+                TaskbarTask task = this.taskbarService.getTask(portalControllerContext,nuxeoController.getBasePath(),"TRASH");
+                if( task == null)   {
+                    request.setAttribute("osivia.emptyResponse", "1");
+                    return "empty";
+                }
+            } catch (PortalException e) {
+                throw new PortletException(e);
+            } 
+        }   
+        
+        request.setAttribute("updatePolicy", System.getProperty("osivia.quota.updatePolicy"));
+        
         
         return "view";
     }

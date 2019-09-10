@@ -78,7 +78,7 @@ public class QuotaServiceImpl implements QuotaService, ApplicationContextAware {
         QuotaForm form = this.applicationContext.getBean(QuotaForm.class);
 
         QuotaInformations infos = this.repository.getQuotaItems(portalControllerContext);
-        String sizeMessage = HtmlFormatter.formatSize(locale, bundle, infos.getTreeSize());
+        String sizeMessage = HtmlFormatter.formatSize(locale, bundle, infos.getTreeSize()) + " "+bundle.getString("QUOTA_USED") ;
         int ratio = 0;
 
         if (infos.getQuota() != -1) {
