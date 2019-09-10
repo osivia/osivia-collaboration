@@ -1,11 +1,12 @@
 package org.osivia.services.calendar.view.portlet.service;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
-
-import javax.portlet.PortletException;
-
+import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.Date;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.PropertyList;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.property.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -14,37 +15,26 @@ import org.osivia.services.calendar.view.portlet.repository.CalendarViewReposito
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import net.fortuna.ical4j.data.CalendarOutputter;
-import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.Date;
-import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.PropertyList;
-import net.fortuna.ical4j.model.ValidationException;
-import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.CalScale;
-import net.fortuna.ical4j.model.property.Description;
-import net.fortuna.ical4j.model.property.DtEnd;
-import net.fortuna.ical4j.model.property.LastModified;
-import net.fortuna.ical4j.model.property.Location;
-import net.fortuna.ical4j.model.property.ProdId;
-import net.fortuna.ical4j.model.property.Uid;
-import net.fortuna.ical4j.model.property.Version;
+import javax.portlet.PortletException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
 
 /**
  * Calendar integration portlet service implementation.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see CalendarIntegrationService
  */
 @Service
 public class CalendarIntegrationServiceImpl implements CalendarIntegrationService {
 
-    /** Portlet repository. */
+    private final ProdId prodId;
+    /**
+     * Portlet repository.
+     */
     @Autowired
     private CalendarViewRepository repository;
-
-
-    private final ProdId prodId;
 
 
     /**
@@ -81,21 +71,17 @@ public class CalendarIntegrationServiceImpl implements CalendarIntegrationServic
                 }
             }
         }
-        
+
         CalendarOutputter outputter = new CalendarOutputter();
-        try {
-            outputter.output(calendar, outputStream);
-        } catch (ValidationException e) {
-            throw new PortletException(e);
-        }
+        outputter.output(calendar, outputStream);
     }
 
 
     /**
      * Create calendar event.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param event event
+     * @param event                   event
      * @throws PortletException
      * @throws IOException
      */

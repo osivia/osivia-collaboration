@@ -1,12 +1,7 @@
 package org.osivia.services.widgets.issued.plugin.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.portlet.PortletRequest;
-import javax.servlet.http.HttpServletRequest;
-
+import fr.toutatice.portail.cms.nuxeo.api.ContextualizationHelper;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
@@ -17,11 +12,7 @@ import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
-import org.osivia.portal.api.menubar.IMenubarService;
-import org.osivia.portal.api.menubar.MenubarContainer;
-import org.osivia.portal.api.menubar.MenubarDropdown;
-import org.osivia.portal.api.menubar.MenubarItem;
-import org.osivia.portal.api.menubar.MenubarModule;
+import org.osivia.portal.api.menubar.*;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.services.widgets.issued.plugin.model.IssuedMenubarModule;
@@ -29,30 +20,42 @@ import org.osivia.services.widgets.issued.portlet.service.IssuedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.toutatice.portail.cms.nuxeo.api.ContextualizationHelper;
+import javax.portlet.PortletRequest;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Issued date plugin service implementation.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see IssuedPluginService
  */
 @Service
 public class IssuedPluginServiceImpl implements IssuedPluginService {
 
-    /** Menubar module. */
+    /**
+     * Menubar module.
+     */
     @Autowired
     private IssuedMenubarModule menubarModule;
 
-    /** Portal URL factory. */
+    /**
+     * Portal URL factory.
+     */
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
 
-    /** Menubar service. */
+    /**
+     * Menubar service.
+     */
     @Autowired
     private IMenubarService menubarService;
 
-    /** Internationalization bundle factory. */
+    /**
+     * Internationalization bundle factory.
+     */
     @Autowired
     private IBundleFactory bundleFactory;
 
@@ -110,26 +113,29 @@ public class IssuedPluginServiceImpl implements IssuedPluginService {
 
     /**
      * Accept document indicator.
+     *
      * @param portalControllerContext portal controller context
-     * @param documentContext document context
+     * @param documentContext         document context
      * @return true if the document is accepted
      */
     private boolean accept(PortalControllerContext portalControllerContext, DocumentContext documentContext) {
         boolean accept;
-        
-        if (ContextualizationHelper.isCurrentDocContextualized(portalControllerContext) && (documentContext != null)) {
+
+        if (ContextualizationHelper.isCurrentDocContextualized(portalControllerContext) && (documentContext != null) && (documentContext.getDocumentType() != null) && !StringUtils.equals("PortalSite", documentContext.getDocumentType().getName())) {
             // Publication infos
             PublicationInfos publicationInfos = documentContext.getPublicationInfos();
             // Permissions
             Permissions permissions = documentContext.getPermissions();
-            
+
             if (!publicationInfos.isLiveSpace() && permissions.isEditable()) {
                 if (this.isLive(portalControllerContext, documentContext)) {
                     // Live
                     accept = true;
-                } else if (StringUtils.equals(publicationInfos.getPath(), documentContext.getCmsPath())) {
-                    // Remote proxy
-                    accept = false;
+                } else if (documentContext instanceof NuxeoDocumentContext) {
+                    NuxeoDocumentContext nuxeoDocumentContext = (NuxeoDocumentContext) documentContext;
+
+                    // Don't accept remote proxies
+                    accept = !nuxeoDocumentContext.isRemoteProxy();
                 } else {
                     accept = true;
                 }
@@ -139,16 +145,16 @@ public class IssuedPluginServiceImpl implements IssuedPluginService {
         } else {
             accept = false;
         }
-        
+
         return accept;
     }
 
 
     /**
      * Check if document is live.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param documentContext document context
+     * @param documentContext         document context
      * @return true if document is live
      */
     private boolean isLive(PortalControllerContext portalControllerContext, DocumentContext documentContext) {
@@ -157,7 +163,7 @@ public class IssuedPluginServiceImpl implements IssuedPluginService {
 
         // Current edition state
         EditionState editionState = (EditionState) request.getAttribute("osivia.editionState");
-        
+
         return (editionState != null) && (documentContext != null)
                 && StringUtils.equals(EditionState.CONTRIBUTION_MODE_EDITION, editionState.getContributionMode())
                 && StringUtils.equals(documentContext.getCmsPath(), editionState.getDocPath());

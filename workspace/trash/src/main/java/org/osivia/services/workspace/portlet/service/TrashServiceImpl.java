@@ -306,6 +306,13 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
      */
     private void updateModel(PortalControllerContext portalControllerContext, TrashForm form, List<TrashedDocument> selection, List<TrashedDocument> rejected,
                              Bundle bundle, String messagePrefix) {
+    	
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();    	
+    	
+		// Portlet response
+		PortletResponse response = portalControllerContext.getResponse();   
+    	
         if (selection == null) {
             // Select all documents
             selection = new ArrayList<>(form.getTrashedDocuments());
@@ -327,7 +334,17 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
             String message = bundle.getString(messagePrefix + "WARNING", StringUtils.join(titles, ", "));
             this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.WARNING);
         }
-
+        
+        
+        // Refresh space data
+        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_SPACE_DATA, Constants.PORTLET_VALUE_ACTIVATE);
+        
+        // Update public render parameter for associated portlets refresh
+        if (response instanceof ActionResponse) {
+            ActionResponse actionResponse = (ActionResponse) response;
+            actionResponse.setRenderParameter("dnd-update", String.valueOf(System.currentTimeMillis()));
+        }        
+        
         // Update model
         form.getTrashedDocuments().removeAll(selection);
     }

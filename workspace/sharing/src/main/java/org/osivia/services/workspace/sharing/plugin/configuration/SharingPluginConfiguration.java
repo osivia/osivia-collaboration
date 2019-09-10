@@ -6,12 +6,15 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.services.workspace.sharing.plugin.model.SharingListTemplateModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+
+import javax.portlet.PortletContext;
 
 /**
  * Sharing plugin configuration.
@@ -25,6 +28,10 @@ public class SharingPluginConfiguration {
     /** Application context. */
     @Autowired
     private ApplicationContext applicationContext;
+
+    /** Portlet context. */
+    @Autowired
+    private PortletContext portletContext;
 
 
     /**
@@ -45,6 +52,12 @@ public class SharingPluginConfiguration {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("plugin");
         return messageSource;
+    }
+
+
+    @Bean
+    public SharingListTemplateModule getSharingListTemplateModule() {
+        return new SharingListTemplateModule(this.portletContext);
     }
 
 

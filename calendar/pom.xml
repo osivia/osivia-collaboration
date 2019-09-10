@@ -18,9 +18,15 @@
     
         <!-- iCal4j -->
 		<dependency>
-		    <groupId>org.mnode.ical4j</groupId>
-		    <artifactId>ical4j</artifactId>
-		    <version>1.0.7</version>
+            <groupId>org.mnode.ical4j</groupId>
+            <artifactId>ical4j</artifactId>
+            <version>3.0.6</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
 		 </dependency>
          
     </dependencies>

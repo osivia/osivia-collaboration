@@ -10,6 +10,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -31,11 +32,10 @@ import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
  * @author Cédric Krommenhoek
  * @see CMSPortlet
  * @see PortletConfigAware
- * @see PortletContextAware
  */
 @Configuration
 @ComponentScan(basePackages = "org.osivia.services.widgets.issued.portlet")
-public class IssuedConfiguration extends CMSPortlet implements PortletConfigAware, PortletContextAware {
+public class IssuedConfiguration extends CMSPortlet implements PortletConfigAware {
 
     /** Application context. */
     @Autowired
@@ -67,15 +67,9 @@ public class IssuedConfiguration extends CMSPortlet implements PortletConfigAwar
         } catch (PortletException e) {
             this.log.error(e.getMessage(), e.getCause());
         }
-    }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setPortletContext(PortletContext portletContext) {
-        portletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
+        // Register application
+        PortletAppUtils.registerApplication(portletConfig, this.applicationContext);
     }
 
 

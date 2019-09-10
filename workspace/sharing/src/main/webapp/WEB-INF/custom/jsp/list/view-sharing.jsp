@@ -11,7 +11,7 @@
         <li>
             <p>
                 <!-- Title -->
-                <span><ttc:title document="${document}" icon="true" /></span>
+                <a href="${document.properties['url']}"><ttc:title document="${document}" linkable="false" icon="true" /></a>
 
                 <br>
 

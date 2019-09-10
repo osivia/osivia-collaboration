@@ -4,10 +4,8 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
-
-<portlet:renderURL copyCurrentRenderParameters="true" var="callbackUrl"/>
-
 <portlet:actionURL name="upload" copyCurrentRenderParameters="true" var="uploadUrl"/>
+<portlet:actionURL name="endUpload" copyCurrentRenderParameters="true" var="callbackUrl" />
 
 
 <c:set var="replaceWarning"><op:translate key="FILE_BROWSER_UPLOAD_WARNING_REPLACE"/></c:set>

@@ -1,5 +1,7 @@
 package org.osivia.services.workspace.portlet.repository;
 
+import java.util.Date;
+
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
@@ -124,7 +126,12 @@ public class CheckTitleAvailabilityInEditionCommand implements INuxeoCommand {
      */
     @Override
     public String getId() {
-        return null;
+    	StringBuilder builder = new StringBuilder();
+        builder.append(this.getClass().getSimpleName());
+        builder.append("/");
+        builder.append(new Date().getTime());
+        return builder.toString();
+
     }
 
 }
