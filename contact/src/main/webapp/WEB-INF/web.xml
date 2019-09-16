@@ -19,5 +19,13 @@
         <url-pattern>/WEB-INF/servlet/view</url-pattern>
     </servlet-mapping>
     
+  <servlet> 
+    <servlet-name>BotDetect Captcha</servlet-name> 
+    <servlet-class>com.captcha.botdetect.web.servlet.CaptchaServlet</servlet-class> 
+  </servlet> 
+  <servlet-mapping> 
+    <servlet-name>BotDetect Captcha</servlet-name> 
+    <url-pattern>/botdetectcaptcha</url-pattern> 
+  </servlet-mapping> 
     
 </web-app>
