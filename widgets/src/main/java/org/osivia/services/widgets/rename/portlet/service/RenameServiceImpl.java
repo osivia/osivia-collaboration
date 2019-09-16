@@ -76,7 +76,7 @@ public class RenameServiceImpl implements RenameService {
     @Override
     public RenameForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
         // Current document
-        Document document = this.getCurrentDocument(portalControllerContext);
+        Document document = this.getCurrentDocument(portalControllerContext, true);
 
         // Rename form
         RenameForm form = this.applicationContext.getBean(RenameForm.class);
@@ -102,7 +102,7 @@ public class RenameServiceImpl implements RenameService {
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
         // Current document
-        Document document = this.getCurrentDocument(portalControllerContext);
+        Document document = this.getCurrentDocument(portalControllerContext, false);
 
         // Old document title
         String oldTitle = document.getTitle();
@@ -118,6 +118,9 @@ public class RenameServiceImpl implements RenameService {
             this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
         }
 
+        // Reload document to invalidate cache
+        this.getCurrentDocument(portalControllerContext, true);
+
         // Redirection
         String redirectionPath = this.getRedirectionPath(portalControllerContext);
         String url = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, redirectionPath, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null,
@@ -130,14 +133,18 @@ public class RenameServiceImpl implements RenameService {
      * Get current Nuxeo document.
      *
      * @param portalControllerContext portal controller context
+     * @param reload reload document context indicator
      * @return Nuxeo document
      */
-    private Document getCurrentDocument(PortalControllerContext portalControllerContext) throws PortletException {
+    private Document getCurrentDocument(PortalControllerContext portalControllerContext, boolean reload) throws PortletException {
         // Current document path
         String path = this.getCurrentPath(portalControllerContext);
 
         // Document context
         NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, path);
+        if (reload) {
+            documentContext.reload();
+        }
 
         return documentContext.getDocument();
     }
