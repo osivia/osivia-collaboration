@@ -4,7 +4,7 @@
 
     <groupId>org.osivia.services</groupId>
     <artifactId>osivia-services-collaboration-parent</artifactId>
-    <version>4.7.14.3</version>
+    <version>4.7-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OSIVIA Services - Collaboration parent</name>
@@ -12,10 +12,10 @@
 
     <properties>
         <!-- Toutatice -->
-        <toutatice.version>4.7.14</toutatice.version>
+        <toutatice.version>4.7-SNAPSHOT</toutatice.version>
 
         <!-- Directory -->
-        <directory.version>4.7.14</directory.version>
+        <directory.version>4.7-SNAPSHOT</directory.version>
 
         <!-- JBoss -->
         <jboss-portal.version>2.7.2</jboss-portal.version>
@@ -101,8 +101,8 @@
                     <version>3.3</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <source>1.7</source>
+                        <target>1.7</target>
                     </configuration>
                 </plugin>
 
