@@ -1,6 +1,7 @@
 package org.osivia.services.workspace.portlet.repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.nuxeo.ecm.automation.client.Session;
@@ -68,7 +69,12 @@ public class WorkspacePermissionsCommand implements INuxeoCommand {
      */
     @Override
     public String getId() {
-        return null;
-    }
+    	StringBuilder builder = new StringBuilder();
+        builder.append(this.getClass().getSimpleName());
+        builder.append("/");
+        builder.append(new Date().getTime());
+        builder.append("/");
+        builder.append(document.getTitle());
+        return builder.toString();    }
 
 }

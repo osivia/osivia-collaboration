@@ -6,7 +6,7 @@
     version="2.0">
 
 	<portlet>
-        <portlet-name>osivia-services-workspace-trash</portlet-name>
+        <portlet-name>osivia-services-workspace-quota</portlet-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 
         <init-param>
@@ -15,7 +15,7 @@
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>
-            <value>org.osivia.services.workspace.portlet.configuration.TrashConfiguration</value>
+            <value>org.osivia.services.workspace.quota.portlet.configuration.QuotaConfiguration</value>
         </init-param>
         
         <expiration-cache>180</expiration-cache>
@@ -27,28 +27,17 @@
         </supports>
         
 		<portlet-info>
-			<title>Trash</title>
+			<title>Quota</title>
 		</portlet-info>
-        <supported-public-render-parameter>dnd-update</supported-public-render-parameter>		
+         <supported-public-render-parameter>dnd-update</supported-public-render-parameter>			
 	</portlet>
     
+	   
+
     <public-render-parameter>
         <identifier>dnd-update</identifier>
         <name>dnd-update</name>
-    </public-render-parameter>
-    <portlet>
-        <portlet-name>osivia-services-workspace-trash-plugin</portlet-name>
-        <portlet-class>org.osivia.services.workspace.plugin.TrashPlugin</portlet-class>
-        
-        <expiration-cache>180</expiration-cache>
+    </public-render-parameter>    
 
-        <supports>
-            <mime-type>text/html</mime-type>
-        </supports>
-
-        <portlet-info>
-            <title>Trash plugin</title>
-        </portlet-info>
-    </portlet>
-	
+   	
 </portlet-app>
