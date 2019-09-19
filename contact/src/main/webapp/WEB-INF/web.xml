@@ -18,14 +18,15 @@
         <servlet-name>ViewRendererServlet</servlet-name>
         <url-pattern>/WEB-INF/servlet/view</url-pattern>
     </servlet-mapping>
-    
-  <servlet> 
-    <servlet-name>BotDetect Captcha</servlet-name> 
-    <servlet-class>com.captcha.botdetect.web.servlet.CaptchaServlet</servlet-class> 
-  </servlet> 
-  <servlet-mapping> 
-    <servlet-name>BotDetect Captcha</servlet-name> 
-    <url-pattern>/botdetectcaptcha</url-pattern> 
-  </servlet-mapping> 
-    
+
+	<servlet>
+		<servlet-name>captcha</servlet-name>
+		<servlet-class>org.osivia.services.contact.portlet.servlet.CaptchaServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>		
+	</servlet>
+	<servlet-mapping>
+	        <servlet-name>captcha</servlet-name>
+	        <url-pattern>/captcha/*</url-pattern>
+	</servlet-mapping>
+	
 </web-app>
