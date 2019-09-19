@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 
+import fr.toutatice.portail.cms.nuxeo.api.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -36,10 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 
 /**
@@ -52,17 +49,6 @@ import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
  */
 @Repository
 public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implements CalendarViewRepository {
-
-    /** CMS path window property name. */
-    private static final String CMS_PATH_WINDOW_PROPERTY = "osivia.calendar.cmsPath";
-    /** Default view window property name. */
-    private static final String DEFAULT_VIEW_WINDOW_PROPERTY = "osivia.calendar.defaultView";
-    /** Compact view indicator window property name. */
-    private static final String COMPACT_VIEW_WINDOW_PROPERTY = "osivia.calendar.compactView";
-    /** Read only indicator window property name. */
-    private static final String READ_ONLY_WINDOW_PROPERTY = "osivia.calendar.readOnly";
-    /** Integration indicator window property name. */
-    private static final String INTEGRATION_WINDOW_PROPERTY = "osivia.calendar.integration";
 
     /** Nuxeo document request attribute name. */
     private static final String DOCUMENT_REQUEST_ATTRIBUTE = "osivia.calendar.document";
@@ -207,8 +193,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
     @Override
     public List<Event> getEvents(PortalControllerContext portalControllerContext, Date start, Date end) throws PortletException {
         // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext.getRequest(), portalControllerContext.getResponse(),
-                portalControllerContext.getPortletCtx());
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // CMS path
         String cmsPath = this.getCMSPath(nuxeoController);
