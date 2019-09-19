@@ -1,6 +1,7 @@
 package org.osivia.services.calendar.view.portlet.service;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -21,6 +22,7 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.WindowState;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -259,7 +261,7 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
      * @throws PortletException
      */
     @SuppressWarnings("unchecked")
-    private void addIntegrationMenubarItem(PortalControllerContext portalControllerContext) throws PortletException {
+    protected void addIntegrationMenubarItem(PortalControllerContext portalControllerContext) throws PortletException {
         // Calendar options
         CalendarOptions options = this.repository.getConfiguration(portalControllerContext);
 
@@ -412,74 +414,67 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
         List<CalendarSynchronizationSource> listUrlSource = this.repository.getSynchronizationSources(portalControllerContext);
-        HashMap<EventKey, EventToSync> mapEvents = new HashMap<EventKey, EventToSync>();
-        try {
-            for (CalendarSynchronizationSource source : listUrlSource) {
-                URL url = new URL(source.getUrl());
-                URLConnection conn = url.openConnection();
 
-                
-                CalendarParser parser = CalendarParserFactory.getInstance().createParser();
-                
-                PropertyFactoryRegistry propertyFactoryRegistry = new PropertyFactoryRegistry();
-                
-                ParameterFactoryRegistry parameterFactoryRegistry = new ParameterFactoryRegistry();
-                
-                TimeZoneRegistry tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry();
-                
-                
-                CalendarBuilder builder = new CalendarBuilder(parser, propertyFactoryRegistry, parameterFactoryRegistry, tzRegistry);
-                BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        if (CollectionUtils.isNotEmpty(listUrlSource)) {
+            HashMap<EventKey, EventToSync> mapEvents = new HashMap<>();
+            try {
+                for (CalendarSynchronizationSource source : listUrlSource) {
+                    // URL
+                    URL url = new URL(source.getUrl());
+                    // URL connection
+                    URLConnection connection = url.openConnection();
 
-                net.fortuna.ical4j.model.Calendar calendar;
-                List<VEvent> listEvent = new ArrayList<VEvent>();
+                    // Calendar builder
+                    CalendarBuilder calendarBuilder = new CalendarBuilder();
+                    // Calendar
+                    net.fortuna.ical4j.model.Calendar calendar = calendarBuilder.build(connection.getInputStream());
 
-                calendar = builder.build(rd);
-                ComponentList listComponent = calendar.getComponents();
-                listEvent = listComponent.getComponents(Component.VEVENT);
-                VTimeZone vTimeZoneAllEvent = (VTimeZone) calendar.getComponent(Component.VTIMEZONE);
-                TimeZone timeZoneAllEvent = null;
+                    ComponentList listComponent = calendar.getComponents();
+                    List<VEvent> listEvent = listComponent.getComponents(Component.VEVENT);
+                    VTimeZone vTimeZoneAllEvent = (VTimeZone) calendar.getComponent(Component.VTIMEZONE);
+                    TimeZone timeZoneAllEvent = null;
 
-                // If timezone not inquire, default timezone is GMT
-                if (vTimeZoneAllEvent == null) {
-                    TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-                    timeZoneAllEvent = registry.getTimeZone("GMT");
-                } else {
-                    timeZoneAllEvent = new TimeZone(vTimeZoneAllEvent);
-                }
-
-                Calendar cal;
-                EventKey key;
-                for (VEvent event : listEvent) {
-                    if (event.getRecurrenceId() == null) {
-                        cal = null;
+                    // If timezone not inquire, default timezone is GMT
+                    if (vTimeZoneAllEvent == null) {
+                        TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+                        timeZoneAllEvent = registry.getTimeZone("GMT");
                     } else {
-                        cal = Calendar.getInstance();
-                        if (event.getRecurrenceId().getTimeZone() == null) {
-                            cal.setTimeZone(timeZoneAllEvent);
-                        } else {
-                            cal.setTimeZone(event.getRecurrenceId().getTimeZone());
-                        }
-                        cal.setTime(event.getRecurrenceId().getDate());
+                        timeZoneAllEvent = new TimeZone(vTimeZoneAllEvent);
                     }
-                    key = new EventKey(event.getUid().getValue(), source.getId(), cal);
-                    mapEvents.put(key, buildEvent(event, source.getId(), timeZoneAllEvent));
+
+                    Calendar cal;
+                    EventKey key;
+                    for (VEvent event : listEvent) {
+                        if (event.getRecurrenceId() == null) {
+                            cal = null;
+                        } else {
+                            cal = Calendar.getInstance();
+                            if (event.getRecurrenceId().getTimeZone() == null) {
+                                cal.setTimeZone(timeZoneAllEvent);
+                            } else {
+                                cal.setTimeZone(event.getRecurrenceId().getTimeZone());
+                            }
+                            cal.setTime(event.getRecurrenceId().getDate());
+                        }
+                        key = new EventKey(event.getUid().getValue(), source.getId(), cal);
+                        mapEvents.put(key, buildEvent(event, source.getId(), timeZoneAllEvent));
+                    }
                 }
+                this.repository.synchronize(portalControllerContext, mapEvents);
+
+                this.notificationsService.addSimpleNotification(portalControllerContext, bundle.getString("MESSAGE_SYNCHRO_DONE"), NotificationsType.SUCCESS);
+
+            } catch (ParserException e) {
+                logger.error("Erreur de parsing lors de la synchronisation, détail:");
+                e.printStackTrace();
+                this.notificationsService.addSimpleNotification(portalControllerContext, bundle.getString("MESSAGE_SYNCHRO_FAILED"), NotificationsType.WARNING);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                this.notificationsService.addSimpleNotification(portalControllerContext, bundle.getString("MESSAGE_SYNCHRO_FAILED_URL"), NotificationsType.WARNING);
+            } catch (IOException e) {
+                e.printStackTrace();
+                this.notificationsService.addSimpleNotification(portalControllerContext, bundle.getString("MESSAGE_SYNCHRO_FAILED"), NotificationsType.WARNING);
             }
-            this.repository.synchronize(portalControllerContext, mapEvents);
-
-            this.notificationsService.addSimpleNotification(portalControllerContext, bundle.getString("MESSAGE_SYNCHRO_DONE"), NotificationsType.SUCCESS);
-
-        } catch (ParserException e) {
-            logger.error("Erreur de parsing lors de la synchronisation, détail:");
-            e.printStackTrace();
-            this.notificationsService.addSimpleNotification(portalControllerContext, bundle.getString("MESSAGE_SYNCHRO_FAILED"), NotificationsType.WARNING);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            this.notificationsService.addSimpleNotification(portalControllerContext, bundle.getString("MESSAGE_SYNCHRO_FAILED_URL"), NotificationsType.WARNING);
-        } catch (IOException e) {
-            e.printStackTrace();
-            this.notificationsService.addSimpleNotification(portalControllerContext, bundle.getString("MESSAGE_SYNCHRO_FAILED"), NotificationsType.WARNING);
         }
     }
 

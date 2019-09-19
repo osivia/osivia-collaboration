@@ -29,9 +29,13 @@
 		<portlet-info>
 			<title>Trash</title>
 		</portlet-info>
+        <supported-public-render-parameter>dnd-update</supported-public-render-parameter>		
 	</portlet>
     
-    
+    <public-render-parameter>
+        <identifier>dnd-update</identifier>
+        <name>dnd-update</name>
+    </public-render-parameter>
     <portlet>
         <portlet-name>osivia-services-workspace-trash-plugin</portlet-name>
         <portlet-class>org.osivia.services.workspace.plugin.TrashPlugin</portlet-class>

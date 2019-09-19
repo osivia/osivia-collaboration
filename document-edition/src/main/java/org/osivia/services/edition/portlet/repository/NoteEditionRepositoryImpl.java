@@ -1,6 +1,7 @@
 package org.osivia.services.edition.portlet.repository;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.portlet.PortletException;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Note edition portlet repository implementation.
@@ -36,7 +38,7 @@ public class NoteEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
 
     @Override
-    void customizeForm(PortalControllerContext portalControllerContext, Document document, NoteEditionForm form) {
+    protected void customizeForm(PortalControllerContext portalControllerContext, Document document, NoteEditionForm form) {
         // Content
         String content = document.getString("note:note");
         form.setContent(content);
@@ -50,7 +52,7 @@ public class NoteEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
 
     @Override
-    void customizeProperties(PortalControllerContext portalControllerContext, NoteEditionForm form, PropertyMap properties) {
+    protected void customizeProperties(PortalControllerContext portalControllerContext, NoteEditionForm form, PropertyMap properties, Map<String, Blob> binaries) {
         // Content
         properties.set("note:note", StringUtils.trimToNull(form.getContent()));
     }

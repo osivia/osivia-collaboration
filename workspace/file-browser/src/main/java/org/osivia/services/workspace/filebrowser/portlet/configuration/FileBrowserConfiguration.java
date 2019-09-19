@@ -10,6 +10,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.customization.ICustomizationService;
@@ -67,7 +68,8 @@ public class FileBrowserConfiguration extends CMSPortlet implements PortletConfi
             throw new RuntimeException(e);
         }
 
-        // TODO PortletAppUtil
+        // Register application
+        PortletAppUtils.registerApplication(portletConfig, this.applicationContext);
     }
 
 

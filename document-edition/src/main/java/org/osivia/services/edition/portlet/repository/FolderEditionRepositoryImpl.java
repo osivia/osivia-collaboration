@@ -1,7 +1,5 @@
 package org.osivia.services.edition.portlet.repository;
 
-import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
 import org.osivia.services.edition.portlet.model.FolderEditionForm;
@@ -35,20 +33,8 @@ public class FolderEditionRepositoryImpl extends AbstractDocumentEditionReposito
 
 
     @Override
-    void customizeForm(PortalControllerContext portalControllerContext, Document document, FolderEditionForm form) {
-        // Do nothing
-    }
-
-
-    @Override
     public String getViewPath(PortalControllerContext portalControllerContext) {
         return "folder";
-    }
-
-
-    @Override
-    void customizeProperties(PortalControllerContext portalControllerContext, FolderEditionForm form, PropertyMap properties) {
-        // Do nothing
     }
 
 }

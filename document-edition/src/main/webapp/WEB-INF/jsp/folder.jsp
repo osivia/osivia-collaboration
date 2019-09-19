@@ -7,7 +7,7 @@
 <portlet:defineObjects/>
 
 
-<portlet:actionURL name="save" var="url"/>
+<portlet:actionURL name="submit" var="url"/>
 
 
 <form:form action="${url}" method="post" modelAttribute="form">

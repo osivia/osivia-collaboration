@@ -19,9 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import javax.portlet.ActionResponse;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
+import javax.portlet.*;
 import java.io.IOException;
 
 /**
@@ -108,6 +106,7 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
         // Form
         AbstractDocumentEditionForm form = repository.getForm(portalControllerContext, windowProperties);
+        form.setWindowProperties(windowProperties);
         form.setName(name);
 
         // Document path
@@ -123,7 +122,33 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
 
     @Override
-    public String getViewPath(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException {
+    public DocumentEditionRepository getRepository(String name) {
+        return this.applicationContext.getBean(name, DocumentEditionRepository.class);
+    }
+
+
+    @Override
+    public String getViewPath(PortalControllerContext portalControllerContext) throws PortletException, IOException {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+        // Render response
+        RenderResponse response = (RenderResponse) portalControllerContext.getResponse();
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
+
+        // Form
+        AbstractDocumentEditionForm form = this.getForm(portalControllerContext);
+
+        // Title
+        String title;
+        if (form.isCreation()) {
+            title = bundle.getString("DOCUMENT_EDITION_TITLE_CREATE");
+        } else {
+            title = bundle.getString("DOCUMENT_EDITION_TITLE_EDIT");
+        }
+        response.setTitle(title);
+
+        // Repository
         DocumentEditionRepository repository = this.getRepository(form.getName());
 
         return repository.getViewPath(portalControllerContext);
@@ -131,16 +156,30 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
 
     @Override
+    public void upload(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Repository
+        DocumentEditionRepository repository = this.getRepository(form.getName());
+
+        repository.upload(portalControllerContext, form);
+    }
+
+
+    @Override
+    public void restore(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Repository
+        DocumentEditionRepository repository = this.getRepository(form.getName());
+
+        repository.restore(portalControllerContext, form);
+    }
+
+
+    @Override
     public void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
-        // Action response
-        ActionResponse response = (ActionResponse) portalControllerContext.getResponse();
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
-        // Window properties
-        DocumentEditionWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
         // Repository
         DocumentEditionRepository repository = this.getRepository(form.getName());
 
@@ -158,10 +197,39 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         }
         this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
 
-        // Redirection
-        String redirectionPath = StringUtils.defaultIfEmpty(windowProperties.getDocumentPath(), windowProperties.getParentDocumentPath());
-        String redirectionUrl = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, redirectionPath, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null, null);
-        response.sendRedirect(redirectionUrl);
+        // Redirect
+        this.redirect(portalControllerContext);
+    }
+
+
+    @Override
+    public void cancel(PortalControllerContext portalControllerContext) throws PortletException, IOException {
+        // Redirect
+        this.redirect(portalControllerContext);
+    }
+
+
+    /**
+     * Redirect.
+     *
+     * @param portalControllerContext portal controller context
+     */
+    private void redirect(PortalControllerContext portalControllerContext) throws IOException {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+
+        if (portletResponse instanceof ActionResponse) {
+            // Action response
+            ActionResponse actionResponse = (ActionResponse) portletResponse;
+
+            // Window properties
+            DocumentEditionWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
+
+            // Redirection
+            String redirectionPath = StringUtils.defaultIfEmpty(windowProperties.getDocumentPath(), windowProperties.getParentDocumentPath());
+            String redirectionUrl = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, redirectionPath, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null, null);
+            actionResponse.sendRedirect(redirectionUrl);
+        }
     }
 
 
@@ -198,17 +266,6 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         }
 
         return name;
-    }
-
-
-    /**
-     * Get portlet repository.
-     *
-     * @param name repository name
-     * @return repository
-     */
-    private DocumentEditionRepository getRepository(String name) {
-        return this.applicationContext.getBean(name, DocumentEditionRepository.class);
     }
 
 }

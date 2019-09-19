@@ -8,15 +8,17 @@ package org.osivia.services.edition.portlet.model;
 public abstract class AbstractDocumentEditionForm {
 
     /**
+     * Window properties.
+     */
+    private DocumentEditionWindowProperties windowProperties;
+    /**
      * Name.
      */
     private String name;
-
     /**
      * Document path.
      */
     private String path;
-
     /**
      * Document creation indicator.
      */
@@ -26,7 +28,10 @@ public abstract class AbstractDocumentEditionForm {
      * Title.
      */
     private String title;
-
+    /**
+     * Original title.
+     */
+    private String originalTitle;
     /**
      * Description.
      */
@@ -36,10 +41,18 @@ public abstract class AbstractDocumentEditionForm {
     /**
      * Constructor.
      */
-    AbstractDocumentEditionForm() {
+    protected AbstractDocumentEditionForm() {
         super();
     }
 
+
+    public DocumentEditionWindowProperties getWindowProperties() {
+        return windowProperties;
+    }
+
+    public void setWindowProperties(DocumentEditionWindowProperties windowProperties) {
+        this.windowProperties = windowProperties;
+    }
 
     public String getName() {
         return name;
@@ -71,6 +84,14 @@ public abstract class AbstractDocumentEditionForm {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getOriginalTitle() {
+        return originalTitle;
+    }
+
+    public void setOriginalTitle(String originalTitle) {
+        this.originalTitle = originalTitle;
     }
 
     public String getDescription() {

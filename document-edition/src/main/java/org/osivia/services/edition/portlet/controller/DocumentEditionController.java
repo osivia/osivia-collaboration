@@ -63,20 +63,51 @@ public class DocumentEditionController {
      *
      * @param request  render request
      * @param response render response
-     * @param form     document edition form model attribute
      * @return view path
      */
     @RenderMapping
-    public String view(RenderRequest request, RenderResponse response, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException {
+    public String view(RenderRequest request, RenderResponse response) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        return this.service.getViewPath(portalControllerContext, form);
+        return this.service.getViewPath(portalControllerContext);
     }
 
 
     /**
-     * Save document action mapping.
+     * Upload document file action mapping.
+     *
+     * @param request  action request
+     * @param response action response
+     * @param form     document edition form model attribute
+     */
+    @ActionMapping(name = "submit", params = "upload")
+    public void upload(ActionRequest request, ActionResponse response, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.upload(portalControllerContext, form);
+    }
+
+
+    /**
+     * Restore document file action mapping.
+     *
+     * @param request  action request
+     * @param response action response
+     * @param form     document edition form model attribute
+     */
+    @ActionMapping(name = "submit", params = "restore")
+    public void restore(ActionRequest request, ActionResponse response, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.restore(portalControllerContext, form);
+    }
+
+
+    /**
+     * Save document edition action mapping.
      *
      * @param request       action request
      * @param response      action response
@@ -84,7 +115,7 @@ public class DocumentEditionController {
      * @param result        binding result
      * @param sessionStatus session status
      */
-    @ActionMapping("save")
+    @ActionMapping(name = "submit", params = "save")
     public void save(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("form") AbstractDocumentEditionForm form, BindingResult result, SessionStatus sessionStatus) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
@@ -94,6 +125,24 @@ public class DocumentEditionController {
 
             this.service.save(portalControllerContext, form);
         }
+    }
+
+
+    /**
+     * Cancel document edition action mapping.
+     *
+     * @param request       action request
+     * @param response      action response
+     * @param sessionStatus session status
+     */
+    @ActionMapping("cancel")
+    public void cancel(ActionRequest request, ActionResponse response, SessionStatus sessionStatus) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        sessionStatus.setComplete();
+
+        this.service.cancel(portalControllerContext);
     }
 
 
@@ -121,7 +170,7 @@ public class DocumentEditionController {
     @InitBinder("form")
     public void editionFormInitBinder(WebDataBinder binder) {
         binder.addValidators(this.validator);
-        binder.setDisallowedFields("name", "creation", "path");
+        binder.setDisallowedFields("name", "creation", "path", "originalTitle");
     }
 
 }

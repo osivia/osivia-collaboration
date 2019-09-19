@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
@@ -69,11 +70,15 @@ public class FileBrowserPluginServiceImpl implements FileBrowserPluginService {
     public Player getFileBrowserPlayer(NuxeoDocumentContext documentContext) {
         // Document
         Document document = documentContext.getDocument();
+        // Publication infos
+        NuxeoPublicationInfos publicationInfos = documentContext.getPublicationInfos();
+        // Workspace indicator
+        boolean workspace = documentContext.isContextualized() && publicationInfos.isLiveSpace();
 
         // Player
         Player player;
 
-        if ((document != null) && this.fileBrowserTypes.contains(document.getType())) {
+        if (workspace && this.fileBrowserTypes.contains(document.getType())) {
             player = this.applicationContext.getBean(FileBrowserPlayer.class, document);
         } else {
             player = null;

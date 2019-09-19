@@ -235,6 +235,27 @@ public class FileBrowserController {
         response.setRenderParameter("view", view.getId());
     }
 
+    /**
+     * End upload action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @param viewId view identifier request parameter
+     * @param form form model attribute
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ActionMapping("endUpload")
+    public void endUpload(ActionRequest request, ActionResponse response, @RequestParam(name = "view", required = false) String viewId) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+ 
+        this.service.endUpload(portalControllerContext);
+
+        // Copy view render parameter
+        FileBrowserView view = this.service.getView(portalControllerContext, viewId);
+        response.setRenderParameter("view", view.getId());
+    }
 
     /**
      * Get toolbar resource mapping.

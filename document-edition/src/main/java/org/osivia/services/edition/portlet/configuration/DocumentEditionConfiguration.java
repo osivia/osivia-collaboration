@@ -1,6 +1,9 @@
 package org.osivia.services.edition.portlet.configuration;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -15,6 +18,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.portlet.context.PortletConfigAware;
+import org.springframework.web.portlet.multipart.CommonsPortletMultipartResolver;
+import org.springframework.web.portlet.multipart.PortletMultipartResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
@@ -31,6 +36,10 @@ import javax.portlet.PortletException;
 @Configuration
 @ComponentScan(basePackages = "org.osivia.services.edition.portlet")
 public class DocumentEditionConfiguration extends CMSPortlet implements PortletConfigAware {
+
+    /** Max upload size per file. */
+    public static final Long MAX_UPLOAD_SIZE_PER_FILE = NumberUtils.toLong(System.getProperty("osivia.filebrowser.max.upload.size"), 500) * FileUtils.ONE_MB;
+
 
     /**
      * Application context.
@@ -86,6 +95,20 @@ public class DocumentEditionConfiguration extends CMSPortlet implements PortletC
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("document-edition");
         return messageSource;
+    }
+
+
+    /**
+     * Get multipart resolver.
+     *
+     * @return multipart resolver
+     */
+    @Bean(name = "portletMultipartResolver")
+    public PortletMultipartResolver getMultipartResolver() {
+        CommonsPortletMultipartResolver multipartResolver = new CommonsPortletMultipartResolver();
+        multipartResolver.setDefaultEncoding(CharEncoding.UTF_8);
+        multipartResolver.setMaxUploadSizePerFile(MAX_UPLOAD_SIZE_PER_FILE);
+        return multipartResolver;
     }
 
 
