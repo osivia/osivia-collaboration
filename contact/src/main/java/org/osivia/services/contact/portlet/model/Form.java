@@ -11,11 +11,10 @@ public class Form
   private String bodyLabel;
   private String nom;
   private String nomLabel;
+  private String captcha;
+  private String token;
+  private boolean captchaValidate;  
   private boolean sent;
-  private boolean fromError;
-  private boolean bodyError;
-  private boolean nomError;
-  private boolean objectError;
   
   public String getTo()
   {
@@ -66,16 +65,7 @@ public class Form
   {
     this.sent = sent;
   }
-  
-  public boolean isFromError()
-  {
-    return fromError;
-  }
-  
-  public void setFromError(boolean fromError)
-  {
-    this.fromError = fromError;
-  }
+
   
   public String getNom()
   {
@@ -87,40 +77,6 @@ public class Form
     this.nom = nom;
   }
   
-  public boolean isBodyError()
-  {
-    return bodyError;
-  }
-  
-  public void setBodyError(boolean bodyError)
-  {
-    this.bodyError = bodyError;
-  }
-  
-  public boolean isNomError()
-  {
-    return nomError;
-  }
-  
-  public void setNomError(boolean nomError)
-  {
-    this.nomError = nomError;
-  }
-  
-  public boolean isObjectError()
-  {
-    return objectError;
-  }
-  
-  public void setObjectError(boolean objectError)
-  {
-    this.objectError = objectError;
-  }
-  
-  public boolean hasError()
-  {
-    return (bodyError) || (fromError) || (nomError) || (objectError);
-  }
   
   public String getFromLabel()
   {
@@ -161,5 +117,30 @@ public class Form
   {
     this.nomLabel = nomLabel;
   }
+
+	public String getCaptcha() {
+		return captcha;
+	}
+	
+	public void setCaptcha(String captcha) {
+		this.captcha = captcha;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public boolean isCaptchaValidate() {
+		return captchaValidate;
+	}
+
+	public void setCaptchaValidate(boolean captchaValidate) {
+		this.captchaValidate = captchaValidate;
+	}
+
 }
 

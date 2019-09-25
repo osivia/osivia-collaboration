@@ -8,12 +8,14 @@ import java.util.Set;
 
 import javax.portlet.PortletException;
 
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.DocumentType;
+import org.osivia.portal.api.cms.PublicationInfos;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.MenubarItem;
@@ -107,8 +109,10 @@ public class CalendarMenubarModule implements MenubarModule {
         if (documentContext != null) {
             // Document type
             DocumentType documentType = documentContext.getDocumentType();
+            // Publication infos
+            PublicationInfos publicationInfos = documentContext.getPublicationInfos();
 
-            if (documentType != null) {
+            if ((documentType != null) && publicationInfos.isLiveSpace()) {
                 // Document
                 Document document = (Document) documentContext.getDocument();
 

@@ -83,15 +83,20 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
      * Nuxeo document request attribute name.
      */
     private static final String DOCUMENT_REQUEST_ATTRIBUTE = "osivia.calendar.document";
+
+
     /**
      * Log.
      */
     private final Log log;
+
+
     /**
      * Application context.
      */
     @Autowired
     private ApplicationContext applicationContext;
+
     /**
      * Portal URL factory.
      */
@@ -231,8 +236,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
     @Override
     public List<Event> getEvents(PortalControllerContext portalControllerContext, Date start, Date end) throws PortletException {
         // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext.getRequest(), portalControllerContext.getResponse(),
-                portalControllerContext.getPortletCtx());
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // CMS path
         String cmsPath = this.getCMSPath(nuxeoController);
