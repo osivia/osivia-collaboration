@@ -12,10 +12,10 @@
 
     <properties>
         <!-- Toutatice -->
-        <toutatice.version>4.7.19-jdk8</toutatice.version>
+        <toutatice.version>4.7.21-jdk8</toutatice.version>
 
         <!-- Directory -->
-        <directory.version>4.7.14</directory.version>
+        <directory.version>4.7.21-jdk8</directory.version>
 
         <!-- JBoss -->
         <jboss-portal.version>2.7.2</jboss-portal.version>
@@ -35,6 +35,7 @@
         <module>widgets</module>
         <module>workspace</module>
         <module>versions</module>
+        <module>search</module>
 
         <module>ear</module>
     </modules>

@@ -1,5 +1,6 @@
 package org.osivia.services.statistics.plugin;
 
+import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.taskbar.TaskbarFactory;
 import org.osivia.portal.api.taskbar.TaskbarItem;
@@ -15,6 +16,8 @@ import fr.toutatice.portail.cms.nuxeo.api.domain.AbstractPluginPortlet;
  */
 public class StatisticsPlugin extends AbstractPluginPortlet {
 
+    /** Statistics template property */
+    private static final String STATISTICS_TEMPLATE = "osivia.collaboration.statistics.template";
     /** Plugin name. */
     private static final String PLUGIN_NAME = "statistics.plugin";
 
@@ -49,8 +52,13 @@ public class StatisticsPlugin extends AbstractPluginPortlet {
         TaskbarFactory factory = this.getTaskbarService().getFactory();
 
         // Statistics
+        String template = "/default/templates/workspace/statistics";
+        if(StringUtils.isNotBlank(System.getProperty(STATISTICS_TEMPLATE))) {
+            template = System.getProperty(STATISTICS_TEMPLATE);
+        }
+        
         TaskbarItem statistics = factory.createStapledTaskbarItem("STATISTICS", "STATISTICS_TASK", "glyphicons glyphicons-charts",
-                "/default/templates/workspace/statistics");
+                template);
         items.add(statistics);
     }
 
