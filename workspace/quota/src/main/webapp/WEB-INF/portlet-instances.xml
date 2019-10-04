@@ -17,4 +17,20 @@
             </security-constraint>
         </instance>
     </deployment>
+    
+    <deployment>
+        <if-exists>overwrite</if-exists>
+        <instance>
+            <display-name xml:lang="en">OSIVIA - Reporting quota</display-name>
+            <display-name xml:lang="fr">OSIVIA - Liste des quotas</display-name>
+            <instance-id>osivia-services-workspace-quota-reporting-instance</instance-id>
+            <portlet-ref>osivia-services-workspace-quota-reporting</portlet-ref>
+            <security-constraint>
+                <policy-permission>
+                    <action-name>view</action-name>
+                    <unchecked />
+                </policy-permission>
+            </security-constraint>
+        </instance>
+    </deployment>    
 </deployments>

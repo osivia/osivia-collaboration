@@ -16,6 +16,13 @@
         </header-content>
     </portlet>
     
+    <portlet>
+        <portlet-name>osivia-services-workspace-quota-reporting</portlet-name>
+
+        <transaction>
+            <trans-attribute>Required</trans-attribute>
+        </transaction>
+    </portlet>
 
     <service>
         <service-name>CustomizationModulesRepository</service-name>
