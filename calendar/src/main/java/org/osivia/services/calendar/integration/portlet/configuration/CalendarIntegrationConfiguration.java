@@ -1,6 +1,10 @@
 package org.osivia.services.calendar.integration.portlet.configuration;
 
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.portlet.PortletAppUtils;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +21,7 @@ import javax.portlet.PortletConfig;
  * Calendar integration portlet configuration.
  *
  * @author Cédric Krommenhoek
+ * @see PortletConfigAware
  */
 @Configuration
 @ComponentScan(basePackages = "org.osivia.services.calendar.integration.portlet")
@@ -62,6 +67,30 @@ public class CalendarIntegrationConfiguration implements PortletConfigAware {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("calendar-integration");
         return messageSource;
+    }
+
+
+    /**
+     * Get internationalization bundle factory.
+     *
+     * @return internationalization bundle factory
+     */
+    @Bean
+    public IBundleFactory getBundleFactory() {
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        return internationalizationService.getBundleFactory(this.getClass().getClassLoader(), this.applicationContext);
+    }
+
+
+    /**
+     * Get portal URL factory.
+     *
+     * @return portal URL factory
+     */
+    @Bean
+    public IPortalUrlFactory getPortalUrlFactory() {
+        return Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
     }
 
 }
