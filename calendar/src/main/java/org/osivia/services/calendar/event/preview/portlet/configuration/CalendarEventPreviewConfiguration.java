@@ -1,6 +1,10 @@
 package org.osivia.services.calendar.event.preview.portlet.configuration;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -26,7 +30,7 @@ import javax.portlet.PortletException;
  * @see PortletConfigAware
  */
 @Configuration
-@ComponentScan(basePackages = "org.osivia.services.calendar.event.preview.portlet")
+@ComponentScan(basePackages = {"org.osivia.services.calendar.event.preview.portlet", "org.osivia.services.calendar.common"})
 public class CalendarEventPreviewConfiguration extends CMSPortlet implements PortletConfigAware {
 
     /**
@@ -97,6 +101,41 @@ public class CalendarEventPreviewConfiguration extends CMSPortlet implements Por
     @Bean
     public IWebIdService getWebIdService() {
         return Locator.findMBean(IWebIdService.class, IWebIdService.MBEAN_NAME);
+    }
+
+
+    /**
+     * Get internationalization bundle factory.
+     *
+     * @return internationalization bundle factory
+     */
+    @Bean
+    public IBundleFactory getBundleFactory() {
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        return internationalizationService.getBundleFactory(this.getClass().getClassLoader(), this.applicationContext);
+    }
+
+
+    /**
+     * Get Nuxeo service.
+     *
+     * @return Nuxeo service
+     */
+    @Bean
+    public INuxeoService getNuxeoService() {
+        return Locator.findMBean(INuxeoService.class, INuxeoService.MBEAN_NAME);
+    }
+
+
+    /**
+     * Get document DAO.
+     *
+     * @return document DAO
+     */
+    @Bean
+    public DocumentDAO getDocumentDao() {
+        return DocumentDAO.getInstance();
     }
 
 }

@@ -191,8 +191,10 @@ $JQry(window).load(function() {
 		initScheduler(false);
 		
 		//To display or hide menu bar on the event's left when the user click on the event
-		scheduler.attachEvent("onClick", function(id){
+		scheduler.attachEvent("onClick", function(id, event){
 			if (isReadonly(id)) {
+				return false;
+			} else if ($JQry(event.target).data("target") === "#osivia-modal") {
 				return false;
 			} else {
 			    var divScheduler = $JQry("div#scheduler_here");
@@ -400,3 +402,7 @@ function isIgnoredDate(date) {
 	return (window.innerWidth < 768) && ((date.getDay() == 6) || (date.getDay() == 0));
 };
 
+
+function calendarPreviewLoadCallback() {
+	// TODO
+}

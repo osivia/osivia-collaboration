@@ -2,6 +2,7 @@ package org.osivia.services.calendar.event.preview.portlet.service;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.calendar.event.preview.portlet.model.CalendarEventPreviewForm;
+import org.osivia.services.calendar.event.view.portlet.service.CalendarEventViewService;
 
 import javax.portlet.PortletException;
 
@@ -25,6 +26,10 @@ public interface CalendarEventPreviewService {
      * Page identifier window property.
      */
     String PAGE_ID_WINDOW_PROPERTY = "osivia.event-preview.page-id";
+    /**
+     * Detail URL.
+     */
+    String DETAIL_URL_WINDOW_PROPERTY = "osivia.event-preview.detail-url";
 
 
     /**

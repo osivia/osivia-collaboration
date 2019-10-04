@@ -163,6 +163,32 @@
 
 
     <portlet>
+        <portlet-name>osivia-services-calendar-integration</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.calendar.integration.portlet.configuration.CalendarIntegrationConfiguration</value>
+        </init-param>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+
+        <portlet-info>
+            <title>Calendar integration</title>
+        </portlet-info>
+    </portlet>
+
+
+    <portlet>
         <portlet-name>osivia-services-calendarPlugin</portlet-name>
         <portlet-class>org.osivia.services.calendar.plugin.CalendarPlugin</portlet-class>
 

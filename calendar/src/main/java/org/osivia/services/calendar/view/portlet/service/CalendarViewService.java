@@ -1,5 +1,7 @@
 package org.osivia.services.calendar.view.portlet.service;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.TimeZone;
@@ -217,5 +219,26 @@ public interface CalendarViewService extends CalendarService {
      * @return
      */
     EventToSync buildEvent(VEvent vevent, String idAgenda, net.fortuna.ical4j.model.TimeZone timeZoneAllEvent) throws PortletException;
+
+
+    /**
+     * Integrate calendar.
+     *
+     * @param portalControllerContext portal controller context
+     * @param outputStream output steam
+     * @param format calendar integration format
+     * @throws PortletException
+     * @throws IOException
+     */
+    void integrate(PortalControllerContext portalControllerContext, OutputStream outputStream, String format) throws PortletException, IOException;
+
+
+    /**
+     * Get integration URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @return URL
+     */
+    String getIntegrationUrl(PortalControllerContext portalControllerContext) throws PortletException;
 
 }

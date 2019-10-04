@@ -6,6 +6,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -333,6 +334,11 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
      * @return URL
      */
     private String getEventPreviewUrl(NuxeoController nuxeoController, Document document) {
+        // Detail URL
+        Link detailLink = nuxeoController.getLink(document);
+        String detailUrl = StringEscapeUtils.escapeHtml(detailLink.getUrl());
+
+
         // Portlet instance
         String instance = CalendarEventPreviewService.PORTLET_INSTANCE;
 
@@ -340,6 +346,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         Map<String, String> properties = new HashMap<>();
         properties.put(CalendarEventPreviewService.DOCUMENT_PATH_WINDOW_PROPERTY, document.getPath());
         properties.put(CalendarEventPreviewService.PAGE_ID_WINDOW_PROPERTY, nuxeoController.getPageId());
+        properties.put(CalendarEventPreviewService.DETAIL_URL_WINDOW_PROPERTY, detailUrl);
 
         // URL
         String url;
@@ -349,11 +356,6 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
             url = null;
             this.log.error("Error while computing event URL.", e.getCause());
         }
-
-
-        // FIXME
-        System.out.println(nuxeoController.getLink(document).getUrl());
-
 
         return url;
     }

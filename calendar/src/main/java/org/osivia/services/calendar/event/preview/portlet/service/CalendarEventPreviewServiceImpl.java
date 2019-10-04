@@ -1,7 +1,9 @@
 package org.osivia.services.calendar.event.preview.portlet.service;
 
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
@@ -16,11 +18,15 @@ import org.osivia.portal.core.web.IWebIdService;
 import org.osivia.services.calendar.event.edition.portlet.service.CalendarEventEditionService;
 import org.osivia.services.calendar.event.preview.portlet.model.CalendarEventPreviewForm;
 import org.osivia.services.calendar.event.preview.portlet.repository.CalendarEventPreviewRepository;
+import org.osivia.services.calendar.event.view.portlet.model.CalendarEventViewForm;
+import org.osivia.services.calendar.event.view.portlet.service.CalendarEventViewServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.portlet.PortletException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,34 +94,42 @@ public class CalendarEventPreviewServiceImpl implements CalendarEventPreviewServ
         // Title
         String title = document.getTitle();
         form.setTitle(title);
+        // All day indicator
+        boolean allDay = BooleanUtils.toBoolean(document.getProperties().getBoolean("vevent:allDay"));
+        form.setAllDay(allDay);
+        // Start date
+        Date startDate = document.getDate("vevent:dtstart");
+        form.setStartDate(startDate);
+        // End date
+        Date endDate = document.getDate("vevent:dtend");
+        form.setEndDate(endDate);
+        // All day end date
+        Date endDateAllDay;
+        if (allDay) {
+            endDateAllDay = DateUtils.addDays(endDate, -1);
+        } else {
+            endDateAllDay = null;
+        }
+        form.setEndDateAllDay(endDateAllDay);
+        // Same day indicator
+        boolean sameDay;
+        if (allDay) {
+            sameDay = DateUtils.isSameDay(startDate, endDateAllDay);
+        } else {
+            sameDay = DateUtils.isSameDay(startDate, endDate);
+        }
+        form.setSameDay(sameDay);
+        // Location
+        String location = document.getString("vevent:location");
+        form.setLocation(location);
 
-        // TODO
-
-
-        // View URL
-        String cmsPath = this.webIdService.webIdToCmsPath(documentContext.getWebId());
-        Map<String, String> parameters = new HashMap<>(0);
-        String contextualization = IPortalUrlFactory.CONTEXTUALIZATION_PORTLET;
-        String viewUrl = this.portalUrlFactory.getCMSUrl(portalControllerContext, pagePath, cmsPath, parameters, contextualization, null, null, null, null, null);
-        form.setViewUrl(viewUrl);
+        // Detail URL
+        String detailUrl = window.getProperty(DETAIL_URL_WINDOW_PROPERTY);
+        form.setDetailUrl(detailUrl);
 
         // Edit URL
         if (documentContext.getPermissions().isEditable()) {
-            // Portlet instance
-            String instance = CalendarEventEditionService.PORTLET_INSTANCE;
-            // Window properties
-            Map<String, String> properties = new HashMap<>();
-            properties.put(Constants.WINDOW_PROP_URI, document.getPath());
-            properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
-            properties.put("osivia.ajaxLink", "1");
-            // URL
-            String editUrl;
-            try {
-                editUrl = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, instance, properties);
-            } catch (PortalException e) {
-                throw new PortletException(e);
-            }
-            form.setEditUrl(editUrl);
+            // TODO : L'API ne permet pas actuellement de faire un lien CMS avec un mode d'édition actif
         }
 
         return form;

@@ -11,11 +11,11 @@ function printCell()
 	//Modifier onTemplatesReady doit se faire avant l'appel à scheduler.init
 	scheduler.attachEvent("onTemplatesReady", function(){
 		scheduler.templates.event_text=function(start, end, event){
-			return "<a href=\"javascript:\" class=\"event_title no-ajax-link\" data-target=\"#osivia-modal\" data-load-url=\"" + event.view_url + "\">" + event.text + "</a>";
+			return "<a href=\"javascript:\" class=\"event_title no-ajax-link\" data-target=\"#osivia-modal\" data-load-url=\"" + event.view_url + "\" data-load-callback-function=\"calendarPreviewLoadCallback\" data-size=\"small\">" + event.text + "</a>";
 		};
 
 		scheduler.templates.event_bar_text=function(start, end, event){
-			return "<a href=\"javascript:\" class=\"event_title no-ajax-link\" data-target=\"#osivia-modal\" data-load-url=\"" + event.view_url + "\">" + event.text + "</a>";
+			return "<a href=\"javascript:\" class=\"event_title no-ajax-link\" data-target=\"#osivia-modal\" data-load-url=\"" + event.view_url + "\" data-load-callback-function=\"calendarPreviewLoadCallback\" data-size=\"small\">" + event.text + "</a>";
 		};
 
 	    scheduler.templates.event_class = function(start,end,ev){

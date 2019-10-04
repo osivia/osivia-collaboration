@@ -1,0 +1,46 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+
+<div class="media">
+    <div class="media-left">
+        <i class="glyphicons glyphicons-calendar"></i>
+    </div>
+
+    <div class="media-body">
+        <h3 class="h4 media-heading">${form.title}</h3>
+
+        <div>
+            <c:choose>
+                <c:when test="${form.allDay}">
+                    <c:choose>
+                        <c:when test="${form.sameDay}">
+                            <span><fmt:formatDate value="${form.startDate}" type="date" dateStyle="long" /></span>
+                        </c:when>
+                        <c:otherwise>
+                            <span><fmt:formatDate value="${form.startDate}" type="date" dateStyle="long" /></span>
+                            <span>&ndash;</span>
+                            <span><fmt:formatDate value="${form.endDateAllDay}" type="date" dateStyle="long" /></span>
+                        </c:otherwise>
+                    </c:choose>
+                </c:when>
+                <c:otherwise>
+                    <c:choose>
+                        <c:when test="${form.sameDay}">
+                            <span><fmt:formatDate value="${form.startDate}" type="date" dateStyle="long"/></span>
+                            <span>&nbsp;</span>
+                            <span><fmt:formatDate value="${form.startDate}" type="time" timeStyle="short" /></span>
+                            <span>&ndash;</span>
+                            <span><fmt:formatDate value="${form.endDate}" type="time" timeStyle="short" /></span>
+                        </c:when>
+                        <c:otherwise>
+                            <span><fmt:formatDate value="${form.startDate}" type="both" dateStyle="long" timeStyle="short" /></span>
+                            <span>&ndash;</span>
+                            <span><fmt:formatDate value="${form.endDate}" type="both" dateStyle="long" timeStyle="short" /></span>
+                        </c:otherwise>
+                    </c:choose>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
+</div>
