@@ -590,6 +590,7 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
             object.put("doc_id", event.getId());
             object.put("color", event.getBckgColor());
             object.put("view_url", event.getViewURL());
+            object.put("preview_url", event.getPreviewUrl());
             if (event.getBckgColor() == null) {
                 if (event.getIdParentSource() == null) {
                     if (mapColor.get("PRIMARY") != null) {

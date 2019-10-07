@@ -16,47 +16,76 @@ import org.springframework.stereotype.Component;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Event {
 
-    /** Event time. */
-    private String time;
-
-    /** Event last modified date. */
-    private Date lastModified;
-    /** Event location. */
-    private String location;
-    /** Event description. */
-    private String description;
-    /** Background color */
-    private String bckgColor;
-
-
-    /** Event identifier. */
+    /**
+     * Event identifier.
+     */
     private final String id;
-    /** Event title. */
+    /**
+     * Event title.
+     */
     private final String title;
-    /** Event start date. */
+    /**
+     * Event start date.
+     */
     private final Date startDate;
-    /** Event end date. */
+    /**
+     * Event end date.
+     */
     private final Date endDate;
-    /** Event all day indicator. */
+    /**
+     * Event all day indicator.
+     */
     private final boolean allDay;
-    /** Event view document URL. */
+    /**
+     * Event view document URL.
+     */
     private final String viewURL;
-    /** Summary */
+    /**
+     * Summary
+     */
     private final String summary;
-    /** Id event source */
+    /**
+     * Id event source
+     */
     private final String idEventSource;
-    /** Id parent source */
+    /**
+     * Id parent source
+     */
     private final String idParentSource;
+    /**
+     * Event time.
+     */
+    private String time;
+    /**
+     * Event last modified date.
+     */
+    private Date lastModified;
+    /**
+     * Event location.
+     */
+    private String location;
+    /**
+     * Event description.
+     */
+    private String description;
+    /**
+     * Background color
+     */
+    private String bckgColor;
+    /**
+     * Event preview URL.
+     */
+    private String previewUrl;
 
 
     /**
      * Constructor.
      *
-     * @param id event identifier
-     * @param title event title
+     * @param id        event identifier
+     * @param title     event title
      * @param startDate event start date
-     * @param endDate event end date
-     * @param viewURL event view document URL
+     * @param endDate   event end date
+     * @param viewURL   event view document URL
      */
     public Event(String id, String title, Date startDate, Date endDate, boolean allDay, String bckgColor, String viewURL, String idEventSrc, String idParentSrc) {
         super();
@@ -79,6 +108,7 @@ public class Event {
      */
     public Event(Event event) {
         this(event.id, event.title, event.startDate, event.endDate, event.allDay, event.bckgColor, event.viewURL, event.idEventSource, event.idParentSource);
+        this.previewUrl = event.previewUrl;
     }
 
 
@@ -149,7 +179,7 @@ public class Event {
 
     /**
      * Getter for lastModified.
-     * 
+     *
      * @return the lastModified
      */
     public Date getLastModified() {
@@ -158,7 +188,7 @@ public class Event {
 
     /**
      * Setter for lastModified.
-     * 
+     *
      * @param lastModified the lastModified to set
      */
     public void setLastModified(Date lastModified) {
@@ -167,7 +197,7 @@ public class Event {
 
     /**
      * Getter for location.
-     * 
+     *
      * @return the location
      */
     public String getLocation() {
@@ -176,7 +206,7 @@ public class Event {
 
     /**
      * Setter for location.
-     * 
+     *
      * @param location the location to set
      */
     public void setLocation(String location) {
@@ -185,7 +215,7 @@ public class Event {
 
     /**
      * Getter for description.
-     * 
+     *
      * @return the description
      */
     public String getDescription() {
@@ -194,7 +224,7 @@ public class Event {
 
     /**
      * Setter for description.
-     * 
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {
@@ -203,7 +233,7 @@ public class Event {
 
     /**
      * Getter for bckgColor.
-     * 
+     *
      * @return the bckgColor
      */
     public String getBckgColor() {
@@ -212,11 +242,19 @@ public class Event {
 
     /**
      * Setter for bckgColor.
-     * 
+     *
      * @param bckgColor the bckgColor to set
      */
     public void setBckgColor(String bckgColor) {
         this.bckgColor = bckgColor;
+    }
+
+    public String getPreviewUrl() {
+        return previewUrl;
+    }
+
+    public void setPreviewUrl(String previewUrl) {
+        this.previewUrl = previewUrl;
     }
 
     /**
@@ -228,7 +266,7 @@ public class Event {
         return this.id;
     }
 
-	/**
+    /**
      * Getter for title.
      *
      * @return the title
@@ -256,13 +294,13 @@ public class Event {
     }
 
 
-	public String getSummary() {
-		return summary;
-	}
+    public String getSummary() {
+        return summary;
+    }
 
-	/**
+    /**
      * Getter for allDay.
-     * 
+     *
      * @return the allDay
      */
     public boolean isAllDay() {
@@ -280,21 +318,21 @@ public class Event {
 
     /**
      * Getter for idEvent source
-     * 
+     *
      * @return idEventSource
      */
-	public String getIdEventSource() {
-		return idEventSource;
-	}
+    public String getIdEventSource() {
+        return idEventSource;
+    }
 
-	/**
-	 * Getter for idParentSource
-	 * 
-	 * @return the idParentSource
-	 */
-	public String getIdParentSource() {
-		return idParentSource;
-	}
+    /**
+     * Getter for idParentSource
+     *
+     * @return the idParentSource
+     */
+    public String getIdParentSource() {
+        return idParentSource;
+    }
 
 
 }

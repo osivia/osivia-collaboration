@@ -299,13 +299,13 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         Date endDate = document.getDate(END_DATE_PROPERTY);
         String bckgcolor = document.getString(BCKG_COLOR);
         boolean allDay = BooleanUtils.isTrue(document.getProperties().getBoolean(ALL_DAY_PROPERTY));
-        String url = this.getEventPreviewUrl(nuxeoController, document);
+        String viewUrl = nuxeoController.getLink(document).getUrl();
         String idEventSrc;
         String idParentSrc;
         idEventSrc = document.getString(ID_SOURCE_PROPERTY);
         idParentSrc = document.getString(ID_PARENT_SOURCE_PROPERTY);
 
-        Event event = this.applicationContext.getBean(Event.class, id, title, startDate, endDate, allDay, bckgcolor, url, idEventSrc, idParentSrc);
+        Event event = this.applicationContext.getBean(Event.class, id, title, startDate, endDate, allDay, bckgcolor, viewUrl, idEventSrc, idParentSrc);
 
         // Last modified date
         Date lastModified = document.getDate("dc:modified");
@@ -321,6 +321,10 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
             String description = nuxeoController.transformHTMLContent(content);
             event.setDescription(description);
         }
+
+        // Preview URL
+        String previewUrl = this.getEventPreviewUrl(nuxeoController, document);
+        event.setPreviewUrl(previewUrl);
 
         return event;
     }
