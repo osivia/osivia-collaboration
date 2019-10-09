@@ -70,7 +70,15 @@
             <artifactId>osivia-services-pad</artifactId>
             <version>${project.version}</version>
             <type>war</type>
-        </dependency> 
+        </dependency>
+
+        <!--RSS-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>osivia-services-rss</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
         
         <!-- Search -->
         <dependency>
@@ -234,7 +242,14 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>osivia-services-pad</artifactId>
                             <contextRoot>/osivia-services-pad</contextRoot>
-                        </webModule>                        
+                        </webModule>
+
+                        <!-- RSS -->
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>osivia-services-rss</artifactId>
+                            <contextRoot>/osivia-services-rss</contextRoot>
+                        </webModule>
                         
                         <!-- Statistics -->
                         <webModule>

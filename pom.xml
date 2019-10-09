@@ -30,12 +30,13 @@
         <module>faq</module>
         <module>forum</module>
         <module>pad</module>
+        <module>rss</module>
+        <module>search</module>
         <module>statistics</module>
         <module>taskbar</module>
+        <module>versions</module>
         <module>widgets</module>
         <module>workspace</module>
-        <module>versions</module>
-        <module>search</module>
 
         <module>ear</module>
     </modules>
