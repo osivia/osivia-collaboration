@@ -337,12 +337,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
      * @param document        event document
      * @return URL
      */
-    private String getEventPreviewUrl(NuxeoController nuxeoController, Document document) {
-        // Detail URL
-        Link detailLink = nuxeoController.getLink(document);
-        String detailUrl = StringEscapeUtils.escapeHtml(detailLink.getUrl());
-
-
+    protected String getEventPreviewUrl(NuxeoController nuxeoController, Document document) {
         // Portlet instance
         String instance = CalendarEventPreviewService.PORTLET_INSTANCE;
 
@@ -350,7 +345,6 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         Map<String, String> properties = new HashMap<>();
         properties.put(CalendarEventPreviewService.DOCUMENT_PATH_WINDOW_PROPERTY, document.getPath());
         properties.put(CalendarEventPreviewService.PAGE_ID_WINDOW_PROPERTY, nuxeoController.getPageId());
-        properties.put(CalendarEventPreviewService.DETAIL_URL_WINDOW_PROPERTY, detailUrl);
 
         // URL
         String url;

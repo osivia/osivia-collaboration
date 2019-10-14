@@ -26,10 +26,6 @@ public interface CalendarEventPreviewService {
      * Page identifier window property.
      */
     String PAGE_ID_WINDOW_PROPERTY = "osivia.event-preview.page-id";
-    /**
-     * Detail URL.
-     */
-    String DETAIL_URL_WINDOW_PROPERTY = "osivia.event-preview.detail-url";
 
 
     /**

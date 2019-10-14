@@ -6,29 +6,19 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
-import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
-import org.osivia.portal.core.web.IWebIdService;
-import org.osivia.services.calendar.event.edition.portlet.service.CalendarEventEditionService;
 import org.osivia.services.calendar.event.preview.portlet.model.CalendarEventPreviewForm;
 import org.osivia.services.calendar.event.preview.portlet.repository.CalendarEventPreviewRepository;
-import org.osivia.services.calendar.event.view.portlet.model.CalendarEventViewForm;
-import org.osivia.services.calendar.event.view.portlet.service.CalendarEventViewServiceImpl;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.portlet.PortletException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Calendar event preview portlet service implementation.
@@ -56,12 +46,6 @@ public class CalendarEventPreviewServiceImpl implements CalendarEventPreviewServ
      */
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
-
-    /**
-     * WebId service.
-     */
-    @Autowired
-    private IWebIdService webIdService;
 
 
     @Override
@@ -124,7 +108,7 @@ public class CalendarEventPreviewServiceImpl implements CalendarEventPreviewServ
         form.setLocation(location);
 
         // Detail URL
-        String detailUrl = window.getProperty(DETAIL_URL_WINDOW_PROPERTY);
+        String detailUrl = this.portalUrlFactory.getCMSUrl(portalControllerContext, pagePath, document.getPath(), null, null, null, null, null, null, null);
         form.setDetailUrl(detailUrl);
 
         // Edit URL
