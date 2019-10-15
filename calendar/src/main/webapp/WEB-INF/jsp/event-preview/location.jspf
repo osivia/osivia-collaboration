@@ -5,7 +5,7 @@
         </div>
 
         <div class="media-body">
-            <div>${form.location}</div>
+            <div class="text-pre-wrap">${form.location}</div>
         </div>
     </div>
 </c:if>
