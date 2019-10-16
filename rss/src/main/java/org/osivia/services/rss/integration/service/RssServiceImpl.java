@@ -12,6 +12,7 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osivia.services.rss.integration.Model.ContainerRssModel;
 import org.osivia.services.rss.integration.Model.RssModel;
 
 /**
@@ -29,14 +30,14 @@ public class RssServiceImpl implements RssService {
     static final String TITLE = "title";
     static final String DESCRIPTION = "description";
     static final String CHANNEL = "channel";
-    static final String LANGUAGE = "language";
-    static final String COPYRIGHT = "copyright";
     static final String LINK = "link";
     static final String AUTHOR = "author";
     static final String ITEM = "item";
     static final String PUB_DATE = "pubDate";
     static final String GUID = "guid";
-    
+    static final String CATEGORY = "category";
+    static final String SOURCE = "source";
+    static final String ENCLOSURE = "enclosure";     
     
     /**
      * Lecture d'un flux RSS et création du document Nuxeo.
@@ -47,16 +48,20 @@ public class RssServiceImpl implements RssService {
 	public void readRss(URL url) {
     	
     	logger.info("Lecure du flux RSS");
-    	RssModel model = null;
-        // Set header values intial to the empty string
+    	RssModel rss = null;
+    	ContainerRssModel conteneur = null;
+        // Set header values initial to the empty string
         String description = "";
         String title = "";
         String link = "";
         String author = "";
         String pubdate = "";
         String guid = "";
-        String enclosure = "";        
-        boolean isItem = true;        
+        String category = "";
+        String enclosure = "";
+        String sourceRss = "";
+        String idConteneur = "";
+        boolean isItem = false;
     	
 		try {
 			
@@ -75,29 +80,40 @@ public class RssServiceImpl implements RssService {
                     switch (localPart) {
                     case ITEM:
                         if (isItem) {
-                        	isItem = false;
-                            model = new RssModel(title, link, description, enclosure,
-                                    pubdate, guid, description, pubdate, localPart, localPart);
-                        }                    	
+                            rss = new RssModel(title, link, description, author, pubdate, guid, enclosure, idConteneur, 
+                                     category, sourceRss);
+                        }else {
+                        	conteneur = new ContainerRssModel(title, link, description, pubdate, idConteneur);
+                        	isItem = true;
+                        }
                         event = eventReader.nextEvent();
                         break;
                     case TITLE:
                         title = getCharacterData(event, eventReader);
                         break;
-                    case DESCRIPTION:
-                        description = getCharacterData(event, eventReader);
-                        break;
                     case LINK:
                         link = getCharacterData(event, eventReader);
                         break;
-                    case GUID:
-                        guid = getCharacterData(event, eventReader);
+                    case DESCRIPTION:
+                        description = getCharacterData(event, eventReader);
                         break;
                     case AUTHOR:
                         author = getCharacterData(event, eventReader);
                         break;
+                    case CATEGORY:
+                        category = getCharacterData(event, eventReader);
+                        break;
+                    case ENCLOSURE:
+                        enclosure = getCharacterData(event, eventReader);
+                        break;                        
+                    case GUID:
+                        guid = getCharacterData(event, eventReader);
+                        break;
                     case PUB_DATE:
                         pubdate = getCharacterData(event, eventReader);
+                        break;
+                    case SOURCE:
+                    	sourceRss = getCharacterData(event, eventReader);
                         break;
                     }
                 } else if (event.isEndElement()) {

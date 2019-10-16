@@ -3,7 +3,7 @@ package org.osivia.services.rss.integration.repository;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.rss.integration.Model.ConteneurRssModel;
+import org.osivia.services.rss.integration.Model.RssModel;
 
 /**
  * RSS repository interface.
@@ -12,61 +12,45 @@ import org.osivia.services.rss.integration.Model.ConteneurRssModel;
  */
 public interface RssRepository {
 
-   /** RSS event document type name. */
-   String DOCUMENT_TYPE_EVENEMENT = "rss";
+	/** RSS event document type name. */
+	String DOCUMENT_TYPE_EVENEMENT = "ottc-rss-item";
 	/** Id Conteneur RSS */
-	String CONTENEUR_PROPERTY = "rss:idConteneur";
-   /** title Item Nuxeo property. */
-   String TITLE_PROPERTY = "rss:title";
-   /** link Nuxeo property. */
-   String LINK_PROPERTY = "rss:link";
-   /** Description Nuxeo property. */
-   String DESCRIPTION_PROPERTY = "rss:description";
-   /** title Item Nuxeo property. */
-   String AUTHOR_PROPERTY = "rss:author";   
-   /** Category Nuxeo property. */
-   String CATEGORY_PROPERTY = "rss:category";
-   /** enclosure Nuxeo property. */
-   String ENCLOSURE_PROPERTY = "rss:enclosure";
-   /** GUID Nuxeo property. */
-   String GUID_PROPERTY = "rss:guid";   
-   /** pubDate Nuxeo property. */
-   String PUBDATE_PROPERTY = "rss:pubDate";
-   /** sourceRss Nuxeo property. */
-   String SOURCES_PROPERTY = "rss:sourceRss"; 
-
-   /** RSS event document type name. */
-   String DOCUMENT_TYPE_CONTENEUR = "conteneur";
-   /** Id flux RSS */
-   String ID_GUID_PROPERTY = "conrss:idGuid";
-   /** Id Conteneur */
-   String ID_CONTENEUR_PROPERTY = "conrss:idConteneur";
-   /** Title globale du flux RSS */
-   String TITLE_CONTENEUR_PROPERTY = "conrss:title";   
-   /** Description globale du flux RSS */
-   String DESCRIPTION_CONTENEUR_PROPERTY = "conrss:description";
-   /** Date globale du flux RSS */
-   String PUBDATE_CONTENEUR_PROPERTY = "conrss:pubDate";   
-   
-   /** List of synchronization sources */
-   String LIST_SOURCE_RSS = "rss:sources";
+	String CONTENEUR_PROPERTY = "rssi:idConteneur";
+	/** title Item Nuxeo property. */
+	String TITLE_PROPERTY = "rssi:title";
+	/** link Nuxeo property. */
+	String LINK_PROPERTY = "rssi:link";
+	/** Description Nuxeo property. */
+	String DESCRIPTION_PROPERTY = "rssi:description";
+	/** title Item Nuxeo property. */
+	String AUTHOR_PROPERTY = "rssi:author";
+	/** Category Nuxeo property. */
+	String CATEGORY_PROPERTY = "rssi:category";
+	/** enclosure Nuxeo property. */
+	String ENCLOSURE_PROPERTY = "rssi:enclosure";
+	/** GUID Nuxeo property. */
+	String GUID_PROPERTY = "rssi:guid";
+	/** pubDate Nuxeo property. */
+	String PUBDATE_PROPERTY = "rssi:pubDate";
+	/** source Nuxeo property. */
+	String SOURCES_PROPERTY = "rssi:source";	   
    
    /**
-    * Save.
+    * Creation du flux RSS.
     *
     * @param portalControllerContext portal controller context
-    * @param form form
+    * @param Model
     * @throws PortletException
     */
-   void save(PortalControllerContext portalControllerContext, RssForm form) throws PortletException;
+   void creation(PortalControllerContext portalControllerContext, RssModel model) throws PortletException;
    
    /**
-    * Remove document using document_id
+    * Suppresion du  flux.
     *
     * @param portalControllerContext portal controller context
     * @param model 
     * @throws PortletException
     */
-   void remove(PortalControllerContext portalControllerContext, ConteneurRssModel model) throws PortletException;   
+   void remove(PortalControllerContext portalControllerContext, RssModel model) throws PortletException;   
    
 }

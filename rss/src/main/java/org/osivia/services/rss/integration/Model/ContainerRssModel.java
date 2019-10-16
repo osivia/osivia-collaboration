@@ -1,8 +1,9 @@
 package org.osivia.services.rss.integration.Model;
 
 import java.util.List;
+import java.util.UUID;
 
-public class ConteneurRssModel {
+public class ContainerRssModel {
 
     public String titleConteneur;
     public String linkConteneur;
@@ -11,7 +12,7 @@ public class ConteneurRssModel {
     public String idConteneur;
     public List<RssModel> sources;
 
-    public ConteneurRssModel(String titleConteneur, String linkConteneur, String descriptionConteneur, String pubDateConteneur, 
+    public ContainerRssModel(String titleConteneur, String linkConteneur, String descriptionConteneur, String pubDateConteneur, 
     		String idConteneur) {
         this.titleConteneur = titleConteneur;
         this.linkConteneur = linkConteneur;
@@ -56,8 +57,8 @@ public class ConteneurRssModel {
 		return idConteneur;
 	}
 
-	public void setIdConteneur(String idConteneur) {
-		this.idConteneur = idConteneur;
+	public void setIdConteneur() {
+		this.idConteneur = UUID.randomUUID().toString();;
 	}
 
 	public List<RssModel> getSources() {
