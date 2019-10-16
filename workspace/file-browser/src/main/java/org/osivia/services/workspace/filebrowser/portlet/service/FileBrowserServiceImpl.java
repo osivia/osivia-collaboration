@@ -514,32 +514,64 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
 
                     // Single selection
-                    Element singleSelectionGroup = this.getToolbarSingleSelectionGroup(portalControllerContext, form, view, documentDto, permissions, bundle);
-                    toolbar.add(singleSelectionGroup);
+                    this.addToolbarSingleSelectionItems(portalControllerContext, toolbar, form, view, documentDto, permissions, bundle);
                 } else {
                     // Bulk download
-                    Element bulkDownload;
+                    String bulkDownloadUrl;
                     if (allFile) {
-                        String title = bundle.getString("FILE_BROWSER_TOOLBAR_DOWNLOAD");
-                        String url = this.getBulkDownloadUrl(portalControllerContext, selection);
-                        bulkDownload = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-primary btn-sm mr-2 no-ajax-link", null,
-                                "glyphicons glyphicons-basic-square-download");
-                        DOM4JUtils.addAttribute(bulkDownload, "title", title);
+                        bulkDownloadUrl = this.getBulkDownloadUrl(portalControllerContext, selection);
                     } else {
-                        bulkDownload = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary btn-sm mr-2 disabled", null,
-                                "glyphicons glyphicons-basic-square-download");
+                        bulkDownloadUrl = null;
                     }
-                    toolbar.add(bulkDownload);
+                    this.addToolbarItem(toolbar, bulkDownloadUrl, "_blank", bundle.getString("FILE_BROWSER_TOOLBAR_DOWNLOAD"), "glyphicons glyphicons-basic-square-download");
                 }
 
                 // Multiple selection
-                Element multipleSelectionGroup = this.getToolbarMultipleSelectionGroup(portalControllerContext, form, view, selection, allEditable, container,
-                        bundle);
-                toolbar.add(multipleSelectionGroup);
+                this.addToolbarMultipleSelectionItems(portalControllerContext, toolbar, form, view, selection, allEditable, container, bundle);
             }
         }
 
         return container;
+    }
+
+
+    /**
+     * Add toolbar item.
+     *
+     * @param toolbar toolbar DOM element
+     * @param url     toolbar item URL
+     * @param target  toolbar item target
+     * @param title   toolbar item title
+     * @param icon    toolbar item icon
+     */
+    protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon) {
+        // Item
+        Element item;
+        if (StringUtils.isEmpty(url)) {
+            item = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary btn-sm mr-2 disabled", null,
+                    icon);
+        } else if ("#osivia-modal".equals(target)) {
+            item = DOM4JUtils.generateLinkElement("javascript:", null, null, "btn btn-primary btn-sm mr-2 no-ajax-link", null,
+                    icon);
+            DOM4JUtils.addAttribute(item, "title", title);
+            DOM4JUtils.addDataAttribute(item, "target", "#osivia-modal");
+            DOM4JUtils.addDataAttribute(item, "load-url", url);
+        } else if ("modal".equals(target)) {
+            item = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-primary btn-sm mr-2 no-ajax-link", null,
+                    icon);
+            DOM4JUtils.addAttribute(item, "title", title);
+            DOM4JUtils.addDataAttribute(item, "toggle", "modal");
+        } else {
+            item = DOM4JUtils.generateLinkElement(url, target, null, "btn btn-primary btn-sm mr-2 no-ajax-link", null,
+                    icon);
+            DOM4JUtils.addAttribute(item, "title", title);
+        }
+
+        // Text
+        Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", title);
+        item.add(text);
+
+        toolbar.add(item);
     }
 
 
@@ -552,8 +584,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * @param bundle                  internationalization bundle
      * @return DOM element
      */
-    private Element getToolbarLiveEditionGroup(PortalControllerContext portalControllerContext, DocumentDTO documentDto, NuxeoPermissions permissions,
-                                               Bundle bundle) throws PortletException {
+    protected Element getToolbarLiveEditionGroup(PortalControllerContext portalControllerContext, DocumentDTO documentDto, NuxeoPermissions permissions,
+                                                 Bundle bundle) throws PortletException {
         // Portlet request
         PortletRequest portletRequest = portalControllerContext.getRequest();
 
@@ -655,90 +687,69 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
 
     /**
-     * Get single selection group DOM element.
+     * Add single selection items to toolbar.
      *
      * @param portalControllerContext portal controller context
+     * @param toolbar                 toolbar DOM element
      * @param form                    form
      * @param view                    view
      * @param documentDto             document DTO
      * @param permissions             permissions
      * @param bundle                  internationalization bundle
-     * @return DOM element
      */
-    private Element getToolbarSingleSelectionGroup(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserView view,
-                                                   DocumentDTO documentDto, NuxeoPermissions permissions, Bundle bundle) throws PortletException {
+    protected void addToolbarSingleSelectionItems(PortalControllerContext portalControllerContext, Element toolbar, FileBrowserForm form, FileBrowserView view, DocumentDTO documentDto, NuxeoPermissions permissions, Bundle bundle) throws PortletException {
         // Nuxeo document
         Document nuxeoDocument = documentDto.getDocument();
         // Document path
         String path = documentDto.getPath();
 
 
-        // Single selection group
-        Element group = DOM4JUtils.generateDivElement("btn-group btn-group-sm mr-2");
+        // Download
+        String downloadUrl;
+        if ((documentDto.getType() != null) && documentDto.getType().isFile()) {
+            downloadUrl = this.repository.getDownloadUrl(portalControllerContext, nuxeoDocument);
+        } else {
+            downloadUrl = null;
+        }
+        this.addToolbarItem(toolbar, downloadUrl, "_blank", bundle.getString("FILE_BROWSER_TOOLBAR_DOWNLOAD"), "glyphicons glyphicons-basic-square-download");
 
         // Rename
-        Element rename;
+        String renameUrl;
         if (permissions.isEditable()) {
-            String title = bundle.getString("FILE_BROWSER_TOOLBAR_RENAME");
-            String url = this.getRenameUrl(portalControllerContext, form, path);
-            rename = DOM4JUtils.generateLinkElement("javascript:", null, null, "btn btn-primary no-ajax-link", null, "glyphicons glyphicons-basic-square-edit");
-            DOM4JUtils.addAttribute(rename, "title", title);
-            DOM4JUtils.addDataAttribute(rename, "target", "#osivia-modal");
-            DOM4JUtils.addDataAttribute(rename, "load-url", url);
+            renameUrl = this.getRenameUrl(portalControllerContext, form, path);
         } else {
-            rename = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-basic-square-edit");
+            renameUrl = null;
         }
-        group.add(rename);
-
-        // Download
-        Element download;
-        if ((documentDto.getType() != null) && documentDto.getType().isFile()) {
-            String title = bundle.getString("FILE_BROWSER_TOOLBAR_DOWNLOAD");
-            String url = this.repository.getDownloadUrl(portalControllerContext, nuxeoDocument);
-            download = DOM4JUtils.generateLinkElement(url, "_blank", null, "btn btn-primary no-ajax-link", null, "glyphicons glyphicons-basic-square-download");
-            DOM4JUtils.addAttribute(download, "title", title);
-        } else {
-            download = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-basic-square-download");
-        }
-        group.add(download);
+        this.addToolbarItem(toolbar, renameUrl, "#osivia-modal", bundle.getString("FILE_BROWSER_TOOLBAR_RENAME"), "glyphicons glyphicons-basic-square-edit");
 
         // Duplicate
         if (!form.isListMode()) {
-            Element duplicate;
+            String duplicateUrl;
             if (permissions.canBeCopied()) {
-                String title = bundle.getString("FILE_BROWSER_TOOLBAR_DUPLICATE");
-                String url = this.getDuplicateUrl(portalControllerContext, path, view);
-                duplicate = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-primary", null, "glyphicons glyphicons-duplicate");
-                DOM4JUtils.addAttribute(duplicate, "title", title);
+                duplicateUrl = this.getDuplicateUrl(portalControllerContext, path, view);
             } else {
-                duplicate = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-duplicate");
+                duplicateUrl = null;
             }
-            group.add(duplicate);
+            this.addToolbarItem(toolbar, duplicateUrl, null, bundle.getString("FILE_BROWSER_TOOLBAR_DUPLICATE"), "glyphicons glyphicons-basic-copy-duplicate");
         }
-
-        return group;
     }
 
 
     /**
-     * Get toolbar multiple selection group DOM element.
+     * Add multiple selection items to toolbar.
      *
      * @param portalControllerContext portal controller context
+     * @param toolbar                 toolbar DOM element
      * @param form                    form
      * @param view                    view
      * @param selection               selected documents
      * @param allEditable             all editable indicator
      * @param container               toolbar container DOM element
      * @param bundle                  internationalization bundle
-     * @return DOM element
      */
-    private Element getToolbarMultipleSelectionGroup(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserView view,
-                                                     List<DocumentDTO> selection, boolean allEditable, Element container, Bundle bundle) throws PortletException {
+    protected void addToolbarMultipleSelectionItems(PortalControllerContext portalControllerContext, Element toolbar, FileBrowserForm form, FileBrowserView view, List<DocumentDTO> selection, boolean allEditable, Element container, Bundle bundle) throws PortletException {
         // Namespace
         String namespace = portalControllerContext.getResponse().getNamespace();
-
-        // Delete modal identifier
-        String deleteId = namespace + "-delete";
 
         // Base path
         String basePath = form.getBasePath();
@@ -786,44 +797,33 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         }
 
 
-        // Group
-        Element group = DOM4JUtils.generateDivElement("btn-group btn-group-sm");
-
-
         // Move
         if (StringUtils.isNotEmpty(basePath)) {
-            Element move;
+            String moveUrl;
             if (allEditable && !unknownType) {
-                String title = bundle.getString("FILE_BROWSER_TOOLBAR_MOVE");
-                String url = this.getMoveUrl(portalControllerContext, form, basePath, identifiers, paths, acceptedTypes);
-                move = DOM4JUtils.generateLinkElement("javascript:", null, null, "btn btn-primary no-ajax-link", null, "glyphicons glyphicons-basic-block-move");
-                DOM4JUtils.addAttribute(move, "title", title);
-                DOM4JUtils.addDataAttribute(move, "target", "#osivia-modal");
-                DOM4JUtils.addDataAttribute(move, "load-url", url);
+                moveUrl = this.getMoveUrl(portalControllerContext, form, basePath, identifiers, paths, acceptedTypes);
             } else {
-                move = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-basic-block-move");
+                moveUrl = null;
             }
-            group.add(move);
+            this.addToolbarItem(toolbar, moveUrl, "#osivia-modal", bundle.getString("FILE_BROWSER_TOOLBAR_MOVE"), "glyphicons glyphicons-basic-block-move");
         }
 
 
         // Delete
-        Element delete;
+        String deleteUrl;
         if (allEditable) {
-            String title = bundle.getString("FILE_BROWSER_TOOLBAR_DELETE");
-            delete = DOM4JUtils.generateLinkElement("#" + deleteId, null, null, "btn btn-primary no-ajax-link", null, "glyphicons glyphicons-basic-bin");
-            DOM4JUtils.addAttribute(delete, "title", title);
-            DOM4JUtils.addDataAttribute(delete, "toggle", "modal");
+            // Delete modal identifier
+            String deleteId = namespace + "-delete";
+
+            deleteUrl = "#" + deleteId;
 
             // Delete confirmation modal
             Element modal = this.getToolbarDeleteModal(portalControllerContext, identifiers, view, deleteId, bundle);
             container.add(modal);
         } else {
-            delete = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary disabled", null, "glyphicons glyphicons-basic-bin");
+            deleteUrl = null;
         }
-        group.add(delete);
-
-        return group;
+        this.addToolbarItem(toolbar, deleteUrl, "modal", bundle.getString("FILE_BROWSER_TOOLBAR_DELETE"), "glyphicons glyphicons-basic-bin");
     }
 
 
@@ -1246,12 +1246,12 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                 //String message = bundle.getString("FILE_BROWSER_UPLOAD_ERROR_MESSAGE");
                 //this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
 
-               String message = e.getUserMessage(portalControllerContext);
+                String message = e.getUserMessage(portalControllerContext);
 
                 if (message == null) {
                     message = bundle.getString("FILE_BROWSER_UPLOAD_ERROR_MESSAGE");
                 }
-                
+
                 request.getPortletSession().setAttribute("uploadMsg", message);
             }
 
@@ -1275,14 +1275,14 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
     @Override
     public void endUpload(PortalControllerContext portalControllerContext) throws PortletException {
-        
+
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
         // Portlet response
         PortletResponse response = portalControllerContext.getResponse();
-        
+
         // Internationalization bundle
-        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());        
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
         // Refresh navigation
         request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
@@ -1292,22 +1292,22 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             ActionResponse actionResponse = (ActionResponse) response;
             actionResponse.setRenderParameter("dnd-update", String.valueOf(System.currentTimeMillis()));
         }
-        
-        
+
+
         String message = (String) request.getPortletSession().getAttribute("uploadMsg");
         NotificationsType type;
-        
+
         request.getPortletSession().removeAttribute("uploadMsg");
-        
-        if(StringUtils.isEmpty(message))   {
+
+        if (StringUtils.isEmpty(message)) {
             message = bundle.getString("FILE_BROWSER_UPLOAD_SUCCESS_MESSAGE");
-            type =  NotificationsType.SUCCESS;
-        }   else    {
+            type = NotificationsType.SUCCESS;
+        } else {
             type = NotificationsType.ERROR;
         }
-        
+
         this.notificationsService.addSimpleNotification(portalControllerContext, message, type);
-        
+
     }
 
 }
