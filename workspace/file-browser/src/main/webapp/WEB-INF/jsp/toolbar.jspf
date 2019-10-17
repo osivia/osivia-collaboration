@@ -1,27 +1,68 @@
-<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="op" uri="http://www.osivia.org/jsp/taglib/osivia-portal" %>
 
 
-<portlet:resourceURL id="toolbar" var="toolbarUrl" />
+<portlet:resourceURL id="toolbar" var="toolbarUrl"/>
 
 
 <div class="portal-table-toolbar-container" data-url="${toolbarUrl}">
-    <!-- View -->
+    <%--View--%>
     <div class="btn-group btn-group-sm align-self-start">
         <c:forEach var="item" items="${views}">
             <portlet:actionURL name="change-view" var="url">
                 <portlet:param name="view" value="${item.id}"/>
             </portlet:actionURL>
-            <c:set var="title"><op:translate key="${item.key}" /></c:set>
-        
+            <c:set var="title"><op:translate key="${item.key}"/></c:set>
+
             <a href="${url}" class="btn btn-outline-secondary ${item.id eq view ? 'active' : ''}" title="${title}">
                 <i class="${item.icon}"></i>
             </a>
         </c:forEach>
     </div>
 
-    <!-- Toolbar -->
+    <div class="text-dark ml-3 pt-1">
+        <c:choose>
+            <c:when test="${empty form.items}"><c:set var="text"><op:translate
+                    key="FILE_BROWSER_TOOLBAR_STATE_NO_ITEM"/></c:set></c:when>
+            <c:when test="${fn:length(form.items) eq 1}"><c:set var="text"><op:translate
+                    key="FILE_BROWSER_TOOLBAR_STATE_ONE_ITEM"/></c:set></c:when>
+            <c:otherwise><c:set var="text"><op:translate key="FILE_BROWSER_TOOLBAR_STATE_N_ITEMS"
+                                                         args="${fn:length(form.items)}"/></c:set></c:otherwise>
+        </c:choose>
+
+        <strong>${text}</strong><span>,</span>
+
+        <div class="dropdown d-inline">
+            <a href="javascript:" class="dropdown-toggle text-reset no-ajax-link" data-toggle="dropdown">
+                <span>
+                    <c:choose>
+                        <c:when test="${empty form.items or fn:length(form.items) eq 1}"><op:translate
+                                key="FILE_BROWSER_TOOLBAR_STATE_SORTED_BY"/></c:when>
+                        <c:otherwise><op:translate key="FILE_BROWSER_TOOLBAR_STATE_SORTED_BY_N_ITEMS"/></c:otherwise>
+                    </c:choose>
+                </span>
+                <span class="text-lowercase"><op:translate key="${form.criteria.field.key}"/></span>
+            </a>
+
+            <div class="dropdown-menu dropdown-menu-right">
+                <c:forEach var="field" items="${sortFields}">
+                    <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
+                        <portlet:param name="field" value="${field.id}"/>
+                        <portlet:param name="alt" value="false"/>
+                    </portlet:actionURL>
+
+                    <a href="${url}" class="dropdown-item ${form.criteria.field eq field ? 'active' : ''}">
+                        <span><op:translate key="${field.key}"/></span>
+                    </a>
+                </c:forEach>
+            </div>
+        </div>
+
+    </div>
+
+    <%--Toolbar--%>
     <div class="portal-table-toolbar">
         <div></div>
     </div>

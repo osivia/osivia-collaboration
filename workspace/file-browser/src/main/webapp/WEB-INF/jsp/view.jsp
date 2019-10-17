@@ -9,10 +9,11 @@
 <portlet:actionURL name="drop" copyCurrentRenderParameters="true" var="dropUrl"/>
 
 <portlet:resourceURL id="toolbar" var="toolbarUrl"/>
+<portlet:resourceURL id="location" var="locationUrl"/>
 
 
 <div class="file-browser position-relative ${form.uploadable ? 'file-browser-drop-zone' : ''}" data-drop-url="${dropUrl}"
-     data-toolbar-url="${toolbarUrl}">
+     data-toolbar-url="${toolbarUrl}" data-location-url="${locationUrl}">
     <%@ include file="toolbar.jspf" %>
 
     <jsp:include page="${view}.jsp"/>

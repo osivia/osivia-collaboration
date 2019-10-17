@@ -4,117 +4,33 @@
 <%@ taglib prefix="op" uri="http://www.osivia.org/jsp/taglib/osivia-portal" %>
 
 
-<!-- Column group -->
+<%--Column group--%>
 <div class="portal-table-column-group">
     <div class="portal-table-column" data-column="title"></div>
+    <c:if test="${form.listMode}">
+        <div class="portal-table-column" data-column="location"></div>
+    </c:if>
     <div class="portal-table-column" data-column="last-modification"></div>
     <div class="portal-table-column" data-column="file-size"></div>
     <div class="portal-table-column" data-column="checkbox"></div>
 </div>
 
-<!-- Header -->
+<%--Header--%>
 <div class="portal-table-header-group">
-    <!-- Title -->
-    <div class="portal-table-cell" data-column="title">
-        <div class="portal-table-cell-inner" data-column="title">
-            <c:choose>
-                <c:when test="${form.listMode}">
-                    <strong class="text-dark">
-                        <c:choose>
-                            <c:when test="${empty form.items}"><op:translate key="FILE_BROWSER_SORT_TITLE_NO_ITEM"/></c:when>
-                            <c:when test="${fn:length(form.items) eq 1}"><op:translate key="FILE_BROWSER_SORT_TITLE_ONE_ITEM"/></c:when>
-                            <c:otherwise><op:translate key="FILE_BROWSER_SORT_TITLE_N_ITEMS" args="${fn:length(form.items)}"/></c:otherwise>
-                        </c:choose>
-                    </strong>
-                </c:when>
+    <%--Title--%>
+    <%@ include file="table-header-title.jspf" %>
 
-                <c:otherwise>
-                    <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
-                        <portlet:param name="sort" value="title"/>
-                        <portlet:param name="alt"
-                                       value="${form.criteria.sort.id eq 'title' and not form.criteria.alt}"/>
-                    </portlet:actionURL>
+    <%--Location--%>
+    <c:if test="${form.listMode}">
+        <%@ include file="table-header-location.jspf" %>
+    </c:if>
 
-                    <a href="${url}">
-                        <span><op:translate key="FILE_BROWSER_SORT_TITLE"/></span>
+    <%--Last modification--%>
+    <%@ include file="table-header-last-modification.jspf" %>
 
-                        <c:if test="${form.criteria.sort.id eq 'title'}">
-                            <small class="d-inline-block align-text-bottom">
-                                <i class="glyphicons glyphicons-arrow-${form.criteria.alt ? 'up' : 'down'}"></i>
-                            </small>
-                        </c:if>
-                    </a>
-                </c:otherwise>
-            </c:choose>
-        </div>
-    </div>
+    <%--File size--%>
+    <%@ include file="table-header-file-size.jspf" %>
 
-    <!-- Last modification -->
-    <div class="portal-table-cell" data-column="last-modification">
-        <div class="portal-table-cell-inner" data-column="last-modification">
-            <c:choose>
-                <c:when test="${form.listMode}">
-                    <span><op:translate key="FILE_BROWSER_SORT_LAST_MODIFICATION"/></span>
-                </c:when>
-
-                <c:otherwise>
-                    <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
-                        <portlet:param name="sort" value="last-modification"/>
-                        <portlet:param name="alt"
-                                       value="${form.criteria.sort.id eq 'last-modification' and not form.criteria.alt}"/>
-                    </portlet:actionURL>
-
-                    <a href="${url}">
-                        <span><op:translate key="FILE_BROWSER_SORT_LAST_MODIFICATION"/></span>
-
-                        <c:if test="${form.criteria.sort.id eq 'last-modification'}">
-                            <small class="d-inline-block align-text-bottom">
-                                <i class="glyphicons glyphicons-arrow-${form.criteria.alt ? 'up' : 'down'}"></i>
-                            </small>
-                        </c:if>
-                    </a>
-                </c:otherwise>
-            </c:choose>
-        </div>
-    </div>
-
-    <!-- File size -->
-    <div class="portal-table-cell" data-column="file-size">
-        <div class="portal-table-cell-inner" data-column="file-size">
-            <c:choose>
-                <c:when test="${form.listMode}">
-                    <span><op:translate key="FILE_BROWSER_SORT_FILE_SIZE"/></span>
-                </c:when>
-
-                <c:otherwise>
-                    <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
-                        <portlet:param name="sort" value="file-size"/>
-                        <portlet:param name="alt" value="${form.criteria.sort.id eq 'file-size' and not form.criteria.alt}"/>
-                    </portlet:actionURL>
-
-                    <a href="${url}">
-                        <span><op:translate key="FILE_BROWSER_SORT_FILE_SIZE"/></span>
-
-                        <c:if test="${form.criteria.sort.id eq 'file-size'}">
-                            <small class="d-inline-block align-text-bottom">
-                                <i class="glyphicons glyphicons-arrow-${form.criteria.alt ? 'up' : 'down'}"></i>
-                            </small>
-                        </c:if>
-                    </a>
-                </c:otherwise>
-            </c:choose>
-        </div>
-    </div>
-
-    <!-- Checkbox -->
-    <div class="portal-table-cell" data-column="checkbox">
-        <div class="portal-table-cell-inner" data-column="checkbox">
-            <div class="portal-table-checkbox">
-                <c:set var="title"><op:translate key="TABLE_SELECT_ALL_CHECKBOX_TITLE"/></c:set>
-                <a href="javascript:;" class="no-ajax-link" title="${title}">
-                    <i class="glyphicons glyphicons-basic-square-empty"></i>
-                </a>
-            </div>
-        </div>
-    </div>
+    <%--Checkbox--%>
+    <%@ include file="table-header-checkbox.jspf" %>
 </div>

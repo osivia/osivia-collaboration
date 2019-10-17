@@ -14,26 +14,26 @@
                     <div class="btn-group">
                         <div class="btn-group">
                             <button type="button" class="btn btn-outline-dark dropdown-toggle" data-toggle="dropdown">
-                                <span><op:translate key="${form.criteria.sort.key}" /></span>
+                                <span><op:translate key="${form.criteria.field.key}" /></span>
                                 <span class="caret"></span>
                             </button>
 
                             <div class="dropdown-menu dropdown-menu-right">
-                                <c:forEach var="sort" items="${sorts}">
+                                <c:forEach var="field" items="${sortFields}">
                                     <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
-                                        <portlet:param name="sort" value="${sort.id}" />
-                                        <portlet:param name="alt" value="${form.criteria.sort.id eq sort.id and not form.criteria.alt}" />
+                                        <portlet:param name="field" value="${field.id}" />
+                                        <portlet:param name="alt" value="${form.criteria.field.id eq field.id and not form.criteria.alt}" />
                                     </portlet:actionURL>
 
-                                    <a href="${url}" class="dropdown-item ${form.criteria.sort eq sort ? 'active' : ''}">
-                                        <span><op:translate key="${sort.key}" /></span>
+                                    <a href="${url}" class="dropdown-item ${form.criteria.field eq field ? 'active' : ''}">
+                                        <span><op:translate key="${field.key}" /></span>
                                     </a>
                                 </c:forEach>
                             </div>
                         </div>
 
                         <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
-                            <portlet:param name="sort" value="${form.criteria.sort.id}" />
+                            <portlet:param name="field" value="${form.criteria.field.id}" />
                             <portlet:param name="alt" value="${not form.criteria.alt}" />
                         </portlet:actionURL>
 
@@ -55,7 +55,7 @@
                             <div class="file-browser-thumbnail file-browser-selectable-filter file-browser-droppable" data-id="${item.document.id}" 
                                     data-type="${item.document.type.name}" data-text="${item.title}" data-accepted-types="${item.acceptedTypes}"
                                     data-double-click-target=".file-browser-draggable a">
-                                <!-- Title -->
+                                <%--Title--%>
                                 <div class="file-browser-thumbnail-title">
                                     <div class="text-truncate file-browser-draggable">
                                         <span><ttc:icon document="${item.document}" /></span>
@@ -63,7 +63,7 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Draggable -->
+                                <%--Draggable--%>
                                 <c:if test="${item.document.type.editable}">
                                     <div class="file-browser-draggable file-browser-draggable-shadowbox border-primary"></div>
                                 </c:if>
@@ -94,7 +94,7 @@
                             <div class="file-browser-thumbnail file-browser-selectable-filter" data-id="${item.document.id}" 
                                     data-type="${item.document.type.name}" data-text="${item.title}"
                                     data-double-click-target=".file-browser-draggable a">
-                                <!-- Preview -->
+                                <%--Preview--%>
                                 <div class="file-browser-thumbnail-preview-container">
                                     <div class="file-browser-thumbnail-preview">
                                         <c:set var="vignetteUrl"><ttc:pictureLink document="${item.document}" property="ttc:vignette" /></c:set>
@@ -117,7 +117,7 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Title -->
+                                <%--Title--%>
                                 <div class="file-browser-thumbnail-title">
                                     <div class="text-truncate file-browser-draggable">
                                         <span><ttc:icon document="${item.document}" /></span>
@@ -125,7 +125,7 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Draggable -->
+                                <%--Draggable--%>
                                 <c:if test="${item.document.type.editable}">
                                     <div class="file-browser-draggable file-browser-draggable-shadowbox border-primary"></div>
                                 </c:if>

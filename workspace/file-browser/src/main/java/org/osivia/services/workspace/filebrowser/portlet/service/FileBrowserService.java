@@ -62,7 +62,6 @@ public interface FileBrowserService {
      * @param portalControllerContext portal controller context
      * @param viewId                  provided view identifier, may be null
      * @return view
-     * @throws PortletException
      */
     FileBrowserView getView(PortalControllerContext portalControllerContext, String viewId) throws PortletException;
 
@@ -73,7 +72,6 @@ public interface FileBrowserService {
      * @param portalControllerContext portal controller context
      * @param form                    form
      * @param view                    view
-     * @throws PortletException
      */
     void saveView(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserView view) throws PortletException;
 
@@ -83,7 +81,6 @@ public interface FileBrowserService {
      *
      * @param portalControllerContext portal controller context
      * @return form
-     * @throws PortletException
      */
     FileBrowserForm getForm(PortalControllerContext portalControllerContext) throws PortletException;
 
@@ -93,11 +90,30 @@ public interface FileBrowserService {
      *
      * @param portalControllerContext portal controller context
      * @param form                    form
-     * @param sort                    sort
+     * @param field                   sort field
      * @param alt                     alternative sort indicator
-     * @throws PortletException
      */
-    void sortItems(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserSort sort, boolean alt) throws PortletException;
+    void sortItems(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserSortField field, boolean alt) throws PortletException;
+
+
+    /**
+     * Get file browser sort fields.
+     *
+     * @param portalControllerContext portal controller context
+     * @return sort fields
+     */
+    List<FileBrowserSortField> getSortFields(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    /**
+     * Get file browser sort field.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    form
+     * @param fieldId                 sort field identifier
+     * @return sort field
+     */
+    FileBrowserSortField getSortField(PortalControllerContext portalControllerContext, FileBrowserForm form, String fieldId) throws PortletException;
 
 
     /**
@@ -108,7 +124,6 @@ public interface FileBrowserService {
      * @param indexes                 selected items indexes
      * @param viewId                  provided view identifier, may be null
      * @return DOM element
-     * @throws PortletException
      */
     Element getToolbar(PortalControllerContext portalControllerContext, FileBrowserForm form, List<String> indexes, String viewId) throws PortletException;
 
@@ -119,7 +134,6 @@ public interface FileBrowserService {
      * @param portalControllerContext portal controller context
      * @param form                    form
      * @param path                    document path
-     * @throws PortletException
      */
     void duplicate(PortalControllerContext portalControllerContext, FileBrowserForm form, String path) throws PortletException;
 
@@ -129,8 +143,6 @@ public interface FileBrowserService {
      *
      * @param portalControllerContext portal controller context
      * @param identifiers             document identifiers
-     * @throws PortletException
-     * @throws IOException
      */
     void delete(PortalControllerContext portalControllerContext, List<String> identifiers) throws PortletException, IOException;
 
@@ -141,8 +153,6 @@ public interface FileBrowserService {
      * @param portalControllerContext portal controller context
      * @param paths                   document paths
      * @return content
-     * @throws PortletException
-     * @throws IOException
      */
     FileBrowserBulkDownloadContent getBulkDownload(PortalControllerContext portalControllerContext, List<String> paths) throws PortletException, IOException;
 
@@ -153,7 +163,6 @@ public interface FileBrowserService {
      * @param portalControllerContext portal controller context
      * @param sourceIdentifiers       source identifiers
      * @param targetIdentifier        target identifier
-     * @throws PortletException
      */
     void drop(PortalControllerContext portalControllerContext, List<String> sourceIdentifiers, String targetIdentifier) throws PortletException;
 
@@ -163,8 +172,6 @@ public interface FileBrowserService {
      *
      * @param portalControllerContext portal controller context
      * @param form                    form
-     * @throws PortletException
-     * @throws IOException
      */
     void upload(PortalControllerContext portalControllerContext, FileBrowserForm form) throws PortletException, IOException;
 
@@ -173,19 +180,25 @@ public interface FileBrowserService {
      * Update menubar.
      *
      * @param portalControllerContext portal controller context
-     * @throws PortletException
      */
     void updateMenubar(PortalControllerContext portalControllerContext) throws PortletException;
 
-    
+
     /**
-     * end upload.
-     * 
+     * End upload.
+     *
      * @param portalControllerContext portal controller context
-     * @param form form
-     * @throws PortletException
-     * @throws IOException
      */
     void endUpload(PortalControllerContext portalControllerContext) throws PortletException;
-    
+
+
+    /**
+     * Get location breadcrumb DOM element
+     *
+     * @param portalControllerContext portal controller context
+     * @param path                    document path
+     * @return DOM element
+     */
+    Element getLocationBreadcrumb(PortalControllerContext portalControllerContext, String path) throws PortletException;
+
 }

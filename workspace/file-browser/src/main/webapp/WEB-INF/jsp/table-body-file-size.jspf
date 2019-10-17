@@ -1,0 +1,13 @@
+<div class="portal-table-cell" data-column="file-size">
+    <div class="portal-table-cell-inner" data-column="file-size">
+        <c:choose>
+            <c:when test="${item.size gt 0}">
+                <span><ttc:fileSize size="${item.size}"/></span>
+            </c:when>
+
+            <c:otherwise>
+                <span>&ndash;</span>
+            </c:otherwise>
+        </c:choose>
+    </div>
+</div>

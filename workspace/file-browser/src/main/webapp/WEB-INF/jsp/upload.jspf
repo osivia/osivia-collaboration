@@ -20,7 +20,7 @@
 
     <div class="card">
         <div class="card-body">
-            <!-- Buttons -->
+            <%--Buttons--%>
             <div class="form-group fileupload-buttonbar">
                 <button type="button" class="btn btn-primary mr-2 start">
                     <span><op:translate key="FILE_BROWSER_UPLOAD_START"/></span>
@@ -31,14 +31,14 @@
                 </button>
             </div>
 
-            <!-- Global progress bar -->
+            <%--Global progress bar--%>
             <div class="form-group">
                 <div class="progress">
                     <div class="progress-bar" role="progressbar"></div>
                 </div>
             </div>
 
-            <!-- Files -->
+            <%--Files--%>
             <ul class="list-unstyled file-browser-upload-files files"></ul>
         </div>
     </div>

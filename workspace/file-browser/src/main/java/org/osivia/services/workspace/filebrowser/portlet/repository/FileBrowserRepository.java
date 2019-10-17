@@ -93,6 +93,17 @@ public interface FileBrowserRepository {
 
 
     /**
+     * Get parent Nuxeo document.
+     * For performance reasons, the parent document is taken from navigation.
+     *
+     * @param portalControllerContext portal controller context
+     * @param document                Nuxeo document
+     * @return parent Nuxeo document
+     */
+    Document getParentDocument(PortalControllerContext portalControllerContext, Document document) throws PortletException;
+
+
+    /**
      * Get user preferences.
      *
      * @param portalControllerContext portal controller context
@@ -167,5 +178,15 @@ public interface FileBrowserRepository {
      * @param path                    document path
      */
     void updateMenubar(PortalControllerContext portalControllerContext, String path) throws PortletException;
+
+
+    /**
+     * Get parent Nuxeo documents.
+     *
+     * @param portalControllerContext portal controller context
+     * @param path                    document path
+     * @return Nuxeo documents
+     */
+    List<Document> getParentDocuments(PortalControllerContext portalControllerContext, String path) throws PortletException;
 
 }

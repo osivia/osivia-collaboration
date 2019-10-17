@@ -15,6 +15,8 @@ import org.apache.commons.io.output.CountingOutputStream;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.portal.api.PortalException;
@@ -60,15 +62,25 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
      * Zip file name RegEx.
      */
     private static final String ZIP_FILE_NAME_REGEX = "(.+) \\(([0-9]+)\\)";
+
+
+    /**
+     * Log.
+     */
+    private final Log log;
+
     /**
      * Zip file name pattern.
      */
     private final Pattern zipFileNamePattern;
+
+
     /**
      * Application context.
      */
     @Autowired
     private ApplicationContext applicationContext;
+
     /**
      * CMS service locator.
      */
@@ -81,6 +93,9 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
      */
     public FileBrowserRepositoryImpl() {
         super();
+
+        // Log
+        this.log = LogFactory.getLog(this.getClass());
 
         // Zip file name pattern
         this.zipFileNamePattern = Pattern.compile(ZIP_FILE_NAME_REGEX);
@@ -200,7 +215,7 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         CMSServiceCtx cmsContext = nuxeoController.getCMSCtx();
 
         // User workspace
-        CMSItem userWorkspace = null;
+        CMSItem userWorkspace;
         try {
             userWorkspace = cmsService.getUserWorkspace(cmsContext);
         } catch (CMSException e) {
@@ -286,6 +301,28 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         }
 
         return identifiers;
+    }
+
+
+    @Override
+    public Document getParentDocument(PortalControllerContext portalControllerContext, Document document) {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = nuxeoController.getCMSCtx();
+
+        // Base path
+        String basePath = nuxeoController.getBasePath();
+        // Parent path
+        CMSObjectPath objectPath = CMSObjectPath.parse(document.getPath());
+        CMSObjectPath parentObjectPath = objectPath.getParent();
+        String parentPath = parentObjectPath.toString();
+
+        // Parent document
+        return this.getDocumentFromNavigation(cmsService, cmsContext, basePath, parentPath);
     }
 
 
@@ -410,14 +447,7 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
                         counter = 0;
                     }
 
-                    StringBuilder builder = new StringBuilder();
-                    builder.append(name);
-                    builder.append(" (");
-                    builder.append(counter + 1);
-                    builder.append(").");
-                    builder.append(extension);
-
-                    fileName = builder.toString();
+                    fileName = name + " (" + (counter + 1) + ")." + extension;
                 }
                 zipFileNames.add(fileName);
 
@@ -438,8 +468,8 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
                     // CRC
                     CheckedInputStream checkedInputStream = new CheckedInputStream(fileInputStream, new CRC32());
                     try {
-                        while (checkedInputStream.read(buffer) >= 0) {
-                        }
+//                        while (checkedInputStream.read(buffer) >= 0) {
+//                        }
                         zipEntry.setCrc(checkedInputStream.getChecksum().getValue());
 
                         zipOutputStream.putNextEntry(zipEntry);
@@ -450,7 +480,7 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
                     // Write
                     fileInputStream = new FileInputStream(file);
                     try {
-                        int i = -1;
+                        int i;
                         while ((i = fileInputStream.read(buffer)) != -1) {
                             countingOutputStream.write(buffer, 0, i);
                         }
@@ -464,7 +494,7 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
                     // CRC
                     CheckedInputStream checkedInputStream = new CheckedInputStream(content.getStream(), new CRC32());
                     try {
-                        int i = -1;
+                        int i;
                         while ((i = checkedInputStream.read(buffer)) != -1) {
                             byteArrayOutputStream.write(buffer, 0, i);
                         }
@@ -482,8 +512,6 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
                     } finally {
                         IOUtils.closeQuietly(byteArrayOutputStream);
                     }
-                } else {
-                    continue;
                 }
             }
         } finally {
@@ -537,6 +565,72 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         // Update menubar
         nuxeoController.setCurrentDoc(document);
         nuxeoController.insertContentMenuBarItems();
+    }
+
+
+    @Override
+    public List<Document> getParentDocuments(PortalControllerContext portalControllerContext, String path) {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = nuxeoController.getCMSCtx();
+
+        // Base path
+        String basePath = nuxeoController.getBasePath();
+        // Parent path
+        String parentPath = path;
+
+        // Parent documents
+        List<Document> documents = new ArrayList<>();
+
+        while (StringUtils.startsWith(parentPath, basePath)) {
+            // Parent document
+            Document document = this.getDocumentFromNavigation(cmsService, cmsContext, basePath, parentPath);
+
+            if (document != null) {
+                documents.add(0, document);
+            }
+
+            // Loop on parent path
+            CMSObjectPath objectPath = CMSObjectPath.parse(parentPath);
+            CMSObjectPath parentObjectPath = objectPath.getParent();
+            parentPath = parentObjectPath.toString();
+        }
+
+        return documents;
+    }
+
+
+    /**
+     * Get Nuxeo document from navigation.
+     *
+     * @param cmsService CMS service
+     * @param cmsContext CMS context
+     * @param basePath   base path
+     * @param path       document path
+     * @return Nuxeo document, may be null if not found in navigation
+     */
+    private Document getDocumentFromNavigation(ICMSService cmsService, CMSServiceCtx cmsContext, String basePath, String path) {
+        Document document;
+
+        try {
+            // Navigation item
+            CMSItem navigationItem = cmsService.getPortalNavigationItem(cmsContext, basePath, path);
+
+            if ((navigationItem != null) && (navigationItem.getNativeItem() instanceof Document)) {
+                document = (Document) navigationItem.getNativeItem();
+            } else {
+                document = null;
+            }
+        } catch (CMSException e) {
+            this.log.error(e.getMessage(), e.getCause());
+            document = null;
+        }
+
+        return document;
     }
 
 }

@@ -169,9 +169,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public FileBrowserView getView(PortalControllerContext portalControllerContext, String viewId) throws PortletException {
         // View
@@ -209,9 +206,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void saveView(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserView view) throws PortletException {
         if (StringUtils.isNotEmpty(form.getPath())) {
@@ -231,9 +225,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public FileBrowserForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
         // Form
@@ -279,21 +270,42 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             } else {
                 items = new ArrayList<>(documents.size());
 
-                for (Document document : documents) {
+                for (int i = 0; i < documents.size(); i++) {
+                    // Document
+                    Document document = documents.get(i);
+
                     FileBrowserItem item = this.createItem(portalControllerContext, document);
 
                     // Subscription
                     boolean subscription = userSubscriptions.contains(document.getId());
                     item.setSubscription(subscription);
 
+                    // Native order
+                    item.setNativeOrder(i);
+
+                    // Parent document
+                    if (listMode) {
+                        Document parent = this.repository.getParentDocument(portalControllerContext, document);
+                        if (parent != null) {
+                            DocumentDTO parentDto = this.documentDao.toDTO(parent);
+                            item.setParentDocument(parentDto);
+                        }
+                    }
+
                     items.add(item);
                 }
             }
             form.setItems(items);
 
-            if (!listMode) {
+            if (listMode) {
+                // Sort criteria
+                FileBrowserSortCriteria criteria = this.applicationContext.getBean(FileBrowserSortCriteria.class);
+                criteria.setField(FileBrowserSortEnum.RELEVANCE);
+                criteria.setAlt(false);
+                form.setCriteria(criteria);
+            } else {
                 // Sort
-                this.sortItems(portalControllerContext, form, FileBrowserSort.TITLE, false);
+                this.sortItems(portalControllerContext, form, FileBrowserSortEnum.TITLE, false);
 
                 // Uploadable indicator
                 boolean uploadable = (type != null) && CollectionUtils.isNotEmpty(type.getSubtypes());
@@ -382,35 +394,39 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void sortItems(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserSort sort, boolean alt) {
+    public void sortItems(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserSortField field, boolean alt) {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Window properties
+        FileBrowserWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
+
+        // List mode indicator
+        boolean listMode = BooleanUtils.isTrue(windowProperties.getListMode());
 
         // Sort criteria
         FileBrowserSortCriteria criteria;
 
         if (form.isInitialized()) {
             criteria = this.applicationContext.getBean(FileBrowserSortCriteria.class);
-            criteria.setSort(sort);
+            criteria.setField(field);
             criteria.setAlt(alt);
 
-            controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, SORT_CRITERIA_ATTRIBUTE, criteria);
+            if (!listMode) {
+                controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, SORT_CRITERIA_ATTRIBUTE, criteria);
+            }
         } else {
             Object criteriaAttribute = controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, SORT_CRITERIA_ATTRIBUTE);
 
-            if (!(criteriaAttribute instanceof FileBrowserSortCriteria)) {
+            if (listMode || !(criteriaAttribute instanceof FileBrowserSortCriteria)) {
                 criteria = this.applicationContext.getBean(FileBrowserSortCriteria.class);
-                criteria.setSort(sort);
+                criteria.setField(field);
                 criteria.setAlt(alt);
             } else {
                 criteria = (FileBrowserSortCriteria) criteriaAttribute;
             }
         }
-
 
         if (CollectionUtils.isNotEmpty(form.getItems())) {
             // Comparator
@@ -424,9 +440,60 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public List<FileBrowserSortField> getSortFields(PortalControllerContext portalControllerContext) {
+        // Window properties
+        FileBrowserWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
+
+        // List mode indicator
+        boolean listMode = BooleanUtils.isTrue(windowProperties.getListMode());
+
+        // Enum values
+        FileBrowserSortEnum[] values = FileBrowserSortEnum.values();
+
+        // Sort fields
+        List<FileBrowserSortField> fields = new ArrayList<>(values.length);
+        for (FileBrowserSortEnum value : values) {
+            if (listMode || !value.isListMode()) {
+                fields.add(value);
+            }
+        }
+
+        return fields;
+    }
+
+
+    @Override
+    public FileBrowserSortField getSortField(PortalControllerContext portalControllerContext, FileBrowserForm form, String fieldId) {
+        // Enum values
+        FileBrowserSortEnum[] values = FileBrowserSortEnum.values();
+
+        // Result
+        FileBrowserSortField result = null;
+        int i = 0;
+        while ((result == null) && (i < values.length)) {
+            FileBrowserSortEnum value = values[i];
+
+            if (StringUtils.equals(fieldId, value.getId())) {
+                result = value;
+            }
+
+            i++;
+        }
+
+        if (result == null) {
+            // Default result
+            if (form.isListMode()) {
+                result = FileBrowserSortEnum.RELEVANCE;
+            } else {
+                result = FileBrowserSortEnum.TITLE;
+            }
+        }
+
+        return result;
+    }
+
+
     @Override
     public Element getToolbar(PortalControllerContext portalControllerContext, FileBrowserForm form, List<String> indexes, String viewId)
             throws PortletException {
@@ -545,26 +612,38 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * @param icon    toolbar item icon
      */
     protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon) {
+        // Base HTML classes
+        String baseHtmlClasses = "btn btn-primary btn-sm ml-2";
+
         // Item
         Element item;
         if (StringUtils.isEmpty(url)) {
-            item = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-primary btn-sm mr-2 disabled", null,
-                    icon);
-        } else if ("#osivia-modal".equals(target)) {
-            item = DOM4JUtils.generateLinkElement("javascript:", null, null, "btn btn-primary btn-sm mr-2 no-ajax-link", null,
-                    icon);
-            DOM4JUtils.addAttribute(item, "title", title);
-            DOM4JUtils.addDataAttribute(item, "target", "#osivia-modal");
-            DOM4JUtils.addDataAttribute(item, "load-url", url);
-        } else if ("modal".equals(target)) {
-            item = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-primary btn-sm mr-2 no-ajax-link", null,
-                    icon);
-            DOM4JUtils.addAttribute(item, "title", title);
-            DOM4JUtils.addDataAttribute(item, "toggle", "modal");
+            item = DOM4JUtils.generateLinkElement("#", null, null, baseHtmlClasses + " disabled", null, icon);
         } else {
-            item = DOM4JUtils.generateLinkElement(url, target, null, "btn btn-primary btn-sm mr-2 no-ajax-link", null,
-                    icon);
+            // Data attributes
+            Map<String, String> data = new HashMap<>();
+
+            if ("#osivia-modal".equals(target)) {
+                data.put("target", "#osivia-modal");
+                data.put("load-url", url);
+
+                url = "javascript:";
+                target = null;
+            } else if ("modal".equals(target)) {
+                data.put("toggle", "modal");
+
+                target = null;
+            }
+
+            item = DOM4JUtils.generateLinkElement(url, target, null, baseHtmlClasses + " no-ajax-link", null, icon);
+
+            // Title
             DOM4JUtils.addAttribute(item, "title", title);
+
+            // Data attributes
+            for (Map.Entry<String, String> entry : data.entrySet()) {
+                DOM4JUtils.addDataAttribute(item, entry.getKey(), entry.getValue());
+            }
         }
 
         // Text
@@ -608,7 +687,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
 
         // Live edition group
-        Element liveEditionGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm d-none d-md-flex mr-2");
+        Element liveEditionGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm d-none d-md-flex ml-2");
         // Dropdown
         Element dropdownGroup;
         Element dropdownMenu;
@@ -642,7 +721,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
                 // OnlyOffice (with lock)
                 Element onlyOffice = DOM4JUtils.generateLinkElement(onlyOfficeUrl, null, null, "btn btn-primary no-ajax-link", onlyOfficeAction,
-                        "glyphicons glyphicons-pencil");
+                        "glyphicons glyphicons-basic-pencil");
                 liveEditionGroup.add(onlyOffice);
             } else if (StringUtils.isNotEmpty(portletRequest.getRemoteUser())) {
                 String onlyOfficeReadOnlyTitle = bundle.getString("FILE_BROWSER_TOOLBAR_ONLYOFFICE_READ_ONLY_TITLE");
@@ -1088,9 +1167,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void duplicate(PortalControllerContext portalControllerContext, FileBrowserForm form, String path) throws PortletException {
         // Portlet request
@@ -1128,9 +1204,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void delete(PortalControllerContext portalControllerContext, List<String> identifiers) throws PortletException {
         // Portlet request
@@ -1156,9 +1229,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public FileBrowserBulkDownloadContent getBulkDownload(PortalControllerContext portalControllerContext, List<String> paths)
             throws PortletException, IOException {
@@ -1184,9 +1254,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void drop(PortalControllerContext portalControllerContext, List<String> sourceIdentifiers, String targetIdentifier) throws PortletException {
         // Portlet request
@@ -1220,9 +1287,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void upload(PortalControllerContext portalControllerContext, FileBrowserForm form) throws PortletException, IOException {
         // Portlet request
@@ -1237,15 +1301,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             try {
                 // Import
                 this.repository.importFiles(portalControllerContext, form.getPath(), upload);
-
-                // Notification
-                //String message = bundle.getString("FILE_BROWSER_UPLOAD_SUCCESS_MESSAGE");
-                //this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
             } catch (NuxeoException e) {
-                // Notification
-                //String message = bundle.getString("FILE_BROWSER_UPLOAD_ERROR_MESSAGE");
-                //this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
-
                 String message = e.getUserMessage(portalControllerContext);
 
                 if (message == null) {
@@ -1261,9 +1317,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void updateMenubar(PortalControllerContext portalControllerContext) throws PortletException {
         // Form
@@ -1274,8 +1327,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
 
     @Override
-    public void endUpload(PortalControllerContext portalControllerContext) throws PortletException {
-
+    public void endUpload(PortalControllerContext portalControllerContext) {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
         // Portlet response
@@ -1307,7 +1359,24 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         }
 
         this.notificationsService.addSimpleNotification(portalControllerContext, message, type);
+    }
 
+
+    @Override
+    public Element getLocationBreadcrumb(PortalControllerContext portalControllerContext, String path) throws PortletException {
+        // Parent documents
+        List<Document> documents = this.repository.getParentDocuments(portalControllerContext, path);
+
+        // Breadcrumb container
+        Element breadcrumb = DOM4JUtils.generateElement("ol", "breadcrumb m-0 p-0", StringUtils.EMPTY);
+
+        for (Document document : documents) {
+            // Breadcrumb item
+            Element item = DOM4JUtils.generateElement("li", "breadcrumb-item", document.getTitle());
+            breadcrumb.add(item);
+        }
+
+        return breadcrumb;
     }
 
 }

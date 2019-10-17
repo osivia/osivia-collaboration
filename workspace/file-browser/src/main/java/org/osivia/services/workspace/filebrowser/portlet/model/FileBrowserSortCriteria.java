@@ -6,16 +6,20 @@ import org.springframework.stereotype.Component;
 
 /**
  * File browser sort criteria java-bean.
- * 
+ *
  * @author Cédric Krommenhoek
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class FileBrowserSortCriteria {
 
-    /** Sort. */
-    private FileBrowserSort sort;
-    /** Alternative sort indicator. */
+    /**
+     * Sort field.
+     */
+    private FileBrowserSortField field;
+    /**
+     * Alternative sort indicator.
+     */
     private boolean alt;
 
 
@@ -27,40 +31,19 @@ public class FileBrowserSortCriteria {
     }
 
 
-    /**
-     * Getter for sort.
-     * 
-     * @return the sort
-     */
-    public FileBrowserSort getSort() {
-        return sort;
+    public FileBrowserSortField getField() {
+        return field;
     }
 
-    /**
-     * Setter for sort.
-     * 
-     * @param sort the sort to set
-     */
-    public void setSort(FileBrowserSort sort) {
-        this.sort = sort;
+    public void setField(FileBrowserSortField field) {
+        this.field = field;
     }
 
-    /**
-     * Getter for alt.
-     * 
-     * @return the alt
-     */
     public boolean isAlt() {
         return alt;
     }
 
-    /**
-     * Setter for alt.
-     * 
-     * @param alt the alt to set
-     */
     public void setAlt(boolean alt) {
         this.alt = alt;
     }
-
 }
