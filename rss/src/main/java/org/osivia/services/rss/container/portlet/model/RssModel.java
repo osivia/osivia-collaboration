@@ -1,4 +1,4 @@
-package org.osivia.services.rss.integration.Model;
+package org.osivia.services.rss.container.portlet.model;
 
 public class RssModel {
 

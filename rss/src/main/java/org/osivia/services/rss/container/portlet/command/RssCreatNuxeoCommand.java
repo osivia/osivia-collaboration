@@ -1,4 +1,4 @@
-package org.osivia.services.rss.integration;
+package org.osivia.services.rss.container.portlet.command;
 
 import java.io.IOException;
 
@@ -11,8 +11,8 @@ import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.osivia.services.rss.integration.Model.RssModel;
-import org.osivia.services.rss.integration.repository.RssRepository;
+import org.osivia.services.rss.container.portlet.model.RssModel;
+import org.osivia.services.rss.container.portlet.repository.RssRepository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 

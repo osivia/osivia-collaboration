@@ -7,10 +7,10 @@
     <deployment>
         <if-exists>overwrite</if-exists>
         <instance>
-            <display-name xml:lang="en">Collaboration - RSS Container</display-name>
-            <display-name xml:lang="fr">Collaboration - Conteneur RSS</display-name>
-            <instance-id>osivia-collaboration-rss-container-instance</instance-id>
-            <portlet-ref>osivia-collaboration-rss-container</portlet-ref>
+            <display-name xml:lang="en">RSS Container</display-name>
+            <display-name xml:lang="fr">Conteneur RSS</display-name>
+            <instance-id>osivia-services-rss-container-instance</instance-id>
+            <portlet-ref>osivia-services-rss-container</portlet-ref>
             <security-constraint>
                 <policy-permission>
                     <action-name>view</action-name>

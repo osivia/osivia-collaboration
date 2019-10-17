@@ -1,9 +1,9 @@
-package org.osivia.services.rss.integration.repository;
+package org.osivia.services.rss.container.portlet.repository;
 
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.rss.integration.Model.RssModel;
+import org.osivia.services.rss.container.portlet.model.RssModel;
 
 /**
  * RSS repository interface.
@@ -12,7 +12,7 @@ import org.osivia.services.rss.integration.Model.RssModel;
  */
 public interface RssRepository {
 
-	/** RSS event document type name. */
+	/** RSS document type name. */
 	String DOCUMENT_TYPE_EVENEMENT = "ottc-rss-item";
 	/** Id Conteneur RSS */
 	String CONTENEUR_PROPERTY = "rssi:idConteneur";

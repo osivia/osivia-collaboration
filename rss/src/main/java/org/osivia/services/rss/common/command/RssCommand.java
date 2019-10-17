@@ -1,7 +1,5 @@
 package org.osivia.services.rss.common.command;
 
-import java.util.List;
-
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
@@ -31,8 +29,6 @@ public class RssCommand  implements INuxeoCommand {
      *
      * @param queryContext Nuxeo query filter context
      * @param contextPath context path
-     * @param startDate start date
-     * @param endDate end date
      */
     public RssCommand(NuxeoQueryFilterContext queryContext, String contextPath) {
         super();

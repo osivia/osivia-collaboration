@@ -1,9 +1,11 @@
-package org.osivia.services.rss.integration.service;
+package org.osivia.services.rss.container.portlet.service;
+
+import java.util.List;
 
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.rss.integration.Model.ContainerRssModel;
+import org.osivia.services.rss.container.portlet.model.ContainerRssModel;
 
 /**
  * Container RSS service interface
@@ -19,9 +21,8 @@ public interface ContainerRssService {
      *
      * @param portalControllerContext portal controller context
      * @param calendarData calendar data
-     * @return calendar events
+     * @return List<ContainerRssModel>
      * @throws PortletException
      */
-    void getListContainer(PortalControllerContext portalControllerContext, ContainerRssModel containerRss) throws PortletException;
-
+	List<ContainerRssModel> getListContainer(PortalControllerContext portalControllerContext) throws PortletException;
 }

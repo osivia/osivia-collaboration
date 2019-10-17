@@ -1,10 +1,10 @@
-package org.osivia.services.rss.integration.repository;
+package org.osivia.services.rss.container.portlet.repository;
 
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.rss.integration.RssCreatNuxeoCommand;
-import org.osivia.services.rss.integration.Model.RssModel;
+import org.osivia.services.rss.container.portlet.command.RssCreatNuxeoCommand;
+import org.osivia.services.rss.container.portlet.model.RssModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;

@@ -1,4 +1,4 @@
-package org.osivia.services.rss.integration.service;
+package org.osivia.services.rss.container.portlet.service;
 
 import java.net.URL;
 

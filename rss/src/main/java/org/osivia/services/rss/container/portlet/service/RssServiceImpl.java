@@ -1,4 +1,4 @@
-package org.osivia.services.rss.integration.service;
+package org.osivia.services.rss.container.portlet.service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,8 +12,8 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.osivia.services.rss.integration.Model.ContainerRssModel;
-import org.osivia.services.rss.integration.Model.RssModel;
+import org.osivia.services.rss.container.portlet.model.ContainerRssModel;
+import org.osivia.services.rss.container.portlet.model.RssModel;
 
 /**
  * RSS service interface
@@ -83,7 +83,7 @@ public class RssServiceImpl implements RssService {
                             rss = new RssModel(title, link, description, author, pubdate, guid, enclosure, idConteneur, 
                                      category, sourceRss);
                         }else {
-                        	conteneur = new ContainerRssModel(title, link, description, pubdate, idConteneur);
+//                        	conteneur = new ContainerRssModel(title, link, description, pubdate, idConteneur);
                         	isItem = true;
                         }
                         event = eventReader.nextEvent();

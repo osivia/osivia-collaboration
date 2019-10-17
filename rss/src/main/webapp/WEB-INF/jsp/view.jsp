@@ -5,22 +5,22 @@
 <%@ page isELIgnored="false" %>
 
 <div>
-    <input type="text" path="from" cssClass="form-control" placeholder="Ajouter un flux" />
+    <input type="text" placeholder="Ajouter un flux" />
 	<button type="submit" name="send" class="btn btn-primary"><op:translate key="ADD"/></button>
 </div>
 
 
 <div>
-    <c:if test="${empty document}">
+    <c:if test="${empty containers}">
         <p>
             <span><op:translate key="LIST_CONTAINER_NO_RESULT" /></span>
         </p>
     </c:if>
 	
 	<ol>
-    	<c:forEach var="document" items="${documents}" varStatus="status">
+    	<c:forEach var="container" items="${containers}" varStatus="status">
     		<li>
-	            <strong>${form.document.properties['dc:title']}</strong>
+	            <strong>${container.displayName}</strong>
     		</li>
 	    </c:forEach>
 	</ol>

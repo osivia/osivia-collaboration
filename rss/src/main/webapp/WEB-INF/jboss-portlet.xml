@@ -5,7 +5,7 @@
 <portlet-app>
 
     <portlet>
-        <portlet-name>osivia-collaboration-rss-container</portlet-name>
+        <portlet-name>osivia-service-rss-container</portlet-name>
 
         <transaction>
             <trans-attribute>Required</trans-attribute>

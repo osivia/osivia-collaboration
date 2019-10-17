@@ -1,4 +1,4 @@
-package org.osivia.services.rss.integration.repository;
+package org.osivia.services.rss.container.portlet.repository;
 
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;

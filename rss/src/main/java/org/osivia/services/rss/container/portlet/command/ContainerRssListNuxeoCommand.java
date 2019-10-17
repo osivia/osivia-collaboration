@@ -1,8 +1,11 @@
-package org.osivia.services.rss.integration;
+package org.osivia.services.rss.container.portlet.command;
 
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoCompatibility;
@@ -10,12 +13,14 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 
 /**
- * List Nuxeo events command.
+ * List Nuxeo command.
  *
  * @author Cédric Krommenhoek
  * @author Frédéric Boudan
  * @see INuxeoCommand
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ContainerRssListNuxeoCommand implements INuxeoCommand {
 
     /** Nuxeo query filter context. */
