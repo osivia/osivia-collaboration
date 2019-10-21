@@ -14,12 +14,13 @@ import org.osivia.services.rss.container.portlet.model.ContainerRssModel;
  * @author Frédéric Boudan
  *
  */
-public interface ContainerRssService {
+public interface FeedRssService {
 
     /**
      * get List Container.
      *
      * @param portalControllerContext portal controller context
+     * @param calendarData calendar data
      * @return List<ContainerRssModel>
      * @throws PortletException
      */
@@ -29,8 +30,9 @@ public interface ContainerRssService {
      * create Container.
      *
      * @param portalControllerContext portal controller context
-     * @param model ContainerRssModel
+     * @param calendarData calendar data
+     * @return List<ContainerRssModel>
      * @throws PortletException
      */
-	void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;	
+	void creatContainer(PortalControllerContext portalControllerContext) throws PortletException;	
 }

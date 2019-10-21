@@ -13,7 +13,7 @@ import javax.xml.stream.events.XMLEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.services.rss.container.portlet.model.ContainerRssModel;
-import org.osivia.services.rss.container.portlet.model.RssModel;
+import org.osivia.services.rss.container.portlet.model.ItemRssModel;
 
 /**
  * RSS service interface
@@ -48,7 +48,7 @@ public class RssServiceImpl implements RssService {
 	public void readRss(URL url) {
     	
     	logger.info("Lecure du flux RSS");
-    	RssModel rss = null;
+    	ItemRssModel rss = null;
     	ContainerRssModel conteneur = null;
         // Set header values initial to the empty string
         String description = "";
@@ -80,7 +80,7 @@ public class RssServiceImpl implements RssService {
                     switch (localPart) {
                     case ITEM:
                         if (isItem) {
-                            rss = new RssModel(title, link, description, author, pubdate, guid, enclosure, idConteneur, 
+                            rss = new ItemRssModel(title, link, description, author, pubdate, guid, enclosure, idConteneur, 
                                      category, sourceRss);
                         }else {
 //                        	conteneur = new ContainerRssModel(title, link, description, pubdate, idConteneur);

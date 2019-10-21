@@ -12,7 +12,7 @@ import org.osivia.services.rss.container.portlet.model.ContainerRssModel;
  *
  * @author Frédéric Boudan
  */
-public interface ContainerRssRepository {
+public interface ContainerRepository {
 
 	/** RSS document type name. */
 	String DOCUMENT_TYPE_CONTENEUR = "ottc-rss-container";
@@ -24,30 +24,30 @@ public interface ContainerRssRepository {
 	String URL_PROPERTY = "rssc:url";
 	/** Display Name RSS */
 	String DISPLAY_NAME_PROPERTY = "rssc:displayName";
+	/** dc title RSS */
+	String NAME_PROPERTY = "dc:title";
 	   
    /**
-    * Creation du container RSS.
+    * Create container RSS.
     *
     * @param portalControllerContext portal controller context
-    * @param Model
+    * @param model
     * @throws PortletException
     */
-	ContainerRssModel creation(PortalControllerContext portalControllerContext) throws PortletException;
+	void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;
    
    /**
-    * Suppresion du container de flux RSS.
+    * remove container flux RSS.
     *
     * @param portalControllerContext portal controller context
-    * @param model 
     * @throws PortletException
     */
-   ContainerRssModel remove(PortalControllerContext portalControllerContext) throws PortletException;   
+   void remove(PortalControllerContext portalControllerContext) throws PortletException;   
 
    /**
     * get containers list RSS.
     *
     * @param portalControllerContext portal controller context
-    * @param model 
     * @throws PortletException
     */
    List<ContainerRssModel> getListContainerRss(PortalControllerContext portalControllerContext) throws PortletException;

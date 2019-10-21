@@ -13,17 +13,25 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.jboss.portal.common.http.HttpRequest.Form;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.windows.PortalWindow;
+import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.rss.container.portlet.model.ContainerRssModel;
 import org.osivia.services.rss.container.portlet.service.ContainerRssService;
+import org.osivia.services.rss.container.portlet.validator.ContainerFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
@@ -35,6 +43,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
  */
 @Controller
 @RequestMapping(value = "VIEW")
+@SessionAttributes("form")
 public class ViewContainerRssController {
 
     /** Error JSP path. */
@@ -46,9 +55,13 @@ public class ViewContainerRssController {
     @Autowired
     protected PortletContext portletContext;
 
-    /** Calendar service. */
+    /** Container RSS service. */
     @Autowired
     protected ContainerRssService service;
+    
+    /** Validator. */
+    @Autowired
+    private ContainerFormValidator formValidator;    
 
     /** Bundle factory. */
     @Autowired
@@ -81,13 +94,15 @@ public class ViewContainerRssController {
 
         List<ContainerRssModel> containers = this.service.getListContainer(portalControllerContext);
         
-        request.setAttribute("containers", containers);
+        if(containers != null) {
+            request.setAttribute("containers", containers);
+        }
         
         return "view";
     }
 
-    /**
-     * remove container
+     /**
+     * Add container 
      * 
      * @param request
      * @param response
@@ -95,28 +110,18 @@ public class ViewContainerRssController {
      * @throws PortletException
      * @throws IOException
      */
-    @ActionMapping(value = "remove")
-    public void remove(ActionRequest request, ActionResponse response, PortletSession session, @RequestParam("doc_id") String docid) throws PortletException, IOException {
+	@ActionMapping(value = "add")
+    public void add(ActionRequest request, ActionResponse response, PortletSession session) throws PortletException, IOException {
 
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-    }
-
-    /**
-     * Add 
-     * 
-     * @param request
-     * @param response
-     * @param session
-     * @throws PortletException
-     * @throws IOException
-     */
-    @ActionMapping(value = "add")
-    public void add(ActionRequest request, ActionResponse response, PortletSession session, @RequestParam("url") String url) throws PortletException, IOException {
-
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        ContainerRssModel container = new ContainerRssModel();
+        // container and path Name
+        container.setName(request.getParameter("name"));
+		container.setPath(request.getParameter("path"));
+        
+        this.service.creatContainer(portalControllerContext, container);
 
     }
 
@@ -136,25 +141,41 @@ public class ViewContainerRssController {
         return ERROR_PATH;
     }
     
-    @ActionMapping(name="submit", params="synchro")
-    public void reloadImage(ActionRequest request, ActionResponse response, @ModelAttribute("form") ContainerRssModel containerRss) {
-		// Synchronisation du conteneur avec le flux RSS
-    }
+    /**
+     * Containerform init binder.
+     *
+     * @param binder data binder
+     */
+    @InitBinder("form")
+    public void formInitBinder(WebDataBinder binder) {
+        binder.addValidators(this.formValidator);
+    }    
+    
+    @ModelAttribute("form")
+    public ContainerRssModel getForm(PortletRequest request, PortletResponse response)
+    {
+        PortalWindow window = WindowFactory.getWindow(request);
+
+        ContainerRssModel form = new ContainerRssModel();
+        form.setName(window.getProperty("name"));
+        form.setPath(window.getProperty("path"));
+        return form;
+    }    
     
     /**
-     * Get containers model attribute.
+     * remove container
      * 
-     * @param request portlet request
-     * @param response portlet response
-     * @return containers
+     * @param request
+     * @param response
+     * @param session
      * @throws PortletException
+     * @throws IOException
      */
-    @ModelAttribute("containers")
-    public ContainerRssModel getContainers(PortletRequest request, PortletResponse response) throws PortletException {
+    @ActionMapping(value = "remove")
+    public void remove(ActionRequest request, ActionResponse response, PortletSession session, @RequestParam("doc_id") String docid) throws PortletException, IOException {
+
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        return (ContainerRssModel) this.service.getListContainer(portalControllerContext);
     }    
-
 }

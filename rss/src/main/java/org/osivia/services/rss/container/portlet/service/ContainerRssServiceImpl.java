@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.container.portlet.model.ContainerRssModel;
-import org.osivia.services.rss.container.portlet.repository.ContainerRssRepository;
+import org.osivia.services.rss.container.portlet.repository.ContainerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class ContainerRssServiceImpl implements ContainerRssService {
 
     /** Repository. */
     @Autowired
-    public ContainerRssRepository repository;
+    public ContainerRepository repository;
 	
 	/** logger */
 	protected static final Log logger = LogFactory.getLog(ContainerRssServiceImpl.class);	
@@ -38,4 +38,8 @@ public class ContainerRssServiceImpl implements ContainerRssService {
         return containers;    	
     }
 
+    public void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
+
+    	this.repository.creatContainer(portalControllerContext, model);    	
+    }    
 }

@@ -3,7 +3,7 @@ package org.osivia.services.rss.container.portlet.repository;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.rss.container.portlet.model.RssModel;
+import org.osivia.services.rss.container.portlet.model.ItemRssModel;
 
 /**
  * RSS repository interface.
@@ -42,7 +42,7 @@ public interface RssRepository {
     * @param Model
     * @throws PortletException
     */
-   void creation(PortalControllerContext portalControllerContext, RssModel model) throws PortletException;
+   void creation(PortalControllerContext portalControllerContext, ItemRssModel model) throws PortletException;
    
    /**
     * Suppresion du  flux.
@@ -51,6 +51,6 @@ public interface RssRepository {
     * @param model 
     * @throws PortletException
     */
-   void remove(PortalControllerContext portalControllerContext, RssModel model) throws PortletException;   
+   void remove(PortalControllerContext portalControllerContext, ItemRssModel model) throws PortletException;   
    
 }

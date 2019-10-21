@@ -11,28 +11,28 @@ import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.osivia.services.rss.container.portlet.model.RssModel;
-import org.osivia.services.rss.container.portlet.repository.RssRepository;
+import org.osivia.services.rss.container.portlet.model.ContainerRssModel;
+import org.osivia.services.rss.container.portlet.repository.ContainerRepository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
 /**
- * Create Rss Nuxeo events command.
+ * Create Container RSS Nuxeo command.
  *
  * @author Cédric Krommenhoek
  * @author Frédéric Boudan
  * @see INuxeoCommand
  */
-public class RssCreatNuxeoCommand  implements INuxeoCommand {
+public class ContainerUpNuxeoCommand implements INuxeoCommand {
     
     /** Rss Nuxeo document type. */
-    private static final String DOCUMENT_TYPE_RSS = "rss";
+    private static final String DOCUMENT_TYPE_RSS = "RssContainer";
     
     /** RSS Model. */
-    private RssModel event;
+    private ContainerRssModel container;
 
 	/** logger */
-    protected static final Log logger = LogFactory.getLog(RssCreatNuxeoCommand.class);
+    protected static final Log logger = LogFactory.getLog(ContainerCreatNuxeoCommand.class);
     
     @Override
 	public Object execute(Session nuxeoSession) throws Exception {
@@ -40,10 +40,9 @@ public class RssCreatNuxeoCommand  implements INuxeoCommand {
         // Document service
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
 
-        // TODO: Parent --> à voir comment et où il est valorisé
-        DocRef parent = new DocRef(this.event.getIdConteneur());
+        DocRef parent = new DocRef("");
 
-    	PropertyMap flux = fillRss(event);
+    	PropertyMap flux = fillRss(container);
 
         // Création du document RSS
         Document document = documentService.createDocument(parent, DOCUMENT_TYPE_RSS, null, flux, true);
@@ -56,21 +55,15 @@ public class RssCreatNuxeoCommand  implements INuxeoCommand {
 	}
 	
 	//	On rempli le flux RSS
-	private PropertyMap fillRss(RssModel event) throws JsonGenerationException, JsonMappingException, IOException
+	private PropertyMap fillRss(ContainerRssModel container) throws JsonGenerationException, JsonMappingException, IOException
     {
         PropertyMap map = new PropertyMap();
         
         // Valorisation du schéma RSS (Item)
-        map.set(RssRepository.CONTENEUR_PROPERTY, event.getIdConteneur());
-        map.set(RssRepository.TITLE_PROPERTY, event.getTitle());
-        map.set(RssRepository.DESCRIPTION_PROPERTY, event.getDescription());
-        map.set(RssRepository.PUBDATE_PROPERTY, event.getPubDate());
-//        map.set(RssRepository.ID_GUID_PROPERTY, event.getGuid());
-        map.set(RssRepository.CATEGORY_PROPERTY, event.getCategory());
-        map.set(RssRepository.ENCLOSURE_PROPERTY, event.getEnclosure());
-        map.set(RssRepository.LINK_PROPERTY, event.getLink());
-        map.set(RssRepository.SOURCES_PROPERTY, event.getSourceRss());
-        map.set(RssRepository.AUTHOR_PROPERTY, event.getAuthor());
+        map.set(ContainerRepository.ID_PART_PROPERTY, container.getPartId());
+        map.set(ContainerRepository.DISPLAY_NAME_PROPERTY, container.getDisplayName());
+        map.set(ContainerRepository.ID_PROPERTY, container.getSyncId());
+        map.set(ContainerRepository.URL_PROPERTY, container.getUrl());
         
         return map;
     }

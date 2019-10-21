@@ -4,18 +4,16 @@ import java.util.List;
 
 public class ContainerRssModel {
 
-    public String displayName;
-    public String url;
-    public String partId;
-    public String syncId;
-    public List<RssModel> sources;
+	public String name;
+	public String path;
+	public String displayName;
+	public String url;
+	public String partId;
+	public String syncId;
+	public List<ItemRssModel> sources;
 
-    public ContainerRssModel(String displayName, String url, String partId, String syncId) {
-        this.displayName = displayName;
-        this.url = url;
-        this.partId = partId;
-        this.syncId = syncId;
-    }
+	public ContainerRssModel() {
+	}
 
 	public String getDisplayName() {
 		return displayName;
@@ -49,12 +47,28 @@ public class ContainerRssModel {
 		this.syncId = syncId;
 	}
 
-	public List<RssModel> getSources() {
+	public List<ItemRssModel> getSources() {
 		return sources;
 	}
 
-	public void setSources(List<RssModel> sources) {
+	public void setSources(List<ItemRssModel> sources) {
 		this.sources = sources;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 }

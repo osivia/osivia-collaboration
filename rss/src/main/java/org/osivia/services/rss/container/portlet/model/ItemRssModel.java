@@ -1,6 +1,6 @@
 package org.osivia.services.rss.container.portlet.model;
 
-public class RssModel {
+public class ItemRssModel {
 
     public String idConteneur;   
     public String title;
@@ -13,7 +13,7 @@ public class RssModel {
     public String enclosure;
     public String sourceRss;
 
-    public RssModel(String title, String link, String description, String author, String pubDate, String guid, String idConteneur,
+    public ItemRssModel(String title, String link, String description, String author, String pubDate, String guid, String idConteneur,
     		String category, String enclosure, String sourceRss) {
         this.idConteneur = idConteneur;
     	this.title = title;

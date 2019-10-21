@@ -8,8 +8,8 @@ import javax.portlet.PortletException;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.rss.container.portlet.command.ContainerCreatNuxeoCommand;
 import org.osivia.services.rss.container.portlet.command.ContainerRssListNuxeoCommand;
-import org.osivia.services.rss.container.portlet.command.RssCreatNuxeoCommand;
 import org.osivia.services.rss.container.portlet.model.ContainerRssModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 
 /**
  * Rss creation Nuxeo command.
@@ -26,7 +25,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
  * @author Cédric Krommenhoek
  */
 @Repository
-public class ContainerRssRepositoryImpl implements ContainerRssRepository{
+public class ContainerRepositoryImpl implements ContainerRepository{
 
     /** Application context. */
     @Autowired
@@ -35,7 +34,7 @@ public class ContainerRssRepositoryImpl implements ContainerRssRepository{
     /**
      * Constructor.
      */
-    public ContainerRssRepositoryImpl() {
+    public ContainerRepositoryImpl() {
         super();
     }
 	
@@ -46,10 +45,10 @@ public class ContainerRssRepositoryImpl implements ContainerRssRepository{
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        List<ContainerRssModel> containers;        
+        List<ContainerRssModel> containers;
         
         // Nuxeo command
-        INuxeoCommand nuxeoCommand = new ContainerRssListNuxeoCommand(NuxeoQueryFilterContext.CONTEXT_LIVE_N_PUBLISHED);
+        INuxeoCommand nuxeoCommand = this.applicationContext.getBean(ContainerRssListNuxeoCommand.class);
         Documents documents = (Documents) nuxeoController.executeNuxeoCommand(nuxeoCommand);
         // containers
         containers = new ArrayList<ContainerRssModel>(documents.size());
@@ -73,29 +72,24 @@ public class ContainerRssRepositoryImpl implements ContainerRssRepository{
 	}    
     
     /**
-     * Création du conteneur de flux RSS
-     */
-    public void creation(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
+     * Create container RSS
+     */    
+	public void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // Nuxeo command
-        INuxeoCommand command;
-        command = this.applicationContext.getBean(RssCreatNuxeoCommand.class, model);
-
-        nuxeoController.executeNuxeoCommand(command);
-    }
-    
-	@Override
-	public ContainerRssModel remove(PortalControllerContext portalControllerContext) throws PortletException {
-		// TODO Auto-generated method stub
-		return null;
+        INuxeoCommand nuxeoCommand;
+        nuxeoCommand = this.applicationContext.getBean(ContainerCreatNuxeoCommand.class, model);
+        
+        nuxeoController.executeNuxeoCommand(nuxeoCommand);
+		
 	}
 
 	@Override
-	public ContainerRssModel creation(PortalControllerContext portalControllerContext) throws PortletException {
+	public void remove(PortalControllerContext portalControllerContext) throws PortletException {
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
 
 }
