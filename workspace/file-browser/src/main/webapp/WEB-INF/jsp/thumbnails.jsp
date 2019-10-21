@@ -10,38 +10,36 @@
             <div class="d-flex">
                 <h3 class="h4 flex-grow-1"><op:translate key="FILE_BROWSER_FOLDERS" /></h3>
 
-                <c:if test="${not form.listMode}">
+                <div class="btn-group">
                     <div class="btn-group">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-outline-dark dropdown-toggle" data-toggle="dropdown">
-                                <span><op:translate key="${form.criteria.field.key}" /></span>
-                                <span class="caret"></span>
-                            </button>
+                        <button type="button" class="btn btn-outline-dark dropdown-toggle" data-toggle="dropdown">
+                            <span><op:translate key="${form.criteria.field.key}" /></span>
+                            <span class="caret"></span>
+                        </button>
 
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <c:forEach var="field" items="${sortFields}">
-                                    <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
-                                        <portlet:param name="field" value="${field.id}" />
-                                        <portlet:param name="alt" value="${form.criteria.field.id eq field.id and not form.criteria.alt}" />
-                                    </portlet:actionURL>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <c:forEach var="field" items="${sortFields}">
+                                <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
+                                    <portlet:param name="field" value="${field.id}" />
+                                    <portlet:param name="alt" value="${form.criteria.field.id eq field.id and not form.criteria.alt}" />
+                                </portlet:actionURL>
 
-                                    <a href="${url}" class="dropdown-item ${form.criteria.field eq field ? 'active' : ''}">
-                                        <span><op:translate key="${field.key}" /></span>
-                                    </a>
-                                </c:forEach>
-                            </div>
+                                <a href="${url}" class="dropdown-item ${form.criteria.field eq field ? 'active' : ''}">
+                                    <span><op:translate key="${field.key}" /></span>
+                                </a>
+                            </c:forEach>
                         </div>
-
-                        <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
-                            <portlet:param name="field" value="${form.criteria.field.id}" />
-                            <portlet:param name="alt" value="${not form.criteria.alt}" />
-                        </portlet:actionURL>
-
-                        <a href="${url}" class="btn btn-outline-dark">
-                            <i class="glyphicons glyphicons-arrow-${form.criteria.alt ? 'up' : 'down'}"></i>
-                        </a>
                     </div>
-                </c:if>
+
+                    <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
+                        <portlet:param name="field" value="${form.criteria.field.id}" />
+                        <portlet:param name="alt" value="${not form.criteria.alt}" />
+                    </portlet:actionURL>
+
+                    <a href="${url}" class="btn btn-outline-dark">
+                        <i class="glyphicons glyphicons-arrow-${form.criteria.alt ? 'up' : 'down'}"></i>
+                    </a>
+                </div>
             </div>
             
             <c:set var="count" value="0" />

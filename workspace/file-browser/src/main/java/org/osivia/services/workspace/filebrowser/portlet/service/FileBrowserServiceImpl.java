@@ -231,89 +231,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         FileBrowserForm form = this.applicationContext.getBean(FileBrowserForm.class);
 
         if (!form.isInitialized()) {
-            // Window properties
-            FileBrowserWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
-
-            // Document base path
-            String basePath = this.repository.getBasePath(portalControllerContext, windowProperties);
-            form.setBasePath(basePath);
-
-            // Document path
-            String path = this.repository.getContentPath(portalControllerContext, windowProperties);
-            form.setPath(path);
-
-            // List mode indicator
-            boolean listMode = BooleanUtils.isTrue(windowProperties.getListMode());
-            form.setListMode(listMode);
-
-            // Current document type
-            DocumentType type;
-            if (StringUtils.isEmpty(path)) {
-                type = null;
-            } else {
-                // Current document context
-                NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, path);
-
-                type = documentContext.getDocumentType();
-            }
-
-            // Documents
-            List<Document> documents = this.repository.getDocuments(portalControllerContext, windowProperties, path);
-
-            // User subscriptions
-            Set<String> userSubscriptions = this.repository.getUserSubscriptions(portalControllerContext);
-
-            // Items
-            List<FileBrowserItem> items;
-            if (CollectionUtils.isEmpty(documents)) {
-                items = null;
-            } else {
-                items = new ArrayList<>(documents.size());
-
-                for (int i = 0; i < documents.size(); i++) {
-                    // Document
-                    Document document = documents.get(i);
-
-                    FileBrowserItem item = this.createItem(portalControllerContext, document);
-
-                    // Subscription
-                    boolean subscription = userSubscriptions.contains(document.getId());
-                    item.setSubscription(subscription);
-
-                    // Native order
-                    item.setNativeOrder(i);
-
-                    // Parent document
-                    if (listMode) {
-                        Document parent = this.repository.getParentDocument(portalControllerContext, document);
-                        if (parent != null) {
-                            DocumentDTO parentDto = this.documentDao.toDTO(parent);
-                            item.setParentDocument(parentDto);
-                        }
-                    }
-
-                    items.add(item);
-                }
-            }
-            form.setItems(items);
-
-            if (listMode) {
-                // Sort criteria
-                FileBrowserSortCriteria criteria = this.applicationContext.getBean(FileBrowserSortCriteria.class);
-                criteria.setField(FileBrowserSortEnum.RELEVANCE);
-                criteria.setAlt(false);
-                form.setCriteria(criteria);
-            } else {
-                // Sort
-                this.sortItems(portalControllerContext, form, FileBrowserSortEnum.TITLE, false);
-
-                // Uploadable indicator
-                boolean uploadable = (type != null) && CollectionUtils.isNotEmpty(type.getSubtypes());
-                form.setUploadable(uploadable);
-
-                // Max file size
-                form.setMaxFileSize(FileBrowserConfiguration.MAX_UPLOAD_SIZE_PER_FILE);
-            }
+            this.initializeForm(portalControllerContext, form);
 
             // Initialized indicator
             form.setInitialized(true);
@@ -324,13 +242,109 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
 
     /**
+     * Initialize form.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    form
+     */
+    protected void initializeForm(PortalControllerContext portalControllerContext, FileBrowserForm form) throws PortletException {
+        // Window properties
+        FileBrowserWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
+
+        // Document base path
+        String basePath = this.repository.getBasePath(portalControllerContext, windowProperties);
+        form.setBasePath(basePath);
+
+        // Document path
+        String path = this.repository.getContentPath(portalControllerContext, windowProperties);
+        form.setPath(path);
+
+        // List mode indicator
+        boolean listMode = BooleanUtils.isTrue(windowProperties.getListMode());
+        form.setListMode(listMode);
+
+        // Current document type
+        DocumentType type;
+        if (StringUtils.isEmpty(path)) {
+            type = null;
+        } else {
+            // Current document context
+            NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, path);
+
+            type = documentContext.getDocumentType();
+        }
+
+        // Documents
+        List<Document> documents = this.repository.getDocuments(portalControllerContext, windowProperties, path);
+
+        // User subscriptions
+        Set<String> userSubscriptions = this.repository.getUserSubscriptions(portalControllerContext);
+
+        // Items
+        List<FileBrowserItem> items;
+        if (CollectionUtils.isEmpty(documents)) {
+            items = null;
+        } else {
+            items = new ArrayList<>(documents.size());
+
+            for (int i = 0; i < documents.size(); i++) {
+                // Document
+                Document document = documents.get(i);
+
+                FileBrowserItem item = this.createItem(portalControllerContext, document);
+
+                // Subscription
+                boolean subscription = userSubscriptions.contains(document.getId());
+                item.setSubscription(subscription);
+
+                // Native order
+                item.setNativeOrder(i);
+
+                // Parent document
+                if (listMode) {
+                    Document parent = this.repository.getParentDocument(portalControllerContext, document);
+                    if (parent != null) {
+                        DocumentDTO parentDto = this.documentDao.toDTO(parent);
+                        item.setParentDocument(parentDto);
+                    }
+                }
+
+                items.add(item);
+            }
+        }
+        form.setItems(items);
+
+        // Default field sort
+        FileBrowserSortField field = this.getDefaultSortField(listMode);
+
+        if (listMode) {
+            // Sort criteria
+            FileBrowserSortCriteria criteria = this.applicationContext.getBean(FileBrowserSortCriteria.class);
+            criteria.setField(field);
+            criteria.setAlt(false);
+            form.setCriteria(criteria);
+        } else {
+            // Sort
+            this.sortItems(portalControllerContext, form, field, false);
+
+            // Uploadable indicator
+            boolean uploadable = (type != null) && CollectionUtils.isNotEmpty(type.getSubtypes());
+            form.setUploadable(uploadable);
+
+            // Max file size
+            form.setMaxFileSize(FileBrowserConfiguration.MAX_UPLOAD_SIZE_PER_FILE);
+        }
+    }
+
+
+    /**
      * Create file browser item.
      *
      * @param portalControllerContext portal controller context
      * @param nuxeoDocument           Nuxeo document
      * @return item
      */
-    private FileBrowserItem createItem(PortalControllerContext portalControllerContext, Document nuxeoDocument) {
+    protected FileBrowserItem createItem(PortalControllerContext portalControllerContext, Document nuxeoDocument) {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
 
@@ -441,38 +455,38 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
 
     @Override
-    public List<FileBrowserSortField> getSortFields(PortalControllerContext portalControllerContext) {
+    public List<FileBrowserSortField> getSortFields(PortalControllerContext portalControllerContext) throws PortletException {
         // Window properties
         FileBrowserWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
 
         // List mode indicator
         boolean listMode = BooleanUtils.isTrue(windowProperties.getListMode());
 
-        // Enum values
-        FileBrowserSortEnum[] values = FileBrowserSortEnum.values();
-
         // Sort fields
-        List<FileBrowserSortField> fields = new ArrayList<>(values.length);
-        for (FileBrowserSortEnum value : values) {
-            if (listMode || !value.isListMode()) {
-                fields.add(value);
+        List<FileBrowserSortField> fields = this.getAllSortFields();
+
+        // Filtered sort fields
+        List<FileBrowserSortField> filteredFields = new ArrayList<>(fields.size());
+        for (FileBrowserSortField field : fields) {
+            if (listMode || !field.isListMode()) {
+                filteredFields.add(field);
             }
         }
 
-        return fields;
+        return filteredFields;
     }
 
 
     @Override
     public FileBrowserSortField getSortField(PortalControllerContext portalControllerContext, FileBrowserForm form, String fieldId) {
-        // Enum values
-        FileBrowserSortEnum[] values = FileBrowserSortEnum.values();
+        // Sort fields
+        List<FileBrowserSortField> fields = this.getAllSortFields();
 
         // Result
         FileBrowserSortField result = null;
         int i = 0;
-        while ((result == null) && (i < values.length)) {
-            FileBrowserSortEnum value = values[i];
+        while ((result == null) && (i < fields.size())) {
+            FileBrowserSortField value = fields.get(i);
 
             if (StringUtils.equals(fieldId, value.getId())) {
                 result = value;
@@ -483,14 +497,40 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
         if (result == null) {
             // Default result
-            if (form.isListMode()) {
-                result = FileBrowserSortEnum.RELEVANCE;
-            } else {
-                result = FileBrowserSortEnum.TITLE;
-            }
+            result = this.getDefaultSortField(form.isListMode());
         }
 
         return result;
+    }
+
+
+    /**
+     * Get all sort fields.
+     *
+     * @return sort fields
+     */
+    protected List<FileBrowserSortField> getAllSortFields() {
+        // Enum values
+        FileBrowserSortEnum[] values = FileBrowserSortEnum.values();
+
+        return new ArrayList<>(Arrays.asList(values));
+    }
+
+
+    /**
+     * Get default sort field.
+     *
+     * @param listMode list mode indicator
+     * @return field
+     */
+    protected FileBrowserSortField getDefaultSortField(boolean listMode) {
+        FileBrowserSortField field;
+        if (listMode) {
+            field = FileBrowserSortEnum.RELEVANCE;
+        } else {
+            field = FileBrowserSortEnum.TITLE;
+        }
+        return field;
     }
 
 
