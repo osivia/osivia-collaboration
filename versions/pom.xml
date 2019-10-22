@@ -13,28 +13,4 @@
 
     <name>OSIVIA Services - Versions</name>
 
-
-    <dependencies>
-    
-        <!-- Toutatice -->
-        <dependency>
-            <groupId>toutatice-portail.cms</groupId>
-            <artifactId>toutatice-portail-cms-nuxeo-dependencies</artifactId>
-        </dependency>
-        
-    </dependencies>
-
-
-    <build>
-        <plugins>
-            
-            <!-- LESS -->
-            <!-- <plugin>
-                <groupId>org.lesscss</groupId>
-                <artifactId>lesscss-maven-plugin</artifactId>
-            </plugin> -->
-
-        </plugins>
-    </build>
-
 </project>
