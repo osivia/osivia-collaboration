@@ -1,7 +1,14 @@
-package org.osivia.services.rss.container.portlet.model;
+package org.osivia.services.rss.common.model;
 
 import java.util.List;
 
+import org.osivia.services.rss.fluxRss.portlet.model.ItemRssModel;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ContainerRssModel {
 
 	public String name;

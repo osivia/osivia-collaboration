@@ -5,7 +5,7 @@ import java.util.List;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.rss.container.portlet.model.ContainerRssModel;
+import org.osivia.services.rss.common.model.ContainerRssModel;
 
 /**
  * RSS repository interface.

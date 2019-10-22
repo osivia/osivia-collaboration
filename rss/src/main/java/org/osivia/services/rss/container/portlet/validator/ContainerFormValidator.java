@@ -1,6 +1,6 @@
 package org.osivia.services.rss.container.portlet.validator;
 
-import org.osivia.services.rss.container.portlet.model.ContainerRssModel;
+import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;

@@ -1,4 +1,4 @@
-package org.osivia.services.rss.container.portlet.model;
+package org.osivia.services.rss.fluxRss.portlet.model;
 
 public class ItemRssModel {
 

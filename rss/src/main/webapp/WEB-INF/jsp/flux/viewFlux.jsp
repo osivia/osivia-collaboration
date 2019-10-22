@@ -12,7 +12,7 @@
 	<spring:bind path="url">
 		<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">    			
 			<form:label path="url" cssClass="control-label"><op:translate key="NAME"/></form:label>
-       		<form:input type="text" path="url" cssClass="form-control" placeholder="" />
+       		<form:input type="text" path="url" cssClass="form-control" placeholder="https://www.lemonde.fr/rss/une.xml" />
          	<form:errors path="name" cssClass="help-block" />
    		</div>
 	</spring:bind>

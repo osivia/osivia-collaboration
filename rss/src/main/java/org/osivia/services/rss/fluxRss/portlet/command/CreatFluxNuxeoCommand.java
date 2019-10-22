@@ -1,4 +1,4 @@
-package org.osivia.services.rss.container.portlet.command;
+package org.osivia.services.rss.fluxRss.portlet.command;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.osivia.services.rss.container.portlet.model.ContainerRssModel;
+import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.container.portlet.repository.ContainerRepository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
@@ -23,7 +23,7 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
  * @author Frédéric Boudan
  * @see INuxeoCommand
  */
-public class ContainerUpNuxeoCommand implements INuxeoCommand {
+public class CreatFluxNuxeoCommand implements INuxeoCommand {
     
     /** Rss Nuxeo document type. */
     private static final String DOCUMENT_TYPE_RSS = "RssContainer";
@@ -32,7 +32,7 @@ public class ContainerUpNuxeoCommand implements INuxeoCommand {
     private ContainerRssModel container;
 
 	/** logger */
-    protected static final Log logger = LogFactory.getLog(ContainerCreatNuxeoCommand.class);
+    protected static final Log logger = LogFactory.getLog(CreatFluxNuxeoCommand.class);
     
     @Override
 	public Object execute(Session nuxeoSession) throws Exception {

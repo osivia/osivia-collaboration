@@ -8,9 +8,9 @@ import javax.portlet.PortletException;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.container.portlet.command.ContainerCreatNuxeoCommand;
 import org.osivia.services.rss.container.portlet.command.ContainerRssListNuxeoCommand;
-import org.osivia.services.rss.container.portlet.model.ContainerRssModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
@@ -66,7 +66,11 @@ public class ContainerRepositoryImpl implements ContainerRepository{
 	    String partId = document.getString(ID_PART_PROPERTY);
 	    String syncId = document.getString(ID_PROPERTY);
 
-	    ContainerRssModel container = this.applicationContext.getBean(ContainerRssModel.class, displayName, url, partId, syncId);
+	    ContainerRssModel container = this.applicationContext.getBean(ContainerRssModel.class);
+	    container.setDisplayName(displayName);
+	    container.setUrl(url);
+	    container.setPartId(partId);
+	    container.setSyncId(syncId);
 	    
 	    return container;
 	}    

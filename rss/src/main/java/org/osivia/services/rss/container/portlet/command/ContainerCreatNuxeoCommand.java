@@ -7,7 +7,7 @@ import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.osivia.services.rss.container.portlet.model.ContainerRssModel;
+import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.container.portlet.repository.ContainerRepository;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;

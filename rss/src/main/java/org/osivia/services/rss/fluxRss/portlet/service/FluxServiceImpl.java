@@ -1,4 +1,4 @@
-package org.osivia.services.rss.container.portlet.service;
+package org.osivia.services.rss.fluxRss.portlet.service;
 
 import java.util.List;
 
@@ -20,14 +20,14 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
-public class ContainerRssServiceImpl implements ContainerRssService {
+public class FluxServiceImpl implements FluxService {
 
     /** Repository. */
     @Autowired
     public ContainerRepository repository;
 	
 	/** logger */
-	protected static final Log logger = LogFactory.getLog(ContainerRssServiceImpl.class);
+	protected static final Log logger = LogFactory.getLog(FluxServiceImpl.class);	
 	
     /**
      * {@inheritDoc}
@@ -41,6 +41,11 @@ public class ContainerRssServiceImpl implements ContainerRssService {
     public void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
 
     	this.repository.creatContainer(portalControllerContext, model);    	
-    }    
-    
+    }
+
+	@Override
+	public void creatFlux(PortalControllerContext portalControllerContext) throws PortletException {
+		// TODO Auto-generated method stub
+		
+	}    
 }

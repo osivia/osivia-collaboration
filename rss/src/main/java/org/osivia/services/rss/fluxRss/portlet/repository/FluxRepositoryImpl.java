@@ -1,10 +1,10 @@
-package org.osivia.services.rss.container.portlet.repository;
+package org.osivia.services.rss.fluxRss.portlet.repository;
 
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.container.portlet.command.ContainerCreatNuxeoCommand;
-import org.osivia.services.rss.container.portlet.model.ItemRssModel;
+import org.osivia.services.rss.fluxRss.portlet.model.ItemRssModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -23,7 +23,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class RssRepositoryImpl {
+public class FluxRepositoryImpl {
 
     /** Application context. */
     @Autowired
@@ -33,7 +33,7 @@ public class RssRepositoryImpl {
     /**
      * Constructor.
      */
-    public RssRepositoryImpl() {
+    public FluxRepositoryImpl() {
         super();
     }
 	

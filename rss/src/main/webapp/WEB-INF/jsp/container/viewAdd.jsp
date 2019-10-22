@@ -6,7 +6,10 @@
 
 <%@ page isELIgnored="false" %>
 
-<portlet:actionURL name="add" var="add" />
+<portlet:actionURL name="add" var="add" copyCurrentRenderParameters="true" />
+<portlet:renderURL var="cancelUrl">
+	<portlet:param name="view" value="container" />
+</portlet:renderURL>
 
 <form:form action="${add}" method="post" modelAttribute="form">
 
@@ -26,29 +29,12 @@
       		</div>
 		</spring:bind>		
 		
-	    <div class="row">
-		    <div class="col-lg-offset-8 col-lg-4">
-		    	<button type="submit" name="add" class="btn btn-primary"><op:translate key="ADDCONTAINER"/></button>
-		 	</div>
-		 </div>
+	    <div class="col-sm-offset-4 col-sm-8 col-lg-offset-5 col-lg-7">
+	        <!-- Cancel -->
+	        <a href="${cancelUrl}" class="btn btn-default">
+	            <span><op:translate key="CANCEL"/></span>
+	        </a>
+	    	<button type="submit" name="add" class="btn btn-primary"><op:translate key="ADDCONTAINER"/></button>
+	 	</div>
 		
-		<div>
-			<fieldset>
-				<Legend>Liste des flux</Legend>
-			    <c:if test="${empty containers}">
-			        <p>
-			            <span><op:translate key="LIST_CONTAINER_NO_RESULT" /></span>
-			        </p>
-			    </c:if>
-				
-				<ol>
-			    	<c:forEach var="container" items="${containers}" varStatus="status">
-			    		<li>
-				            <a href="">${container.name}</strong>
-			    		</li>
-				    </c:forEach>
-				</ol>
-			</fieldset>
-		</div>
-	
 </form:form>
