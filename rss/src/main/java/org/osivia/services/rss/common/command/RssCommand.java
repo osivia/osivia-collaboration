@@ -1,12 +1,16 @@
 package org.osivia.services.rss.common.command;
 
-import org.nuxeo.ecm.automation.client.Constants;
-import org.nuxeo.ecm.automation.client.OperationRequest;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.client.adapters.DocumentService;
+import org.nuxeo.ecm.automation.client.model.DocRef;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.services.rss.common.model.ContainerRssModel;
+import org.osivia.services.rss.common.repository.ContainerRepository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoCompatibility;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 
 /**
@@ -18,12 +22,16 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
  */
 public class RssCommand  implements INuxeoCommand {
     
-    /** Nuxeo query filter context. */
-    private NuxeoQueryFilterContext queryContext;
-    /** Context path. */
-    private final String contextPath;
-
-
+    
+    /** Rss Nuxeo document type. */
+    private static final String DOCUMENT_TYPE_RSS = "RssContainer";
+    
+    /** RSS Model. */
+    private ContainerRssModel form;
+    
+	/** logger */
+    protected static final Log logger = LogFactory.getLog(ContainerCreatNuxeoCommand.class);	
+	
     /**
      * Constructor.
      *
@@ -32,8 +40,7 @@ public class RssCommand  implements INuxeoCommand {
      */
     public RssCommand(NuxeoQueryFilterContext queryContext, String contextPath) {
         super();
-        this.queryContext = queryContext;
-        this.contextPath = contextPath;
+        this.form = form;
     }
 
 
@@ -43,25 +50,25 @@ public class RssCommand  implements INuxeoCommand {
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
 
-    	// Clause
-        StringBuilder clause = new StringBuilder();
-        clause.append("ecm:primaryType = 'RssContainer' ");
+        // Document service
+        DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
 
-        // Filter on published documents
-        String filteredRequest = NuxeoQueryFilter.addPublicationFilter(this.queryContext, clause.toString());
+        // Correspond à l'endroit où l'on souhaite stocker le document
+        DocRef parent = new DocRef(form.getPath());
 
-        // Request
-        OperationRequest request;
-        if (NuxeoCompatibility.canUseES()) {
-            request = nuxeoSession.newRequest("Document.QueryES");
-            request.set(Constants.HEADER_NX_SCHEMAS, "*");
-        } else {
-            request = nuxeoSession.newRequest("Document.Query");
-            request.setHeader(Constants.HEADER_NX_SCHEMAS, "*");
-        }
-        request.set("query", "SELECT * FROM Document WHERE " + filteredRequest);
-
-        return request.execute();
+        // Properties
+        PropertyMap properties = new PropertyMap();
+        properties.set(ContainerRepository.DISPLAY_NAME_PROPERTY, this.form.getDisplayName());
+        properties.set(ContainerRepository.ID_PART_PROPERTY, this.form.getPartId());
+        properties.set(ContainerRepository.ID_PROPERTY, this.form.getSyncId());
+        properties.set(ContainerRepository.NAME_PROPERTY, this.form.getName());
+        properties.set(ContainerRepository.URL_PROPERTY, this.form.getUrl());
+        
+        
+        // Création du document RSS
+        Document document = documentService.createDocument(parent, DOCUMENT_TYPE_RSS, null, properties);
+        
+    	return document;
     }
 
 

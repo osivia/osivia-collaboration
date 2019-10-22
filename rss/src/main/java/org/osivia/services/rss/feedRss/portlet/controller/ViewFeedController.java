@@ -13,7 +13,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.services.rss.common.model.ContainerRssModel;
-import org.osivia.services.rss.container.portlet.service.ContainerRssService;
+import org.osivia.services.rss.feedRss.portlet.service.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -36,7 +36,7 @@ public class ViewFeedController {
 
     /** Container RSS service. */
     @Autowired
-    protected ContainerRssService service;
+    protected FeedService service;
     
     /** Bundle factory. */
     @Autowired
@@ -74,6 +74,6 @@ public class ViewFeedController {
     {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-        return this.service.getListContainer(portalControllerContext);
+        return this.service.getListFeed(portalControllerContext);
     }
 }

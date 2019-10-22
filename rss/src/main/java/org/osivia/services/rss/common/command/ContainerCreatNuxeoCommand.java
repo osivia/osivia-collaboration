@@ -1,4 +1,4 @@
-package org.osivia.services.rss.container.portlet.command;
+package org.osivia.services.rss.common.command;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -8,7 +8,7 @@ import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.services.rss.common.model.ContainerRssModel;
-import org.osivia.services.rss.container.portlet.repository.ContainerRepository;
+import org.osivia.services.rss.common.repository.ContainerRepository;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.model.ContainerRssModel;
-import org.osivia.services.rss.container.portlet.repository.ContainerRepository;
+import org.osivia.services.rss.common.repository.ContainerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,20 +32,14 @@ public class FeedServiceImpl implements FeedService {
     /**
      * {@inheritDoc}
      */
-    public List<ContainerRssModel> getListContainer(PortalControllerContext portalControllerContext) throws PortletException {
+    public List<ContainerRssModel> getListFeed(PortalControllerContext portalControllerContext) throws PortletException {
 
     	List<ContainerRssModel> containers = this.repository.getListContainerRss(portalControllerContext);    	
         return containers;    	
     }
 
-    public void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
+    public void creatFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
 
-    	this.repository.creatContainer(portalControllerContext, model);    	
+    	this.repository.creatFeed(portalControllerContext, model);    	
     }
-
-	@Override
-	public void creatFlux(PortalControllerContext portalControllerContext) throws PortletException {
-		// TODO Auto-generated method stub
-		
-	}    
 }

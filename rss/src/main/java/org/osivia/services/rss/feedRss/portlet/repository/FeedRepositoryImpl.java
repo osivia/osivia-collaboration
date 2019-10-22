@@ -3,7 +3,7 @@ package org.osivia.services.rss.feedRss.portlet.repository;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.rss.container.portlet.command.ContainerCreatNuxeoCommand;
+import org.osivia.services.rss.feedRss.portlet.command.FeedCreatNuxeoCommand;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -28,7 +28,6 @@ public class FeedRepositoryImpl {
     /** Application context. */
     @Autowired
     private ApplicationContext applicationContext;
-    
 
     /**
      * Constructor.
@@ -38,15 +37,15 @@ public class FeedRepositoryImpl {
     }
 	
     /**
-     * Création des flux RSS
+     * Create Feed RSS
      */
-    public void creation(PortalControllerContext portalControllerContext, ItemRssModel model) throws PortletException {
+    public void creatFeed(PortalControllerContext portalControllerContext, ItemRssModel model) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // Nuxeo command
         INuxeoCommand command;
-        command = this.applicationContext.getBean(ContainerCreatNuxeoCommand.class, model);
+        command = this.applicationContext.getBean(FeedCreatNuxeoCommand.class, model);
 
         nuxeoController.executeNuxeoCommand(command);
     }

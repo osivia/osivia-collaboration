@@ -1,4 +1,4 @@
-package org.osivia.services.rss.container.portlet.command;
+package org.osivia.services.rss.common.command;
 
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;

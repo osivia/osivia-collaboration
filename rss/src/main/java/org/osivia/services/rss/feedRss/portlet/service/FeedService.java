@@ -20,19 +20,18 @@ public interface FeedService {
      * get List Container.
      *
      * @param portalControllerContext portal controller context
-     * @param calendarData calendar data
      * @return List<ContainerRssModel>
      * @throws PortletException
      */
-	List<ContainerRssModel> getListContainer(PortalControllerContext portalControllerContext) throws PortletException;
+	List<ContainerRssModel> getListFeed(PortalControllerContext portalControllerContext) throws PortletException;
 	
     /**
      * create Flux.
      *
      * @param portalControllerContext portal controller context
-     * @param calendarData calendar data
+     * @param model ContainerRssModel
      * @return List<ContainerRssModel>
      * @throws PortletException
      */
-	void creatFlux(PortalControllerContext portalControllerContext) throws PortletException;	
+	void creatFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;	
 }

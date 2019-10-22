@@ -1,4 +1,4 @@
-package org.osivia.services.rss.container.portlet.repository;
+package org.osivia.services.rss.common.repository;
 
 import java.util.List;
 
@@ -35,6 +35,15 @@ public interface ContainerRepository {
     * @throws PortletException
     */
 	void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;
+	
+   /**
+    * Create feed RSS.
+    *
+    * @param portalControllerContext portal controller context
+    * @param model
+    * @throws PortletException
+    */
+	void creatFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;	
    
    /**
     * remove container flux RSS.

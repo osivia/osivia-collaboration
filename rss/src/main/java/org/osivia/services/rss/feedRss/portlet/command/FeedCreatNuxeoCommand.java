@@ -12,7 +12,7 @@ import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.services.rss.common.model.ContainerRssModel;
-import org.osivia.services.rss.container.portlet.repository.ContainerRepository;
+import org.osivia.services.rss.common.repository.ContainerRepository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
@@ -23,7 +23,7 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
  * @author Frédéric Boudan
  * @see INuxeoCommand
  */
-public class CreatFeedNuxeoCommand implements INuxeoCommand {
+public class FeedCreatNuxeoCommand implements INuxeoCommand {
     
     /** Rss Nuxeo document type. */
     private static final String DOCUMENT_TYPE_RSS = "RssContainer";
@@ -32,7 +32,7 @@ public class CreatFeedNuxeoCommand implements INuxeoCommand {
     private ContainerRssModel container;
 
 	/** logger */
-    protected static final Log logger = LogFactory.getLog(CreatFeedNuxeoCommand.class);
+    protected static final Log logger = LogFactory.getLog(FeedCreatNuxeoCommand.class);
     
     @Override
 	public Object execute(Session nuxeoSession) throws Exception {

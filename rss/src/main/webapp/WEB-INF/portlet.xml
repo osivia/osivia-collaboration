@@ -16,7 +16,7 @@
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>
-            <value>org.osivia.services.rss.container.portlet.configuration.RssContainerConfiguration</value>
+            <value>org.osivia.services.rss.feedRss.portlet.configuration.FeedRssConfiguration</value>
         </init-param>
 
         <expiration-cache>180</expiration-cache>

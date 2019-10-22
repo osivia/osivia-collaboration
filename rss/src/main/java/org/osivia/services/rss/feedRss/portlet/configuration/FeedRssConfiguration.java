@@ -21,7 +21,7 @@ import org.springframework.web.servlet.view.JstlView;
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 
 @Configuration
-@ComponentScan(basePackages={"org.osivia.services.rss.fluxRss.portlet", "org.osivia.services.rss.common"})
+@ComponentScan(basePackages={"org.osivia.services.rss.feedRss.portlet", "org.osivia.services.rss.common"})
 public class FeedRssConfiguration extends CMSPortlet implements PortletConfigAware {
 
     /** Application context. */

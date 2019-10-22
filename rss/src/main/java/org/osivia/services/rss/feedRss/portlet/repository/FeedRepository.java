@@ -1,9 +1,11 @@
 package org.osivia.services.rss.feedRss.portlet.repository;
 
+import java.util.List;
+
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
+import org.osivia.services.rss.common.model.ContainerRssModel;
 
 /**
  * RSS repository interface.
@@ -36,21 +38,29 @@ public interface FeedRepository {
 	String SOURCES_PROPERTY = "rssi:source";	   
    
    /**
-    * Creation du flux RSS.
+    * Create feed RSS.
     *
     * @param portalControllerContext portal controller context
     * @param Model
     * @throws PortletException
     */
-   void creation(PortalControllerContext portalControllerContext, ItemRssModel model) throws PortletException;
+   void creatFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;
    
    /**
-    * Suppresion du  flux.
+    * remove Feed.
     *
     * @param portalControllerContext portal controller context
     * @param model 
     * @throws PortletException
     */
-   void remove(PortalControllerContext portalControllerContext, ItemRssModel model) throws PortletException;   
+   void remove(PortalControllerContext portalControllerContext) throws PortletException;
+   
+   /**
+    * get feed list RSS.
+    *
+    * @param portalControllerContext portal controller context
+    * @throws PortletException
+    */
+   List<ContainerRssModel> getListFeedRss(PortalControllerContext portalControllerContext) throws PortletException;   
    
 }
