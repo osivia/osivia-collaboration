@@ -5,7 +5,6 @@ import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.user.UserPreferences;
 import org.osivia.portal.core.cms.CMSBinaryContent;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserWindowProperties;
 import org.springframework.web.multipart.MultipartFile;
@@ -101,15 +100,6 @@ public interface FileBrowserRepository {
      * @return parent Nuxeo document
      */
     Document getParentDocument(PortalControllerContext portalControllerContext, Document document) throws PortletException;
-
-
-    /**
-     * Get user preferences.
-     *
-     * @param portalControllerContext portal controller context
-     * @return user preferences
-     */
-    UserPreferences getUserPreferences(PortalControllerContext portalControllerContext) throws PortletException;
 
 
     /**

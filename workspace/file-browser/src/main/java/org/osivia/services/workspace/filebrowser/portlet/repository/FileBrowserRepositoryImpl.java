@@ -23,7 +23,6 @@ import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.Link;
-import org.osivia.portal.api.user.UserPreferences;
 import org.osivia.portal.core.cms.*;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserWindowProperties;
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.CopyDocumentCommand;
@@ -323,26 +322,6 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
 
         // Parent document
         return this.getDocumentFromNavigation(cmsService, cmsContext, basePath, parentPath);
-    }
-
-
-    @Override
-    public UserPreferences getUserPreferences(PortalControllerContext portalControllerContext) throws PortletException {
-        // CMS service
-        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-        // CMS context
-        CMSServiceCtx cmsContext = new CMSServiceCtx();
-        cmsContext.setPortalControllerContext(portalControllerContext);
-
-        // User preferences
-        UserPreferences userPreferences;
-        try {
-            userPreferences = cmsService.getUserPreferences(portalControllerContext);
-        } catch (PortalException e) {
-            throw new PortletException(e);
-        }
-
-        return userPreferences;
     }
 
 

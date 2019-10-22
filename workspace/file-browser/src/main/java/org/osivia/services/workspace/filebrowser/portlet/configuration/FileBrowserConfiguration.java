@@ -1,11 +1,12 @@
 package org.osivia.services.workspace.filebrowser.portlet.configuration;
 
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletException;
-
+import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.math.NumberUtils;
+import org.osivia.portal.api.directory.v2.DirServiceFactory;
+import org.osivia.directory.v2.service.preferences.UserPreferencesService;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -26,12 +27,12 @@ import org.springframework.web.portlet.multipart.PortletMultipartResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
-import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletException;
 
 /**
  * File browser portlet configuration.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see CMSPortlet
  * @see PortletConfigAware
@@ -40,11 +41,15 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 @ComponentScan(basePackages = "org.osivia.services.workspace.filebrowser.portlet")
 public class FileBrowserConfiguration extends CMSPortlet implements PortletConfigAware {
 
-    /** Max upload size per file. */
+    /**
+     * Max upload size per file.
+     */
     public static final Long MAX_UPLOAD_SIZE_PER_FILE = NumberUtils.toLong(System.getProperty("osivia.filebrowser.max.upload.size"), 500) * FileUtils.ONE_MB;
 
 
-    /** Application context. */
+    /**
+     * Application context.
+     */
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -104,7 +109,7 @@ public class FileBrowserConfiguration extends CMSPortlet implements PortletConfi
 
     /**
      * Get multipart resolver.
-     * 
+     *
      * @return multipart resolver
      */
     @Bean(name = "portletMultipartResolver")
@@ -118,7 +123,7 @@ public class FileBrowserConfiguration extends CMSPortlet implements PortletConfi
 
     /**
      * Get CMS service locator.
-     * 
+     *
      * @return CMS service locator
      */
     @Bean
@@ -129,7 +134,7 @@ public class FileBrowserConfiguration extends CMSPortlet implements PortletConfi
 
     /**
      * Get portal URL factory.
-     * 
+     *
      * @return portal URL factory
      */
     @Bean
@@ -140,7 +145,7 @@ public class FileBrowserConfiguration extends CMSPortlet implements PortletConfi
 
     /**
      * Get internationalization bundle factory.
-     * 
+     *
      * @return internationalization bundle factory
      */
     @Bean
@@ -153,7 +158,7 @@ public class FileBrowserConfiguration extends CMSPortlet implements PortletConfi
 
     /**
      * Get notifications service.
-     * 
+     *
      * @return notifications service
      */
     @Bean
@@ -164,7 +169,7 @@ public class FileBrowserConfiguration extends CMSPortlet implements PortletConfi
 
     /**
      * Get customization service.
-     * 
+     *
      * @return customization service
      */
     @Bean
@@ -175,12 +180,23 @@ public class FileBrowserConfiguration extends CMSPortlet implements PortletConfi
 
     /**
      * Get document DAO.
-     * 
+     *
      * @return document DAO
      */
     @Bean
     public DocumentDAO getDocumentDao() {
         return DocumentDAO.getInstance();
+    }
+
+
+    /**
+     * Get user preferences service.
+     *
+     * @return user preferences service
+     */
+    @Bean
+    public UserPreferencesService getUserPreferencesService() {
+        return DirServiceFactory.getService(UserPreferencesService.class);
     }
 
 }

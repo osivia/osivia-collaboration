@@ -16,6 +16,8 @@ import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.directory.v2.model.preferences.UserPreferences;
+import org.osivia.directory.v2.service.preferences.UserPreferencesService;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentType;
@@ -28,7 +30,6 @@ import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
-import org.osivia.portal.api.user.UserPreferences;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSBinaryContent;
@@ -98,6 +99,13 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      */
     @Autowired
     private DocumentDAO documentDao;
+
+
+    /**
+     * User preferences service.
+     */
+    @Autowired
+    private UserPreferencesService userPreferencesService;
 
 
     /**
@@ -188,11 +196,19 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                 String webId = document.getString("ttc:webid");
 
                 // User preferences
-                UserPreferences userPreferences = this.repository.getUserPreferences(portalControllerContext);
+                UserPreferences userPreferences = null;
+                try {
+                    userPreferences = this.userPreferencesService.getUserPreferences(portalControllerContext);
+                } catch (PortalException e) {
+                    throw new PortletException(e);
+                }
 
                 if (userPreferences != null) {
+                    // Folder displays
+                    Map<String, String> folderDisplays = userPreferences.getFolderDisplays();
+
                     // Saved view
-                    String savedView = userPreferences.getFolderDisplayMode(webId);
+                    String savedView = folderDisplays.get(webId);
                     view = FileBrowserView.fromId(savedView);
                 } else {
                     view = FileBrowserView.DEFAULT;
@@ -216,10 +232,23 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             String webId = document.getString("ttc:webid");
 
             // User preferences
-            UserPreferences userPreferences = this.repository.getUserPreferences(portalControllerContext);
+            UserPreferences userPreferences = null;
+            try {
+                userPreferences = this.userPreferencesService.getUserPreferences(portalControllerContext);
+            } catch (PortalException e) {
+                throw new PortletException(e);
+            }
 
             if (userPreferences != null) {
-                userPreferences.updateFolderDisplayMode(webId, view.getId());
+                // Folder displays
+                Map<String, String> folderDisplays = userPreferences.getFolderDisplays();
+
+                // Update folder displays
+                folderDisplays.put(webId, view.getId());
+
+                // Update user preferences
+                userPreferences.setFolderDisplays(folderDisplays);
+                userPreferences.setUpdated(true);
             }
         }
     }
