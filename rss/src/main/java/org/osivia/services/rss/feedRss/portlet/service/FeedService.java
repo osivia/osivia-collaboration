@@ -1,4 +1,4 @@
-package org.osivia.services.rss.fluxRss.portlet.service;
+package org.osivia.services.rss.feedRss.portlet.service;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import org.osivia.services.rss.common.model.ContainerRssModel;
  * @author Frédéric Boudan
  *
  */
-public interface FluxService {
+public interface FeedService {
 
     /**
      * get List Container.

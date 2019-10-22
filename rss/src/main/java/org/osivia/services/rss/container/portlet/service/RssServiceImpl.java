@@ -13,7 +13,7 @@ import javax.xml.stream.events.XMLEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.services.rss.common.model.ContainerRssModel;
-import org.osivia.services.rss.fluxRss.portlet.model.ItemRssModel;
+import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
 
 /**
  * RSS service interface

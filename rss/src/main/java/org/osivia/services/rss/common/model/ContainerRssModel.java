@@ -2,7 +2,7 @@ package org.osivia.services.rss.common.model;
 
 import java.util.List;
 
-import org.osivia.services.rss.fluxRss.portlet.model.ItemRssModel;
+import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package org.osivia.services.rss.fluxRss.portlet.service;
+package org.osivia.services.rss.feedRss.portlet.service;
 
 import java.util.List;
 
@@ -20,14 +20,14 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
-public class FluxServiceImpl implements FluxService {
+public class FeedServiceImpl implements FeedService {
 
     /** Repository. */
     @Autowired
     public ContainerRepository repository;
 	
 	/** logger */
-	protected static final Log logger = LogFactory.getLog(FluxServiceImpl.class);	
+	protected static final Log logger = LogFactory.getLog(FeedServiceImpl.class);	
 	
     /**
      * {@inheritDoc}

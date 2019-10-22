@@ -1,4 +1,4 @@
-package org.osivia.services.rss.fluxRss.portlet.command;
+package org.osivia.services.rss.feedRss.portlet.command;
 
 import java.io.IOException;
 
@@ -23,7 +23,7 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
  * @author Frédéric Boudan
  * @see INuxeoCommand
  */
-public class CreatFluxNuxeoCommand implements INuxeoCommand {
+public class CreatFeedNuxeoCommand implements INuxeoCommand {
     
     /** Rss Nuxeo document type. */
     private static final String DOCUMENT_TYPE_RSS = "RssContainer";
@@ -32,7 +32,7 @@ public class CreatFluxNuxeoCommand implements INuxeoCommand {
     private ContainerRssModel container;
 
 	/** logger */
-    protected static final Log logger = LogFactory.getLog(CreatFluxNuxeoCommand.class);
+    protected static final Log logger = LogFactory.getLog(CreatFeedNuxeoCommand.class);
     
     @Override
 	public Object execute(Session nuxeoSession) throws Exception {

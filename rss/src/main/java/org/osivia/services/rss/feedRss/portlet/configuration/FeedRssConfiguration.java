@@ -1,4 +1,4 @@
-package org.osivia.services.rss.fluxRss.portlet.configuration;
+package org.osivia.services.rss.feedRss.portlet.configuration;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
@@ -22,7 +22,7 @@ import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 
 @Configuration
 @ComponentScan(basePackages={"org.osivia.services.rss.fluxRss.portlet", "org.osivia.services.rss.common"})
-public class FluxRssConfiguration extends CMSPortlet implements PortletConfigAware {
+public class FeedRssConfiguration extends CMSPortlet implements PortletConfigAware {
 
     /** Application context. */
     @Autowired
@@ -34,7 +34,7 @@ public class FluxRssConfiguration extends CMSPortlet implements PortletConfigAwa
 	    InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 	    viewResolver.setCache(true);
 	    viewResolver.setViewClass(JstlView.class);
-	    viewResolver.setPrefix("/WEB-INF/jsp/flux/");
+	    viewResolver.setPrefix("/WEB-INF/jsp/feed/");
 	    viewResolver.setSuffix(".jsp");
 	    return viewResolver;
 	  }

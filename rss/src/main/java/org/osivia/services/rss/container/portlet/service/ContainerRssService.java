@@ -1,6 +1,5 @@
 package org.osivia.services.rss.container.portlet.service;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.portlet.PortletException;

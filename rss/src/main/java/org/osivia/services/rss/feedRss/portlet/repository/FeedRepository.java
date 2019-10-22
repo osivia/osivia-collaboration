@@ -1,16 +1,16 @@
-package org.osivia.services.rss.fluxRss.portlet.repository;
+package org.osivia.services.rss.feedRss.portlet.repository;
 
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.rss.fluxRss.portlet.model.ItemRssModel;
+import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
 
 /**
  * RSS repository interface.
  *
  * @author Frédéric Boudan
  */
-public interface FluxRepository {
+public interface FeedRepository {
 
 	/** RSS document type name. */
 	String DOCUMENT_TYPE_EVENEMENT = "ottc-rss-item";
