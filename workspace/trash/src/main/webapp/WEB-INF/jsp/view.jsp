@@ -40,13 +40,13 @@
                 </div>
 
                 <div class="modal-footer">
-                    <a href="${restoreAllUrl}" class="btn btn-primary" data-dismiss="modal">
-                        <span><op:translate key="TRASH_RESTORE_ALL"/></span>
-                    </a>
-
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
                         <span><op:translate key="CANCEL"/></span>
                     </button>
+
+                    <a href="${restoreAllUrl}" class="btn btn-primary" data-dismiss="modal">
+                        <span><op:translate key="TRASH_RESTORE_ALL"/></span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -79,13 +79,13 @@
                 </div>
 
                 <div class="modal-footer">
-                    <a href="${deleteAllUrl}" class="btn btn-danger" data-dismiss="modal">
-                        <span><op:translate key="TRASH_EMPTY_TRASH"/></span>
-                    </a>
-
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
                         <span><op:translate key="CANCEL"/></span>
                     </button>
+
+                    <a href="${deleteAllUrl}" class="btn btn-danger" data-dismiss="modal">
+                        <span><op:translate key="TRASH_EMPTY_TRASH"/></span>
+                    </a>
                 </div>
             </div>
         </div>

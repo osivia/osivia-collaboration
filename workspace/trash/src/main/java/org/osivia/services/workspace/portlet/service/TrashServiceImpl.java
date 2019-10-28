@@ -587,7 +587,12 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
         Element modalFooter = DOM4JUtils.generateDivElement("modal-footer");
         modalContent.add(modalFooter);
 
-        // Confirmation button
+        // Cancel button
+        Element cancel = DOM4JUtils.generateElement("button", "btn btn-secondary", bundle.getString("CANCEL"), null, null);
+        DOM4JUtils.addAttribute(cancel, "type", "button");
+        DOM4JUtils.addDataAttribute(cancel, "dismiss", "modal");
+        modalFooter.add(cancel);
+
         // Confirmation button
         String url;
         if (mimeResponse == null) {
@@ -602,12 +607,6 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
         }
         Element confirm = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-warning no-ajax-link", bundle.getString("CONFIRM"), null);
         modalFooter.add(confirm);
-
-        // Cancel button
-        Element cancel = DOM4JUtils.generateElement("button", "btn btn-secondary", bundle.getString("CANCEL"), null, null);
-        DOM4JUtils.addAttribute(cancel, "type", "button");
-        DOM4JUtils.addDataAttribute(cancel, "dismiss", "modal");
-        modalFooter.add(cancel);
 
         return modal;
     }
