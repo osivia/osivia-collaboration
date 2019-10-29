@@ -15,31 +15,24 @@
 
 
 <form:form action="${url}" method="post" modelAttribute="form">
-    <fieldset>
-        <legend>
-            <i class="glyphicons glyphicons-basic-square-edit"></i>
-            <span><op:translate key="RENAME_LEGEND" /></span>
-        </legend>
-
-        <%--Title--%>
-        <c:set var="placeholder"><op:translate key="TITLE_PLACEHOLDER" /></c:set>
-        <spring:bind path="title">
-            <div class="form-group required">
-                <form:label path="title"><op:translate key="TITLE_LABEL" /></form:label>
-                <form:input path="title" cssClass="form-control ${status.error ? 'is-invalid' : ''}" placeholder="${placeholder}" />
-                <form:errors path="title" cssClass="invalid-feedback" />
-            </div>
-        </spring:bind>
-        
-        <%--Buttons--%>
-        <div class="text-right">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                <span><op:translate key="CANCEL" /></span>
-            </button>
-
-            <button type="submit" class="btn btn-primary">
-                <span><op:translate key="RENAME_ACTION" /></span>
-            </button>
+    <%--Title--%>
+    <c:set var="placeholder"><op:translate key="TITLE_PLACEHOLDER" /></c:set>
+    <spring:bind path="title">
+        <div class="form-group required">
+            <form:label path="title"><op:translate key="TITLE_LABEL" /></form:label>
+            <form:input path="title" cssClass="form-control ${status.error ? 'is-invalid' : ''}" placeholder="${placeholder}" />
+            <form:errors path="title" cssClass="invalid-feedback" />
         </div>
-    </fieldset>
+    </spring:bind>
+
+    <%--Buttons--%>
+    <div class="text-right">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            <span><op:translate key="CANCEL" /></span>
+        </button>
+
+        <button type="submit" class="btn btn-primary">
+            <span><op:translate key="RENAME_ACTION" /></span>
+        </button>
+    </div>
 </form:form>

@@ -94,6 +94,7 @@ public class MovePluginServiceImpl implements MovePluginService {
             Map<String, String> data = move.getData();
             data.put("target", "#osivia-modal");
             data.put("load-url", url);
+            data.put("title", move.getTitle());
         }
     }
 

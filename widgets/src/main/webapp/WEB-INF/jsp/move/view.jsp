@@ -23,31 +23,24 @@
 
 
 <form:form action="${moveUrl}" method="post" modelAttribute="form" role="form">
-    <fieldset>
-        <legend>
-            <i class="glyphicons glyphicons-basic-block-move"></i>
-            <span><op:translate key="MOVE_LEGEND"/></span>
-        </legend>
-
-        <%--Target path--%>
-        <spring:bind path="targetPath">
-            <div class="form-group required selector">
-                <form:label path="targetPath"><op:translate key="MOVE_TARGET_PATH_LABEL"/></form:label>
-                <form:hidden path="targetPath" cssClass="selector-value form-control ${status.error ? 'is-invalid' : ''}"/>
-                <div class="fancytree fancytree-selector fixed-height p-2 border rounded ${status.error ? 'border-danger' : ''}" data-lazyloadingurl="${browseUrl}"></div>
-                <form:errors path="targetPath" cssClass="invalid-feedback"/>
-            </div>
-        </spring:bind>
-
-        <%--Buttons--%>
-        <div class="text-right">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                <span><op:translate key="CANCEL"/></span>
-            </button>
-
-            <button type="submit" class="btn btn-primary">
-                <span><op:translate key="MOVE_ACTION"/></span>
-            </button>
+    <%--Target path--%>
+    <spring:bind path="targetPath">
+        <div class="form-group required selector">
+            <form:label path="targetPath"><op:translate key="MOVE_TARGET_PATH_LABEL"/></form:label>
+            <form:hidden path="targetPath" cssClass="selector-value form-control ${status.error ? 'is-invalid' : ''}"/>
+            <div class="fancytree fancytree-selector fixed-height p-2 border rounded ${status.error ? 'border-danger' : ''}" data-lazyloadingurl="${browseUrl}"></div>
+            <form:errors path="targetPath" cssClass="invalid-feedback"/>
         </div>
-    </fieldset>
+    </spring:bind>
+
+    <%--Buttons--%>
+    <div class="text-right">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            <span><op:translate key="CANCEL"/></span>
+        </button>
+
+        <button type="submit" class="btn btn-primary">
+            <span><op:translate key="MOVE_ACTION"/></span>
+        </button>
+    </div>
 </form:form>

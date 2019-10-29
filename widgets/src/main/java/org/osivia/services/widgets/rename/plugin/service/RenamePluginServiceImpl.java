@@ -83,7 +83,7 @@ public class RenamePluginServiceImpl implements RenamePluginService {
             // Permissions
             Permissions permissions = documentContext.getPermissions();
 
-            if ((type != null) && type.isEditable() && !type.isFile() && permissions.isEditable()) {
+            if ((type != null) && type.isEditable() && permissions.isEditable()) {
                 // HTTP servlet request
                 HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
                 // Bundle
@@ -101,10 +101,11 @@ public class RenamePluginServiceImpl implements RenamePluginService {
                 int order = 1;
                 String url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, RENAME_INSTANCE, properties, PortalUrlType.MODAL);
 
-                MenubarItem menubarItem = new MenubarItem(id, title, icon, parent, order, "javascript:;", null, null, null);
+                MenubarItem menubarItem = new MenubarItem(id, title, icon, parent, order, "javascript:", null, null, null);
                 Map<String, String> data = menubarItem.getData();
                 data.put("target", "#osivia-modal");
                 data.put("load-url", url);
+                data.put("title", title);
 
                 menubar.add(menubarItem);
             }
