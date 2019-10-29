@@ -18,6 +18,7 @@ import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.panels.PanelPlayer;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.services.workspace.portlet.model.ParentDocument;
 import org.osivia.services.workspace.portlet.model.TrashForm;
 import org.osivia.services.workspace.portlet.model.TrashFormSort;
@@ -166,9 +167,10 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
      */
     @Override
     public void emptyTrash(PortalControllerContext portalControllerContext, TrashForm form) throws PortletException {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
         // Internationalization bundle
-        Locale locale = portalControllerContext.getRequest().getLocale();
-        Bundle bundle = this.bundleFactory.getBundle(locale);
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
         // Service invocation
         List<TrashedDocument> rejected = this.repository.deleteAll(portalControllerContext);
@@ -183,15 +185,19 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
      */
     @Override
     public void restoreAll(PortalControllerContext portalControllerContext, TrashForm form) throws PortletException {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
         // Internationalization bundle
-        Locale locale = portalControllerContext.getRequest().getLocale();
-        Bundle bundle = this.bundleFactory.getBundle(locale);
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
         // Service invocation
         List<TrashedDocument> rejected = this.repository.restoreAll(portalControllerContext);
 
         // Update model
         this.updateModel(portalControllerContext, form, null, rejected, bundle, "TRASH_RESTORE_ALL_MESSAGE_");
+
+        // Refresh navigation
+        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
     }
 
 
@@ -200,9 +206,10 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
      */
     @Override
     public void delete(PortalControllerContext portalControllerContext, TrashForm form, String[] identifiers) throws PortletException {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
         // Internationalization bundle
-        Locale locale = portalControllerContext.getRequest().getLocale();
-        Bundle bundle = this.bundleFactory.getBundle(locale);
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
         // Selected documents
         List<TrashedDocument> selection = this.getSelection(form, identifiers);
@@ -222,9 +229,10 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
      */
     @Override
     public void restore(PortalControllerContext portalControllerContext, TrashForm form, String[] identifiers) throws PortletException {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
         // Internationalization bundle
-        Locale locale = portalControllerContext.getRequest().getLocale();
-        Bundle bundle = this.bundleFactory.getBundle(locale);
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
         // Selected documents
         List<TrashedDocument> selection = this.getSelection(form, identifiers);
@@ -236,6 +244,9 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
 
         // Update model
         this.updateModel(portalControllerContext, form, selection, rejected, bundle, "TRASH_RESTORE_SELECTION_MESSAGE_");
+
+        // Refresh navigation
+        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
     }
 
 
