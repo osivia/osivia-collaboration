@@ -125,7 +125,7 @@ public class FileBrowserController {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         // Sort field
-        FileBrowserSortField field = this.service.getSortField(portalControllerContext, form, fieldId);
+        FileBrowserSortField field = this.service.getSortField(portalControllerContext, fieldId);
 
         // Sort
         this.service.sortItems(portalControllerContext, form, field, BooleanUtils.toBoolean(alt));

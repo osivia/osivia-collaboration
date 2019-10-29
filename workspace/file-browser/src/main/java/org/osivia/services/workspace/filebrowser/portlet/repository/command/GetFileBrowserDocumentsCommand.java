@@ -62,7 +62,7 @@ public class GetFileBrowserDocumentsCommand implements INuxeoCommand {
         }
 
         // Query filter
-        NuxeoQueryFilterContext queryFilterContext = new NuxeoQueryFilterContext(NuxeoQueryFilterContext.STATE_LIVE,
+        NuxeoQueryFilterContext queryFilterContext = new NuxeoQueryFilterContext(NuxeoQueryFilterContext.STATE_LIVE_N_PUBLISHED,
                 InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER);
         String filteredRequest = NuxeoQueryFilter.addPublicationFilter(queryFilterContext, nuxeoRequest.toString());
 

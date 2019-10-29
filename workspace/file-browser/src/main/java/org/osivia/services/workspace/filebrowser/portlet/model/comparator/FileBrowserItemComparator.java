@@ -46,12 +46,20 @@ public class FileBrowserItemComparator implements Comparator<FileBrowserItem> {
     public int compare(FileBrowserItem item1, FileBrowserItem item2) {
         int result;
 
+        // Field identifier
+        String id;
+        if (this.criteria.getField() == null) {
+            id = null;
+        } else {
+            id = this.criteria.getField().getId();
+        }
+
         // Folderish comparison
         boolean folderish1 = item1.isFolderish();
         boolean folderish2 = item2.isFolderish();
         boolean folderishComparison = BooleanUtils.xor(new boolean[]{folderish1, folderish2});
 
-        if (FileBrowserSortEnum.RELEVANCE.equals(this.criteria.getField())) {
+        if (StringUtils.equals(FileBrowserSortEnum.RELEVANCE.getId(), id)) {
             result = Integer.compare(item1.getNativeOrder(), item2.getNativeOrder());
         } else if (folderishComparison) {
             if (folderish1) {
@@ -59,7 +67,7 @@ public class FileBrowserItemComparator implements Comparator<FileBrowserItem> {
             } else {
                 result = 1;
             }
-        } else if (FileBrowserSortEnum.LOCATION.equals(this.criteria.getField())) {
+        } else if (StringUtils.equals(FileBrowserSortEnum.LOCATION.getId(), id)) {
             // Location comparison
             String location1;
             if (item1.getParentDocument() == null) {
@@ -74,7 +82,7 @@ public class FileBrowserItemComparator implements Comparator<FileBrowserItem> {
                 location2 = StringUtils.trimToEmpty(item2.getParentDocument().getTitle());
             }
             result = location1.compareToIgnoreCase(location2);
-        } else if (FileBrowserSortEnum.LAST_MODIFICATION.equals(this.criteria.getField())) {
+        } else if (StringUtils.equals(FileBrowserSortEnum.LAST_MODIFICATION.getId(), id)) {
             // Last modification comparison
             Date date1 = item1.getLastModification();
             Date date2 = item2.getLastModification();
@@ -89,7 +97,7 @@ public class FileBrowserItemComparator implements Comparator<FileBrowserItem> {
 
             // Revert sort
             result = -result;
-        } else if (FileBrowserSortEnum.FILE_SIZE.equals(this.criteria.getField())) {
+        } else if (StringUtils.equals(FileBrowserSortEnum.FILE_SIZE.getId(), id)) {
             // File size comparison
             Long size1 = item1.getSize();
             Long size2 = item2.getSize();

@@ -58,7 +58,17 @@
             <form:checkbox path="listMode" cssClass="form-check-input"/>
             <form:label path="listMode"><op:translate key="FILE_BROWSER_ADMIN_FORM_LIST_MODE_LABEL"/></form:label>
         </div>
-        <p class="form-text text-muted small"><op:translate key="FILE_BROWSER_ADMIN_FORM_LIST_MODE_HELP"/></p>
+    </div>
+
+    <%--Default sort field--%>
+    <div class="form-group">
+        <form:label path="defaultSortField"><op:translate key="FILE_BROWSER_ADMIN_FORM_DEFAULT_SORT_FIELD_LABEL"/></form:label>
+        <form:select path="defaultSortField" cssClass="form-control">
+            <form:option value=""><op:translate key="FILE_BROWSER_ADMIN_FORM_DEFAULT_SORT_FIELD_EMPTY"/></form:option>
+            <c:forEach var="sortField" items="${sortFields}">
+                <form:option value="${sortField.id}"><op:translate key="${sortField.key}"/></form:option>
+            </c:forEach>
+        </form:select>
     </div>
 
     <%--Buttons--%>

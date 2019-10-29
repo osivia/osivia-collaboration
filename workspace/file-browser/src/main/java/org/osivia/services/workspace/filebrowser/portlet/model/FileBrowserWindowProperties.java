@@ -33,6 +33,10 @@ public class FileBrowserWindowProperties {
      * List mode indicator.
      */
     private Boolean listMode;
+    /**
+     * Default sort field identifier.
+     */
+    private String defaultSortField;
 
 
     /**
@@ -83,4 +87,11 @@ public class FileBrowserWindowProperties {
         this.listMode = listMode;
     }
 
+    public String getDefaultSortField() {
+        return defaultSortField;
+    }
+
+    public void setDefaultSortField(String defaultSortField) {
+        this.defaultSortField = defaultSortField;
+    }
 }

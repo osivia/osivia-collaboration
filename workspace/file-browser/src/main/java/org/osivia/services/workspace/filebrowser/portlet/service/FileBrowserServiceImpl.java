@@ -147,6 +147,10 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         boolean listMode = BooleanUtils.toBoolean(window.getProperty(LIST_MODE_WINDOW_PROPERTY));
         windowProperties.setListMode(listMode);
 
+        // Default sort field
+        String defaultSortField = window.getProperty(DEFAULT_SORT_FIELD_WINDOW_PROPERTY);
+        windowProperties.setDefaultSortField(defaultSortField);
+
         return windowProperties;
     }
 
@@ -174,6 +178,10 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         // List mode indicator
         String listMode = BooleanUtils.toStringTrueFalse(windowProperties.getListMode());
         window.setProperty(LIST_MODE_WINDOW_PROPERTY, listMode);
+
+        // Default sort field
+        String defaultSortField = StringUtils.trimToNull(windowProperties.getDefaultSortField());
+        window.setProperty(DEFAULT_SORT_FIELD_WINDOW_PROPERTY, defaultSortField);
     }
 
 
@@ -344,7 +352,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         form.setItems(items);
 
         // Default field sort
-        FileBrowserSortField field = this.getDefaultSortField(listMode);
+        FileBrowserSortField field = this.getDefaultSortField(portalControllerContext);
 
         if (listMode) {
             // Sort criteria
@@ -491,13 +499,22 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         // List mode indicator
         boolean listMode = BooleanUtils.isTrue(windowProperties.getListMode());
 
+        return this.getSortFields(portalControllerContext, listMode);
+    }
+
+
+    @Override
+    public List<FileBrowserSortField> getSortFields(PortalControllerContext portalControllerContext, boolean listMode) throws PortletException {
         // Sort fields
         List<FileBrowserSortField> fields = this.getAllSortFields();
+
+        // Default sort field
+        FileBrowserSortField defaultSortField = this.getDefaultSortField(portalControllerContext);
 
         // Filtered sort fields
         List<FileBrowserSortField> filteredFields = new ArrayList<>(fields.size());
         for (FileBrowserSortField field : fields) {
-            if (listMode || !field.isListMode()) {
+            if ((listMode || !field.isListMode()) && !(StringUtils.equals(FileBrowserSortEnum.RELEVANCE.getId(), field.getId()) && ((defaultSortField == null) || !StringUtils.equals(FileBrowserSortEnum.RELEVANCE.getId(), defaultSortField.getId())))) {
                 filteredFields.add(field);
             }
         }
@@ -507,7 +524,20 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
 
     @Override
-    public FileBrowserSortField getSortField(PortalControllerContext portalControllerContext, FileBrowserForm form, String fieldId) {
+    public FileBrowserSortField getSortField(PortalControllerContext portalControllerContext, String fieldId) {
+        return this.getSortField(portalControllerContext, fieldId, true);
+    }
+
+
+    /**
+     * Get sort field.
+     *
+     * @param portalControllerContext portal controller context
+     * @param fieldId                 sort field identifier
+     * @param getDefaultSortField     get default sort field indicator
+     * @return sort field
+     */
+    protected FileBrowserSortField getSortField(PortalControllerContext portalControllerContext, String fieldId, boolean getDefaultSortField) {
         // Sort fields
         List<FileBrowserSortField> fields = this.getAllSortFields();
 
@@ -524,9 +554,9 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             i++;
         }
 
-        if (result == null) {
+        if ((result == null) && getDefaultSortField) {
             // Default result
-            result = this.getDefaultSortField(form.isListMode());
+            result = this.getDefaultSortField(portalControllerContext);
         }
 
         return result;
@@ -549,16 +579,23 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     /**
      * Get default sort field.
      *
-     * @param listMode list mode indicator
+     * @param portalControllerContext portal controller context
      * @return field
      */
-    protected FileBrowserSortField getDefaultSortField(boolean listMode) {
+    protected FileBrowserSortField getDefaultSortField(PortalControllerContext portalControllerContext) {
+        // Window properties
+        FileBrowserWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
+
+        // Default sort field
         FileBrowserSortField field;
-        if (listMode) {
+        if (windowProperties.getDefaultSortField() != null) {
+            field = this.getSortField(portalControllerContext, windowProperties.getDefaultSortField(), false);
+        } else if (BooleanUtils.isTrue(windowProperties.getListMode())) {
             field = FileBrowserSortEnum.RELEVANCE;
         } else {
             field = FileBrowserSortEnum.TITLE;
         }
+
         return field;
     }
 
@@ -695,6 +732,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             if ("#osivia-modal".equals(target)) {
                 data.put("target", "#osivia-modal");
                 data.put("load-url", url);
+                data.put("title", title);
 
                 url = "javascript:";
                 target = null;

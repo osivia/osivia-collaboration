@@ -36,6 +36,10 @@ public interface FileBrowserService {
      * List mode indicator window property.
      */
     String LIST_MODE_WINDOW_PROPERTY = "osivia.file-browser.list-mode";
+    /**
+     * Default sort field window property.
+     */
+    String DEFAULT_SORT_FIELD_WINDOW_PROPERTY = "osivia.file-browser.default-sort-field";
 
 
     /**
@@ -106,14 +110,23 @@ public interface FileBrowserService {
 
 
     /**
+     * Get file browser sort fields.
+     *
+     * @param portalControllerContext portal controller context
+     * @param listMode                list mode indicator
+     * @return sort fields
+     */
+    List<FileBrowserSortField> getSortFields(PortalControllerContext portalControllerContext, boolean listMode) throws PortletException;
+
+
+    /**
      * Get file browser sort field.
      *
      * @param portalControllerContext portal controller context
-     * @param form                    form
      * @param fieldId                 sort field identifier
      * @return sort field
      */
-    FileBrowserSortField getSortField(PortalControllerContext portalControllerContext, FileBrowserForm form, String fieldId) throws PortletException;
+    FileBrowserSortField getSortField(PortalControllerContext portalControllerContext, String fieldId) throws PortletException;
 
 
     /**
