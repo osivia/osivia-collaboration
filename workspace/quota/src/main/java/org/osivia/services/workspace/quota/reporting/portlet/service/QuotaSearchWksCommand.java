@@ -33,7 +33,7 @@ public class QuotaSearchWksCommand implements INuxeoCommand {
 		
 		// Operation request
         OperationRequest request = nuxeoSession.newRequest("Document.QueryES");
-        request.set(Constants.HEADER_NX_SCHEMAS, "dublincore, quota_computation");
+        request.set(Constants.HEADER_NX_SCHEMAS, "dublincore, quota_computation, webcontainer");
         request.set("pageSize", "1000");
         request.set("currentPageIndex", "0");
         request.set("query", "SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain/workspaces' AND ecm:primaryType = 'Workspace' "+
