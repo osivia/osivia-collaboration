@@ -15,7 +15,7 @@ import org.osivia.services.rss.common.model.ContainerRssModel;
 public interface ContainerRepository {
 
 	/** RSS document type name. */
-	String DOCUMENT_TYPE_CONTENEUR = "ottc-rss-container";
+	String DOCUMENT_TYPE_CONTENEUR = "RssContainer";
 	/** Id sync flux RSS */
 	String ID_PROPERTY = "rssc:syncId";
 	/** Id partener */

@@ -66,10 +66,10 @@ public class ViewFeedController {
     public String view(RenderRequest request, RenderResponse response)
             throws PortletException {
 
-        return "viewFlux";
+        return "viewFeed";
     }
 
-    @ModelAttribute("flux")
+    @ModelAttribute("Feed")
     public List<ContainerRssModel> getContainers(PortletRequest request, PortletResponse response) throws PortletException
     {
         // Portal controller context

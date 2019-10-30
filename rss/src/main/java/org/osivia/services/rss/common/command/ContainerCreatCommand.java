@@ -24,7 +24,7 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ContainerCreatNuxeoCommand implements INuxeoCommand {
+public class ContainerCreatCommand implements INuxeoCommand {
     
     /** Rss Nuxeo document type. */
     private static final String DOCUMENT_TYPE_RSS = "RssContainer";
@@ -33,14 +33,14 @@ public class ContainerCreatNuxeoCommand implements INuxeoCommand {
     private ContainerRssModel form;
     
 	/** logger */
-    protected static final Log logger = LogFactory.getLog(ContainerCreatNuxeoCommand.class);
+    protected static final Log logger = LogFactory.getLog(ContainerCreatCommand.class);
     
     /**
     * Constructor.
     *
     * @param form ContainerRssModel
     */
-   public ContainerCreatNuxeoCommand(ContainerRssModel form) {
+   public ContainerCreatCommand(ContainerRssModel form) {
        super();
        this.form = form;
    }

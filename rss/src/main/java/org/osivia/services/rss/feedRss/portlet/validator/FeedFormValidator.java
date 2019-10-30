@@ -41,10 +41,23 @@ public class FeedFormValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
 
-		// URL feed 
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "feed", "NotEmpty");
-	
+		// Form
+		ContainerRssModel form = (ContainerRssModel) target;
 		
+		// URL feed 
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "url", "NotEmpty");
+		
+		// validate url	
+		if (!errors.hasFieldErrors()) {
+			String url = form.getUrl();
+			boolean b1 = true;
+			if (!b1) {
+				errors.rejectValue("url", "Invalid");
+			}
+		}		
+	
+		// PartId feed 
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "partId", "NotEmpty");		
 		
     }
 

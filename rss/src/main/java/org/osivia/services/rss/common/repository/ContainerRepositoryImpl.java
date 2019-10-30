@@ -8,9 +8,9 @@ import javax.portlet.PortletException;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.rss.common.command.ContainerCreatNuxeoCommand;
-import org.osivia.services.rss.common.command.ContainerRssListNuxeoCommand;
-import org.osivia.services.rss.common.command.RssCommand;
+import org.osivia.services.rss.common.command.ContainerCreatCommand;
+import org.osivia.services.rss.common.command.ContainerListCommand;
+import org.osivia.services.rss.common.command.FeedCreatCommand;
 import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -49,7 +49,7 @@ public class ContainerRepositoryImpl implements ContainerRepository{
         List<ContainerRssModel> containers;
         
         // Nuxeo command
-        INuxeoCommand nuxeoCommand = this.applicationContext.getBean(ContainerRssListNuxeoCommand.class);
+        INuxeoCommand nuxeoCommand = this.applicationContext.getBean(ContainerListCommand.class);
         Documents documents = (Documents) nuxeoController.executeNuxeoCommand(nuxeoCommand);
         // containers
         containers = new ArrayList<ContainerRssModel>(documents.size());
@@ -66,12 +66,14 @@ public class ContainerRepositoryImpl implements ContainerRepository{
 	    String url = document.getString(URL_PROPERTY);
 	    String partId = document.getString(ID_PART_PROPERTY);
 	    String syncId = document.getString(ID_PROPERTY);
+	    String name = document.getString(NAME_PROPERTY);
 
 	    ContainerRssModel container = this.applicationContext.getBean(ContainerRssModel.class);
 	    container.setDisplayName(displayName);
 	    container.setUrl(url);
 	    container.setPartId(partId);
 	    container.setSyncId(syncId);
+	    container.setName(name);
 	    
 	    return container;
 	}    
@@ -85,7 +87,7 @@ public class ContainerRepositoryImpl implements ContainerRepository{
 
         // Nuxeo command
         INuxeoCommand nuxeoCommand;
-        nuxeoCommand = this.applicationContext.getBean(ContainerCreatNuxeoCommand.class, model);
+        nuxeoCommand = this.applicationContext.getBean(ContainerCreatCommand.class, model);
         
         nuxeoController.executeNuxeoCommand(nuxeoCommand);
 		
@@ -98,7 +100,7 @@ public class ContainerRepositoryImpl implements ContainerRepository{
 	}
 
     /**
-     * Create container RSS
+     * Create Feed RSS
      */ 
 	public void creatFeed(PortalControllerContext portalControllerContext, ContainerRssModel model)
 			throws PortletException {
@@ -107,7 +109,7 @@ public class ContainerRepositoryImpl implements ContainerRepository{
 
         // Nuxeo command
         INuxeoCommand nuxeoCommand;
-        nuxeoCommand = this.applicationContext.getBean(RssCommand.class, model);
+        nuxeoCommand = this.applicationContext.getBean(FeedCreatCommand.class, model);
         
         nuxeoController.executeNuxeoCommand(nuxeoCommand);
 		

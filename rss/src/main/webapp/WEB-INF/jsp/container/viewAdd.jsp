@@ -16,7 +16,7 @@
 		<spring:bind path="name">
 			<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">    			
    				<form:label path="name" cssClass="control-label"><op:translate key="NAME"/></form:label>
-          		<form:input type="text" path="name" cssClass="form-control" placeholder="ex: Toutatice" />
+          		<form:input path="name" type="text" cssClass="form-control" placeholder="ex: Toutatice" />
             	<form:errors path="name" cssClass="help-block" />
       		</div>
 		</spring:bind>
@@ -24,7 +24,7 @@
 		<spring:bind path="path">
 			<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">    			
    				<form:label path="path" cssClass="control-label"><op:translate key="PATH"/></form:label>
-          		<form:input type="text" path="path" cssClass="form-control" placeholder="/toutatice/document" />
+          		<form:input path="path" type="text" cssClass="form-control" placeholder="/toutatice/document" />
             	<form:errors path="path" cssClass="help-block" />
       		</div>
 		</spring:bind>		

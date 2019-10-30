@@ -102,9 +102,11 @@ public class AddFeedController {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-//        if(!status.hasErrors()) {
-//            this.service.creatContainer(portalControllerContext, form);        	
-//        }
+        if(status.hasErrors()) {
+            response.setRenderParameter("view", "add");
+        }else {
+        	this.service.creatFeed(portalControllerContext, form);
+        }
        	
     }
 

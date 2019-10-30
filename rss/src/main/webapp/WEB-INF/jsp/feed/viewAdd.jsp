@@ -16,18 +16,18 @@
 		<spring:bind path="url">
 			<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">    			
    				<form:label path="url" cssClass="control-label"><op:translate key="URL"/></form:label>
-          		<form:input type="text" path="url" cssClass="form-control" placeholder="https://www.lemonde.fr/rss/une.xml" />
+          		<form:input path="url" type="text" cssClass="form-control" placeholder="https://www.lemonde.fr/rss/une.xml" />
             	<form:errors path="url" cssClass="help-block" />
       		</div>
 		</spring:bind>
 		
-		<spring:bind path="functId">
+		<spring:bind path="partId">
 			<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">    			
-   				<form:label path="functId" cssClass="control-label"><op:translate key="FUNCTID"/></form:label>
-          		<form:input type="text" path="functId" cssClass="form-control" placeholder="ex: Région" />
-            	<form:errors path="functId" cssClass="help-block" />
+   				<form:label path="partId" cssClass="control-label"><op:translate key="FUNCTID"/></form:label>
+          		<form:input path="partId" type="text" cssClass="form-control" placeholder="ex: Région" />
+            	<form:errors path="partId" cssClass="help-block" />
       		</div>
-		</spring:bind>		
+		</spring:bind>
 		
 	    <div class="col-sm-offset-4 col-sm-8 col-lg-offset-5 col-lg-7">
 	        <!-- Cancel -->

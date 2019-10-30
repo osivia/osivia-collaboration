@@ -20,13 +20,13 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ContainerRssListNuxeoCommand implements INuxeoCommand {
+public class ContainerListCommand implements INuxeoCommand {
 
 	/**
 	 * Constructor.
 	 *
 	 */
-	public ContainerRssListNuxeoCommand() {
+	public ContainerListCommand() {
 		super();
 	}
 
@@ -37,8 +37,8 @@ public class ContainerRssListNuxeoCommand implements INuxeoCommand {
 		StringBuilder clause = new StringBuilder();
 		clause.append("ecm:primaryType = 'RssContainer' ");
 
-		String filteredRequest = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_DEFAULT, clause.toString());
-
+		String filteredRequest = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE, clause.toString());
+		
 		// Request
 		OperationRequest request;
 		request = nuxeoSession.newRequest("Document.Query");

@@ -30,7 +30,7 @@ public class RssCommand  implements INuxeoCommand {
     private ContainerRssModel form;
     
 	/** logger */
-    protected static final Log logger = LogFactory.getLog(ContainerCreatNuxeoCommand.class);	
+    protected static final Log logger = LogFactory.getLog(ContainerCreatCommand.class);	
 	
     /**
      * Constructor.

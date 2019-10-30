@@ -5,7 +5,11 @@
 
 <%@ page isELIgnored="false" %>
 
-<portlet:actionURL name="add" var="add" />
+
+<portlet:renderURL var="addUrl">
+	<portlet:param name="view" value="add" />
+</portlet:renderURL>
+<portlet:actionURL name="synchro" var="synchro" />
 
 <div>
     <c:if test="${empty containers}">
@@ -26,7 +30,5 @@
 
 <div>
 	<a href="${addUrl}" class="btn btn-primary"><op:translate key="ADDFEED"/></a>
-</div>
-<div>
 	<button type="submit" name="synchro" class="btn btn-primary"><op:translate key="SYNCHRO"/></button>
 </div>
