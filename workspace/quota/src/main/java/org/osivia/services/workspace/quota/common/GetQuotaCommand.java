@@ -1,11 +1,10 @@
-package org.osivia.services.workspace.quota.portlet.repository;
+package org.osivia.services.workspace.quota.common;
 
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;

@@ -59,6 +59,20 @@
 	
 	</portlet>
     	   
+    <portlet>
+        <portlet-name>osivia-services-workspace-quota-plugin</portlet-name>
+        <portlet-class>org.osivia.services.workspace.quota.plugin.QuotaPlugin</portlet-class>
+        
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+
+        <portlet-info>
+            <title>Quota management plugin</title>
+        </portlet-info>
+    </portlet>
 
     <public-render-parameter>
         <identifier>dnd-update</identifier>

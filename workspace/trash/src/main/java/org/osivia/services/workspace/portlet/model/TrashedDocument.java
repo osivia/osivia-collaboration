@@ -21,6 +21,8 @@ public class TrashedDocument extends ObjectDocument {
     private String lastContributor;
     /** Document location. */
     private ParentDocument location;
+    /** File size, may be null. */
+    private Long size;    
     /** Document selected indicator. */
     private boolean selected;
 
@@ -89,6 +91,25 @@ public class TrashedDocument extends ObjectDocument {
         this.location = location;
     }
 
+
+    /**
+     * Getter for size.
+     * 
+     * @return the size
+     */
+    public Long getSize() {
+        return size;
+    }
+
+    /**
+     * Setter for size.
+     * 
+     * @param size the size to set
+     */
+    public void setSize(Long size) {
+        this.size = size;
+    }    
+    
     /**
      * Getter for selected.
      * 

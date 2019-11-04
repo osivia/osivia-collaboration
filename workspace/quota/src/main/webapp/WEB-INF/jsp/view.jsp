@@ -22,4 +22,8 @@
 	</c:if>
 
 	<%@ include file="quota.jspf" %>
+	<%@ include file="procedure.jspf" %>
+	<%@ include file="big_files.jspf" %>
+	<%@ include file="buttons.jspf" %>
+	
 </div> 	

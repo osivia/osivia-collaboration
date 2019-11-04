@@ -1,8 +1,5 @@
 package org.osivia.services.workspace.quota.portlet.controller;
 
-import java.io.IOException;
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -10,43 +7,39 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.taskbar.ITaskbarService;
-import org.osivia.portal.api.taskbar.TaskbarTask;
-import org.osivia.services.workspace.quota.portlet.model.QuotaForm;
 import org.osivia.services.workspace.quota.portlet.model.UpdateForm;
-import org.osivia.services.workspace.quota.portlet.model.UpdateOptions;
+import org.osivia.services.workspace.quota.portlet.model.UpdateValidator;
 import org.osivia.services.workspace.quota.portlet.service.QuotaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.portlet.bind.PortletRequestDataBinder;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
-import org.springframework.web.portlet.bind.annotation.ResourceMapping;
-import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 
 /**
  * View quota portlet controller.
  *
- * @author Jean-Sébastien Steux
+ * @author Jean-Sébastien Steux, Loïc Billon
  * @see CMSPortlet
  */
 @Controller
@@ -70,18 +63,11 @@ public class UpdateQuotaController extends CMSPortlet {
      */
     @Autowired
     private QuotaService service;
-    
-    /**
-     * Taskbar service.
-     */
-    @Autowired
-    private ITaskbarService taskbarService;
-    
-    
-    
-    @Autowired
-    private InternalResourceViewResolver viewResolver;
 
+    @Autowired
+    private UpdateValidator validator;
+    
+    
     /** Log. */
     private final Log log;
     
@@ -104,7 +90,23 @@ public class UpdateQuotaController extends CMSPortlet {
     public void postConstruct() throws PortletException {
         super.init(this.portletConfig);
     }
-
+    
+    /**
+     * Quota update view
+     * 
+     * @param request action request
+     * @param response action response
+     * @param redirection redirection request parameter
+     * @param sessionStatus session status
+     * @throws PortletException
+     */
+    @ActionMapping("redirectUpdate")
+    public void redirectUpdate(ActionRequest request, ActionResponse response, SessionStatus sessionStatus)
+            throws PortletException {
+        sessionStatus.setComplete();        
+        response.setRenderParameter("view", "update");
+    }
+    
 
     /**
      * View render mapping.
@@ -113,16 +115,36 @@ public class UpdateQuotaController extends CMSPortlet {
      * @param response render response
      * @return view path
      */
-    @RenderMapping(params = {"tab=update"})
+    @RenderMapping(params = {"view=update"})
     public String view(RenderRequest request, RenderResponse response) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         
-      
         return "update";
     }
-
-
+    
+    
+    
+    @ModelAttribute("updateForm")
+    public UpdateForm getAskForm(PortletRequest request, PortletResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        
+    	return service.getUpdateForm(portalControllerContext);
+    	
+    }
+    
+    
+    /**
+     * Form init binder.
+     *
+     * @param binder portlet request data binder
+     */
+    @InitBinder("updateForm")
+    public void formInitBinder(PortletRequestDataBinder binder) {
+        binder.addValidators(this.validator);
+    }
+        
 
     /**
      * Update quota
@@ -132,12 +154,53 @@ public class UpdateQuotaController extends CMSPortlet {
      * @param form     update form model attribute
      */
     @ActionMapping("save-quota")
-    public void updateQuota(ActionRequest request, ActionResponse response, @ModelAttribute("updateForm") UpdateForm form) throws PortletException {
+    public void updateQuota(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("updateForm") UpdateForm form,
+    		BindingResult result) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.updateQuota(portalControllerContext, form);
+        if(!result.hasErrors()) {
+            this.service.updateQuota(portalControllerContext, form);
+            
+        	Bundle bundle = getBundleFactory().getBundle(portalControllerContext.getRequest().getLocale());
 
+        	String message = bundle.getString("QUOTA_MODIFIED");
+        	if(StringUtils.isBlank(form.getSize())) {
+        		message = bundle.getString("QUOTA_REMOVED");
+        	}
+        	
+        	if(form.isStepRequest()) {
+            	message = message.concat(bundle.getString("QUOTA_ASK_APPROUVED"));
+            }
+
+    		getNotificationsService().addSimpleNotification(portalControllerContext, message , NotificationsType.SUCCESS);
+        	
+        }
+        else {
+            response.setRenderParameter("view", "update");
+        }
+        
+
+    }
+  
+    /**
+     * Refuse quota
+     *
+     * @param request  action request
+     * @param response action response
+     * @param form     update form model attribute
+     */
+    @ActionMapping("refuse-quota")
+    public void refuseQuota(ActionRequest request, ActionResponse response, @ModelAttribute("updateForm") UpdateForm form) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.refuseQuota(portalControllerContext, form);
+
+    	Bundle bundle = getBundleFactory().getBundle(portalControllerContext.getRequest().getLocale());
+    	String message = bundle.getString("QUOTA_ASK_REFUSED");
+		getNotificationsService().addSimpleNotification(portalControllerContext, message , NotificationsType.SUCCESS);
+    	
     }
   
 
@@ -151,42 +214,7 @@ public class UpdateQuotaController extends CMSPortlet {
     @ActionMapping("cancel-quota")
     public void cancelQuota(ActionRequest request, ActionResponse response) throws PortletException {
    }
-    
-    
-    /**
-     * Redirect tab action mapping.
-     * 
-     * @param request action request
-     * @param response action response
-     * @param redirection redirection request parameter
-     * @param sessionStatus session status
-     * @throws PortletException
-     */
-    @ActionMapping("redirect-update")
-    public void redirectTab(ActionRequest request, ActionResponse response, SessionStatus sessionStatus)
-            throws PortletException {
-        sessionStatus.setComplete();        
-        response.setRenderParameter("tab", "update");
-    }
 
-    
-    
-    /**
-     * Get options model attribute.
-     *
-     * @param request portlet request
-     * @param response portlet response
-     * @return options
-     * @throws PortletException
-     */
-    @ModelAttribute("options")
-    public UpdateOptions getOptions(PortletRequest request, PortletResponse response) throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        return this.service.updateOptions(portalControllerContext);
-    }
-    
 
     /**
      * Get update form model attribute.

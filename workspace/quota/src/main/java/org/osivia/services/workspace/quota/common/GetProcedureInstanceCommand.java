@@ -1,4 +1,6 @@
-package org.osivia.services.workspace.quota.reporting.portlet.service;
+package org.osivia.services.workspace.quota.common;
+
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,10 +11,15 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 
+/**
+ * 
+ * Get procedure instance by procedure uuid
+ * @author Loïc Billon
+ *
+ */
 public class GetProcedureInstanceCommand implements INuxeoCommand {
 
 	private final static Log logger = LogFactory.getLog("batch");
@@ -59,8 +66,7 @@ public class GetProcedureInstanceCommand implements INuxeoCommand {
 
 	@Override
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.getClass().getSimpleName() + "/" + uuid + "/" + new Date().getTime();
 	}
 
 }

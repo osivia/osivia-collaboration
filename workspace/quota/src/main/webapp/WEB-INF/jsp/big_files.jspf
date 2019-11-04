@@ -1,0 +1,93 @@
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal"
+	prefix="op"%>
+<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice"
+	prefix="ttc"%>
+
+<%@ page contentType="text/html" isELIgnored="false"%>
+
+
+<portlet:defineObjects />
+
+<h3><op:translate key="BIG_FILES" /></h3>
+
+<c:choose>
+	<c:when test="${empty quotaForm.bigFiles}">
+		<op:translate key="BIG_FILE_EMPTY" />
+	</c:when>
+
+	<c:otherwise>
+		<div class="table">
+		
+            <!-- Header -->
+            <div class="table-row table-header">
+                        
+                <div class="row">
+                    <!-- Document -->
+                    <div class="col-sm-6 col-md-4">
+                        <op:translate key="QUOTA_HEADER_DOCUMENT" />
+                    </div>
+                    
+                    <!-- Date -->
+                    <div class="col-sm-6 col-md-4">
+                        <op:translate key="QUOTA_HEADER_DATE" />
+                        
+                    </div>
+
+                    <!-- Size -->
+                    <div class="col-md-4 hidden-xs hidden-sm">
+                        <op:translate key="QUOTA_HEADER_SIZE" />
+
+                    </div>                    
+                </div>
+            </div>
+            		
+		
+			<c:forEach var="item" items="${quotaForm.bigFiles}">
+			
+			
+				<div class="table-row">
+
+					<div class="row">
+						<!-- Document -->
+						<div class="col-sm-6 col-md-4">
+							<div class="text-overflow">
+								<ttc:title document="${item.document}" icon="true"
+									linkable="${not item.inTrash}" />
+							</div>
+						</div>
+
+						<!-- Date -->
+						<div class="col-sm-6 col-md-4">
+
+							<c:choose>
+								<c:when test="${item.inTrash}">
+									<op:translate key="DELETED" />
+								</c:when>
+
+								<c:otherwise>
+									<op:translate key="MODIFIED" />
+								</c:otherwise>
+							</c:choose>
+
+							<span><op:formatRelativeDate
+									value="${item.modificationDate}" /></span> <small><op:translate
+									key="LAST_CONTRIBUTOR" args="${item.lastContributor}" /></small>
+						</div>
+
+						<!-- Size -->
+						<div class="col-md-4 hidden-xs hidden-sm">
+							<ttc:fileSize size="${item.size}" />
+						</div>
+					</div>
+
+
+				</div>
+			</c:forEach>
+		</div>
+
+	</c:otherwise>
+</c:choose>
+

@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.portlet.PortletContext;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.model.Blob;
@@ -24,7 +25,9 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSException;
-import org.osivia.services.workspace.quota.portlet.repository.GetQuotaCommand;
+import org.osivia.services.workspace.quota.common.GetProcedureInstanceCommand;
+import org.osivia.services.workspace.quota.common.GetQuotaCommand;
+import org.osivia.services.workspace.quota.common.UpdateQuotaComputationCommand;
 
 import fr.toutatice.portail.cms.nuxeo.api.batch.NuxeoBatch;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
@@ -38,11 +41,24 @@ import net.sf.json.JSONObject;
  */
 public class QuotaComputer extends NuxeoBatch {
 
-	private static final double QUOTA_THRESHOLD = 0.8;
+	private final double threshold;
 
 	private final static Log logger = LogFactory.getLog("batch");
 	private static PortletContext portletContext;
 
+	public QuotaComputer() {
+		
+		String thresholdParam = System.getProperty("osivia.services.quota.threshold");
+		
+		if(StringUtils.isNotBlank(thresholdParam)) {
+			
+			threshold = Double.parseDouble(thresholdParam);
+		}
+		else {
+			threshold = 0.8;
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -50,7 +66,13 @@ public class QuotaComputer extends NuxeoBatch {
 	 */
 	@Override
 	public String getJobScheduling() {
-		return "0 0/2 * * * ?";
+		
+		String quotaCron = System.getProperty("osivia.services.quota.cron");
+		
+		if(StringUtils.isNotBlank(quotaCron)) {
+			return quotaCron;
+		}
+		else return "0 0/10 * * * ?";
 	}
 
 	/*
@@ -82,7 +104,7 @@ public class QuotaComputer extends NuxeoBatch {
 
 					logger.warn("Quota : " + workspace.getTitle() + " (" + treeSize + "/" + quota + ")");
 
-					boolean quotaExceeded = treeSize / quota > QUOTA_THRESHOLD;
+					boolean quotaExceeded = treeSize / quota > threshold;
 
 					// If this workspace is currently in a procedure
 					String uuid = workspace.getProperties().getString("qtc:uuid");
@@ -118,13 +140,13 @@ public class QuotaComputer extends NuxeoBatch {
 	
 							// State resolved - check quota
 						} else {
-							uuid = null; // If wrong procedureId is still in workspace, delete it.
+							uuid = null; // If wrong procedureId is still in workspace, renew procedure.
 						}
 
 					}
 
-					// else control the quota threshold
-					else if (quotaExceeded) {
+					// control the quota threshold
+					if (quotaExceeded && uuid == null) {
 						Map<String, String> variables = new HashMap<String, String>();
 
 						variables.put("documentPath", workspace.getPath());

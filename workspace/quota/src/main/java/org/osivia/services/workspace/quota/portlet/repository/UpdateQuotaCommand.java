@@ -1,7 +1,5 @@
 package org.osivia.services.workspace.quota.portlet.repository;
 
-import org.nuxeo.ecm.automation.client.Constants;
-import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -24,7 +22,7 @@ public class UpdateQuotaCommand implements INuxeoCommand {
 
 
     /** Quota size*/
-    private long size;
+    private Long size;
     
     /** Workspace path size*/
     private String path;
@@ -35,7 +33,7 @@ public class UpdateQuotaCommand implements INuxeoCommand {
      * 
      * @param basePath base path
      */
-    public UpdateQuotaCommand(String path,long size) {
+    public UpdateQuotaCommand(String path,Long size) {
         super();
 
         this.size = size;
@@ -53,7 +51,11 @@ public class UpdateQuotaCommand implements INuxeoCommand {
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
         Document docRoot = documentService.getDocument(new PathRef(path)); 
 
-        documentService.setProperty(docRoot, "qt:maxSize", Long.toString(size));
+        // Apply new quota
+        documentService.setProperty(docRoot, "qt:maxSize", size !=null ? Long.toString(size) : null);
+
+        // Remove link to procedure (if exists).
+        documentService.setProperty(docRoot, "qtc:uuid", null);
 
         return null;
     }

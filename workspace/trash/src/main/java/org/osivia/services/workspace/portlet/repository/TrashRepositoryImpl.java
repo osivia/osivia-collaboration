@@ -162,6 +162,9 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
             lastContributorDisplayName = StringUtils.defaultIfBlank(lastContributorPerson.getDisplayName(), lastContributorId);
         }
 
+        // Size
+        Long size = document.getLong("common:size");
+        
         // Location
         CMSObjectPath objectPath = CMSObjectPath.parse(path);
         CMSObjectPath parentObjectPath = objectPath.getParent();
@@ -188,6 +191,7 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
             trashedDocument = this.applicationContext.getBean(TrashedDocument.class, path);
             trashedDocument.setTitle(title);
             trashedDocument.setIcon(icon);
+            trashedDocument.setSize(size);
             trashedDocument.setDeletionDate(deletionDate);
             trashedDocument.setLastContributor(lastContributorDisplayName);
             trashedDocument.setLocation(location);

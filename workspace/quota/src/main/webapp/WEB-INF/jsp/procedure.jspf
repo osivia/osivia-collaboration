@@ -1,0 +1,28 @@
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+<%@ page contentType="text/html" isELIgnored="false" %>
+
+
+<portlet:defineObjects/>
+
+<c:choose>
+	<c:when test="${quotaForm.currentStep eq 'WARNING'}">
+	
+		<h3><op:translate key="QUOTA_PROCEDURE_WARNING" /></h3>
+		
+		<p class="alert alert-warning"><op:translate key="QUOTA_PROCEDURE_WARNING_HELP" args="${quotaForm.ratio}%" />
+		</p>
+			
+	</c:when>
+	<c:when test="${quotaForm.currentStep eq 'QUOTA_REQUEST'}">
+	
+		<h3><op:translate key="QUOTA_PROCEDURE_REQUEST" /></h3>
+		
+		<p class="alert alert-info"><op:translate key="QUOTA_PROCEDURE_REQUEST_HELP" />
+		</p>
+	</c:when>
+
+</c:choose>

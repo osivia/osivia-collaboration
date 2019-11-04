@@ -56,6 +56,8 @@ public class TrashedDocumentComparator implements Comparator<TrashedDocument> {
             ObjectDocument location1 = document1.getLocation();
             ObjectDocument location2 = document2.getLocation();
             result = location1.getTitle().compareTo(location2.getTitle());
+        } else if ("size".equals(this.sort)) {            
+            result = compareLongs(document1, document2);
         } else {
             // Title
             String title1 = document1.getTitle();
@@ -94,6 +96,21 @@ public class TrashedDocumentComparator implements Comparator<TrashedDocument> {
             result = 1;
         } else {
             result = date1.compareTo(date2);
+        }
+        return result;
+    }
+    
+    private int compareLongs(TrashedDocument document1, TrashedDocument document2) {
+        int result;
+        Long long1 = document1.getSize();
+        Long long2 = document2.getSize();
+
+        if (long1 == null) {
+            result = -1;
+        } else if (long2 == null) {
+            result = 1;
+        } else {
+            result = long1.compareTo(long2);
         }
         return result;
     }

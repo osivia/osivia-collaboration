@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.osivia.services.workspace.quota.reporting.portlet.service;
+package org.osivia.services.workspace.quota.common;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

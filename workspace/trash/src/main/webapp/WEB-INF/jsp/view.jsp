@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
 
 <%@ page contentType="text/html" isELIgnored="false" %>
 
@@ -20,6 +21,10 @@
 <portlet:renderURL var="sortLocationUrl">
     <portlet:param name="sort" value="location" />
     <portlet:param name="alt" value="${sort eq 'location' and not alt}"/>
+</portlet:renderURL>
+<portlet:renderURL var="sortSizeUrl">
+    <portlet:param name="sort" value="size" />
+    <portlet:param name="alt" value="${sort eq 'size' and not alt}"/>
 </portlet:renderURL>
 
 <portlet:actionURL name="restore" var="restoreUrl" />
@@ -72,7 +77,7 @@
             
                 <div class="row">
                     <!-- Document -->
-                    <div class="col-sm-6 col-md-4">
+                    <div class="col-sm-6 col-md-3">
                         <a href="${sortTitleUrl}"><op:translate key="TRASH_HEADER_DOCUMENT" /></a>
                         
                         <c:if test="${sort eq 'title'}">
@@ -86,7 +91,7 @@
                     </div>
                     
                     <!-- Date -->
-                    <div class="col-sm-6 col-md-4">
+                    <div class="col-sm-6 col-md-3">
                         <a href="${sortDateUrl}"><op:translate key="TRASH_HEADER_DATE" /></a>
                         
                         <c:if test="${sort eq 'date'}">
@@ -100,7 +105,7 @@
                     </div>
                     
                     <!-- Location -->
-                    <div class="col-md-4 hidden-xs hidden-sm">
+                    <div class="col-md-3 hidden-xs hidden-sm">
                         <a href="${sortLocationUrl}"><op:translate key="TRASH_HEADER_LOCATION" /></a>
                         
                         <c:if test="${sort eq 'location'}">
@@ -112,6 +117,20 @@
                             </small>
                         </c:if>
                     </div>
+                    
+                    <!-- Size -->
+                    <div class="col-md-3 hidden-xs hidden-sm">
+                        <a href="${sortSizeUrl}"><op:translate key="TRASH_HEADER_SIZE" /></a>
+                        
+                        <c:if test="${sort eq 'size'}">
+                            <small class="text-muted">
+                                <c:choose>
+                                    <c:when test="${alt}"><i class="halflings halflings-sort-by-attributes-alt"></i></c:when>
+                                    <c:otherwise><i class="halflings halflings-sort-by-attributes"></i></c:otherwise>
+                                </c:choose>
+                            </small>
+                        </c:if>
+                    </div>                    
                 </div>
             </div>
             
@@ -125,7 +144,7 @@
                             
                                 <div class="row">
                                     <!-- Document -->
-                                    <div class="col-sm-6 col-md-4">
+                                    <div class="col-sm-6 col-md-3">
                                         <div class="form-control-static text-overflow">
                                             <c:if test="${not empty trashedDocument.icon}">
                                                 <i class="${trashedDocument.icon}"></i>
@@ -136,7 +155,7 @@
                                     </div>
                                     
                                     <!-- Date -->
-                                    <div class="col-sm-6 col-md-4">
+                                    <div class="col-sm-6 col-md-3">
                                         <div class="text-overflow">
                                             <span><op:formatRelativeDate value="${trashedDocument.deletionDate}" /></span>
                                             <br>
@@ -145,12 +164,25 @@
                                     </div>
                                     
                                     <!-- Location -->
-                                    <div class="col-md-4 hidden-xs hidden-sm">
+                                    <div class="col-md-3 hidden-xs hidden-sm">
                                         <button type="button" class="btn btn-default text-overflow location">
                                             <i class="${trashedDocument.location.icon}"></i>
                                             <span>${trashedDocument.location.title}</span>
                                         </button>
                                     </div>
+                                    
+                                    <!-- Size -->
+                                    <div class="col-md-3 hidden-xs hidden-sm">
+	                                    <c:choose>
+	                                        <c:when test="${trashedDocument.size gt 0}">
+	                                            <span><ttc:fileSize size="${trashedDocument.size}" /></span>
+	                                        </c:when>
+	                                        
+	                                        <c:otherwise>
+	                                            <span>&ndash;</span>
+	                                        </c:otherwise>
+	                                    </c:choose>
+                                    </div>                                    
                                 </div>
                             </div>
                         </li>

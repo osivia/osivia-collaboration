@@ -1,0 +1,44 @@
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+<%@ page contentType="text/html" isELIgnored="false" %>
+
+<portlet:defineObjects/>
+
+
+<!-- Buttons -->
+<div class="row">
+    <div class="col-sm-offset-3 col-sm-9 col-lg-offset-2 col-lg-10">
+
+        <!-- Trash -->
+        <a href="${trashUrl}" class="btn btn-primary no-ajax-link">
+            <i class="glyphicons glyphicons-bin"></i>
+            <span><op:translate key="QUOTA_BTN_TRASH" /></span>
+        </a>
+
+		<c:if test="${quotaForm.administrator}">
+	
+			<portlet:actionURL name="redirectUpdate" var="redirectUpdateUrl"/>
+
+	        <!-- Admin quota -->
+	        <a href="${redirectUpdateUrl}" class="btn btn-default no-ajax-link">
+	            <i class="glyphicons glyphicons-cogwheel"></i>
+	            <span><op:translate key="QUOTA_BTN_UPDATE" /></span>
+	        </a>
+		       
+		</c:if>
+		<c:if test="${quotaForm.currentStep eq 'WARNING'}">
+			<portlet:actionURL name="askQuota" var="askQuotaUrl"/>
+		
+	        <!-- Request quota -->
+	        <a href="${askQuotaUrl}" class="btn btn-default">
+	            <span><op:translate key="QUOTA_BTN_ASK" /></span>
+	        </a>
+
+		</c:if>
+
+       
+    </div>
+</div>

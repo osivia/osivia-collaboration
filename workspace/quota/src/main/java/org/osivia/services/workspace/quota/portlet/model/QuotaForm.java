@@ -2,10 +2,9 @@ package org.osivia.services.workspace.quota.portlet.model;
 
 import java.util.List;
 
-import org.osivia.portal.api.portlet.Refreshable;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 
 
 
@@ -19,9 +18,11 @@ import org.springframework.web.context.WebApplicationContext;
  *
  */
 @Component
-
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class QuotaForm {
 
+	public enum QuotaProcedureStep {NONE, WARNING, QUOTA_REQUEST;}
+	
 	/** The asynchronous. */
 	private boolean asynchronous = false;
 	
@@ -29,8 +30,38 @@ public class QuotaForm {
 	   /** The asynchronous. */
     private long ts = 0;
     
+	/** The size message. */
+	private String sizeMessage = "";
+
+	
+	private QuotaProcedureStep currentStep = QuotaProcedureStep.NONE;
+
+
+	/** The ratio. */
+	private int ratio=0;
+	
+	/** The ratio in trash. */
+	private int trashRatio=0;
+
+
+
+	/** Service informations. */
+	private QuotaInformations infos;
+
+	/** Big files */
+	private List<BigFile> bigFiles;
+
+
+	private Boolean administrator;
     
-    
+
+
+	/**
+	 * Constructor.
+	 */
+	public QuotaForm() {
+		super();
+	}
 	
     public long getTs() {
         return ts;
@@ -59,10 +90,6 @@ public class QuotaForm {
 		this.asynchronous = asynchronous;
 	}
 
-
-	/** The size message. */
-	private String sizeMessage = "";
-
 	/**
 	 * Gets the size message.
 	 *
@@ -81,12 +108,6 @@ public class QuotaForm {
 		this.sizeMessage = sizeMessage;
 	}
 	
-	
-	/** The ratio. */
-	private int ratio=0;
-	
-	
-
 	/**
 	 * Gets the ratio.
 	 *
@@ -105,9 +126,23 @@ public class QuotaForm {
 		this.ratio = ratio;
 	}
 
+	/**
+	 * Get the trash ratio
+	 * @return
+	 */
+	public int getTrashRatio() {
+		return trashRatio;
+	}
 
-	/** Service informations. */
-	private QuotaInformations infos;
+	/**
+	 * Set the trash ratio
+	 * @param trashRatio
+	 */
+	public void setTrashRatio(int trashRatio) {
+		this.trashRatio = trashRatio;
+	}
+
+	
 
 	/**
 	 * Gets the infos.
@@ -130,10 +165,40 @@ public class QuotaForm {
 
 
 	/**
-	 * Constructor.
+	 * Get procedure current step
+	 * @return
 	 */
-	public QuotaForm() {
-		super();
+	public QuotaProcedureStep getCurrentStep() {
+		return currentStep;
+	}
+
+	/***
+	 * Set procedure current step
+	 * @param currentStep
+	 */
+	public void setCurrentStep(QuotaProcedureStep currentStep) {
+		this.currentStep = currentStep;
+	}
+
+	public List<BigFile> getBigFiles() {
+		return bigFiles;
+	}
+
+	public void setBigFiles(List<BigFile> bigFiles) {
+		this.bigFiles = bigFiles;
+		
+	}
+
+
+	
+	public Boolean getAdministrator() {
+		return administrator;
+	}
+
+
+	public void setAdministrator(Boolean administrator) {
+		this.administrator = administrator;
+		
 	}
 
 

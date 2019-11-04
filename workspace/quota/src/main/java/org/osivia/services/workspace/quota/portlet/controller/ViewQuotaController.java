@@ -1,11 +1,10 @@
 package org.osivia.services.workspace.quota.portlet.controller;
 
-import java.io.IOException;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
@@ -21,19 +20,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarTask;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.services.workspace.quota.portlet.model.QuotaForm;
-import org.osivia.services.workspace.quota.portlet.model.UpdateForm;
-import org.osivia.services.workspace.quota.portlet.model.UpdateOptions;
 import org.osivia.services.workspace.quota.portlet.service.QuotaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import org.springframework.web.servlet.View;
@@ -46,7 +43,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 /**
  * View quota portlet controller.
  *
- * @author Jean-Sébastien Steux
+ * @author Jean-Sébastien Steux, Loïc Billon
  * @see CMSPortlet
  */
 @Controller
@@ -76,7 +73,10 @@ public class ViewQuotaController extends CMSPortlet {
      */
     @Autowired
     private ITaskbarService taskbarService;
-    
+
+
+    @Autowired
+    protected IPortalUrlFactory urlFactory;
     
     
     @Autowired
@@ -134,11 +134,6 @@ public class ViewQuotaController extends CMSPortlet {
         return "view";
     }
 
-
-
-
-
-
     /**
      * Get quota form model attribute.
      *
@@ -180,12 +175,27 @@ public class ViewQuotaController extends CMSPortlet {
     	
     	response.setContentType("text/html");
 
+    }  
+
+    @ModelAttribute("trashUrl")
+    public String getTrashUrl(PortletRequest request, PortletResponse response) {
+    	
+        PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
+
+        Map<String, String> windowProperties = new HashMap<String, String>();
+        
+        Locale locale = Locale.getDefault();
+       	Bundle bundle = getBundleFactory().getBundle(locale);
+
+        windowProperties.put("osivia.title", bundle.getString("TRASH"));
+
+        String url = "#";
+		try {
+			url = urlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-workspace-trash-instance", windowProperties, PortalUrlType.DEFAULT);
+			
+		} catch (PortalException e) {
+			// Do nothing
+		}
+        return url;
     }
-    
-
-
-
-    
-
-
 }

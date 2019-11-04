@@ -1,7 +1,9 @@
 package org.osivia.services.workspace.quota.portlet.configuration;
 
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCustomizer;
 import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
+import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoServiceFactory;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.service.PersonService;
@@ -10,6 +12,7 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -165,5 +168,23 @@ public class QuotaConfiguration {
     }
     
 
-    
+    /**
+     * Get portal URL factory.
+     * 
+     * @return portal URL factory
+     */
+	@Bean(name="urlFactory")
+	public IPortalUrlFactory getUrlFactory() {
+		return Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
+	}
+	
+    /**
+     * Get internationalization service.
+     *
+     * @return internationalization service
+     */
+    @Bean
+    public IFormsService getFormService() {
+        return NuxeoServiceFactory.getFormsService();
+    }	
 }

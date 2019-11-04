@@ -8,22 +8,18 @@
 
 <portlet:defineObjects/>
 
-<portlet:actionURL name="redirect-update" var="redirectUpdate"/>
-
 
 <c:set var="namespace"><portlet:namespace/></c:set>
 
+<h3><op:translate key="QUOTA_PROGRESS" /></h3>
 
 <div class="inner-quota"> 
-	<div class="progress"> 
-		<div class="progress-bar" role="progressbar" style="width: ${quotaForm.ratio}%" aria-valuenow="${quotaForm.ratio}" aria-valuemin="0" aria-valuemax="100"></div> 
-	</div> 
-		<div> <small class="text-muted"> <span>${quotaForm.sizeMessage}</span>
-		<br> <a href="${redirectUpdate}" class="stretched-link"><op:translate key="QUOTA_UPGRADE" /></a></small> 	
+	<div class="progress"> 	
+		<div class="progress-bar" role="progressbar" style="width: ${quotaForm.ratio}%"></div> 
+		<div class="progress-bar progress-bar-warning progress-bar-striped" style="width: ${quotaForm.trashRatio}%"></div>
 	</div>
-
+	<div>${quotaForm.sizeMessage}
+	</div>
 </div>  
-
-
 
 

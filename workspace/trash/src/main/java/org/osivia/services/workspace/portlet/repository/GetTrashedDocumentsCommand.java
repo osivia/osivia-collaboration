@@ -51,7 +51,7 @@ public class GetTrashedDocumentsCommand implements INuxeoCommand {
 
         // Operation request
         OperationRequest request = nuxeoSession.newRequest("Document.QueryES");
-        request.set(Constants.HEADER_NX_SCHEMAS, "dublincore");
+        request.set(Constants.HEADER_NX_SCHEMAS, "dublincore, common");
         request.set("query", query.toString());
 
         return request.execute();
