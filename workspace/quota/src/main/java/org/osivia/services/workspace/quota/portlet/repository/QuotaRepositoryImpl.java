@@ -63,7 +63,7 @@ public class QuotaRepositoryImpl implements QuotaRepository {
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
     	
         String path = nuxeoController.getBasePath();
-        INuxeoCommand command = this.applicationContext.getBean(GetQuotaCommand.class, path);
+        INuxeoCommand command = new GetQuotaCommand(path);
 
 		long treeSize = 0;
 		long trashedTreeSize = 0;

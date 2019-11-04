@@ -15,7 +15,10 @@
 
 <c:choose>
 	<c:when test="${empty quotaForm.bigFiles}">
-		<op:translate key="BIG_FILE_EMPTY" />
+		
+		<p>
+			<op:translate key="BIG_FILE_EMPTY" />
+		</p>
 	</c:when>
 
 	<c:otherwise>
