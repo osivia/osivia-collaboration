@@ -160,27 +160,6 @@ public class FileBrowserController {
 
 
     /**
-     * Delete documents action mapping.
-     *
-     * @param request     action request
-     * @param response    action response
-     * @param identifiers document identifiers request parameter
-     */
-    @ActionMapping("delete")
-    public void delete(ActionRequest request, ActionResponse response, @RequestParam("identifiers") String identifiers,
-                       @RequestParam(name = "view", required = false) String viewId) throws PortletException, IOException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        this.service.delete(portalControllerContext, Arrays.asList(StringUtils.split(identifiers, ",")));
-
-        // Copy view render parameter
-        FileBrowserView view = this.service.getView(portalControllerContext, viewId);
-        response.setRenderParameter("view", view.getId());
-    }
-
-
-    /**
      * Drop action mapping.
      *
      * @param request   action request

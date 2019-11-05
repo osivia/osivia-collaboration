@@ -181,4 +181,57 @@
         </portlet-info>
     </portlet>
 
+
+    <!--Delete-->
+    <portlet>
+        <portlet-name>osivia-services-widgets-delete</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.widgets.delete.portlet.configuration.DeleteConfiguration</value>
+        </init-param>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+
+        <portlet-info>
+            <title>Delete</title>
+        </portlet-info>
+    </portlet>
+
+
+    <!-- Delete plugin -->
+    <portlet>
+        <portlet-name>osivia-services-widgets-delete-plugin</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.widgets.delete.plugin.configuration.DeletePluginConfiguration</value>
+        </init-param>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+
+        <portlet-info>
+            <title>Delete plugin</title>
+        </portlet-info>
+    </portlet>
+
 </portlet-app>

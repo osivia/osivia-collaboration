@@ -152,15 +152,6 @@ public interface FileBrowserService {
 
 
     /**
-     * Delete documents.
-     *
-     * @param portalControllerContext portal controller context
-     * @param identifiers             document identifiers
-     */
-    void delete(PortalControllerContext portalControllerContext, List<String> identifiers) throws PortletException, IOException;
-
-
-    /**
      * Get bulk download content.
      *
      * @param portalControllerContext portal controller context

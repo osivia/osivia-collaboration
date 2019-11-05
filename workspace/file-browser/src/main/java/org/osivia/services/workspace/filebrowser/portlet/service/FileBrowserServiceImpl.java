@@ -934,9 +934,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * @param bundle                  internationalization bundle
      */
     protected void addToolbarMultipleSelectionItems(PortalControllerContext portalControllerContext, Element toolbar, FileBrowserForm form, FileBrowserView view, List<DocumentDTO> selection, boolean allEditable, Element container, Bundle bundle) throws PortletException {
-        // Namespace
-        String namespace = portalControllerContext.getResponse().getNamespace();
-
         // Base path
         String basePath = form.getBasePath();
         // Selected identifiers
@@ -999,17 +996,11 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         String deleteUrl;
         if (allEditable) {
             // Delete modal identifier
-            String deleteId = namespace + "-delete";
-
-            deleteUrl = "#" + deleteId;
-
-            // Delete confirmation modal
-            Element modal = this.getToolbarDeleteModal(portalControllerContext, identifiers, view, deleteId, bundle);
-            container.add(modal);
+            deleteUrl = this.getDeleteUrl(portalControllerContext, identifiers, form.getPath());
         } else {
             deleteUrl = null;
         }
-        this.addToolbarItem(toolbar, deleteUrl, "modal", bundle.getString("FILE_BROWSER_TOOLBAR_DELETE"), "glyphicons glyphicons-basic-bin");
+        this.addToolbarItem(toolbar, deleteUrl, "#osivia-modal", bundle.getString("FILE_BROWSER_TOOLBAR_DELETE"), "glyphicons glyphicons-basic-bin");
     }
 
 
@@ -1181,96 +1172,25 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      *
      * @param portalControllerContext portal controller context
      * @param identifiers             selected document identifiers
-     * @param view                    view
+     * @param redirectionPath         redirection path
      * @return URL
      */
-    private String getDeleteUrl(PortalControllerContext portalControllerContext, List<String> identifiers, FileBrowserView view) {
-        // Portlet response
-        PortletResponse portletResponse = portalControllerContext.getResponse();
+    private String getDeleteUrl(PortalControllerContext portalControllerContext, List<String> identifiers, String redirectionPath) throws PortletException {
+        // Window properties
+        Map<String, String> properties = new HashMap<>();
+        properties.put("osivia.delete.identifiers", StringUtils.join(identifiers, ","));
+        properties.put("osivia.delete.redirection-path", redirectionPath);
 
         // URL
         String url;
-        if (portletResponse instanceof MimeResponse) {
-            MimeResponse mimeResponse = (MimeResponse) portletResponse;
-
-            // Action URL
-            PortletURL actionUrl = mimeResponse.createActionURL();
-            actionUrl.setParameter(ActionRequest.ACTION_NAME, "delete");
-            actionUrl.setParameter("identifiers", StringUtils.join(identifiers, ","));
-            actionUrl.setParameter("view", view.getId());
-
-            url = actionUrl.toString();
-        } else {
-            url = "#";
+        try {
+            url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-widgets-delete-instance", properties,
+                    PortalUrlType.MODAL);
+        } catch (PortalException e) {
+            throw new PortletException(e);
         }
 
         return url;
-    }
-
-
-    /**
-     * Get toolbar delete modal confirmation DOM element.
-     *
-     * @param portalControllerContext portal controller context
-     * @param identifiers             selected document identifiers
-     * @param view                    view
-     * @param id                      modal identifier
-     * @param bundle                  internationalization bundle
-     * @return DOM element
-     */
-    private Element getToolbarDeleteModal(PortalControllerContext portalControllerContext, List<String> identifiers, FileBrowserView view, String id,
-                                          Bundle bundle) {
-        // Modal
-        Element modal = DOM4JUtils.generateDivElement("modal fade");
-        DOM4JUtils.addAttribute(modal, "id", id);
-
-        // Modal dialog
-        Element modalDialog = DOM4JUtils.generateDivElement("modal-dialog");
-        modal.add(modalDialog);
-
-        // Modal content
-        Element modalContent = DOM4JUtils.generateDivElement("modal-content");
-        modalDialog.add(modalContent);
-
-        // Modal header
-        Element modalHeader = DOM4JUtils.generateDivElement("modal-header");
-        modalContent.add(modalHeader);
-
-        // Modal title
-        Element modalTitle = DOM4JUtils.generateElement("h5", "modal-title", bundle.getString("FILE_BROWSER_TOOLBAR_DELETE_MODAL_TITLE"));
-        modalHeader.add(modalTitle);
-
-        // Modal close button
-        Element close = DOM4JUtils.generateElement("button", "close", "×", null, null);
-        DOM4JUtils.addAttribute(close, "type", "button");
-        DOM4JUtils.addDataAttribute(close, "dismiss", "modal");
-        modalHeader.add(close);
-
-        // Modal body
-        Element modalBody = DOM4JUtils.generateDivElement("modal-body");
-        modalContent.add(modalBody);
-
-        // Modal message
-        Element message = DOM4JUtils.generateElement("p", null, bundle.getString("FILE_BROWSER_TOOLBAR_DELETE_MODAL_MESSAGE"));
-        modalBody.add(message);
-
-        // Modal footer
-        Element modalFooter = DOM4JUtils.generateDivElement("modal-footer");
-        modalContent.add(modalFooter);
-
-        // Cancel button
-        Element cancel = DOM4JUtils.generateElement("button", "btn btn-secondary", bundle.getString("CANCEL"), null, null);
-        DOM4JUtils.addAttribute(cancel, "type", "button");
-        DOM4JUtils.addDataAttribute(cancel, "dismiss", "modal");
-        modalFooter.add(cancel);
-
-        // Confirmation button
-        String url = this.getDeleteUrl(portalControllerContext, identifiers, view);
-        Element confirm = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-warning no-ajax-link", bundle.getString("FILE_BROWSER_TOOLBAR_DELETE"),
-                "glyphicons glyphicons-basic-bin");
-        modalFooter.add(confirm);
-
-        return modal;
     }
 
 
@@ -1308,31 +1228,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             ActionResponse actionResponse = (ActionResponse) response;
             actionResponse.setRenderParameter("dnd-update", String.valueOf(System.currentTimeMillis()));
         }
-    }
-
-
-    @Override
-    public void delete(PortalControllerContext portalControllerContext, List<String> identifiers) throws PortletException {
-        // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();
-        // Internationalization bundle
-        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
-
-        try {
-            // Delete
-            this.repository.delete(portalControllerContext, identifiers);
-
-            // Notification
-            String message = bundle.getString("FILE_BROWSER_DELETE_SUCCESS_MESSAGE");
-            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
-        } catch (NuxeoException e) {
-            // Notification
-            String message = bundle.getString("FILE_BROWSER_DELETE_ERROR_MESSAGE");
-            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
-        }
-
-        // Refresh navigation
-        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
     }
 
 

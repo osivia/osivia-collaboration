@@ -31,6 +31,15 @@
     </portlet>
 
 
+    <portlet>
+        <portlet-name>osivia-services-widgets-delete</portlet-name>
+
+        <transaction>
+            <trans-attribute>Required</trans-attribute>
+        </transaction>
+    </portlet>
+
+
     <service>
         <service-name>CustomizationModulesRepository</service-name>
         <service-class>org.osivia.portal.api.customization.ICustomizationModulesRepository</service-class>
