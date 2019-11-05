@@ -173,7 +173,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
             // File
             File file = form.getTemporaryFile();
             // File name
-            String name = form.getTitle();
+            String name = file.getName();
             // File content type
             String contentType;
             if (form.getTemporaryFileMimeType() == null) {
@@ -183,7 +183,6 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
             }
 
             FileBlob blob = new FileBlob(file, name, contentType);
-            blob.setFileName(form.getTitle());
             binaries.put(BINARY_PROPERTY, blob);
         }
     }

@@ -1,5 +1,7 @@
 package org.osivia.services.widgets.rename.portlet.model.validation;
 
+import java.util.regex.Pattern;
+
 import org.osivia.services.widgets.rename.portlet.model.RenameForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -38,6 +40,14 @@ public class RenameFormValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "title", "NotEmpty");
+        
+        // illegal characters : /\:*?<>!
+        String title = errors.getFieldValue("title").toString();
+        Pattern pattern = Pattern.compile("([^/\\\\:*?\\\"<>|])*");
+        if(!pattern.matcher(title).matches())   {
+            errors.rejectValue("title", "InvalidCharacter");
+        }
+        
     }
 
 }
