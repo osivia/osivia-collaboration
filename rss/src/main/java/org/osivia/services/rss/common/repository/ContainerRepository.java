@@ -26,6 +26,8 @@ public interface ContainerRepository {
 	String DISPLAY_NAME_PROPERTY = "rssc:displayName";
 	/** dc title RSS */
 	String NAME_PROPERTY = "dc:title";
+    /** CMS path window property name. */
+    String CMS_PATH_WINDOW_PROPERTY = "osivia.container.cmsPath";	
 	   
    /**
     * Create container RSS.

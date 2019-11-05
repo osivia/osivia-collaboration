@@ -32,14 +32,12 @@ public class IssuedPluginController extends AbstractPluginPortlet {
     @Autowired
     private IssuedPluginService service;
 
-
     /**
      * Constructor.
      */
     public IssuedPluginController() {
         super();
     }
-
 
     /**
      * Post-construct.
@@ -50,7 +48,6 @@ public class IssuedPluginController extends AbstractPluginPortlet {
     public void postConstruct() throws PortletException {
         super.init(this.portletConfig);
     }
-
 
     /**
      * Pre-destroy.

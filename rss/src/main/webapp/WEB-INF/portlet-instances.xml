@@ -19,5 +19,27 @@
             </security-constraint>
         </instance>
     </deployment>
+    
+    <deployment>
+        <if-exists>overwrite</if-exists>
+        <instance>
+            <display-name xml:lang="en">RSS feed</display-name>
+            <display-name xml:lang="fr">Flux RSS</display-name>
+            <instance-id>osivia-services-rss-feed-instance</instance-id>
+            <portlet-ref>osivia-services-rss-feed</portlet-ref>
+            <security-constraint>
+                <policy-permission>
+                    <action-name>view</action-name>
+                    <unchecked/>
+                </policy-permission>
+            </security-constraint>
+            <preferences>
+                <preference>
+                    <name>hide</name>
+                    <value>true</value>
+                </preference>
+            </preferences>            
+        </instance>
+    </deployment>    
 
 </deployments>

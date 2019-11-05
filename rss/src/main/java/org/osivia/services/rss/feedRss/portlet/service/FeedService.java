@@ -26,12 +26,21 @@ public interface FeedService {
 	List<ContainerRssModel> getListFeed(PortalControllerContext portalControllerContext) throws PortletException;
 	
     /**
-     * create Flux.
+     * create Feed.
      *
      * @param portalControllerContext portal controller context
      * @param model ContainerRssModel
-     * @return List<ContainerRssModel>
      * @throws PortletException
      */
 	void creatFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;	
+
+    /**
+     * synchronization Feed with Items.
+     *
+     * @param portalControllerContext portal controller context
+     * @param model ContainerRssModel
+     * @throws PortletException
+     */
+	void synchro(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;
+
 }

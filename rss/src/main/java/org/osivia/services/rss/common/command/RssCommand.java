@@ -62,7 +62,7 @@ public class RssCommand  implements INuxeoCommand {
         properties.set(ContainerRepository.ID_PART_PROPERTY, this.form.getPartId());
         properties.set(ContainerRepository.ID_PROPERTY, this.form.getSyncId());
         properties.set(ContainerRepository.NAME_PROPERTY, this.form.getName());
-        properties.set(ContainerRepository.URL_PROPERTY, this.form.getUrl());
+        properties.set(ContainerRepository.URL_PROPERTY, this.form.getUrl().toString());
         
         
         // Création du document RSS

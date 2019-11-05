@@ -1,5 +1,8 @@
 package org.osivia.services.rss.feedRss.portlet.validator;
 
+import java.io.IOException;
+import java.net.URL;
+
 import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -49,10 +52,11 @@ public class FeedFormValidator implements Validator {
 		
 		// validate url	
 		if (!errors.hasFieldErrors()) {
-			String url = form.getUrl();
-			boolean b1 = true;
-			if (!b1) {
-				errors.rejectValue("url", "Invalid");
+			URL url = form.getUrl();
+			try {
+				url.openStream();
+			} catch (IOException e) {
+				errors.rejectValue("url", "Invalid");				
 			}
 		}		
 	

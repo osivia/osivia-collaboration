@@ -1,5 +1,7 @@
 package org.osivia.services.rss.common.repository;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,11 +65,18 @@ public class ContainerRepositoryImpl implements ContainerRepository{
 
 	private ContainerRssModel fillContainer(Document document, NuxeoController nuxeoController) {
 	    String displayName = document.getString(DISPLAY_NAME_PROPERTY);
-	    String url = document.getString(URL_PROPERTY);
 	    String partId = document.getString(ID_PART_PROPERTY);
 	    String syncId = document.getString(ID_PROPERTY);
 	    String name = document.getString(NAME_PROPERTY);
 
+	    URL url = null;
+		try {
+			url = new URL(document.getString(URL_PROPERTY));
+		} catch (MalformedURLException e) {
+			// A ce niveau il ne doit pas y avoir de pb de conversion
+			e.printStackTrace();
+		}
+		
 	    ContainerRssModel container = this.applicationContext.getBean(ContainerRssModel.class);
 	    container.setDisplayName(displayName);
 	    container.setUrl(url);

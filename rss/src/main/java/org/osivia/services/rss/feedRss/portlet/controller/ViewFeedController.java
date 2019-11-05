@@ -1,7 +1,10 @@
 package org.osivia.services.rss.feedRss.portlet.controller;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -16,8 +19,11 @@ import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.feedRss.portlet.service.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 /**
@@ -76,4 +82,27 @@ public class ViewFeedController {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         return this.service.getListFeed(portalControllerContext);
     }
+    
+	/**
+	 * Add container
+	 * 
+	 * @param request
+	 * @param response
+	 * @param form
+	 * @param status
+	 * @throws PortletException
+	 * @throws IOException
+	 */
+	@ActionMapping(value = "synchro")
+	public void add(ActionRequest request, ActionResponse response,
+			@Validated @ModelAttribute("form") ContainerRssModel form, BindingResult status)
+			throws PortletException, IOException {
+
+		// Portal controller context
+		PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request,
+				response);
+
+		this.service.synchro(portalControllerContext, form);
+
+	}
 }

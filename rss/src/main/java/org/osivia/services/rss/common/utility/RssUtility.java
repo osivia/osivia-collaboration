@@ -1,8 +1,9 @@
-package org.osivia.services.rss.container.portlet.service;
+package org.osivia.services.rss.common.utility;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -16,16 +17,15 @@ import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
 
 /**
- * RSS service interface
- * Lecture des flux RSS
+ * Read RSS feed
  * 
  * @author Frédéric Boudan
  *
  */
-public class RssServiceImpl implements RssService {
+public class RssUtility {
 
 	/** logger */
-	protected static final Log logger = LogFactory.getLog(RssServiceImpl.class);	
+	protected static final Log logger = LogFactory.getLog(RssUtility.class);	
 	
     static final String TITLE = "title";
     static final String DESCRIPTION = "description";
@@ -40,35 +40,33 @@ public class RssServiceImpl implements RssService {
     static final String ENCLOSURE = "enclosure";     
     
     /**
-     * Lecture d'un flux RSS et création du document Nuxeo.
+     * Read RSS feed.
      * 
-     * param URL
      */
-    @Override
-	public void readRss(URL url) {
-    	
-    	logger.info("Lecure du flux RSS");
-    	ItemRssModel rss = null;
-    	ContainerRssModel conteneur = null;
-        // Set header values initial to the empty string
+	public static List<ItemRssModel> readRss(ContainerRssModel feed) {
+    	// Restitution d'une map
+    	logger.info("Lecture du flux RSS");
         String description = "";
         String title = "";
         String link = "";
         String author = "";
-        String pubdate = "";
+        String pubDate = "";
         String guid = "";
         String category = "";
         String enclosure = "";
         String sourceRss = "";
         String idConteneur = "";
-        boolean isItem = false;
+    	ItemRssModel rss = new ItemRssModel(title, link, description, author, pubDate, guid, enclosure, idConteneur, 
+                category, sourceRss);
+        List<ItemRssModel> list = null;
+    	boolean isItem = false;
     	
 		try {
 			
             // Création d'un XMLInputFactory
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 
-            InputStream in = read(url);
+            InputStream in = read(feed.getUrl());
             XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
             
             // lecture du document XML 
@@ -80,10 +78,10 @@ public class RssServiceImpl implements RssService {
                     switch (localPart) {
                     case ITEM:
                         if (isItem) {
-                            rss = new ItemRssModel(title, link, description, author, pubdate, guid, enclosure, idConteneur, 
-                                     category, sourceRss);
+                        	list.add(rss);
+                            rss = new ItemRssModel(title, link, description, author, pubDate, guid, enclosure, idConteneur, 
+                                    category, sourceRss);;
                         }else {
-//                        	conteneur = new ContainerRssModel(title, link, description, pubdate, idConteneur);
                         	isItem = true;
                         }
                         event = eventReader.nextEvent();
@@ -110,7 +108,7 @@ public class RssServiceImpl implements RssService {
                         guid = getCharacterData(event, eventReader);
                         break;
                     case PUB_DATE:
-                        pubdate = getCharacterData(event, eventReader);
+                        pubDate = getCharacterData(event, eventReader);
                         break;
                     case SOURCE:
                     	sourceRss = getCharacterData(event, eventReader);
@@ -119,7 +117,8 @@ public class RssServiceImpl implements RssService {
                 } else if (event.isEndElement()) {
                     if (event.asEndElement().getName().getLocalPart() == (ITEM)) {
                     	// Création du document nuxeo contenant le flux RSS
-                        createDocument();
+                        rss = new ItemRssModel(title, link, description, author, pubDate, guid, enclosure, idConteneur, 
+                                category, sourceRss);
                         event = eventReader.nextEvent();
                         continue;
                     }
@@ -127,11 +126,11 @@ public class RssServiceImpl implements RssService {
             }
         } catch (XMLStreamException e) {
             throw new RuntimeException(e);
-        }			
-			
+        }
+		return list;
     }
 
-    private String getCharacterData(XMLEvent event, XMLEventReader eventReader)
+	public static String getCharacterData(XMLEvent event, XMLEventReader eventReader)
             throws XMLStreamException {
         String result = "";
         event = eventReader.nextEvent();
@@ -141,17 +140,18 @@ public class RssServiceImpl implements RssService {
         return result;
     }    
     
-	private InputStream read(URL url) {
+	public static InputStream read(URL url) {
 		try {
 			return url.openStream();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
-    
-	private void createDocument() {
-		// Ajout du document dans Nuxeo 
-		// > Doit-on le faire de manière unitaire ou pas ? A priori non.
-		
-	}
+    	
+	// Algo à mettre en place
+	// --> 1 : Lecture d'une url ex: le monde
+	// --> 2 : rapatriement du flux
+	// --> 3 : parsing du flux
+	// --> 4 : enregistrement des données dans une map
+	// --> 5 : Que fait on des anciens Items du flux ? Lecture des anciens Items et si les nouveaux Items sont supérieurs à 5 (nb de flux qui peuvent apparaître) on peut suprimer les anciens flux
 }

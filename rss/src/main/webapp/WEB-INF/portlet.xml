@@ -16,7 +16,7 @@
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>
-            <value>org.osivia.services.rss.feedRss.portlet.configuration.FeedRssConfiguration</value>
+            <value>org.osivia.services.rss.container.portlet.configuration.RssContainerConfiguration</value>
         </init-param>
 
         <expiration-cache>180</expiration-cache>
@@ -28,6 +28,46 @@
 
         <portlet-info>
             <title>RSS container</title>
+        </portlet-info>
+    </portlet>
+
+    <portlet>
+        <portlet-name>osivia-services-rss-feed</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.rss.feedRss.portlet.configuration.FeedRssConfiguration</value>
+        </init-param>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+
+        <portlet-info>
+            <title>RSS feed</title>
+        </portlet-info>
+    </portlet>
+
+    <portlet>
+        <portlet-name>osivia-services-rssPlugin</portlet-name>
+        <portlet-class>org.osivia.services.rss.plugin.RssPlugin</portlet-class>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+
+        <portlet-info>
+            <title>Rss plugin</title>
         </portlet-info>
     </portlet>
 

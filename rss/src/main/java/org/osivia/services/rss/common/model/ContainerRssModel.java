@@ -1,5 +1,6 @@
 package org.osivia.services.rss.common.model;
 
+import java.net.URL;
 import java.util.List;
 
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
@@ -14,7 +15,7 @@ public class ContainerRssModel {
 	public String name;
 	public String path;
 	public String displayName;
-	public String url;
+	public URL url;
 	public String partId;
 	public String syncId;
 	public List<ItemRssModel> sources;
@@ -28,14 +29,6 @@ public class ContainerRssModel {
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
 	}
 
 	public String getPartId() {
@@ -76,6 +69,14 @@ public class ContainerRssModel {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	public URL getUrl() {
+		return url;
+	}
+
+	public void setUrl(URL url) {
+		this.url = url;
 	}
 
 }
