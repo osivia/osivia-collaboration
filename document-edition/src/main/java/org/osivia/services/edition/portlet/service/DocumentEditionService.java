@@ -4,6 +4,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
 import org.osivia.services.edition.portlet.repository.DocumentEditionRepository;
+import org.springframework.validation.BindingResult;
 
 import javax.portlet.PortletException;
 import java.io.IOException;
@@ -96,7 +97,7 @@ public interface DocumentEditionService {
      * @param portalControllerContext portal controller context
      * @param form                    document edition form
      */
-    void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+    void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, BindingResult result) throws PortletException, IOException;
 
 
     /**
