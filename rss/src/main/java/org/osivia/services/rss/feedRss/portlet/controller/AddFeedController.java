@@ -1,6 +1,8 @@
 package org.osivia.services.rss.feedRss.portlet.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -15,6 +17,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.services.rss.common.model.ContainerRssModel;
+import org.osivia.services.rss.common.model.FeedRssModel;
 import org.osivia.services.rss.feedRss.portlet.service.FeedService;
 import org.osivia.services.rss.feedRss.portlet.validator.FeedFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
@@ -37,6 +41,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
  */
 @Controller
 @RequestMapping(value = "VIEW", params="view=add")
+@SessionAttributes({"form"})
 public class AddFeedController {
 
     /** Portlet context. */
@@ -97,15 +102,20 @@ public class AddFeedController {
      * @throws IOException
      */
 	@ActionMapping(value = "add")
-    public void add(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("form") ContainerRssModel form, BindingResult status) throws PortletException, IOException {
+    public void add(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("form") FeedRssModel form, BindingResult status) throws PortletException, IOException {
 
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         if(status.hasErrors()) {
             response.setRenderParameter("view", "add");
-        }else {
-        	this.service.creatFeed(portalControllerContext, form);
+        } else {
+        	ContainerRssModel container = applicationContext.getBean(ContainerRssModel.class);
+        	List<FeedRssModel> list = new ArrayList<FeedRssModel>();
+        	list.add(form);
+        	container.setFeedSources(list);        	
+        	
+        	this.service.creatFeed(portalControllerContext, container);
         }
        	
     }
@@ -121,9 +131,9 @@ public class AddFeedController {
     }    
     
     @ModelAttribute("form")
-    public ContainerRssModel getForm(PortletRequest request, PortletResponse response)
+    public FeedRssModel getForm(PortletRequest request, PortletResponse response)
     {
-        return applicationContext.getBean(ContainerRssModel.class);
+    	return applicationContext.getBean(FeedRssModel.class);
     }
     
 }

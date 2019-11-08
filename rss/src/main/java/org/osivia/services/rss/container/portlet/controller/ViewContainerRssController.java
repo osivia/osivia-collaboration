@@ -6,6 +6,7 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -19,6 +20,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 /**
@@ -29,6 +31,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
  */
 @Controller
 @RequestMapping(value = "VIEW")
+@SessionAttributes(value= "ContainerRssModel")
 public class ViewContainerRssController {
 
     /** Portlet context. */
@@ -79,7 +82,8 @@ public class ViewContainerRssController {
     {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-        return this.service.getListContainer(portalControllerContext);
+        List<ContainerRssModel> container = this.service.getListContainer(portalControllerContext);
+        return container;
     }    
     
 }

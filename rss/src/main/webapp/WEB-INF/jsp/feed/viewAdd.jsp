@@ -20,21 +20,13 @@
             	<form:errors path="url" cssClass="help-block" />
       		</div>
 		</spring:bind>
-		
-		<spring:bind path="partId">
-			<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">    			
-   				<form:label path="partId" cssClass="control-label"><op:translate key="FUNCTID"/></form:label>
-          		<form:input path="partId" type="text" cssClass="form-control" placeholder="ex: Région" />
-            	<form:errors path="partId" cssClass="help-block" />
-      		</div>
-		</spring:bind>
-		
+			
 	    <div class="col-sm-offset-4 col-sm-8 col-lg-offset-5 col-lg-7">
 	        <!-- Cancel -->
 	        <a href="${cancelUrl}" class="btn btn-default">
 	            <span><op:translate key="CANCEL"/></span>
 	        </a>
-	    	<button type="submit" name="add" class="btn btn-primary"><op:translate key="ADDCONTAINER"/></button>
+	    	<button type="submit" name="add" class="btn btn-primary"><op:translate key="ADDFEED"/></button>
 	 	</div>
 		
 </form:form>

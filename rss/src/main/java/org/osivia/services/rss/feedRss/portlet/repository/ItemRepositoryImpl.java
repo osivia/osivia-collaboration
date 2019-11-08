@@ -20,8 +20,6 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
  * Rss creation Nuxeo command.
  * 
  * @author Frédéric Boudan
- * @author Cédric Krommenhoek
- * @see AbstractCalendarCommand
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)

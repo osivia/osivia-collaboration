@@ -20,10 +20,7 @@
 	
 	<ol>
     	<c:forEach var="feed" items="${feeds}" varStatus="status">
-    		<c:set var="url"><ttc:documentLink document="${feed}" /></c:set>
-    		<li>
-	            <a href="url">${feed.name}</strong>
-    		</li>
+    		<li>${feed.displayName}</li>
 	    </c:forEach>
 	</ol>
 </div>

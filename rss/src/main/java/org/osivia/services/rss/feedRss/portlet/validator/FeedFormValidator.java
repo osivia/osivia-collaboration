@@ -1,9 +1,8 @@
 package org.osivia.services.rss.feedRss.portlet.validator;
 
 import java.io.IOException;
-import java.net.URL;
 
-import org.osivia.services.rss.common.model.ContainerRssModel;
+import org.osivia.services.rss.common.model.FeedRssModel;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -19,8 +18,6 @@ import org.springframework.validation.Validator;
 @Component
 public class FeedFormValidator implements Validator {
 
-
-
     /**
      * Constructor.
      */
@@ -28,15 +25,13 @@ public class FeedFormValidator implements Validator {
         super();
     }
 
-
     /**
      * {@inheritDoc}
      */
     @Override
     public boolean supports(Class<?> clazz) {
-        return ContainerRssModel.class.isAssignableFrom(clazz);
+        return FeedRssModel.class.isAssignableFrom(clazz);
     }
-
 
     /**
      * {@inheritDoc}
@@ -45,23 +40,22 @@ public class FeedFormValidator implements Validator {
     public void validate(Object target, Errors errors) {
 
 		// Form
-		ContainerRssModel form = (ContainerRssModel) target;
+		FeedRssModel form = (FeedRssModel) target;
 		
 		// URL feed 
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "url", "NotEmpty");
 		
 		// validate url	
 		if (!errors.hasFieldErrors()) {
-			URL url = form.getUrl();
 			try {
-				url.openStream();
+				form.getUrl().openStream();
 			} catch (IOException e) {
 				errors.rejectValue("url", "Invalid");				
 			}
 		}		
 	
-		// PartId feed 
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "partId", "NotEmpty");		
+		// PartId feed -- A supprimer pour l'intégrer dans la seconde version
+		//		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "partId", "NotEmpty");		
 		
     }
 

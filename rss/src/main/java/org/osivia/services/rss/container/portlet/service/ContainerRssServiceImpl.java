@@ -35,8 +35,17 @@ public class ContainerRssServiceImpl implements ContainerRssService {
     public List<ContainerRssModel> getListContainer(PortalControllerContext portalControllerContext) throws PortletException {
 
     	List<ContainerRssModel> containers = this.repository.getListContainerRss(portalControllerContext);    	
-        return containers;    	
+        return containers; 
+        
     }
+	
+//    /**
+//     * {@inheritDoc}
+//     */
+//    public void getListFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
+//
+//    	this.repository.getListFeedRss(portalControllerContext, model);    	
+//    }
 
     public void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
 

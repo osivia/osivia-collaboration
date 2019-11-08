@@ -1,14 +1,11 @@
 package org.osivia.services.rss.common.command;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.services.rss.common.model.ContainerRssModel;
-import org.osivia.services.rss.common.repository.ContainerRepository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
@@ -30,7 +27,7 @@ public class RssCommand  implements INuxeoCommand {
     private ContainerRssModel form;
     
 	/** logger */
-    protected static final Log logger = LogFactory.getLog(ContainerCreatCommand.class);	
+//    protected static final Log logger = LogFactory.getLog(ContainerCreatCommand.class);	
 	
     /**
      * Constructor.
@@ -58,12 +55,10 @@ public class RssCommand  implements INuxeoCommand {
 
         // Properties
         PropertyMap properties = new PropertyMap();
-        properties.set(ContainerRepository.DISPLAY_NAME_PROPERTY, this.form.getDisplayName());
-        properties.set(ContainerRepository.ID_PART_PROPERTY, this.form.getPartId());
-        properties.set(ContainerRepository.ID_PROPERTY, this.form.getSyncId());
-        properties.set(ContainerRepository.NAME_PROPERTY, this.form.getName());
-        properties.set(ContainerRepository.URL_PROPERTY, this.form.getUrl().toString());
-        
+//        properties.set(ContainerRepository.DISPLAY_NAME_PROPERTY, this.form.getDisplayName());
+//        properties.set(ContainerRepository.ID_PROPERTY, this.form.getSyncId());
+//        properties.set(ContainerRepository.URL_PROPERTY, this.form.getUrl().toString());
+//        
         
         // Création du document RSS
         Document document = documentService.createDocument(parent, DOCUMENT_TYPE_RSS, null, properties);

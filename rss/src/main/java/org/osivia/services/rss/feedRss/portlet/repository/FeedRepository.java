@@ -1,9 +1,8 @@
 package org.osivia.services.rss.feedRss.portlet.repository;
 
-import java.util.List;
-
 import javax.portlet.PortletException;
 
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.model.ContainerRssModel;
 
@@ -15,52 +14,50 @@ import org.osivia.services.rss.common.model.ContainerRssModel;
 public interface FeedRepository {
 
 	/** RSS document type name. */
-	String DOCUMENT_TYPE_EVENEMENT = "ottc-rss-item";
-	/** Id Conteneur RSS */
-	String CONTENEUR_PROPERTY = "rssi:idConteneur";
-	/** title Item Nuxeo property. */
-	String TITLE_PROPERTY = "rssi:title";
-	/** link Nuxeo property. */
-	String LINK_PROPERTY = "rssi:link";
-	/** Description Nuxeo property. */
-	String DESCRIPTION_PROPERTY = "rssi:description";
-	/** title Item Nuxeo property. */
-	String AUTHOR_PROPERTY = "rssi:author";
-	/** Category Nuxeo property. */
-	String CATEGORY_PROPERTY = "rssi:category";
-	/** enclosure Nuxeo property. */
-	String ENCLOSURE_PROPERTY = "rssi:enclosure";
-	/** GUID Nuxeo property. */
-	String GUID_PROPERTY = "rssi:guid";
-	/** pubDate Nuxeo property. */
-	String PUBDATE_PROPERTY = "rssi:pubDate";
-	/** source Nuxeo property. */
-	String SOURCES_PROPERTY = "rssi:source";	   
-   
-   /**
-    * Create feed RSS.
-    *
-    * @param portalControllerContext portal controller context
-    * @param Model
-    * @throws PortletException
-    */
-   void creatFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;
+	String DOCUMENT_TYPE_CONTENEUR = "RssContainer";
+	/** DC title RSS */
+	String NAME_PROPERTY = "dc:title";
+	/** FEEDS RSS */
+	String FEEDS_PROPERTY = "rssc:feeds";
+	/** Display Name RSS */
+	String DISPLAY_NAME_PROPERTY = "displayName";	
+	/** url du flux RSS */
+	String URL_PROPERTY = "url";
+	/** Id sync flux RSS */
+	String ID_PROPERTY = "syncId";
    
    /**
     * remove Feed.
     *
     * @param portalControllerContext portal controller context
-    * @param model 
     * @throws PortletException
     */
    void remove(PortalControllerContext portalControllerContext) throws PortletException;
    
    /**
-    * get feed list RSS.
+    * Create feed RSS.
     *
     * @param portalControllerContext portal controller context
+    * @param model
     * @throws PortletException
     */
-   List<ContainerRssModel> getListFeedRss(PortalControllerContext portalControllerContext) throws PortletException;   
+	void creatFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;	
+      
+	/**
+	 * get feeds list RSS.
+	 *
+	 * @param portalControllerContext portal controller context
+	 * @throws PortletException
+	 */
+	ContainerRssModel getListFeedRss(PortalControllerContext portalControllerContext) throws PortletException;
    
+    /**
+     * Get current Nuxeo document.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return Nuxeo document
+     * @throws PortletException
+     */
+    Document getCurrentDocument(PortalControllerContext portalControllerContext) throws PortletException;
+    
 }

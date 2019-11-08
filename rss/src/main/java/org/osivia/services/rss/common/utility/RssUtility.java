@@ -13,7 +13,7 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.osivia.services.rss.common.model.ContainerRssModel;
+import org.osivia.services.rss.common.model.FeedRssModel;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
 
 /**
@@ -43,7 +43,7 @@ public class RssUtility {
      * Read RSS feed.
      * 
      */
-	public static List<ItemRssModel> readRss(ContainerRssModel feed) {
+	public static List<ItemRssModel> readRss(FeedRssModel feed) {
     	// Restitution d'une map
     	logger.info("Lecture du flux RSS");
         String description = "";

@@ -41,7 +41,7 @@ public interface ItemRepository {
     * Create Item RSS.
     *
     * @param portalControllerContext portal controller context
-    * @param Model
+    * @param model
     * @throws PortletException
     */
    void creatItem(PortalControllerContext portalControllerContext, ItemRssModel model) throws PortletException;
@@ -50,7 +50,7 @@ public interface ItemRepository {
     * Create Item RSS.
     *
     * @param portalControllerContext portal controller context
-    * @param Model
+    * @param items
     * @throws PortletException
     */
    void creatItems(PortalControllerContext portalControllerContext, List<ItemRssModel> items) throws PortletException;   
@@ -59,7 +59,6 @@ public interface ItemRepository {
     * remove Item.
     *
     * @param portalControllerContext portal controller context
-    * @param model 
     * @throws PortletException
     */
    void removeItem(PortalControllerContext portalControllerContext) throws PortletException;
@@ -68,7 +67,7 @@ public interface ItemRepository {
     * remove Items.
     *
     * @param portalControllerContext portal controller context
-    * @param model 
+    * @param items 
     * @throws PortletException
     */
    void removeItems(PortalControllerContext portalControllerContext, List<ItemRssModel> items) throws PortletException;

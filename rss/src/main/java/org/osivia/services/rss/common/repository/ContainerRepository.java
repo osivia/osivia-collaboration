@@ -16,18 +16,18 @@ public interface ContainerRepository {
 
 	/** RSS document type name. */
 	String DOCUMENT_TYPE_CONTENEUR = "RssContainer";
-	/** Id sync flux RSS */
-	String ID_PROPERTY = "rssc:syncId";
-	/** Id partener */
-	String ID_PART_PROPERTY = "rssc:partId";
-	/** url du flux RSS */
-	String URL_PROPERTY = "rssc:url";
-	/** Display Name RSS */
-	String DISPLAY_NAME_PROPERTY = "rssc:displayName";
-	/** dc title RSS */
+	/** DC title RSS */
 	String NAME_PROPERTY = "dc:title";
+	/** FEEDS RSS */
+	String FEEDS_PROPERTY = "rssc:feeds";
+	/** Display Name RSS */
+	String DISPLAY_NAME_PROPERTY = "displayName";	
+	/** url du flux RSS */
+	String URL_PROPERTY = "url";
+	/** Id sync flux RSS */
+	String ID_PROPERTY = "syncId";
     /** CMS path window property name. */
-    String CMS_PATH_WINDOW_PROPERTY = "osivia.container.cmsPath";	
+    String CMS_PATH_WINDOW_PROPERTY = "osivia.feed.cmsPath";	
 	   
    /**
     * Create container RSS.
@@ -38,15 +38,7 @@ public interface ContainerRepository {
     */
 	void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;
 	
-   /**
-    * Create feed RSS.
-    *
-    * @param portalControllerContext portal controller context
-    * @param model
-    * @throws PortletException
-    */
-	void creatFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;	
-   
+
    /**
     * remove container flux RSS.
     *

@@ -81,7 +81,7 @@ public class RssPlugin extends AbstractPluginPortlet {
 
         // Rss
         DocumentType rss = DocumentType.createNode(ContainerRepository.DOCUMENT_TYPE_CONTENEUR);
-        rss.setIcon("glyphicons glyphicons-conversation");
+        rss.setIcon("glyphicons glyphicon-folder-open");
         rss.setForceContextualization(true);
         rss.setEditable(true);
         rss.setMovable(true);

@@ -1,7 +1,5 @@
 package org.osivia.services.rss.feedRss.portlet.service;
 
-import java.util.List;
-
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -23,7 +21,7 @@ public interface FeedService {
      * @return List<ContainerRssModel>
      * @throws PortletException
      */
-	List<ContainerRssModel> getListFeed(PortalControllerContext portalControllerContext) throws PortletException;
+	ContainerRssModel getListFeed(PortalControllerContext portalControllerContext) throws PortletException;
 	
     /**
      * create Feed.

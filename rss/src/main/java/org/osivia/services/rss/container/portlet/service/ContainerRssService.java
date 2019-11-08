@@ -9,7 +9,7 @@ import org.osivia.services.rss.common.model.ContainerRssModel;
 
 /**
  * Container RSS service interface
- * Lecture des conteneur de flux RSS
+ * Lecture des conteneurs de flux RSS
  * 
  * @author Frédéric Boudan
  *

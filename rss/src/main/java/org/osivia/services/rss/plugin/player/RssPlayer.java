@@ -57,7 +57,7 @@ public class RssPlayer implements INuxeoPlayerModule {
 
         Player player = null;
      
-        if ("container".equals(document.getType())) {
+        if ("RssContainer".equals(document.getType())) {
             Map<String, String> windowProperties = new HashMap<>();
             windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
             windowProperties.put("osivia.title", document.getTitle());
@@ -68,20 +68,8 @@ public class RssPlayer implements INuxeoPlayerModule {
 
             player = new Player();
             player.setWindowProperties(windowProperties);
-            player.setPortletInstance("osivia-services-rss-container-instance");
-
-        } else if ("feed".equals(document.getType())) {
-            // Window properties
-            Map<String, String> windowProperties = new HashMap<>();
-            windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
-            windowProperties.put("osivia.title", document.getTitle());
-            windowProperties.put("osivia.ajaxLink", "1");
-
-            player = new Player();
-            player.setWindowProperties(windowProperties);
             player.setPortletInstance("osivia-services-rss-feed-instance");
-
-        }       
+        }
 
         return player;
     }

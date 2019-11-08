@@ -1,12 +1,13 @@
 package org.osivia.services.rss.common.model;
 
-import java.net.URL;
 import java.util.List;
 
-import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -14,46 +15,12 @@ public class ContainerRssModel {
 
 	public String name;
 	public String path;
-	public String displayName;
-	public URL url;
-	public String partId;
-	public String syncId;
-	public List<ItemRssModel> sources;
+	public DocumentDTO document;
+	public Document doc;	
+	
+    /** feeds sources. */
+    private List<FeedRssModel> feedSources;	
 
-	public ContainerRssModel() {
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
-
-	public String getPartId() {
-		return partId;
-	}
-
-	public void setPartId(String partId) {
-		this.partId = partId;
-	}
-
-	public String getSyncId() {
-		return syncId;
-	}
-
-	public void setSyncId(String syncId) {
-		this.syncId = syncId;
-	}
-
-	public List<ItemRssModel> getSources() {
-		return sources;
-	}
-
-	public void setSources(List<ItemRssModel> sources) {
-		this.sources = sources;
-	}
 
 	public String getName() {
 		return name;
@@ -71,12 +38,28 @@ public class ContainerRssModel {
 		this.path = path;
 	}
 
-	public URL getUrl() {
-		return url;
+	public DocumentDTO getDocument() {
+		return document;
 	}
 
-	public void setUrl(URL url) {
-		this.url = url;
+	public void setDocument(DocumentDTO document) {
+		this.document = document;
+	}
+
+	public List<FeedRssModel> getFeedSources() {
+		return feedSources;
+	}
+
+	public void setFeedSources(List<FeedRssModel> feedSources) {
+		this.feedSources = feedSources;
+	}
+
+	public Document getDoc() {
+		return doc;
+	}
+
+	public void setDoc(Document doc) {
+		this.doc = doc;
 	}
 
 }

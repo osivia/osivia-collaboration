@@ -9,17 +9,22 @@ import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
+import org.nuxeo.ecm.automation.client.model.PropertyList;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.command.ContainerCreatCommand;
 import org.osivia.services.rss.common.command.ContainerListCommand;
 import org.osivia.services.rss.common.command.FeedCreatCommand;
 import org.osivia.services.rss.common.model.ContainerRssModel;
+import org.osivia.services.rss.common.model.FeedRssModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 /**
  * Rss creation Nuxeo command.
@@ -53,42 +58,29 @@ public class ContainerRepositoryImpl implements ContainerRepository{
         // Nuxeo command
         INuxeoCommand nuxeoCommand = this.applicationContext.getBean(ContainerListCommand.class);
         Documents documents = (Documents) nuxeoController.executeNuxeoCommand(nuxeoCommand);
-        // containers
         containers = new ArrayList<ContainerRssModel>(documents.size());
-
+        
         for (Document document : documents) {
-            	ContainerRssModel container = fillContainer(document, nuxeoController);
-                containers.add(container);
-        }
+        	ContainerRssModel container = fillContainer(document, nuxeoController);
+        	containers.add(container);
+        }        
+        
 		return containers;
-    }    
-
+    }
+    
 	private ContainerRssModel fillContainer(Document document, NuxeoController nuxeoController) {
-	    String displayName = document.getString(DISPLAY_NAME_PROPERTY);
-	    String partId = document.getString(ID_PART_PROPERTY);
-	    String syncId = document.getString(ID_PROPERTY);
 	    String name = document.getString(NAME_PROPERTY);
-
-	    URL url = null;
-		try {
-			url = new URL(document.getString(URL_PROPERTY));
-		} catch (MalformedURLException e) {
-			// A ce niveau il ne doit pas y avoir de pb de conversion
-			e.printStackTrace();
-		}
-		
-	    ContainerRssModel container = this.applicationContext.getBean(ContainerRssModel.class);
-	    container.setDisplayName(displayName);
-	    container.setUrl(url);
-	    container.setPartId(partId);
-	    container.setSyncId(syncId);
-	    container.setName(name);
 	    
+	    ContainerRssModel container = this.applicationContext.getBean(ContainerRssModel.class);
+	    container.setName(name);
+	    DocumentDTO dto = DocumentDAO.getInstance().toDTO(document);
+		container.setDocument(dto);
 	    return container;
-	}    
+	}
+    
     
     /**
-     * Create container RSS
+     * Create Container RSS
      */    
 	public void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
         // Nuxeo controller
@@ -107,21 +99,4 @@ public class ContainerRepositoryImpl implements ContainerRepository{
 		// TODO Auto-generated method stub
 		
 	}
-
-    /**
-     * Create Feed RSS
-     */ 
-	public void creatFeed(PortalControllerContext portalControllerContext, ContainerRssModel model)
-			throws PortletException {
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-
-        // Nuxeo command
-        INuxeoCommand nuxeoCommand;
-        nuxeoCommand = this.applicationContext.getBean(FeedCreatCommand.class, model);
-        
-        nuxeoController.executeNuxeoCommand(nuxeoCommand);
-		
-	}
-
 }
