@@ -41,14 +41,16 @@
         </div>
     </spring:bind>
     
-    <spring:bind path="message">
-        <div class="form-group ">
-            <form:label path="message" cssClass="control-label"><op:translate key="QUOTA_MESSAGE_LABEL" /></form:label>
-            <div class="form-control">
-            	${updateForm.message}
-            </div>
-        </div>
-    </spring:bind>    
+    <c:if test="${updateForm.stepRequest}">
+	    <spring:bind path="message">
+	        <div class="form-group ">
+	            <form:label path="message" cssClass="control-label"><op:translate key="QUOTA_MESSAGE_LABEL" /></form:label>
+	            <div class="form-control">
+	            	${updateForm.message}
+	            </div>
+	        </div>
+	    </spring:bind>    
+    </c:if>
     
     <div class="form-group">
     	<c:choose>
