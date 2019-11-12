@@ -18,7 +18,6 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 /**
  * Create Container RSS Nuxeo command.
  *
- * @author Cédric Krommenhoek
  * @author Frédéric Boudan
  * @see INuxeoCommand
  */

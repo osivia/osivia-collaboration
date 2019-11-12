@@ -19,7 +19,6 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 /**
  * Create Container RSS Nuxeo command.
  *
- * @author Cédric Krommenhoek
  * @author Frédéric Boudan
  * @see INuxeoCommand
  */
@@ -51,11 +50,8 @@ public class ItemCreatCommand implements INuxeoCommand {
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
 
         // Correspond à l'endroit où l'on souhaite stocker le document
-//        DocRef parent = new DocRef(form.getPath());
+        DocRef parent = new DocRef(form.getPath());
 
-        // A supprimer apres les tests
-        DocRef parent = new DocRef("/default-domain/workspaces/frederic");
-        
         // Properties
         PropertyMap properties = new PropertyMap();
         properties.set(ItemRepository.AUTHOR_PROPERTY, this.form.getAuthor());
@@ -69,7 +65,7 @@ public class ItemCreatCommand implements INuxeoCommand {
         properties.set(ItemRepository.TITLE_PROPERTY, this.form.getTitle());        
         
         // Mise à jour du conteneur RSS avec l'url, le nom du flux, la synchronisation
-        Document document = documentService.createDocument(parent, ContainerRepository.DOCUMENT_TYPE_CONTENEUR, null, properties);
+        Document document = documentService.createDocument(parent, ItemRepository.DOCUMENT_TYPE_EVENEMENT, null, properties);
         
     	return document;
 	}

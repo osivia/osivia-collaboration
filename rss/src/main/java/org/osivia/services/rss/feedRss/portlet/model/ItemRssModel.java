@@ -12,6 +12,7 @@ public class ItemRssModel {
     public String category;
     public String enclosure;
     public String sourceRss;
+    public String path;
 
     public ItemRssModel(String title, String link, String description, String author, String pubDate, String guid, String idConteneur,
     		String category, String enclosure, String sourceRss) {
@@ -27,6 +28,9 @@ public class ItemRssModel {
         this.sourceRss = sourceRss;
     }
 
+    public ItemRssModel() {
+    }
+    
 	public String getTitle() {
         return title;
     }
@@ -105,6 +109,14 @@ public class ItemRssModel {
 
 	public void setAuthor(String author) {
 		this.author = author;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 	
 }

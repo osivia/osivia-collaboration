@@ -15,7 +15,7 @@ import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
 public interface ItemRepository {
 
 	/** RSS document type name. */
-	String DOCUMENT_TYPE_EVENEMENT = "ottc-rss-item";
+	String DOCUMENT_TYPE_EVENEMENT = "RssItem";
 	/** Id Conteneur RSS */
 	String CONTENEUR_PROPERTY = "rssi:idConteneur";
 	/** title Item Nuxeo property. */

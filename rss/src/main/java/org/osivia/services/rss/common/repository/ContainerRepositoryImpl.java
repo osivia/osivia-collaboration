@@ -1,7 +1,5 @@
 package org.osivia.services.rss.common.repository;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,14 +7,10 @@ import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
-import org.nuxeo.ecm.automation.client.model.PropertyList;
-import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.command.ContainerCreatCommand;
 import org.osivia.services.rss.common.command.ContainerListCommand;
-import org.osivia.services.rss.common.command.FeedCreatCommand;
 import org.osivia.services.rss.common.model.ContainerRssModel;
-import org.osivia.services.rss.common.model.FeedRssModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;

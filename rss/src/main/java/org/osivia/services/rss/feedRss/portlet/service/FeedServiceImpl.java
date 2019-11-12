@@ -1,12 +1,12 @@
 package org.osivia.services.rss.feedRss.portlet.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.portlet.PortletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.common.model.FeedRssModel;
@@ -56,39 +56,52 @@ public class FeedServiceImpl implements FeedService {
     	this.repository.creatFeed(portalControllerContext, model);    	
     }
     
-    public void synchro(PortalControllerContext portalControllerContext) throws PortletException {
+    @SuppressWarnings("null")
+	public void synchro(PortalControllerContext portalControllerContext) throws PortletException {
 
-    	ContainerRssModel model = null;
-    	// Recherche la liste des feeds
-    	model = this.repository.getListFeedRss(portalControllerContext);
-    	
-    	for(FeedRssModel feed : model.getFeedSources()) {
-        	// retourne une map d'item à faire correspondre avec les items déjà enregistré
+		// Recherche la liste des feeds
+		// ContainerRssModel model =
+		// this.repository.getListFeedRss(portalControllerContext);
+		ContainerRssModel model = new ContainerRssModel();
+		FeedRssModel feed2 = new FeedRssModel();
+		feed2.setUrl("https://www.lemonde.fr/rss/en_continu.xml");
+		feed2.setDisplayName("Le monde: politique");
+		feed2.setSyncId("885454345");
+		List<FeedRssModel> feedSources = new ArrayList<FeedRssModel>();
+		feedSources.add(feed2);
+		model.setFeedSources(feedSources);
+		for (FeedRssModel feed : model.getFeedSources()) {
+			// retourne une map d'item à faire correspondre avec les items déjà enregistré
 			List<ItemRssModel> items = RssUtility.readRss(feed);
-    		
-    		// if la liste est vide on ne supprime pas d'Items dans Nuxeo
-    			// Doit-on le faire si <5 ?
-    		if(items.size() >= 1) {
-            	// Recherche la liste des Items correspondant au flux
-            	List<ItemRssModel> itemsNuxeo = this.repositoryItem.getListItemRss(portalControllerContext);    			
 
-            	// Comparaison de la liste restituée par la lecture du flux et les Items présents dans Nuxeo
-            	// Si Item Nuxeo présent dans le flux lut alors on le supprime de la liste (afin de ne pas le recréer)
-            	items.removeAll(itemsNuxeo);
-            	this.repositoryItem.creatItems(portalControllerContext, items); 
+			// Si la liste est vide on ne supprime pas d'Items dans Nuxeo
+			// Doit-on le faire si <5 ?
+			if (items != null) {
+				if (items.size() >= 1) {
+					// Recherche la liste des Items correspondant au flux
+					List<ItemRssModel> itemsNuxeo = this.repositoryItem.getListItemRss(portalControllerContext);
 
-            	itemsNuxeo.removeAll(items);
-            	
-            	// Tous les Item Nuxeo pas trouver dans le flux seront supprimé
-            	this.repositoryItem.removeItems(portalControllerContext, itemsNuxeo);
-    		}
-    	}
-    }
+					// Comparaison de la liste restituée par la lecture du flux et les Items
+					// présents dans Nuxeo
+					// Si Item Nuxeo présent dans le flux lut alors on le supprime de la liste (afin
+					// de ne pas le recréer)
+					if (itemsNuxeo != null) {
+						items.removeAll(itemsNuxeo);
+					}
+					if(items != null || items.size() >= 1) {
+						this.repositoryItem.creatItems(portalControllerContext, items);						
+					}
 
-	@Override
-	public void synchro(PortalControllerContext portalControllerContext, ContainerRssModel model)
-			throws PortletException {
-		// TODO Auto-generated method stub
-		
-	}    
+					if (itemsNuxeo != null) {
+						itemsNuxeo.removeAll(items);
+						if (itemsNuxeo != null || itemsNuxeo.size() != 0) {
+							// Tous les Item Nuxeo pas trouver dans le flux seront supprimé
+							this.repositoryItem.removeItems(portalControllerContext, itemsNuxeo);
+						}						
+					}
+				}
+
+			}
+		}
+	}
 }

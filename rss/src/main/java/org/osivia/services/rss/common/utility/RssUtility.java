@@ -2,7 +2,9 @@ package org.osivia.services.rss.common.utility;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
@@ -43,6 +45,7 @@ public class RssUtility {
      * Read RSS feed.
      * 
      */
+	@SuppressWarnings("null")
 	public static List<ItemRssModel> readRss(FeedRssModel feed) {
     	// Restitution d'une map
     	logger.info("Lecture du flux RSS");
@@ -56,17 +59,21 @@ public class RssUtility {
         String enclosure = "";
         String sourceRss = "";
         String idConteneur = "";
-    	ItemRssModel rss = new ItemRssModel(title, link, description, author, pubDate, guid, enclosure, idConteneur, 
-                category, sourceRss);
-        List<ItemRssModel> list = null;
-    	boolean isItem = false;
+    	ItemRssModel rss = null;
+        List<ItemRssModel> list = new ArrayList<ItemRssModel>();
     	
 		try {
 			
             // Création d'un XMLInputFactory
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 
-            InputStream in = read(feed.getUrl());
+            URL url = null;
+			try {
+				url = new URL(feed.getUrl());
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+            InputStream in = read(url);
             XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
             
             // lecture du document XML 
@@ -77,13 +84,6 @@ public class RssUtility {
                             .getLocalPart();
                     switch (localPart) {
                     case ITEM:
-                        if (isItem) {
-                        	list.add(rss);
-                            rss = new ItemRssModel(title, link, description, author, pubDate, guid, enclosure, idConteneur, 
-                                    category, sourceRss);;
-                        }else {
-                        	isItem = true;
-                        }
                         event = eventReader.nextEvent();
                         break;
                     case TITLE:
@@ -119,6 +119,7 @@ public class RssUtility {
                     	// Création du document nuxeo contenant le flux RSS
                         rss = new ItemRssModel(title, link, description, author, pubDate, guid, enclosure, idConteneur, 
                                 category, sourceRss);
+                        list.add(rss);                        
                         event = eventReader.nextEvent();
                         continue;
                     }

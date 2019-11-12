@@ -39,6 +39,6 @@ public interface FeedService {
      * @param model ContainerRssModel
      * @throws PortletException
      */
-	void synchro(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;
+	void synchro(PortalControllerContext portalControllerContext) throws PortletException;
 
 }

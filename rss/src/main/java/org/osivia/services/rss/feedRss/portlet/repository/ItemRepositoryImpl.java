@@ -1,11 +1,15 @@
 package org.osivia.services.rss.feedRss.portlet.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.portlet.PortletException;
 
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.command.ItemCreatCommand;
+import org.osivia.services.rss.common.command.ItemListCommand;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -58,10 +62,51 @@ public class ItemRepositoryImpl implements ItemRepository{
 
 	@Override
 	public List<ItemRssModel> getListItemRss(PortalControllerContext portalControllerContext) throws PortletException {
-		// TODO Auto-generated method stub
-		return null;
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        List<ItemRssModel> items;
+        
+        // Nuxeo command
+        INuxeoCommand nuxeoCommand = this.applicationContext.getBean(ItemListCommand.class);
+        Documents documents = (Documents) nuxeoController.executeNuxeoCommand(nuxeoCommand);
+        items = new ArrayList<ItemRssModel>(documents.size());
+        
+        for (Document document : documents) {
+        	// Faire un test sur le path pour faire correspond avec le conteneur
+        	ItemRssModel item = fillItem(document, nuxeoController);
+        	items.add(item);
+        }        
+        
+		return items;
 	}
 
+	private ItemRssModel fillItem(Document document, NuxeoController nuxeoController) {
+	    String id = document.getString(CONTENEUR_PROPERTY);
+	    String title = document.getString(TITLE_PROPERTY);	    
+	    String link = document.getString(LINK_PROPERTY);
+	    String description = document.getString(DESCRIPTION_PROPERTY);
+	    String autor = document.getString(AUTHOR_PROPERTY);
+	    String category = document.getString(CATEGORY_PROPERTY);
+	    String enclosure = document.getString(ENCLOSURE_PROPERTY);
+	    String pubdate =  document.getString(PUBDATE_PROPERTY);
+	    String guid =  document.getString(GUID_PROPERTY);
+	    String sources =  document.getString(SOURCES_PROPERTY);
+	    
+	    ItemRssModel item = new ItemRssModel();
+	    item.setIdConteneur(id);
+	    item.setTitle(title);
+	    item.setLink(link);
+	    item.setDescription(description);
+	    item.setAuthor(autor);
+	    item.setCategory(category);
+	    item.setEnclosure(enclosure);
+	    item.setPubDate(pubdate);
+	    item.setGuid(guid);
+	    item.setSourceRss(sources);
+	    return item;
+	}
+	
 	@Override
 	public void creatItems(PortalControllerContext portalControllerContext, List<ItemRssModel> items)
 			throws PortletException {
@@ -72,10 +117,11 @@ public class ItemRepositoryImpl implements ItemRepository{
         // Nuxeo command
         INuxeoCommand command;
 
-//        for (ItemRssModel item : items) {
-//	        command = this.applicationContext.getBean(ItemCreatCommand.class, item);
-//	        nuxeoController.executeNuxeoCommand(command);
-//        }
+        for (ItemRssModel item : items) {
+        	item.setPath(nuxeoController.getCurrentDocumentContext().getCmsPath()); 
+        	command = this.applicationContext.getBean(ItemCreatCommand.class, item);
+	        nuxeoController.executeNuxeoCommand(command);
+        }
 	}
 
 	@Override

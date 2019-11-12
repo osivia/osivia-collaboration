@@ -11,7 +11,6 @@ import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
@@ -20,14 +19,10 @@ import org.osivia.services.rss.feedRss.portlet.service.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
-
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 
 /**
  * View Flux Rss controller.
@@ -96,21 +91,18 @@ public class ViewFeedController {
 	 * 
 	 * @param request
 	 * @param response
-	 * @param form
-	 * @param status
 	 * @throws PortletException
 	 * @throws IOException
 	 */
 	@ActionMapping(value = "synchro")
-	public void add(ActionRequest request, ActionResponse response,
-			@Validated @ModelAttribute("form") ContainerRssModel form, BindingResult status)
+	public void add(ActionRequest request, ActionResponse response)
 			throws PortletException, IOException {
 
 		// Portal controller context
 		PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request,
 				response);
 
-		this.service.synchro(portalControllerContext, form);
+		this.service.synchro(portalControllerContext);
 
 	}
 }

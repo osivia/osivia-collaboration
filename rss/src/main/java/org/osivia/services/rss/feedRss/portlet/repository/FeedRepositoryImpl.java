@@ -1,7 +1,5 @@
 package org.osivia.services.rss.feedRss.portlet.repository;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,13 +91,7 @@ public class FeedRepositoryImpl implements FeedRepository{
                 PropertyMap map = propertyList.getMap(i);
                 feed = new FeedRssModel();
                 feed.setSyncId(map.getString(ID_PROPERTY));
-        	    URL url = null;
-        		try {
-        			url = new URL(map.getString(URL_PROPERTY));
-        		} catch (MalformedURLException e) {
-        			e.printStackTrace();
-        		}
-                feed.setUrl(url);
+                feed.setUrl(map.getString(URL_PROPERTY));
                 feed.setSyncId(map.getString(DISPLAY_NAME_PROPERTY));
                 listFeed.add(feed);
             }        	
