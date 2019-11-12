@@ -44,14 +44,6 @@ public interface TrashService {
 
 
     /**
-     * Add menubar items.
-     *
-     * @param portalControllerContext portal controller context
-     */
-    void addMenubarItems(PortalControllerContext portalControllerContext) throws PortletException;
-
-
-    /**
      * Empty trash.
      *
      * @param portalControllerContext portal controller context

@@ -78,12 +78,6 @@ public class ViewTrashController extends CMSPortlet {
      */
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response) throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        // Add menubar items
-        this.service.addMenubarItems(portalControllerContext);
-
         return "view";
     }
 
@@ -142,10 +136,10 @@ public class ViewTrashController extends CMSPortlet {
     /**
      * Restore selected items action mapping.
      *
-     * @param request  action request
-     * @param response action response
+     * @param request     action request
+     * @param response    action response
      * @param identifiers selection identifiers request parameter
-     * @param form     trash form model attribute
+     * @param form        trash form model attribute
      */
     @ActionMapping("restore")
     public void restore(ActionRequest request, ActionResponse response, @RequestParam("identifiers") String[] identifiers, @ModelAttribute("trashForm") TrashForm form) throws PortletException {
@@ -159,10 +153,10 @@ public class ViewTrashController extends CMSPortlet {
     /**
      * Delete selected items action mapping.
      *
-     * @param request  action request
-     * @param response action response
+     * @param request     action request
+     * @param response    action response
      * @param identifiers selection identifiers request parameter
-     * @param form     trash form model attribute
+     * @param form        trash form model attribute
      */
     @ActionMapping("delete")
     public void delete(ActionRequest request, ActionResponse response, @RequestParam("identifiers") String[] identifiers, @ModelAttribute("trashForm") TrashForm form) throws PortletException {
@@ -215,14 +209,14 @@ public class ViewTrashController extends CMSPortlet {
 
 
     /**
-     * Get location breadcrumb resource mapping.
+     * Get location resource mapping.
      *
      * @param request  resource request
      * @param response resource response
      * @param path     location path request parameter
      */
-    @ResourceMapping("location-breadcrumb")
-    public void getLocationBreadcrumb(ResourceRequest request, ResourceResponse response, @RequestParam("path") String path)
+    @ResourceMapping("location")
+    public void getLocation(ResourceRequest request, ResourceResponse response, @RequestParam("path") String path)
             throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);

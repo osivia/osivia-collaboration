@@ -9,6 +9,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -94,6 +95,17 @@ public class TrashConfiguration {
     @Bean
     public INuxeoCustomizer getNuxeoCustomizer(INuxeoService nuxeoService) {
         return nuxeoService.getCMSCustomizer();
+    }
+
+
+    /**
+     * Get portal URL factory.
+     *
+     * @return portal URL factory
+     */
+    @Bean
+    public IPortalUrlFactory getPortalUrlFactory() {
+        return Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
     }
 
 

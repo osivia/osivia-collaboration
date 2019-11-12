@@ -10,12 +10,12 @@
 <portlet:actionURL name="restore-all" var="restoreAllUrl"/>
 <portlet:actionURL name="delete-all" var="deleteAllUrl"/>
 
-<portlet:resourceURL id="location-breadcrumb" var="locationBreadcrumbUrl"/>
+<portlet:resourceURL id="location" var="locationUrl"/>
 
 <c:set var="namespace"><portlet:namespace/></c:set>
 
 
-<div class="trash" data-location-url="${locationBreadcrumbUrl}">
+<div class="trash" data-location-url="${locationUrl}">
     <%@ include file="table.jspf" %>
 
 

@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.portlet.service;
 
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -18,7 +19,7 @@ import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.panels.PanelPlayer;
-import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.workspace.portlet.model.ParentDocument;
 import org.osivia.services.workspace.portlet.model.TrashForm;
 import org.osivia.services.workspace.portlet.model.TrashFormSort;
@@ -50,6 +51,12 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
      */
     @Autowired
     private TrashRepository repository;
+
+    /**
+     * Portal URL factory.
+     */
+    @Autowired
+    private IPortalUrlFactory portalUrlFactory;
 
     /**
      * Internationalization bundle factory.
@@ -120,45 +127,6 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
             form.setSort(sort);
             form.setAlt(alt);
         }
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addMenubarItems(PortalControllerContext portalControllerContext) {
-        // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();
-        // Portlet response
-        PortletResponse response = portalControllerContext.getResponse();
-        // Portlet namespace
-        String namespace = response.getNamespace();
-
-        // Internationalization bundle
-        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
-
-        // Menubar
-        @SuppressWarnings("unchecked")
-        List<MenubarItem> menubar = (List<MenubarItem>) request.getAttribute(Constants.PORTLET_ATTR_MENU_BAR);
-
-
-        // Restore all
-        String restoreAllTitle = bundle.getString("TRASH_MENUBAR_RESTORE_ALL");
-        String restoreAllUrl = "#" + namespace + "-restore-all";
-        MenubarItem restoreAllItem = new MenubarItem("TRASH_RESTORE_ALL", restoreAllTitle, "glyphicons glyphicons-basic-history", MenubarGroup.SPECIFIC, 1, restoreAllUrl, null,
-                null, null);
-        restoreAllItem.getData().put("toggle", "modal");
-        menubar.add(restoreAllItem);
-
-        // Empty trash
-        String emptyTrashTitle = bundle.getString("TRASH_MENUBAR_EMPTY_TRASH");
-        String emptyTrashUrl = "#" + namespace + "-empty-trash";
-        MenubarItem emptyTrashItem = new MenubarItem("TRASH_EMPTY_TRASH", emptyTrashTitle, "glyphicons glyphicons-basic-bin", MenubarGroup.SPECIFIC, 2,
-                emptyTrashUrl,
-                null, null, null);
-        emptyTrashItem.getData().put("toggle", "modal");
-        menubar.add(emptyTrashItem);
     }
 
 
@@ -317,13 +285,13 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
      */
     private void updateModel(PortalControllerContext portalControllerContext, TrashForm form, List<TrashedDocument> selection, List<TrashedDocument> rejected,
                              Bundle bundle, String messagePrefix) {
-    	
+
         // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();    	
-    	
-		// Portlet response
-		PortletResponse response = portalControllerContext.getResponse();   
-    	
+        PortletRequest request = portalControllerContext.getRequest();
+
+        // Portlet response
+        PortletResponse response = portalControllerContext.getResponse();
+
         if (selection == null) {
             // Select all documents
             selection = new ArrayList<>(form.getTrashedDocuments());
@@ -345,17 +313,17 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
             String message = bundle.getString(messagePrefix + "WARNING", StringUtils.join(titles, ", "));
             this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.WARNING);
         }
-        
-        
+
+
         // Refresh space data
         request.setAttribute(Constants.PORTLET_ATTR_UPDATE_SPACE_DATA, Constants.PORTLET_VALUE_ACTIVATE);
-        
+
         // Update public render parameter for associated portlets refresh
         if (response instanceof ActionResponse) {
             ActionResponse actionResponse = (ActionResponse) response;
             actionResponse.setRenderParameter("dnd-update", String.valueOf(System.currentTimeMillis()));
-        }        
-        
+        }
+
         // Update model
         form.getTrashedDocuments().removeAll(selection);
     }
@@ -467,20 +435,24 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
     /**
      * Get toolbar button DOM element.
      *
-     * @param id   modal identifier
-     * @param text button text
-     * @param icon button icon
+     * @param id    modal identifier
+     * @param title button text
+     * @param icon  button icon
      * @return DOM element
      */
-    private Element getToolbarButton(String id, String text, String icon) {
+    private Element getToolbarButton(String id, String title, String icon) {
         // URL
         String url = "#" + id;
         // HTML classes
         String htmlClass = "btn btn-primary btn-sm ml-1 no-ajax-link";
 
         // Button
-        Element button = DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
+        Element button = DOM4JUtils.generateLinkElement(url, null, null, htmlClass, null, icon);
         DOM4JUtils.addDataAttribute(button, "toggle", "modal");
+
+        // Text
+        Element text = DOM4JUtils.generateElement("span", "d-none d-xl-inline", title);
+        button.add(text);
 
         return button;
     }
@@ -635,11 +607,19 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
         Element breadcrumb = DOM4JUtils.generateElement("ol", "breadcrumb m-0 p-0", StringUtils.EMPTY);
 
         for (ParentDocument parent : parents) {
-            String htmlClass = "breadcrumb-item";
+            // Document
+            DocumentDTO document = parent.getDocument();
+
+            // Document URL
+            String url = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, document.getPath(), null, null, null, null, null, null, null);
 
             // Breadcrumb item
-            Element item = DOM4JUtils.generateElement("li", htmlClass, parent.getDocument().getTitle(), parent.getDocument().getIcon(), null);
+            Element item = DOM4JUtils.generateElement("li", "breadcrumb-item", null);
             breadcrumb.add(item);
+
+            // Document link
+            Element link = DOM4JUtils.generateLinkElement(url, null, null, "no-ajax-link", document.getTitle());
+            item.add(link);
         }
 
         return breadcrumb;

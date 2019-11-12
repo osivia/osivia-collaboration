@@ -24,7 +24,7 @@
             <c:forEach var="trashedDocument" items="${trashForm.trashedDocuments}">
                 <div class="portal-table-row portal-table-selectable-filter"
                      data-location-path="${trashedDocument.location.document.path}">
-                        <%--Document--%>
+                    <%--Document--%>
                     <div class="portal-table-cell" data-column="document">
                         <div class="portal-table-cell-inner" data-column="document">
                             <div class="d-flex align-items-center">
@@ -34,7 +34,7 @@
                         </div>
                     </div>
 
-                        <%--Date--%>
+                    <%--Date--%>
                     <div class="portal-table-cell" data-column="date">
                         <div class="portal-table-cell-inner" data-column="date">
                             <div class="d-flex flex-wrap overflow-hidden">
@@ -52,18 +52,18 @@
                         </div>
                     </div>
 
-                        <%--Location--%>
+                    <%--Location--%>
                     <div class="portal-table-cell" data-column="location">
                         <div class="portal-table-cell-inner" data-column="location">
-                            <button type="button" class="btn btn-secondary text-truncate location">
-                                <span><ttc:icon document="${trashedDocument.location.document}"/></span>
-                                <span><ttc:title document="${trashedDocument.location.document}"
-                                                 linkable="false"/></span>
-                            </button>
+                            <div class="text-truncate">
+                                <a href="javascript:" data-location-path="${trashedDocument.location.document.path}">
+                                    <span><ttc:title document="${trashedDocument.location.document}" linkable="false" /></span>
+                                </a>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Checkbox -->
+                    <%--Checkbox--%>
                     <div class="portal-table-cell" data-column="checkbox">
                         <div class="portal-table-cell-inner" data-column="checkbox">
                             <div class="portal-table-checkbox">
