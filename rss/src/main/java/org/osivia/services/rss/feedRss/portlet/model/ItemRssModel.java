@@ -119,4 +119,36 @@ public class ItemRssModel {
 		this.path = path;
 	}
 	
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((guid == null) ? 0 : guid.hashCode());
+        return result;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ItemRssModel other = (ItemRssModel) obj;
+        if (guid == null) {
+            if (other.guid != null)
+                return false;
+        } else if (!guid.equals(other.guid))
+            return false;
+        return true;
+    }	
+	
 }

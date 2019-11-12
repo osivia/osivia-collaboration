@@ -56,7 +56,6 @@ public class FeedServiceImpl implements FeedService {
     	this.repository.creatFeed(portalControllerContext, model);    	
     }
     
-    @SuppressWarnings("null")
 	public void synchro(PortalControllerContext portalControllerContext) throws PortletException {
 
 		// Recherche la liste des feeds
@@ -81,6 +80,7 @@ public class FeedServiceImpl implements FeedService {
 					// Recherche la liste des Items correspondant au flux
 					List<ItemRssModel> itemsNuxeo = this.repositoryItem.getListItemRss(portalControllerContext);
 
+					List<ItemRssModel> itemsSav = items;
 					// Comparaison de la liste restituée par la lecture du flux et les Items
 					// présents dans Nuxeo
 					// Si Item Nuxeo présent dans le flux lut alors on le supprime de la liste (afin
@@ -88,13 +88,14 @@ public class FeedServiceImpl implements FeedService {
 					if (itemsNuxeo != null) {
 						items.removeAll(itemsNuxeo);
 					}
-					if(items != null || items.size() >= 1) {
+					
+					if(items != null && items.size() != 0) {
 						this.repositoryItem.creatItems(portalControllerContext, items);						
 					}
 
 					if (itemsNuxeo != null) {
-						itemsNuxeo.removeAll(items);
-						if (itemsNuxeo != null || itemsNuxeo.size() != 0) {
+						itemsNuxeo.removeAll(itemsSav);
+						if (itemsNuxeo != null && itemsNuxeo.size() != 0) {
 							// Tous les Item Nuxeo pas trouver dans le flux seront supprimé
 							this.repositoryItem.removeItems(portalControllerContext, itemsNuxeo);
 						}						
