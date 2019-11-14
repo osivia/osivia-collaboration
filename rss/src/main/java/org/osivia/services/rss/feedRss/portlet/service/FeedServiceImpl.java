@@ -2,11 +2,13 @@ package org.osivia.services.rss.feedRss.portlet.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.common.model.FeedRssModel;
@@ -85,7 +87,7 @@ public class FeedServiceImpl implements FeedService {
 					// présents dans Nuxeo
 					// Si Item Nuxeo présent dans le flux lut alors on le supprime de la liste (afin
 					// de ne pas le recréer)
-					if (itemsNuxeo != null) {
+					if (itemsNuxeo.size() != 0) {
 						items.removeAll(itemsNuxeo);
 					}
 					
@@ -105,4 +107,14 @@ public class FeedServiceImpl implements FeedService {
 			}
 		}
 	}
+
+	public Document getCurrentDocument(PortalControllerContext portalControllerContext) throws PortletException {
+		return this.repository.getCurrentDocument(portalControllerContext);
+	}
+	
+    public Map<Integer, String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException {
+
+    	Map<Integer, String> map = this.repository.getMapFeed(portalControllerContext);    	
+        return map; 
+    }	
 }

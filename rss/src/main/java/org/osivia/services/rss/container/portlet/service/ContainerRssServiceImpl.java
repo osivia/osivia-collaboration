@@ -1,6 +1,7 @@
 package org.osivia.services.rss.container.portlet.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletException;
 
@@ -39,13 +40,11 @@ public class ContainerRssServiceImpl implements ContainerRssService {
         
     }
 	
-//    /**
-//     * {@inheritDoc}
-//     */
-//    public void getListFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
-//
-//    	this.repository.getListFeedRss(portalControllerContext, model);    	
-//    }
+    public Map<Integer, String> getMapContainer(PortalControllerContext portalControllerContext) throws PortletException {
+
+    	Map<Integer, String> map = this.repository.getMapContainer(portalControllerContext);    	
+        return map; 
+    }
 
     public void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
 

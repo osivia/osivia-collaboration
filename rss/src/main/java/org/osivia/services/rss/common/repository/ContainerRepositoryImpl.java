@@ -1,7 +1,9 @@
 package org.osivia.services.rss.common.repository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletException;
 
@@ -24,7 +26,6 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
  * Rss creation Nuxeo command.
  * 
  * @author Frédéric Boudan
- * @author Cédric Krommenhoek
  */
 @Repository
 public class ContainerRepositoryImpl implements ContainerRepository{
@@ -85,8 +86,29 @@ public class ContainerRepositoryImpl implements ContainerRepository{
         nuxeoCommand = this.applicationContext.getBean(ContainerCreatCommand.class, model);
         
         nuxeoController.executeNuxeoCommand(nuxeoCommand);
-		
 	}
+	
+    /**
+     * getMap container RSS
+     */
+    public Map<Integer, String> getMapContainer(PortalControllerContext portalControllerContext) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        Map<Integer, String> map = new HashMap<Integer, String>();
+        
+        // Nuxeo command
+        INuxeoCommand nuxeoCommand = this.applicationContext.getBean(ContainerListCommand.class);
+        Documents documents = (Documents) nuxeoController.executeNuxeoCommand(nuxeoCommand);
+        
+        int i = 0;
+        for (Document document : documents) {
+        	map.put(i, document.getString(NAME_PROPERTY));
+        	i++;
+        }
+        
+		return map;
+    }	
 
 	@Override
 	public void remove(PortalControllerContext portalControllerContext) throws PortletException {

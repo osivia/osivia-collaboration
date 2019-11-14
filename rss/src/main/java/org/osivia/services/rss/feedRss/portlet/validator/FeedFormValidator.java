@@ -10,7 +10,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Contact form validator.
+ * Feed form validator.
  * 
  * @author Frédéric Boudan
  * 
@@ -52,9 +52,15 @@ public class FeedFormValidator implements Validator {
 				URL url = new URL(form.getUrl()); 
 				url.openStream();
 			} catch (IOException e) {
-				errors.rejectValue("url", "Invalid");				
+				errors.rejectValue("url", "Invalid");
+			}
+			
+			if(form.getMap().containsValue(form.getUrl())) {
+				errors.rejectValue("url", "Duplicated");
 			}
 		}
+		
+		
     }
 
 }

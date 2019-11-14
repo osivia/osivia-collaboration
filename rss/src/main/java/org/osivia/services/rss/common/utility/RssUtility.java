@@ -5,11 +5,13 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.XMLEvent;
 
@@ -17,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.services.rss.common.model.FeedRssModel;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
+import org.w3c.dom.Element;
 
 /**
  * Read RSS feed
@@ -45,7 +48,6 @@ public class RssUtility {
      * Read RSS feed.
      * 
      */
-	@SuppressWarnings("null")
 	public static List<ItemRssModel> readRss(FeedRssModel feed) {
     	// Restitution d'une map
     	logger.info("Lecture du flux RSS");
@@ -102,7 +104,7 @@ public class RssUtility {
                         category = getCharacterData(event, eventReader);
                         break;
                     case ENCLOSURE:
-                        enclosure = getCharacterData(event, eventReader);
+                        enclosure = getEnclosure(event, eventReader);
                         break;                        
                     case GUID:
                         guid = getCharacterData(event, eventReader);
@@ -139,8 +141,22 @@ public class RssUtility {
             result = event.asCharacters().getData();
         }
         return result;
+    }
+	
+	public static String getEnclosure(XMLEvent event, XMLEventReader eventReader)
+            throws XMLStreamException {
+        String result = "";
+//        Iterator<Attribute> attributes = event.ATTRIBUTE.getName;      
+//        while(attributes.hasNext()) {
+//        	if(attributes.equals("URL")){
+//        		System.out.println("cpipci");
+//        		break;
+//        	}
+//        }        
+
+        return result;
     }    
-    
+	
 	public static InputStream read(URL url) {
 		try {
 			return url.openStream();

@@ -13,7 +13,7 @@
 <div>
     <c:if test="${empty containers}">
         <p>
-            <span><op:translate key="LIST_CONTAINER_NO_RESULT" /></span>
+            <span><op:translate key="LIST_NO_RESULT" /></span>
         </p>
     </c:if>
 

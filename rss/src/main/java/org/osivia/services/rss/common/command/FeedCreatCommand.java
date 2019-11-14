@@ -91,17 +91,17 @@ public class FeedCreatCommand implements INuxeoCommand {
 		} else {
 
 			for (FeedRssModel source : sources) {
-
-				// Identifier
-				source.setSyncId(UUID.randomUUID().toString());
+				if(source.getSyncId() != null) {
+					// Identifier
+					source.setSyncId(UUID.randomUUID().toString());					
+					// Display Name
+					int firstComa = source.getUrl().toString().indexOf('.') + 1;
+					int secondComa = source.getUrl().toString().indexOf('.', firstComa);
+					String displayName = source.getUrl().toString().substring(firstComa, secondComa);
+					source.setDisplayName(displayName);
+				}
 				propertyMap.put(ContainerRepository.ID_PROPERTY, source.getSyncId());
-
-				// Display Name
-				int firstComa = source.getUrl().toString().indexOf('.') + 1;
-				int secondComa = source.getUrl().toString().indexOf('.', firstComa);
-				String displayName = source.getUrl().toString().substring(firstComa, secondComa);
-
-				propertyMap.put(ContainerRepository.DISPLAY_NAME_PROPERTY, displayName);
+				propertyMap.put(ContainerRepository.DISPLAY_NAME_PROPERTY, source.getDisplayName());
 
 				// URL
 				String url = source.getUrl().toString();
@@ -113,6 +113,5 @@ public class FeedCreatCommand implements INuxeoCommand {
 		}
 
 		return property;
-
 	}
 }

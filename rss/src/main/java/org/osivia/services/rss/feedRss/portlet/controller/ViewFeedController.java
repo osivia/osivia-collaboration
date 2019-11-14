@@ -1,6 +1,7 @@
 package org.osivia.services.rss.feedRss.portlet.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -15,6 +16,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.services.rss.common.model.ContainerRssModel;
+import org.osivia.services.rss.common.model.FeedRssModel;
 import org.osivia.services.rss.feedRss.portlet.service.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -38,7 +40,7 @@ public class ViewFeedController {
     @Autowired
     protected PortletContext portletContext;
 
-    /** Container RSS service. */
+    /** Feed RSS service. */
     @Autowired
     protected FeedService service;
     
@@ -76,14 +78,14 @@ public class ViewFeedController {
         return "viewFeed";
     }
 
-    @ModelAttribute("Feeds")
-    public ContainerRssModel getContainers(PortletRequest request, PortletResponse response) throws PortletException
+    @ModelAttribute("feeds")
+    public List<FeedRssModel> getContainers(PortletRequest request, PortletResponse response) throws PortletException
     {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
              
-        return this.service.getListFeed(portalControllerContext);
-        
+        ContainerRssModel container = this.service.getListFeed(portalControllerContext);
+        return container.getFeedSources();
     }
     
 	/**

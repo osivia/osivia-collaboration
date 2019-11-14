@@ -24,7 +24,7 @@
 		<spring:bind path="path">
 			<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">    			
    				<form:label path="path" cssClass="control-label"><op:translate key="PATH"/></form:label>
-          		<form:input path="path" type="text" cssClass="form-control" placeholder="/toutatice/document" />
+          		<form:input path="path" type="text" cssClass="form-control" placeholder="/default-domain/workspaces/frederic" />
             	<form:errors path="path" cssClass="help-block" />
       		</div>
 		</spring:bind>		

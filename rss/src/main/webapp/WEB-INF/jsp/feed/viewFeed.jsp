@@ -13,17 +13,30 @@
 
 <form:form action="${synchro}" method="post" modelAttribute="form">
 	<div>
-		<c:if test="${empty containers}">
+		<c:if test="${empty feeds}">
 			<p>
-				<span><op:translate key="LIST_CONTAINER_NO_RESULT" /></span>
+				<span><op:translate key="LIST_NO_RESULT" /></span>
 			</p>
 		</c:if>
 
-		<ol>
-			<c:forEach var="feed" items="${feeds}" varStatus="status">
-				<li>${feed.displayName}</li>
-			</c:forEach>
-		</ol>
+		<ul class="list-inline">
+			<c:if test="${!empty feeds}">
+				<table class="table table-condensed table-hover">
+					<thead>
+						<tr>
+							<th><op:translate key="NAME_TITLE" /></th>
+							<th><op:translate key="URL_TITLE" /></th>
+						</tr>
+					</thead>
+					<c:forEach var="feed" items="${feeds}" varStatus="status">
+						<tr>
+							<td>${feed.displayName}</td>
+							<td>${feed.url}</td>
+						</tr>
+					</c:forEach>
+				</table>
+			</c:if>
+		</ul>
 	</div>
 
 	<div>

@@ -1,5 +1,7 @@
 package org.osivia.services.rss.feedRss.portlet.repository;
 
+import java.util.Map;
+
 import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -60,4 +62,13 @@ public interface FeedRepository {
      */
     Document getCurrentDocument(PortalControllerContext portalControllerContext) throws PortletException;
     
+    
+    /**
+     * get Map Feed.
+     *
+     * @param portalControllerContext portal controller context
+     * @return Map<Integer, String> 
+     * @throws PortletException
+     */
+ 	Map<Integer, String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException;    
 }

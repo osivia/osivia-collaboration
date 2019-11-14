@@ -1,6 +1,7 @@
 package org.osivia.services.rss.container.portlet.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
@@ -97,15 +99,16 @@ public class AddContainerRssController {
      * @throws IOException
      */
 	@ActionMapping(value = "add")
-    public void add(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("form") ContainerRssModel form, BindingResult status) throws PortletException, IOException {
+    public void add(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("form") ContainerRssModel form, BindingResult result, SessionStatus status) throws PortletException, IOException {
 
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        if(status.hasErrors()) {
+        if(result.hasErrors()) {
         	response.setRenderParameter("view", "add");
         } else {
         	this.service.creatContainer(portalControllerContext, form);
+            status.setComplete();
         }
        	
     }
@@ -121,9 +124,14 @@ public class AddContainerRssController {
     }    
     
     @ModelAttribute("form")
-    public ContainerRssModel getForm(PortletRequest request, PortletResponse response)
+    public ContainerRssModel getForm(PortletRequest request, PortletResponse response) throws PortletException
     {
-        return applicationContext.getBean(ContainerRssModel.class);
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+        ContainerRssModel container = applicationContext.getBean(ContainerRssModel.class);
+        container.setMap(this.service.getMapContainer(portalControllerContext));    	
+
+        return container;
+        		
     }
     
 }

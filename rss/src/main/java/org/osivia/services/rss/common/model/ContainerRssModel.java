@@ -1,6 +1,7 @@
 package org.osivia.services.rss.common.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -16,7 +17,9 @@ public class ContainerRssModel {
 	public String name;
 	public String path;
 	public DocumentDTO document;
-	public Document doc;	
+	public Document doc;
+	public String error;
+	public Map<Integer, String> map;
 	
     /** feeds sources. */
     private List<FeedRssModel> feedSources;	
@@ -60,6 +63,22 @@ public class ContainerRssModel {
 
 	public void setDoc(Document doc) {
 		this.doc = doc;
+	}
+
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
+
+	public Map<Integer, String> getMap() {
+		return map;
+	}
+
+	public void setMap(Map<Integer, String> map) {
+		this.map = map;
 	}
 
 }

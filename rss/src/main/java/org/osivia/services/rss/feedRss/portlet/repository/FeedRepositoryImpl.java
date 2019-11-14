@@ -1,7 +1,9 @@
 package org.osivia.services.rss.feedRss.portlet.repository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletException;
 
@@ -51,12 +53,23 @@ public class FeedRepositoryImpl implements FeedRepository{
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         
+        Document document = this.getCurrentDocument(portalControllerContext);
         model.setPath(nuxeoController.getCurrentDocumentContext().getCmsPath());
-        // Nuxeo command
-        INuxeoCommand nuxeoCommand;
-        nuxeoCommand = this.applicationContext.getBean(FeedCreatCommand.class, model);
+        model.setDoc(document);
+        List<FeedRssModel> feed = null;
+        if(document != null) {
+            feed = fillFeed(document, nuxeoController, model);        	
+        }
         
-        nuxeoController.executeNuxeoCommand(nuxeoCommand);
+        if(model.getError() == null) {
+            model.setFeedSources(feed);       
+            // Nuxeo command
+            INuxeoCommand nuxeoCommand;
+            nuxeoCommand = this.applicationContext.getBean(FeedCreatCommand.class, model);
+            
+            nuxeoController.executeNuxeoCommand(nuxeoCommand);        	
+        }
+
 	}
     
     /**
@@ -92,12 +105,40 @@ public class FeedRepositoryImpl implements FeedRepository{
                 feed = new FeedRssModel();
                 feed.setSyncId(map.getString(ID_PROPERTY));
                 feed.setUrl(map.getString(URL_PROPERTY));
-                feed.setSyncId(map.getString(DISPLAY_NAME_PROPERTY));
+                feed.setDisplayName(map.getString(DISPLAY_NAME_PROPERTY));
                 listFeed.add(feed);
             }        	
         }
 	    return listFeed;
 	}
+	
+	private List<FeedRssModel> fillFeed(Document document, NuxeoController nuxeoController, ContainerRssModel model) {
+		
+        ArrayList<FeedRssModel> listFeed = new ArrayList<FeedRssModel>();
+        PropertyList propertyList = (PropertyList) document.getProperties().get(FEEDS_PROPERTY);
+        String url = null;
+        for (FeedRssModel feed : model.getFeedSources()) {
+        	listFeed.add(feed);
+        	url = feed.getUrl();
+        }
+        if (propertyList != null) {
+        	FeedRssModel feedNuxeo;
+            for (int i = 0; i < propertyList.size(); i++) {
+                PropertyMap map = propertyList.getMap(i);
+            	if(!url.equalsIgnoreCase(map.getString(URL_PROPERTY))) {
+                    feedNuxeo = new FeedRssModel();
+                    feedNuxeo.setSyncId(map.getString(ID_PROPERTY));
+                    feedNuxeo.setUrl(map.getString(URL_PROPERTY));
+                    feedNuxeo.setDisplayName(map.getString(DISPLAY_NAME_PROPERTY));
+                    listFeed.add(feedNuxeo);            		
+            	} else {
+            		 model.setError("Duplicated.form.url");
+            		 break;
+            	}
+            }        	
+        }
+	    return listFeed;
+	}	
 
 	@Override
 	public void remove(PortalControllerContext portalControllerContext) throws PortletException {
@@ -113,7 +154,7 @@ public class FeedRepositoryImpl implements FeedRepository{
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        // Nuxeo document context
+        // Nuxeo document context	
         NuxeoDocumentContext documentContext = nuxeoController.getCurrentDocumentContext();
 
         // Nuxeo document
@@ -126,5 +167,27 @@ public class FeedRepositoryImpl implements FeedRepository{
 
         return document;
     }
-	
+    
+    /**
+     * getMap feed RSS
+     */
+    public Map<Integer, String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException {
+        
+        Map<Integer, String> mapFeed = new HashMap<Integer, String>();
+        
+        // Current Nuxeo document
+        Document document = this.getCurrentDocument(portalControllerContext);
+        if(document != null) {
+            PropertyList propertyList = (PropertyList) document.getProperties().get(FEEDS_PROPERTY);
+            if (propertyList != null) {
+                for (int i = 0; i < propertyList.size(); i++) {
+                    PropertyMap map = propertyList.getMap(i);
+                    mapFeed.put(i, map.getString(URL_PROPERTY));
+                }        	
+            }     	
+        }
+        
+        return mapFeed;
+    }     
+    
 }

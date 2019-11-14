@@ -1,5 +1,7 @@
 package org.osivia.services.rss.common.model;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,7 @@ public class FeedRssModel {
 	public String displayName;
 	public String url;
 	public String syncId;
+	public Map<Integer, String> map;
 
 	public FeedRssModel() {
 	}
@@ -37,6 +40,14 @@ public class FeedRssModel {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public Map<Integer, String> getMap() {
+		return map;
+	}
+
+	public void setMap(Map<Integer, String> map) {
+		this.map = map;
 	}
 
 }

@@ -1,6 +1,7 @@
 package org.osivia.services.rss.common.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletException;
 
@@ -54,4 +55,13 @@ public interface ContainerRepository {
     * @throws PortletException
     */
    List<ContainerRssModel> getListContainerRss(PortalControllerContext portalControllerContext) throws PortletException;
+   
+   /**
+    * get Map Container.
+    *
+    * @param portalControllerContext portal controller context
+    * @return Map<Integer, String> 
+    * @throws PortletException
+    */
+	Map<Integer, String> getMapContainer(PortalControllerContext portalControllerContext) throws PortletException;
 }
