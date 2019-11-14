@@ -354,7 +354,7 @@ function updateFileBrowserToolbar($target) {
 
     // AJAX
     tableToolbarXhr = jQuery.ajax({
-        url: $toolbarContainer.data("url"),
+        url: adaptAjaxRedirection( $toolbarContainer.data("url")),
         async: true,
         cache: false,
         data: {
