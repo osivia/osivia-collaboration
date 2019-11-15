@@ -1,28 +1,35 @@
 package org.osivia.services.calendar.view.portlet.repository;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-
-import fr.toutatice.portail.cms.nuxeo.api.*;
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.Window;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.urls.Link;
+import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.repository.CalendarRepositoryImpl;
 import org.osivia.services.calendar.common.repository.command.EventRemoveCommand;
 import org.osivia.services.calendar.edition.portlet.model.CalendarSynchronizationSource;
+import org.osivia.services.calendar.event.preview.portlet.service.CalendarEventPreviewService;
 import org.osivia.services.calendar.view.portlet.model.CalendarEditionMode;
 import org.osivia.services.calendar.view.portlet.model.CalendarOptions;
 import org.osivia.services.calendar.view.portlet.model.CalendarViewForm;
@@ -37,7 +44,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import java.util.*;
 
 /**
  * Calendar repository implementation.
@@ -50,21 +59,58 @@ import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 @Repository
 public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implements CalendarViewRepository {
 
-    /** Nuxeo document request attribute name. */
+    /**
+     * CMS path window property name.
+     */
+    private static final String CMS_PATH_WINDOW_PROPERTY = "osivia.calendar.cmsPath";
+    /**
+     * Default view window property name.
+     */
+    private static final String DEFAULT_VIEW_WINDOW_PROPERTY = "osivia.calendar.defaultView";
+    /**
+     * Compact view indicator window property name.
+     */
+    private static final String COMPACT_VIEW_WINDOW_PROPERTY = "osivia.calendar.compactView";
+    /**
+     * Read only indicator window property name.
+     */
+    private static final String READ_ONLY_WINDOW_PROPERTY = "osivia.calendar.readOnly";
+    /**
+     * Integration indicator window property name.
+     */
+    private static final String INTEGRATION_WINDOW_PROPERTY = "osivia.calendar.integration";
+
+    /**
+     * Nuxeo document request attribute name.
+     */
     private static final String DOCUMENT_REQUEST_ATTRIBUTE = "osivia.calendar.document";
 
 
-    /** Application context. */
-    @Autowired
-    protected ApplicationContext applicationContext;
+    /**
+     * Log.
+     */
+    private final Log log;
 
-    
+
+    /**
+     * Application context.
+     */
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    /**
+     * Portal URL factory.
+     */
+    @Autowired
+    private IPortalUrlFactory portalUrlFactory;
+
+
     /**
      * Constructor.
      */
     public CalendarViewRepositoryImpl() {
         super();
-
+        this.log = LogFactory.getLog(this.getClass());
     }
 
 
@@ -133,20 +179,20 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
 
         ArrayList<CalendarSynchronizationSource> listSource = new ArrayList<CalendarSynchronizationSource>();
         if (document != null) {
-	        PropertyList propertyList = (PropertyList) document.getProperties().get(LIST_SOURCE_SYNCHRO);
-	        if (propertyList != null) {
-	            CalendarSynchronizationSource source;
-	            for (int i = 0; i < propertyList.size(); i++) {
-	                PropertyMap map = propertyList.getMap(i);
-	                source = new CalendarSynchronizationSource();
-	                source.setColor((map.getString(COLOR_SYNCHRONIZATION) == null) ? null : CalendarColor.fromId(map.getString(COLOR_SYNCHRONIZATION)));
-	                source.setDisplayName(map.getString(DISPLAYNAME_SYNCHRONIZATION));
-	                source.setUrl(map.getString(URL_SYNCHRONIZATION));
-	                source.setId(map.getString(SOURCEID_SYNCHRONIZATION));
-	                listSource.add(source);
-	            }
-	        }
-	    }
+            PropertyList propertyList = (PropertyList) document.getProperties().get(LIST_SOURCE_SYNCHRO);
+            if (propertyList != null) {
+                CalendarSynchronizationSource source;
+                for (int i = 0; i < propertyList.size(); i++) {
+                    PropertyMap map = propertyList.getMap(i);
+                    source = new CalendarSynchronizationSource();
+                    source.setColor((map.getString(COLOR_SYNCHRONIZATION) == null) ? null : CalendarColor.fromId(map.getString(COLOR_SYNCHRONIZATION)));
+                    source.setDisplayName(map.getString(DISPLAYNAME_SYNCHRONIZATION));
+                    source.setUrl(map.getString(URL_SYNCHRONIZATION));
+                    source.setId(map.getString(SOURCEID_SYNCHRONIZATION));
+                    listSource.add(source);
+                }
+            }
+        }
 
         return listSource;
     }
@@ -162,12 +208,10 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
                 portalControllerContext.getPortletCtx());
 
         Document document = this.getDocument(nuxeoController);
-        if (document != null)
-        {
-        	return document.getString(PRIMARY_CALENDAR_COLOR);
-        } else
-        {
-        	return "";
+        if (document != null) {
+            return document.getString(PRIMARY_CALENDAR_COLOR);
+        } else {
+            return "";
         }
     }
 
@@ -243,7 +287,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
 
     /**
      * Fill event attributes
-     * 
+     *
      * @param document
      * @param nuxeoController
      * @return event filled
@@ -255,13 +299,13 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         Date endDate = document.getDate(END_DATE_PROPERTY);
         String bckgcolor = document.getString(BCKG_COLOR);
         boolean allDay = BooleanUtils.isTrue(document.getProperties().getBoolean(ALL_DAY_PROPERTY));
-        String viewURL = nuxeoController.getLink(document).getUrl();
+        String viewUrl = nuxeoController.getLink(document).getUrl();
         String idEventSrc;
         String idParentSrc;
         idEventSrc = document.getString(ID_SOURCE_PROPERTY);
         idParentSrc = document.getString(ID_PARENT_SOURCE_PROPERTY);
 
-        Event event = this.applicationContext.getBean(Event.class, id, title, startDate, endDate, allDay, bckgcolor, viewURL, idEventSrc, idParentSrc);
+        Event event = this.applicationContext.getBean(Event.class, id, title, startDate, endDate, allDay, bckgcolor, viewUrl, idEventSrc, idParentSrc);
 
         // Last modified date
         Date lastModified = document.getDate("dc:modified");
@@ -278,7 +322,40 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
             event.setDescription(description);
         }
 
+        // Preview URL
+        String previewUrl = this.getEventPreviewUrl(nuxeoController, document);
+        event.setPreviewUrl(previewUrl);
+
         return event;
+    }
+
+
+    /**
+     * Get calendar event preview URL.
+     *
+     * @param nuxeoController Nuxeo controller
+     * @param document        event document
+     * @return URL
+     */
+    protected String getEventPreviewUrl(NuxeoController nuxeoController, Document document) {
+        // Portlet instance
+        String instance = CalendarEventPreviewService.PORTLET_INSTANCE;
+
+        // Window properties
+        Map<String, String> properties = new HashMap<>();
+        properties.put(CalendarEventPreviewService.DOCUMENT_PATH_WINDOW_PROPERTY, document.getPath());
+        properties.put(CalendarEventPreviewService.PAGE_ID_WINDOW_PROPERTY, nuxeoController.getPageId());
+
+        // URL
+        String url;
+        try {
+            url = this.portalUrlFactory.getStartPortletUrl(nuxeoController.getPortalCtx(), instance, properties, PortalUrlType.MODAL);
+        } catch (PortalException e) {
+            url = null;
+            this.log.error("Error while computing event URL.", e.getCause());
+        }
+
+        return url;
     }
 
 
@@ -357,9 +434,9 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
     /**
      * {@inheritDoc}
      */
-	@Override
-	public void save(PortalControllerContext portalControllerContext, CalendarViewForm form) throws PortletException {
-		// Nuxeo controller
+    @Override
+    public void save(PortalControllerContext portalControllerContext, CalendarViewForm form) throws PortletException {
+        // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // CMS path
@@ -369,7 +446,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(EventEditionCommand.class, form);
         Document document = (Document) nuxeoController.executeNuxeoCommand(command);
-        
+
         if (CalendarEditionMode.EDITION.equals(form.getMode())) {
             // Refresh document
             NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(document.getPath());
@@ -378,7 +455,7 @@ public class CalendarViewRepositoryImpl extends CalendarRepositoryImpl implement
         }
 
         form.setDocument(document);
-	}
+    }
 
 
     /**

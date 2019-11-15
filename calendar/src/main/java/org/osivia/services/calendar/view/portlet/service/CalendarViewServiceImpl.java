@@ -1,27 +1,16 @@
 package org.osivia.services.calendar.view.portlet.service;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.portlet.WindowState;
-
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.TimeZone;
+import net.fortuna.ical4j.model.*;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.component.VTimeZone;
+import net.fortuna.ical4j.model.property.*;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -37,18 +26,15 @@ import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.service.CalendarServiceImpl;
 import org.osivia.services.calendar.edition.portlet.model.CalendarSynchronizationSource;
+import org.osivia.services.calendar.integration.portlet.service.CalendarIntegrationService;
 import org.osivia.services.calendar.view.portlet.model.CalendarOptions;
 import org.osivia.services.calendar.view.portlet.model.CalendarViewForm;
 import org.osivia.services.calendar.view.portlet.model.calendar.CalendarData;
-import org.osivia.services.calendar.view.portlet.model.events.DailyCalendarEventsData;
-import org.osivia.services.calendar.view.portlet.model.events.DailyEvent;
-import org.osivia.services.calendar.view.portlet.model.events.Event;
-import org.osivia.services.calendar.view.portlet.model.events.EventKey;
-import org.osivia.services.calendar.view.portlet.model.events.EventToSync;
-import org.osivia.services.calendar.view.portlet.model.events.EventsData;
+import org.osivia.services.calendar.view.portlet.model.events.*;
 import org.osivia.services.calendar.view.portlet.repository.CalendarViewRepository;
 import org.osivia.services.calendar.view.portlet.service.generator.ICalendarGenerator;
 import org.osivia.services.calendar.view.portlet.utils.PeriodTypes;
@@ -56,22 +42,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
-import net.fortuna.ical4j.data.CalendarBuilder;
-import net.fortuna.ical4j.data.CalendarParser;
-import net.fortuna.ical4j.data.CalendarParserFactory;
-import net.fortuna.ical4j.data.ParserException;
-import net.fortuna.ical4j.model.Component;
-import net.fortuna.ical4j.model.ComponentList;
-import net.fortuna.ical4j.model.ParameterFactoryRegistry;
-import net.fortuna.ical4j.model.PropertyFactoryRegistry;
-import net.fortuna.ical4j.model.TimeZone;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
-import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.component.VTimeZone;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.WindowState;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.*;
 
 /**
  * Calendar service implementation.
@@ -83,35 +65,57 @@ import net.sf.json.JSONObject;
 @Service
 public class CalendarViewServiceImpl extends CalendarServiceImpl implements CalendarViewService {
 
-    /** Application context. */
+    /**
+     * Log.
+     */
+    private final Log log;
+    /**
+     * ProdId.
+     */
+    private final ProdId prodId;
+
+
+    /**
+     * Application context.
+     */
     @Autowired
     protected ApplicationContext applicationContext;
 
-    /** Calendar repository. */
+    /**
+     * Calendar repository.
+     */
     @Autowired
     protected CalendarViewRepository repository;
 
-    /** Portal URL factory. */
+    /**
+     * Portal URL factory.
+     */
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
 
-    /** Notifications service. */
+    /**
+     * Notifications service.
+     */
     @Autowired
     private INotificationsService notificationsService;
 
-    /** Internationalization bundle factory. */
+    /**
+     * Internationalization bundle factory.
+     */
     @Autowired
     private IBundleFactory bundleFactory;
 
-
-    /** logger */
-    protected static final Log logger = LogFactory.getLog(CalendarViewServiceImpl.class);
 
     /**
      * Constructor.
      */
     public CalendarViewServiceImpl() {
         super();
+
+        // Log
+        this.log = LogFactory.getLog(this.getClass());
+        // ProdId
+        this.prodId = new ProdId("-//OSIVIA Portal//4.7//FR");
     }
 
 
@@ -239,8 +243,6 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
         // Period type
         PeriodTypes periodType = calendarData.getPeriodType();
 
-        // Integration
-        this.addIntegrationMenubarItem(portalControllerContext);
         // Insert content menubar items
         this.repository.insertContentMenubarItems(portalControllerContext);
 
@@ -465,7 +467,7 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
                 this.notificationsService.addSimpleNotification(portalControllerContext, bundle.getString("MESSAGE_SYNCHRO_DONE"), NotificationsType.SUCCESS);
 
             } catch (ParserException e) {
-                logger.error("Erreur de parsing lors de la synchronisation, détail:");
+            log.error("Erreur de parsing lors de la synchronisation, détail:");
                 e.printStackTrace();
                 this.notificationsService.addSimpleNotification(portalControllerContext, bundle.getString("MESSAGE_SYNCHRO_FAILED"), NotificationsType.WARNING);
             } catch (MalformedURLException e) {
@@ -588,6 +590,7 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
             object.put("doc_id", event.getId());
             object.put("color", event.getBckgColor());
             object.put("view_url", event.getViewURL());
+            object.put("preview_url", event.getPreviewUrl());
             if (event.getBckgColor() == null) {
                 if (event.getIdParentSource() == null) {
                     if (mapColor.get("PRIMARY") != null) {
@@ -680,6 +683,140 @@ public class CalendarViewServiceImpl extends CalendarServiceImpl implements Cale
         boolean synchronizedEvent = StringUtils.isNotEmpty(event.getIdEventSource());
 
         return synchronizedEvent || this.isCalendarReadOnly(portalControllerContext);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void integrate(PortalControllerContext portalControllerContext, OutputStream outputStream, String format) throws PortletException, IOException {
+        // Calendar
+        net.fortuna.ical4j.model.Calendar calendar = new net.fortuna.ical4j.model.Calendar();
+        calendar.getProperties().add(this.prodId);
+        calendar.getProperties().add(Version.VERSION_2_0);
+        calendar.getProperties().add(CalScale.GREGORIAN);
+
+
+        // Events
+        List<Event> events = this.repository.getEvents(portalControllerContext, null, null);
+
+        if (CollectionUtils.isNotEmpty(events)) {
+            for (Event event : events) {
+                VEvent vevent = createVEvent(portalControllerContext, event);
+                if (vevent != null) {
+                    calendar.getComponents().add(vevent);
+                }
+            }
+        }
+
+        CalendarOutputter outputter = new CalendarOutputter();
+        outputter.output(calendar, outputStream);
+    }
+
+
+    /**
+     * Create calendar event.
+     *
+     * @param portalControllerContext portal controller context
+     * @param event                   event
+     * @throws PortletException
+     * @throws IOException
+     */
+    protected VEvent createVEvent(PortalControllerContext portalControllerContext, Event event) throws PortletException, IOException {
+        VEvent vevent;
+
+        // Start
+        net.fortuna.ical4j.model.Date start;
+        if (event.getStartDate() == null) {
+            start = null;
+        } else if (event.isAllDay()) {
+            start = new net.fortuna.ical4j.model.Date(event.getStartDate());
+        } else {
+            DateTime dateTime = new DateTime(event.getStartDate());
+            dateTime.setUtc(true);
+            start = dateTime;
+        }
+
+        // Summary
+        String summary = event.getTitle();
+
+        if ((start != null) && StringUtils.isNotEmpty(summary)) {
+            vevent = new VEvent(start, summary);
+            PropertyList properties = vevent.getProperties();
+
+            // End
+            if (event.getEndDate() != null) {
+                DtEnd end;
+                if (event.isAllDay()) {
+                    end = new DtEnd(new net.fortuna.ical4j.model.Date(event.getEndDate()));
+                } else {
+                    end = new DtEnd(new DateTime(event.getEndDate()));
+                    end.setUtc(true);
+                }
+                properties.add(end);
+            }
+
+            // UID
+            if (StringUtils.isNotEmpty(event.getId())) {
+                Uid uid = new Uid(event.getId());
+                properties.add(uid);
+            }
+
+            // Last modified
+            if (event.getLastModified() != null) {
+                LastModified lastModified = new LastModified(new DateTime(event.getLastModified()));
+                properties.add(lastModified);
+            }
+
+            // Location
+            if (StringUtils.isNotBlank(event.getLocation())) {
+                Location location = new Location(event.getLocation());
+                properties.add(location);
+            }
+
+            // Description
+            if (StringUtils.isNotBlank(event.getDescription())) {
+                Description description = new Description(event.getDescription());
+                properties.add(description);
+            }
+        } else {
+            vevent = null;
+        }
+
+        return vevent;
+    }
+
+
+    @Override
+    public String getIntegrationUrl(PortalControllerContext portalControllerContext) throws PortletException {
+        // Calendar options
+        CalendarOptions options = this.repository.getConfiguration(portalControllerContext);
+
+        // URL
+        String url;
+
+        if (options.isIntegration()) {
+            // Calendar path
+            String path = this.repository.getCalendarPath(portalControllerContext);
+
+            // Portlet instance
+            String instance = CalendarIntegrationService.PORTLET_INSTANCE;
+
+            // Window properties
+            Map<String, String> properties = new HashMap<>();
+            properties.put(CalendarIntegrationService.DOCUMENT_PATH_WINDOW_PROPERTY, path);
+
+            try {
+                url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, instance, properties, PortalUrlType.MODAL);
+            } catch (PortalException e) {
+                throw new PortletException(e);
+            }
+        } else {
+            url = null;
+        }
+
+        return url;
     }
 
 }

@@ -46,4 +46,14 @@ public interface CalendarRepository {
      */
     void insertContentMenubarItems(PortalControllerContext portalControllerContext) throws PortletException;
 
+
+    /**
+     * Check if document is in workspace.
+     *
+     * @param portalControllerContext portal controller context
+     * @param document                Nuxeo document
+     * @return workspace indicator
+     */
+    boolean isWorkspace(PortalControllerContext portalControllerContext, Document document) throws PortletException;
+
 }

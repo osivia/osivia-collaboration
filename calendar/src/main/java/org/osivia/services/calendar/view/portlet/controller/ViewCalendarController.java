@@ -1,30 +1,6 @@
 package org.osivia.services.calendar.view.portlet.controller;
 
-import static org.osivia.services.calendar.view.portlet.service.CalendarViewService.DATE_PARAMETER;
-import static org.osivia.services.calendar.view.portlet.service.CalendarViewService.PERIOD_TYPE_PARAMETER;
-import static org.osivia.services.calendar.view.portlet.service.CalendarViewService.SELECTED_DATE_FORMAT;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.PortletContext;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
-import javax.portlet.PortletSession;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
-
+import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
@@ -37,7 +13,6 @@ import org.osivia.services.calendar.view.portlet.model.CalendarEditionMode;
 import org.osivia.services.calendar.view.portlet.model.CalendarViewForm;
 import org.osivia.services.calendar.view.portlet.model.calendar.CalendarData;
 import org.osivia.services.calendar.view.portlet.model.events.Event;
-import org.osivia.services.calendar.view.portlet.service.CalendarIntegrationService;
 import org.osivia.services.calendar.view.portlet.service.CalendarViewService;
 import org.osivia.services.calendar.view.portlet.utils.PeriodTypes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +25,17 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
-import net.sf.json.JSONArray;
+import javax.portlet.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+import static org.osivia.services.calendar.view.portlet.service.CalendarViewService.*;
 
 /**
  * View calendar controller.
@@ -89,10 +74,6 @@ public class ViewCalendarController {
     /** Calendar service. */
     @Autowired
     protected CalendarViewService calendarService;
-
-    /** Calendar integration service. */
-    @Autowired
-    private CalendarIntegrationService calendarIntegrationService;
 
     /** Portal URL factory. */
     @Autowired
@@ -248,6 +229,10 @@ public class ViewCalendarController {
         // Read only indicator
         boolean readOnly = this.calendarService.isCalendarReadOnly(portalControllerContext);
         calendarData.setReadOnly(readOnly);
+
+        // Integration URL
+        String integrationUrl = this.calendarService.getIntegrationUrl(portalControllerContext);
+        calendarData.setIntegrationUrl(integrationUrl);
 
         // Portlet URI
         this.calendarService.definePortletUri(portalControllerContext);
@@ -496,7 +481,7 @@ public class ViewCalendarController {
         // Content type
         response.setContentType("text/calendar");
         
-        this.calendarIntegrationService.integrate(portalControllerContext, response.getPortletOutputStream(), format);
+        this.calendarService.integrate(portalControllerContext, response.getPortletOutputStream(), format);
     }
 
 

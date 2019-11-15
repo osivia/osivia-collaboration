@@ -22,6 +22,7 @@ import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.calendar.edition.portlet.service.CalendarEditionService;
+import org.osivia.services.calendar.event.edition.portlet.service.CalendarEventEditionService;
 
 /**
  * Calendar menubar module.
@@ -56,7 +57,7 @@ public class CalendarMenubarModule implements MenubarModule {
     /** Calendar edition portlet instance. */
     protected static final String CALENDAR_EDITION_PORTLET_INSTANCE = "osivia-services-calendar-edition-instance";
     /** Calendar event edition portlet instance. */
-    protected static final String EVENT_EDITION_PORTLET_INSTANCE = "osivia-services-calendar-event-edition-instance";
+    protected static final String EVENT_EDITION_PORTLET_INSTANCE = CalendarEventEditionService.PORTLET_INSTANCE;
 
     /** Portal URL factory. */
     protected final IPortalUrlFactory portalUrlFactory;

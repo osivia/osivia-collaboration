@@ -1,15 +1,8 @@
 package org.osivia.services.calendar.common.repository;
 
-import java.util.List;
-
-import javax.portlet.ActionRequest;
-import javax.portlet.MimeResponse;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
-import javax.portlet.PortletURL;
-import javax.portlet.WindowState;
-
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -20,8 +13,8 @@ import org.osivia.portal.api.menubar.MenubarItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import javax.portlet.*;
+import java.util.List;
 
 /**
  * Calendar repository implementation.
@@ -32,7 +25,9 @@ import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 @Repository("common-repository")
 public class CalendarRepositoryImpl implements CalendarRepository {
 
-    /** Internationalization bundle factory. */
+    /**
+     * Internationalization bundle factory.
+     */
     @Autowired
     private IBundleFactory bundleFactory;
 
@@ -99,35 +94,57 @@ public class CalendarRepositoryImpl implements CalendarRepository {
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         // Nuxeo document context
         NuxeoDocumentContext documentContext = nuxeoController.getCurrentDocumentContext();
-        if (documentContext != null)
-        {
-	        // Nuxeo document
-	        Document document = documentContext.getDocument();
-	        nuxeoController.setCurrentDoc(document);
-	
-	        // Internationalization bundle
-	        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
-	
-	        if (WindowState.MAXIMIZED.equals(request.getWindowState())) {
-	            // Insert content menubar items
-	            nuxeoController.insertContentMenuBarItems();
-	
-	            if ((document != null) && ("Agenda".equals(document.getType())) && (response instanceof MimeResponse)) {
-	                MimeResponse mimeResponse = (MimeResponse) response;
-	
-	                // Action URL
-	                PortletURL actionUrl = mimeResponse.createActionURL();
-	                actionUrl.setParameters(request.getParameterMap());
-	                actionUrl.setParameter(ActionRequest.ACTION_NAME, "synchronize");
-	
-	                // Menubar
-	                List<MenubarItem> menubar = (List<MenubarItem>) request.getAttribute(Constants.PORTLET_ATTR_MENU_BAR);
-	                MenubarItem menubarItem = new MenubarItem("SYNCHRONIZED_CALENDAR", bundle.getString("REFRESH"), "glyphicons glyphicons-repeat",
-	                        MenubarGroup.GENERIC, 100, actionUrl.toString(), null, null, null);
-	                menubar.add(menubarItem);
-	            }
-	        }
+        if (documentContext != null) {
+            // Nuxeo document
+            Document document = documentContext.getDocument();
+            nuxeoController.setCurrentDoc(document);
+
+            // Internationalization bundle
+            Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
+
+            if (WindowState.MAXIMIZED.equals(request.getWindowState())) {
+                // Insert content menubar items
+                nuxeoController.insertContentMenuBarItems();
+
+                if ((document != null) && ("Agenda".equals(document.getType())) && (response instanceof MimeResponse)) {
+                    MimeResponse mimeResponse = (MimeResponse) response;
+
+                    // Action URL
+                    PortletURL actionUrl = mimeResponse.createActionURL();
+                    actionUrl.setParameters(request.getParameterMap());
+                    actionUrl.setParameter(ActionRequest.ACTION_NAME, "synchronize");
+
+                    // Menubar
+                    List<MenubarItem> menubar = (List<MenubarItem>) request.getAttribute(Constants.PORTLET_ATTR_MENU_BAR);
+                    MenubarItem menubarItem = new MenubarItem("SYNCHRONIZED_CALENDAR", bundle.getString("REFRESH"), "glyphicons glyphicons-repeat",
+                            MenubarGroup.GENERIC, 100, actionUrl.toString(), null, null, null);
+                    menubar.add(menubarItem);
+                }
+            }
         }
+    }
+
+
+    @Override
+    public boolean isWorkspace(PortalControllerContext portalControllerContext, Document document) {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // Workspace indicator
+        boolean workspace;
+
+        if (document == null) {
+            workspace = false;
+        } else {
+            // Document context
+            NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(document.getPath());
+            // Publication infos
+            NuxeoPublicationInfos publicationInfos = documentContext.getPublicationInfos();
+
+            workspace = publicationInfos.isLiveSpace();
+        }
+
+        return workspace;
     }
 
 }

@@ -1,17 +1,8 @@
 package org.osivia.services.calendar.event.view.portlet.service;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
-import javax.portlet.PortletException;
-
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -29,9 +20,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
-import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
+import javax.portlet.PortletException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Calendar event view portlet service implementation.
@@ -42,22 +36,26 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements CalendarEventViewService {
 
 
-    /** Application context. */
+    /**
+     * Date format.
+     */
+    protected final DateFormat dateFormat;
+    /**
+     * Application context.
+     */
     @Autowired
     protected ApplicationContext applicationContext;
-
-    /** Portlet repository. */
+    /**
+     * Portlet repository.
+     */
     @Autowired
     @Qualifier("common-repository")
     protected CalendarRepository repository;
-
-    /** Document DAO. */
+    /**
+     * Document DAO.
+     */
     @Autowired
     protected DocumentDAO dao;
-
-
-    /** Date format. */
-    protected final DateFormat dateFormat;
 
 
     /**
@@ -86,7 +84,6 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
      */
     @Override
     public CalendarEventViewForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
-
         // Calendar event edition form
         CalendarEventViewForm form = this.applicationContext.getBean(CalendarEventViewForm.class);
 
@@ -94,6 +91,7 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
 
         form.setDocument(this.dao.toDTO(document));
         form.setTitle(document.getString(TITLE_PROPERTY));
+
 
         // All day indicator
         boolean allDay = this.isAllDay(portalControllerContext, document);
@@ -114,7 +112,7 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
         // Color
         CalendarColor color = this.getColor(portalControllerContext, document, calendarColor);
         form.setColor(color);
-        
+
         // Description
         String description = this.getDescription(portalControllerContext, document);
         form.setDescription(description);
@@ -122,8 +120,13 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
         // Attachments
         this.setAttachments(portalControllerContext, document, form);
 
+        // Workspace indicator
+        boolean workspace = this.repository.isWorkspace(portalControllerContext, document);
+        form.setWorkspace(workspace);
+
         return form;
     }
+
 
     @Override
     public CalendarColor getCalendarColor(PortalControllerContext portalControllerContext, Document document) throws PortletException {
@@ -227,27 +230,25 @@ public class CalendarEventViewServiceImpl extends CalendarServiceImpl implements
         boolean sameDay = false;
         Calendar calStart = Calendar.getInstance();
         Calendar calEnd = Calendar.getInstance();
-        
+
         calStart.setTime(form.getStartDate());
         calEnd.setTime(form.getEndDate());
-        
-        if (form.isAllDay())
-        {
+
+        if (form.isAllDay()) {
             long diff = 0;
-            diff = Math.round((calEnd.getTime().getTime() - calStart.getTime().getTime())/86400000);
+            diff = Math.round((calEnd.getTime().getTime() - calStart.getTime().getTime()) / 86400000);
             sameDay = diff <= 1;
-        } else
-        {
+        } else {
             calStart.set(Calendar.HOUR_OF_DAY, 0);
             calStart.set(Calendar.MINUTE, 0);
-            calStart.set(Calendar.SECOND,0);
+            calStart.set(Calendar.SECOND, 0);
             calStart.set(Calendar.MILLISECOND, 0);
-            
+
             calEnd.set(Calendar.HOUR_OF_DAY, 0);
             calEnd.set(Calendar.MINUTE, 0);
-            calEnd.set(Calendar.SECOND,0);
+            calEnd.set(Calendar.SECOND, 0);
             calEnd.set(Calendar.MILLISECOND, 0);
-            
+
             sameDay = dateFormat.format(calStart.getTime()).equals(dateFormat.format(calEnd.getTime()));
         }
         return sameDay;

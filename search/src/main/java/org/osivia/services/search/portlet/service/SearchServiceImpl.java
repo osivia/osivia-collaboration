@@ -13,7 +13,10 @@ import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.windows.PortalWindow;
+import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.search.portlet.model.SearchForm;
+import org.osivia.services.search.portlet.model.SearchSettings;
 import org.osivia.services.search.portlet.model.TaskPath;
 import org.osivia.services.search.portlet.repository.SearchRepository;
 import org.osivia.services.search.selector.type.portlet.model.SearchType;
@@ -29,6 +32,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SearchServiceImpl implements SearchService {
+
+    
+    private static final String TASKPATH_WINDOW_PROPERTY = "osivia.collaboration.search.taskpath";
 
     /** Application context. */
     @Autowired
@@ -83,9 +89,18 @@ public class SearchServiceImpl implements SearchService {
                 throw new PortletException(e);
             }
         } else {
-            // Search task path
-            TaskPath path = this.repository.getSearchTaskPath(portalControllerContext, root.getPath());
-
+            
+            TaskPath path = null;
+            SearchSettings settings = getSettings(portalControllerContext);
+            if(settings.getTaskPath() != null) {
+                path = applicationContext.getBean(TaskPath.class);
+                path.setCmsPath(settings.getTaskPath());
+            }
+            else {
+                // Search task path
+                path = this.repository.getSearchTaskPath(portalControllerContext, root.getPath());            
+            }
+            
             // Page parameters
             Map<String, String> parameters = new HashMap<>();
 
@@ -101,7 +116,7 @@ public class SearchServiceImpl implements SearchService {
             
             // Ldap id for search users in space
             String workspaceId = root.getProperties().getString("webc:url");
-            if (StringUtils.isNotEmpty(query)) {
+            if (StringUtils.isNotEmpty(workspaceId)) {
                 selectors.put("workspaceId", Arrays.asList(workspaceId));
             }
 
@@ -122,6 +137,33 @@ public class SearchServiceImpl implements SearchService {
         }
 
         return redirectionUrl;
+    }
+
+
+    @Override
+    public SearchSettings getSettings(PortalControllerContext portalControllerContext) {
+        // Window
+        PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
+        
+        // Portlet settings
+        SearchSettings settings = this.applicationContext.getBean(SearchSettings.class);
+        
+        // Label
+        String taskPath = window.getProperty(TASKPATH_WINDOW_PROPERTY);
+        settings.setTaskPath(taskPath);
+
+        return settings;
+    }
+
+
+    @Override
+    public void save(PortalControllerContext portalControllerContext, SearchSettings settings) {
+        // Window
+        PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
+
+        // Label
+        String taskPath = StringUtils.trimToNull(settings.getTaskPath());
+        window.setProperty(TASKPATH_WINDOW_PROPERTY, taskPath);
     }
 
 }
