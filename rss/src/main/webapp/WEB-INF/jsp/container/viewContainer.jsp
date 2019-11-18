@@ -17,13 +17,29 @@
         </p>
     </c:if>
 
-	<ol>
+	<table class="table table-condensed table-hover">
+		<thead>
+			<tr>
+				<th><op:translate key="NAME_CONTAINER" /></th>
+				<th><op:translate key="EDITION" /></th>
+			</tr>
+		</thead>
 		<c:forEach var="container" items="${containers}" varStatus="status">
-			<li><ttc:title document="${container.document}" /></li>
+			<portlet:renderURL var="editContainer">
+				<portlet:param name="view" value="edit" />
+				<portlet:param name="name" value="${container.name}" />
+				<portlet:param name="path" value="${container.path}" />
+				<portlet:param name="id"   value="${container.document.id}" />
+			</portlet:renderURL>
+			<tr>
+				<td><ttc:title document="${container.document}" /></td>
+				<td><a href="${editContainer}" class="btn btn-primary"><op:translate key="EDIT_CONTAINER"/></a></td>
+			</tr>
 		</c:forEach>
-	</ol>
+	</table>
+
 </div>
 
 <div>
-	<a href="${addUrl}" class="btn btn-primary"><op:translate key="ADDCONTAINER"/></a>
+	<a href="${addUrl}" class="btn btn-primary"><op:translate key="ADD_CONTAINER"/></a>
 </div>

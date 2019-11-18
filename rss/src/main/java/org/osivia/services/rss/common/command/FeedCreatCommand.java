@@ -81,24 +81,20 @@ public class FeedCreatCommand implements INuxeoCommand {
 	 * @return property
 	 */
 	private String getFeedsSourcesProperty(List<FeedRssModel> sources) {
-		NuxeoPropertyList propertyList = new NuxeoPropertyList(sources.size());
-		NuxeoPropertyMap propertyMap = new NuxeoPropertyMap();
+
+
 
 		String property;
 
 		if (CollectionUtils.isEmpty(sources)) {
 			property = null;
 		} else {
-
+			NuxeoPropertyList propertyList = new NuxeoPropertyList(sources.size());
 			for (FeedRssModel source : sources) {
-				if(source.getSyncId() != null) {
+				NuxeoPropertyMap propertyMap = new NuxeoPropertyMap();
+				if(source.getSyncId() == null) {
 					// Identifier
 					source.setSyncId(UUID.randomUUID().toString());					
-					// Display Name
-					int firstComa = source.getUrl().toString().indexOf('.') + 1;
-					int secondComa = source.getUrl().toString().indexOf('.', firstComa);
-					String displayName = source.getUrl().toString().substring(firstComa, secondComa);
-					source.setDisplayName(displayName);
 				}
 				propertyMap.put(ContainerRepository.ID_PROPERTY, source.getSyncId());
 				propertyMap.put(ContainerRepository.DISPLAY_NAME_PROPERTY, source.getDisplayName());

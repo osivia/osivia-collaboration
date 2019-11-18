@@ -29,8 +29,12 @@
 						</tr>
 					</thead>
 					<c:forEach var="feed" items="${feeds}" varStatus="status">
+						<portlet:renderURL var="editFeed">
+							<portlet:param name="view" value="edit" />
+							<portlet:param name="id" value="${feed.syncId}" />
+						</portlet:renderURL>
 						<tr>
-							<td>${feed.displayName}</td>
+							<td><a href="${editFeed}">${feed.displayName}</a></td>
 							<td>${feed.url}</td>
 						</tr>
 					</c:forEach>
@@ -41,7 +45,7 @@
 
 	<div>
 		<a href="${addUrl}" class="btn btn-primary"><op:translate
-				key="ADDFEED" /></a>
+				key="ADD_FEED" /></a>
 		<button type="submit" name="synchro" class="btn btn-primary">
 			<op:translate key="SYNCHRO" />
 		</button>

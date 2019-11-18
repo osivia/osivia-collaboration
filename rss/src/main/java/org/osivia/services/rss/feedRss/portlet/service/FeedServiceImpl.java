@@ -1,6 +1,5 @@
 package org.osivia.services.rss.feedRss.portlet.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,22 +54,14 @@ public class FeedServiceImpl implements FeedService {
 
     public void creatFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
 
-    	this.repository.creatFeed(portalControllerContext, model);    	
+    	this.repository.creatFeed(portalControllerContext, model);
     }
     
 	public void synchro(PortalControllerContext portalControllerContext) throws PortletException {
 
 		// Recherche la liste des feeds
-		// ContainerRssModel model =
-		// this.repository.getListFeedRss(portalControllerContext);
-		ContainerRssModel model = new ContainerRssModel();
-		FeedRssModel feed2 = new FeedRssModel();
-		feed2.setUrl("https://www.lemonde.fr/rss/en_continu.xml");
-		feed2.setDisplayName("Le monde: politique");
-		feed2.setSyncId("885454345");
-		List<FeedRssModel> feedSources = new ArrayList<FeedRssModel>();
-		feedSources.add(feed2);
-		model.setFeedSources(feedSources);
+		ContainerRssModel model = this.repository.getListFeedRss(portalControllerContext);
+
 		for (FeedRssModel feed : model.getFeedSources()) {
 			// retourne une map d'item à faire correspondre avec les items déjà enregistré
 			List<ItemRssModel> items = RssUtility.readRss(feed);
@@ -90,9 +81,9 @@ public class FeedServiceImpl implements FeedService {
 					if (itemsNuxeo.size() != 0) {
 						items.removeAll(itemsNuxeo);
 					}
-					
-					if(items != null && items.size() != 0) {
-						this.repositoryItem.creatItems(portalControllerContext, items);						
+
+					if (items != null && items.size() != 0) {
+						this.repositoryItem.creatItems(portalControllerContext, items);
 					}
 
 					if (itemsNuxeo != null) {
@@ -100,7 +91,7 @@ public class FeedServiceImpl implements FeedService {
 						if (itemsNuxeo != null && itemsNuxeo.size() != 0) {
 							// Tous les Item Nuxeo pas trouver dans le flux seront supprimé
 							this.repositoryItem.removeItems(portalControllerContext, itemsNuxeo);
-						}						
+						}
 					}
 				}
 
@@ -116,5 +107,29 @@ public class FeedServiceImpl implements FeedService {
 
     	Map<Integer, String> map = this.repository.getMapFeed(portalControllerContext);    	
         return map; 
-    }	
+    }
+
+    public FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, FeedRssModel model) throws PortletException {
+
+    	FeedRssModel mod = this.repository.getMapFeed(portalControllerContext, id, model);    	
+        return mod; 
+    }
+    
+    /**
+     * Modification Feed
+     */
+	public void modFeed(PortalControllerContext portalControllerContext, ContainerRssModel model)
+			throws PortletException {
+		this.repository.modFeed(portalControllerContext, model);
+		
+	}
+
+    /**
+     * delete Feed
+     */
+	public void delFeed(PortalControllerContext portalControllerContext, ContainerRssModel model)
+			throws PortletException {
+		this.repository.delFeed(portalControllerContext, model);
+		
+	}	
 }

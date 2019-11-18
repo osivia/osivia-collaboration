@@ -5,13 +5,11 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.XMLEvent;
 
@@ -19,7 +17,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.services.rss.common.model.FeedRssModel;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
-import org.w3c.dom.Element;
 
 /**
  * Read RSS feed
@@ -60,7 +57,7 @@ public class RssUtility {
         String category = "";
         String enclosure = "";
         String sourceRss = "";
-        String idConteneur = "";
+        String idConteneur = feed.getSyncId();
     	ItemRssModel rss = null;
         List<ItemRssModel> list = new ArrayList<ItemRssModel>();
     	
@@ -119,9 +116,8 @@ public class RssUtility {
                 } else if (event.isEndElement()) {
                     if (event.asEndElement().getName().getLocalPart() == (ITEM)) {
                     	// Création du document nuxeo contenant le flux RSS
-                        rss = new ItemRssModel(title, link, description, author, pubDate, guid, enclosure, idConteneur, 
-                                category, sourceRss);
-                        list.add(rss);                        
+                        rss = new ItemRssModel(title, link, description, author, pubDate, guid, idConteneur, category, enclosure, sourceRss);   
+                        list.add(rss);
                         event = eventReader.nextEvent();
                         continue;
                     }

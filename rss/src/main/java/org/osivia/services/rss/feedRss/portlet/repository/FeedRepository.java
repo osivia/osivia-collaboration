@@ -7,6 +7,7 @@ import javax.portlet.PortletException;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.model.ContainerRssModel;
+import org.osivia.services.rss.common.model.FeedRssModel;
 
 /**
  * RSS repository interface.
@@ -70,5 +71,36 @@ public interface FeedRepository {
      * @return Map<Integer, String> 
      * @throws PortletException
      */
- 	Map<Integer, String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException;    
+    Map<Integer, String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException;    
+
+    /**
+     * get Map Feed.
+     *
+     * @param portalControllerContext portal controller context
+     * @param Id syncId
+     * @param FeedRssModel model
+     * @return FeedRssModel
+     * @throws PortletException
+     */
+ 	FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String Id, FeedRssModel model) throws PortletException;
+ 	
+ 	/**
+     * Modification feed RSS.
+     *
+     * @param portalControllerContext portal controller context
+     * @param model
+     * @throws PortletException
+     */
+ 	void modFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;	
+ 	
+ 	
+    /**
+     * Delete feed RSS.
+     *
+     * @param portalControllerContext portal controller context
+     * @param model
+     * @throws PortletException
+     */
+ 	void delFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;	 	
+
 }

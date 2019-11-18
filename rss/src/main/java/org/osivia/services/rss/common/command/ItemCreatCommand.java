@@ -62,7 +62,8 @@ public class ItemCreatCommand implements INuxeoCommand {
         properties.set(ItemRepository.LINK_PROPERTY, this.form.getLink());
         properties.set(ItemRepository.PUBDATE_PROPERTY, this.form.getPubDate());
         properties.set(ItemRepository.SOURCES_PROPERTY, this.form.getSourceRss());
-        properties.set(ItemRepository.TITLE_PROPERTY, this.form.getTitle());        
+        properties.set(ItemRepository.TITLE_PROPERTY, this.form.getTitle());     
+        properties.set(ItemRepository.CONTENEUR_PROPERTY, this.form.getIdConteneur());
         
         // Mise à jour du conteneur RSS avec l'url, le nom du flux, la synchronisation
         Document document = documentService.createDocument(parent, ItemRepository.DOCUMENT_TYPE_EVENEMENT, null, properties);

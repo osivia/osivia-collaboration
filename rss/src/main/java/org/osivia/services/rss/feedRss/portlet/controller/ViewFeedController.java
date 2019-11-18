@@ -29,7 +29,6 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 /**
  * View Flux Rss controller.
  *
- * @author Cédric Krommenhoek
  * @author Frédéric Boudan
  */
 @Controller

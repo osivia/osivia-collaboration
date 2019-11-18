@@ -1,8 +1,15 @@
 package org.osivia.services.rss.common.command;
 
+import java.util.List;
+
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.client.adapters.DocumentService;
+import org.nuxeo.ecm.automation.client.model.DocRef;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.services.rss.feedRss.portlet.repository.ItemRepository;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -12,44 +19,34 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 
 /**
- * List Nuxeo command.
+ * Items Delete Nuxeo command.
+ * Delete Items with the syncId 
  *
  * @author Frédéric Boudan
- * @see INuxeoCommand
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ItemListCommand implements INuxeoCommand {
+public class ItemsDeleteCommand implements INuxeoCommand {
 
-//    private final String syncId;
-//    private final String path;
-//	
-//	/**
-//	 * Constructor.
-//	 *
-//	 */
-//	public ItemListCommand(String syncId, String path) {
-//		super();
-//        this.syncId = syncId;
-//        this.path = path; 
-//	}
-	
-	/**
-	 * Constructor.
-	 *
-	 */
-	public ItemListCommand() {
-		super();
-	}
+    private final List<String> items;
+
+    /**
+     * Constructor.
+     *
+     * @param syncId 
+     */
+    public ItemsDeleteCommand(List<String> items) {
+        super();
+        this.items = items;
+    }
 
 
-	@Override
-	public Object execute(Session nuxeoSession) throws Exception {
+    @Override
+    public Object execute(Session nuxeoSession) throws Exception {
 
 		// Clause
 		StringBuilder clause = new StringBuilder();
 		clause.append("ecm:primaryType = 'RssItem' ");
-//		clause.append("AND rssi:syncId = '").append(this.syncId).append("' ");;
 
 		String filteredRequest = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE, clause.toString());
 		
@@ -60,12 +57,12 @@ public class ItemListCommand implements INuxeoCommand {
 		request.set("query", "SELECT * FROM Document WHERE " + filteredRequest);
 
 		return request.execute();
-	}
+    }
 
-	@Override
-	public String getId() {
-//		return this.path;
-		return null;
-	}
+
+    @Override
+    public String getId() {
+        return null;
+    }
 
 }

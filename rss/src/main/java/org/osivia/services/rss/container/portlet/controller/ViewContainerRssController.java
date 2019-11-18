@@ -6,7 +6,6 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -26,7 +25,6 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 /**
  * View Container Rss controller.
  *
- * @author Cédric Krommenhoek
  * @author Frédéric Boudan
  */
 @Controller

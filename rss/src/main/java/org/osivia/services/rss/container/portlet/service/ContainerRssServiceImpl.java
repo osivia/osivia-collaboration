@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * RSS service interface
- * Lecture des flux RSS
  * 
  * @author Frédéric Boudan
  *
@@ -48,7 +47,16 @@ public class ContainerRssServiceImpl implements ContainerRssService {
 
     public void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
 
-    	this.repository.creatContainer(portalControllerContext, model);    	
-    }    
+    	this.repository.creatContainer(portalControllerContext, model);  	
+    }
+
+    /**
+     * Remove container service
+     */
+	public void removeContainer(PortalControllerContext portalControllerContext, String docid)
+			throws PortletException {
+    	this.repository.remove(portalControllerContext, docid);
+		
+	}    
     
 }

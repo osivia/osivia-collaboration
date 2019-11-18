@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
 /**
- * Item remove Nuxeo command.
+ * Container remove Nuxeo command.
  *
  * @author Frédéric Boudan
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ItemRemoveCommand implements INuxeoCommand {
+public class ContainerRemoveCommand implements INuxeoCommand {
 
     private final String docid;
 
@@ -24,7 +24,7 @@ public class ItemRemoveCommand implements INuxeoCommand {
      *
      * @param docid    document id
      */
-    public ItemRemoveCommand(String docid) {
+    public ContainerRemoveCommand(String docid) {
         super();
         this.docid = docid;
     }

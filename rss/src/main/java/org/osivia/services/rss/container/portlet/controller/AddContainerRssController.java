@@ -1,7 +1,6 @@
 package org.osivia.services.rss.container.portlet.controller;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -34,7 +33,6 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 /**
  * View Container Rss controller.
  *
- * @author Cédric Krommenhoek
  * @author Frédéric Boudan
  */
 @Controller

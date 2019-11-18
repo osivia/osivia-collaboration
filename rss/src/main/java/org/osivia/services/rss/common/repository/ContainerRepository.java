@@ -44,9 +44,10 @@ public interface ContainerRepository {
     * remove container flux RSS.
     *
     * @param portalControllerContext portal controller context
+    * @param docid String
     * @throws PortletException
     */
-   void remove(PortalControllerContext portalControllerContext) throws PortletException;   
+   void remove(PortalControllerContext portalControllerContext, String docid) throws PortletException;   
 
    /**
     * get containers list RSS.

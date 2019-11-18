@@ -17,7 +17,7 @@ public interface ItemRepository {
 	/** RSS document type name. */
 	String DOCUMENT_TYPE_EVENEMENT = "RssItem";
 	/** Id Conteneur RSS */
-	String CONTENEUR_PROPERTY = "rssi:idConteneur";
+	String CONTENEUR_PROPERTY = "rssi:syncId";
 	/** title Item Nuxeo property. */
 	String TITLE_PROPERTY = "rssi:title";
 	/** link Nuxeo property. */

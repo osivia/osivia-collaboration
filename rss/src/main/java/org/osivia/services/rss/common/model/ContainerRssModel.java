@@ -18,7 +18,6 @@ public class ContainerRssModel {
 	public String path;
 	public DocumentDTO document;
 	public Document doc;
-	public String error;
 	public Map<Integer, String> map;
 	
     /** feeds sources. */
@@ -63,14 +62,6 @@ public class ContainerRssModel {
 
 	public void setDoc(Document doc) {
 		this.doc = doc;
-	}
-
-	public String getError() {
-		return error;
-	}
-
-	public void setError(String error) {
-		this.error = error;
 	}
 
 	public Map<Integer, String> getMap() {

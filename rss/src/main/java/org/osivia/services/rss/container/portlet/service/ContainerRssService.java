@@ -10,7 +10,6 @@ import org.osivia.services.rss.common.model.ContainerRssModel;
 
 /**
  * Container RSS service interface
- * Lecture des conteneurs de flux RSS
  * 
  * @author Frédéric Boudan
  *
@@ -43,5 +42,14 @@ public interface ContainerRssService {
      * @throws PortletException
      */
 	void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;
+	
+    /**
+     * remove Container.
+     *
+     * @param portalControllerContext portal controller context
+     * @param docid String
+     * @throws PortletException
+     */
+	void removeContainer(PortalControllerContext portalControllerContext, String docid) throws PortletException;	
 
 }
