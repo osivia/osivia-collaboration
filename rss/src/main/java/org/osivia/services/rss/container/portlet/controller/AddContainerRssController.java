@@ -15,8 +15,8 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.services.rss.common.model.ContainerRssModel;
-import org.osivia.services.rss.container.portlet.service.ContainerRssService;
-import org.osivia.services.rss.container.portlet.validator.ContainerFormValidator;
+import org.osivia.services.rss.common.service.ContainerRssService;
+import org.osivia.services.rss.common.validator.ContainerFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -36,7 +36,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
  * @author Frédéric Boudan
  */
 @Controller
-@RequestMapping(value = "VIEW", params="view=add")
+@RequestMapping(value = "VIEW", params="add=container")
 public class AddContainerRssController {
 
     /** Portlet context. */
@@ -83,7 +83,7 @@ public class AddContainerRssController {
     public String view(RenderRequest request, RenderResponse response)
             throws PortletException {
 
-        return "viewAdd";
+        return "addContainer";
     }
 
      /**
@@ -103,7 +103,7 @@ public class AddContainerRssController {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         if(result.hasErrors()) {
-        	response.setRenderParameter("view", "add");
+        	response.setRenderParameter("add", "container");
         } else {
         	this.service.creatContainer(portalControllerContext, form);
             status.setComplete();

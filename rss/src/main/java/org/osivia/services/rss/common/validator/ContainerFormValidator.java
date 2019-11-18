@@ -1,9 +1,6 @@
-package org.osivia.services.rss.container.portlet.validator;
-
-import java.util.List;
+package org.osivia.services.rss.common.validator;
 
 import org.osivia.services.rss.common.model.ContainerRssModel;
-import org.osivia.services.rss.common.model.FeedRssModel;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -51,7 +48,7 @@ public class ContainerFormValidator implements Validator {
 		
 		// Duplicated Container
 		if (!errors.hasFieldErrors()) {
-			if(container.getMap().containsValue(container.getName())) {
+			if(container.getMap().contains(container.getName())) {
 				errors.rejectValue("name", "Duplicated");
 			}
 		}

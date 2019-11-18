@@ -13,7 +13,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.services.rss.common.model.ContainerRssModel;
-import org.osivia.services.rss.container.portlet.service.ContainerRssService;
+import org.osivia.services.rss.common.service.ContainerRssService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;

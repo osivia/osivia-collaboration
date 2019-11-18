@@ -1,8 +1,6 @@
 package org.osivia.services.rss.feedRss.portlet.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -16,7 +14,6 @@ import javax.portlet.RenderResponse;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
-import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.common.model.FeedRssModel;
 import org.osivia.services.rss.feedRss.portlet.service.FeedService;
 import org.osivia.services.rss.feedRss.portlet.validator.FeedFormValidator;
@@ -41,7 +38,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
  * @author Frédéric Boudan
  */
 @Controller
-@RequestMapping(value = "VIEW", params="view=edit")
+@RequestMapping(value = "VIEW", params="edit=feed")
 @SessionAttributes({"form"})
 public class EditFeedController {
 
@@ -95,7 +92,7 @@ public class EditFeedController {
     public String view(RenderRequest request, RenderResponse response, @ModelAttribute FeedRssModel form)
             throws PortletException {
     	
-    	return "viewEdit";
+    	return "editFeed";
     }
 
      /**
@@ -109,16 +106,12 @@ public class EditFeedController {
      * @throws IOException
      */
 	@ActionMapping("del")
-    public void del(ActionRequest request, ActionResponse response, @ModelAttribute("form") FeedRssModel form, SessionStatus status) throws PortletException, IOException {
+    public void del(ActionRequest request, ActionResponse response, @RequestParam String id ,@ModelAttribute("form") FeedRssModel form, SessionStatus status) throws PortletException, IOException {
 
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-		ContainerRssModel container = applicationContext.getBean(ContainerRssModel.class);
-		List<FeedRssModel> list = new ArrayList<FeedRssModel>();
-		list.add(form);
-		container.setFeedSources(list);
 
-		this.service.delFeed(portalControllerContext, container);
+		this.service.delFeed(portalControllerContext, form);
 		status.setComplete();
     }
 	
@@ -141,14 +134,9 @@ public class EditFeedController {
 		PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request,
 				response);
 		if (result.hasErrors()) {
-			response.setRenderParameter("view", "edit");
+			response.setRenderParameter("edit", "feed");
 		} else {
-			ContainerRssModel container = applicationContext.getBean(ContainerRssModel.class);
-			List<FeedRssModel> list = new ArrayList<FeedRssModel>();
-			list.add(form);
-			container.setFeedSources(list);
-
-			this.service.modFeed(portalControllerContext, container);
+			this.service.modFeed(portalControllerContext, form);
 			status.setComplete();
 		}
 	}
@@ -164,11 +152,10 @@ public class EditFeedController {
     }    
     
     @ModelAttribute("form")
-    public FeedRssModel getForm(PortletRequest request, PortletResponse response, @RequestParam(value = ID, required = false) String id ) throws PortletException
+    public FeedRssModel getForm(PortletRequest request, PortletResponse response, @RequestParam(value=ID, required=false) String id, @RequestParam(value=DISPLAY, required=false) String name, @RequestParam(value=URL, required=false) String url ) throws PortletException
     {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-        FeedRssModel feed = applicationContext.getBean(FeedRssModel.class);
         
-    	return this.service.getMapFeed(portalControllerContext, id, feed);
+    	return this.service.getMapFeed(portalControllerContext, id, name, url);
     }
 }

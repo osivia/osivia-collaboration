@@ -55,7 +55,7 @@ public class FeedFormValidator implements Validator {
 				errors.rejectValue("url", "Invalid");
 			}
 			
-			if(form.getMap().containsValue(form.getUrl())) {
+			if(form.getMap().contains(form.getUrl())) {
 				errors.rejectValue("url", "Duplicated");
 			}
 		}

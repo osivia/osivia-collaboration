@@ -1,9 +1,9 @@
 package org.osivia.services.rss.common.repository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.PortletException;
 
@@ -92,20 +92,18 @@ public class ContainerRepositoryImpl implements ContainerRepository{
     /**
      * getMap container RSS
      */
-    public Map<Integer, String> getMapContainer(PortalControllerContext portalControllerContext) throws PortletException {
+    public Set<String> getMapContainer(PortalControllerContext portalControllerContext) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        Map<Integer, String> map = new HashMap<Integer, String>();
+        Set<String> map = new HashSet<String>();
         
         // Nuxeo command
         INuxeoCommand nuxeoCommand = this.applicationContext.getBean(ContainerListCommand.class);
         Documents documents = (Documents) nuxeoController.executeNuxeoCommand(nuxeoCommand);
         
-        int i = 0;
         for (Document document : documents) {
-        	map.put(i, document.getString(NAME_PROPERTY));
-        	i++;
+        	map.add(document.getString(NAME_PROPERTY));
         }
         
 		return map;

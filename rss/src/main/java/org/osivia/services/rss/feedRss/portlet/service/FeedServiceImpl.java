@@ -1,7 +1,8 @@
 package org.osivia.services.rss.feedRss.portlet.service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.PortletException;
 
@@ -11,6 +12,7 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.common.model.FeedRssModel;
+import org.osivia.services.rss.common.repository.ContainerRepository;
 import org.osivia.services.rss.common.utility.RssUtility;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
 import org.osivia.services.rss.feedRss.portlet.repository.FeedRepository;
@@ -29,13 +31,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class FeedServiceImpl implements FeedService {
 
-    /** Repository. */
+    /** Repository Feed. */
     @Autowired
     public FeedRepository repository;
 	
-    /** Repository. */
+    /** Repository Item. */
     @Autowired
     public ItemRepository repositoryItem;
+    
+    /** Repository Container. */
+    @Autowired
+    public ContainerRepository repositoryContainer;
     
     /** Application context. */
     @Autowired
@@ -52,9 +58,13 @@ public class FeedServiceImpl implements FeedService {
         return this.repository.getListFeedRss(portalControllerContext);        
     }
 
-    public void creatFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
+    public void creatFeed(PortalControllerContext portalControllerContext, FeedRssModel model) throws PortletException {
 
-    	this.repository.creatFeed(portalControllerContext, model);
+    	ContainerRssModel container = applicationContext.getBean(ContainerRssModel.class);
+    	List<FeedRssModel> list = new ArrayList<FeedRssModel>();
+    	list.add(model);
+    	container.setFeedSources(list);
+    	this.repository.creatFeed(portalControllerContext, container);
     }
     
 	public void synchro(PortalControllerContext portalControllerContext) throws PortletException {
@@ -103,33 +113,73 @@ public class FeedServiceImpl implements FeedService {
 		return this.repository.getCurrentDocument(portalControllerContext);
 	}
 	
-    public Map<Integer, String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException {
+    public Set<String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException {
 
-    	Map<Integer, String> map = this.repository.getMapFeed(portalControllerContext);    	
+    	Set<String> map = this.repository.getMapFeed(portalControllerContext);    	
         return map; 
     }
 
-    public FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, FeedRssModel model) throws PortletException {
+    public FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, String name, String url) throws PortletException {
 
-    	FeedRssModel mod = this.repository.getMapFeed(portalControllerContext, id, model);    	
+    	FeedRssModel mod = this.repository.getMapFeed(portalControllerContext, id, name, url);
         return mod; 
     }
     
     /**
      * Modification Feed
      */
-	public void modFeed(PortalControllerContext portalControllerContext, ContainerRssModel model)
+	public void modFeed(PortalControllerContext portalControllerContext, FeedRssModel model)
 			throws PortletException {
-		this.repository.modFeed(portalControllerContext, model);
+		ContainerRssModel container = applicationContext.getBean(ContainerRssModel.class);
+		List<FeedRssModel> list = new ArrayList<FeedRssModel>();
+		list.add(model);
+		container.setFeedSources(list);		
+		this.repository.modFeed(portalControllerContext, container);
 		
 	}
 
     /**
      * delete Feed
      */
-	public void delFeed(PortalControllerContext portalControllerContext, ContainerRssModel model)
+	public void delFeed(PortalControllerContext portalControllerContext, FeedRssModel model)
 			throws PortletException {
-		this.repository.delFeed(portalControllerContext, model);
 		
+		ContainerRssModel container = applicationContext.getBean(ContainerRssModel.class);
+		List<FeedRssModel> list = new ArrayList<FeedRssModel>();
+		list.add(model);
+		container.setFeedSources(list);		
+		
+		this.repository.delFeed(portalControllerContext, container);
 	}	
+	
+    /**
+     * get Map Container Feed
+     */	
+    public ContainerRssModel getMapContainer(PortalControllerContext portalControllerContext) throws PortletException {
+
+		ContainerRssModel container = applicationContext.getBean(ContainerRssModel.class);
+		Document doc = this.repository.getCurrentDocument(portalControllerContext);
+		container.setPath(doc.getPath());
+		container.setName(doc.getTitle());
+		container.setDocId(doc.getId());
+		
+		Set<String> map = this.repositoryContainer.getMapContainer(portalControllerContext);
+		container.setMap(map);
+		
+        return container; 
+    }	
+    
+    public void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
+
+    	this.repositoryContainer.creatContainer(portalControllerContext, model);  	
+    }
+
+    /**
+     * Remove container service
+     */
+	public void removeContainer(PortalControllerContext portalControllerContext, String docid)
+			throws PortletException {
+    	this.repositoryContainer.remove(portalControllerContext, docid);
+		
+	}        
 }

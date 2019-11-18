@@ -1,4 +1,4 @@
-package org.osivia.services.rss.container.portlet.controller;
+package org.osivia.services.rss.feedRss.portlet.controller;
 
 import java.io.IOException;
 
@@ -15,8 +15,8 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.services.rss.common.model.ContainerRssModel;
-import org.osivia.services.rss.container.portlet.service.ContainerRssService;
-import org.osivia.services.rss.container.portlet.validator.ContainerFormValidator;
+import org.osivia.services.rss.common.validator.ContainerFormValidator;
+import org.osivia.services.rss.feedRss.portlet.service.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -37,8 +37,8 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
  * @author Frédéric Boudan
  */
 @Controller
-@RequestMapping(value = "VIEW", params = "view=edit")
-public class EditContainerRssController {
+@RequestMapping(value = "VIEW", params = "edit=container")
+public class EditContainerController {
 
 	/** Portlet context. */
 	@Autowired
@@ -50,7 +50,7 @@ public class EditContainerRssController {
 
 	/** Container RSS service. */
 	@Autowired
-	protected ContainerRssService service;
+	protected FeedService service;
 
 	/** Validator. */
 	@Autowired
@@ -65,12 +65,12 @@ public class EditContainerRssController {
 	protected INotificationsService notificationsService;
 
 	// Add render param
-    public final static String DOCID = "id";
-	
+	public final static String DOCID = "id";
+
 	/**
 	 * Constructor.
 	 */
-	public EditContainerRssController() {
+	public EditContainerController() {
 		super();
 	}
 
@@ -84,7 +84,7 @@ public class EditContainerRssController {
 	@RenderMapping
 	public String view(RenderRequest request, RenderResponse response) throws PortletException {
 
-		return "viewEdit";
+		return "editContainer";
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class EditContainerRssController {
 				response);
 
 		if (result.hasErrors()) {
-			response.setRenderParameter("view", "edit");
+			response.setRenderParameter("edit", "container");
 		} else {
 			this.service.creatContainer(portalControllerContext, form);
 			status.setComplete();
@@ -124,7 +124,9 @@ public class EditContainerRssController {
 	 * @throws IOException
 	 */
 	@ActionMapping(value = "del")
-	public void del(ActionRequest request, ActionResponse response, @RequestParam(value = DOCID, required = false) String docId, SessionStatus status ) throws PortletException, IOException {
+	public void del(ActionRequest request, ActionResponse response,
+			@RequestParam(value = DOCID, required = false) String docId, SessionStatus status)
+			throws PortletException, IOException {
 
 		// Portal controller context
 		PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request,
@@ -148,11 +150,8 @@ public class EditContainerRssController {
 	public ContainerRssModel getForm(PortletRequest request, PortletResponse response) throws PortletException {
 		PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request,
 				response);
-		ContainerRssModel container = applicationContext.getBean(ContainerRssModel.class);
-		container.setMap(this.service.getMapContainer(portalControllerContext));
 
-		return container;
-
+		return this.service.getMapContainer(portalControllerContext);
 	}
 
 }

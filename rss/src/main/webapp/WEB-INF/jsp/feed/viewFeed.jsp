@@ -5,9 +5,11 @@
 
 <%@ page isELIgnored="false" %>
 
-
 <portlet:renderURL var="addUrl">
-	<portlet:param name="view" value="add" />
+	<portlet:param name="add" value="feed" />
+</portlet:renderURL>
+<portlet:renderURL var="editContainer">
+	<portlet:param name="edit" value="container" />
 </portlet:renderURL>
 <portlet:actionURL name="synchro" var="synchro" />
 
@@ -30,12 +32,12 @@
 					</thead>
 					<c:forEach var="feed" items="${feeds}" varStatus="status">
 						<portlet:renderURL var="editFeed">
-							<portlet:param name="view" value="edit" />
+							<portlet:param name="edit" value="feed" />
 							<portlet:param name="id" value="${feed.syncId}" />
 						</portlet:renderURL>
 						<tr>
 							<td><a href="${editFeed}">${feed.displayName}</a></td>
-							<td>${feed.url}</td>
+							<td><a href="${editFeed}">${feed.url}</a></td>
 						</tr>
 					</c:forEach>
 				</table>
@@ -49,5 +51,7 @@
 		<button type="submit" name="synchro" class="btn btn-primary">
 			<op:translate key="SYNCHRO" />
 		</button>
+		<a href="${editContainer}" class="btn btn-primary"><op:translate
+				key="EDIT_CONTAINER" /></a>
 	</div>
 </form:form>

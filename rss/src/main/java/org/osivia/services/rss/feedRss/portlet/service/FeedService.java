@@ -1,6 +1,6 @@
 package org.osivia.services.rss.feedRss.portlet.service;
 
-import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.PortletException;
 
@@ -33,7 +33,7 @@ public interface FeedService {
      * @param model ContainerRssModel
      * @throws PortletException
      */
-	void creatFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;	
+	void creatFeed(PortalControllerContext portalControllerContext, FeedRssModel model) throws PortletException;	
 
     /**
      * synchronization Feed with Items.
@@ -60,7 +60,7 @@ public interface FeedService {
      * @return Map
      * @throws PortletException
      */
-	Map<Integer, String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException;
+	Set<String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException;
 	
     /**
      * Modification Feed.
@@ -69,25 +69,54 @@ public interface FeedService {
      * @param model ContainerRssModel
      * @throws PortletException
      */
-	void modFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;	
+	void modFeed(PortalControllerContext portalControllerContext, FeedRssModel model) throws PortletException;	
 
     /**
      * Delete Feed.
      *
      * @param portalControllerContext portal controller context
-     * @param model ContainerRssModel
+     * @param model FeedRssModel
      * @throws PortletException
      */
-	void delFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;
+	void delFeed(PortalControllerContext portalControllerContext, FeedRssModel model) throws PortletException;
 
     /**
      * get Map Feed.
      *
      * @param portalControllerContext portal controller context
      * @param id syncId
-     * @param FeedRssModel model
+     * @param name 
+     * @param url
      * @return FeedRssModel
      * @throws PortletException
      */
-	FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, FeedRssModel model) throws PortletException;
+	FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, String name, String url) throws PortletException;
+
+    /**
+     * get Map Container.
+     *
+     * @param portalControllerContext portal controller context
+     * @return FeedRssModel
+     * @throws PortletException
+     */
+	ContainerRssModel getMapContainer(PortalControllerContext portalControllerContext) throws PortletException;
+	
+    /**
+     * create Container.
+     *
+     * @param portalControllerContext portal controller context
+     * @param model ContainerRssModel
+     * @throws PortletException
+     */
+	void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;
+	
+    /**
+     * remove Container.
+     *
+     * @param portalControllerContext portal controller context
+     * @param docid String
+     * @throws PortletException
+     */
+	void removeContainer(PortalControllerContext portalControllerContext, String docid) throws PortletException;	
+	
 }

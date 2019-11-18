@@ -7,7 +7,7 @@
 <%@ page isELIgnored="false" %>
 
 <portlet:renderURL var="addUrl">
-	<portlet:param name="view" value="add" />
+	<portlet:param name="add" value="container" />
 </portlet:renderURL>
 
 <div>

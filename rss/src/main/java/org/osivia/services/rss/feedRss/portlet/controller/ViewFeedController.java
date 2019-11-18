@@ -104,6 +104,5 @@ public class ViewFeedController {
 				response);
 
 		this.service.synchro(portalControllerContext);
-
 	}
 }

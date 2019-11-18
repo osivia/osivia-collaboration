@@ -6,17 +6,18 @@
 
 <%@ page isELIgnored="false" %>
 
-<portlet:actionURL name="add" var="add" copyCurrentRenderParameters="true" />
-<portlet:renderURL var="cancelUrl">
+<portlet:actionURL name="modif" var="modif" copyCurrentRenderParameters="true" />
+<portlet:actionURL name="del" var="delFeed" copyCurrentRenderParameters="true"/>
+<portlet:renderURL var="cancelFeed">
 	<portlet:param name="view" value="container" />
 </portlet:renderURL>
 
-<form:form action="${add}" method="post" modelAttribute="form">
+<form:form action="${modif}" method="post" modelAttribute="form">
 
 		<spring:bind path="url">
 			<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">    			
    				<form:label path="url" cssClass="control-label"><op:translate key="URL"/></form:label>
-          		<form:input path="url" type="text" cssClass="form-control" placeholder="https://www.lemonde.fr/rss/une.xml" />
+          		<form:input path="url" type="text" cssClass="form-control" />
             	<form:errors path="url" cssClass="help-block" />
       		</div>
 		</spring:bind>
@@ -27,14 +28,15 @@
           		<form:input path="displayName" type="text" cssClass="form-control" />
             	<form:errors path="displayName" cssClass="help-block" />
       		</div>
-		</spring:bind>	
+		</spring:bind>		
 			
-	    <div class="col-sm-offset-4 col-sm-8 col-lg-offset-5 col-lg-7">
+	    <div>
 	        <!-- Cancel -->
-	        <a href="${cancelUrl}" class="btn btn-default">
+	        <a href="${cancelFeed}" class="btn btn-default">
 	            <span><op:translate key="CANCEL"/></span>
 	        </a>
-	    	<button type="submit" name="add" class="btn btn-primary"><op:translate key="ADD_FEED"/></button>
+	    	<button type="submit" class="btn btn-primary"><op:translate key="MOD_FEED"/></button>
+	 		<a href="${delFeed}" class="btn btn-primary"><span><op:translate key="DEL_FEED"/></span></a>
 	 	</div>
 		
 </form:form>

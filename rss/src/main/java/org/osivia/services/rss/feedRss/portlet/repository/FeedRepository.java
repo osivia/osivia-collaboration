@@ -1,6 +1,6 @@
 package org.osivia.services.rss.feedRss.portlet.repository;
 
-import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.PortletException;
 
@@ -68,21 +68,20 @@ public interface FeedRepository {
      * get Map Feed.
      *
      * @param portalControllerContext portal controller context
-     * @return Map<Integer, String> 
+     * @return Set<String> 
      * @throws PortletException
      */
-    Map<Integer, String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException;    
+    Set<String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException;    
 
     /**
      * get Map Feed.
      *
      * @param portalControllerContext portal controller context
-     * @param Id syncId
-     * @param FeedRssModel model
+     * @param id syncId
      * @return FeedRssModel
      * @throws PortletException
      */
- 	FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String Id, FeedRssModel model) throws PortletException;
+ 	FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, String name, String url) throws PortletException;
  	
  	/**
      * Modification feed RSS.

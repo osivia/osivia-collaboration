@@ -1,20 +1,17 @@
 package org.osivia.services.rss.feedRss.portlet.repository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.command.FeedCreatCommand;
-import org.osivia.services.rss.common.command.ItemListCommand;
-import org.osivia.services.rss.common.command.ItemsDeleteCommand;
 import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.common.model.FeedRssModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,9 +165,9 @@ public class FeedRepositoryImpl implements FeedRepository{
     /**
      * getMap feed RSS
      */
-    public Map<Integer, String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException {
+    public Set<String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException {
         
-        Map<Integer, String> mapFeed = new HashMap<Integer, String>();
+        Set<String> mapFeed = new HashSet<String>();
         
         // Current Nuxeo document
         Document document = this.getCurrentDocument(portalControllerContext);
@@ -179,7 +176,7 @@ public class FeedRepositoryImpl implements FeedRepository{
             if (propertyList != null) {
                 for (int i = 0; i < propertyList.size(); i++) {
                     PropertyMap map = propertyList.getMap(i);
-                    mapFeed.put(i, map.getString(URL_PROPERTY));
+                    mapFeed.add(map.getString(URL_PROPERTY));
                 }        	
             }     	
         }
@@ -190,9 +187,11 @@ public class FeedRepositoryImpl implements FeedRepository{
     /**
      * getMap feed RSS
      */
-    public FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, FeedRssModel model) throws PortletException {
+    public FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, String name, String url) throws PortletException {
         
-        Map<Integer, String> mapFeed = new HashMap<Integer, String>();
+        FeedRssModel model = applicationContext.getBean(FeedRssModel.class);
+        
+        Set<String> mapFeed = new HashSet<String>();
         
         // Current Nuxeo document
         Document document = this.getCurrentDocument(portalControllerContext);
@@ -205,7 +204,7 @@ public class FeedRepositoryImpl implements FeedRepository{
             if (propertyList != null) {
                 for (int i = 0; i < propertyList.size(); i++) {
                     PropertyMap map = propertyList.getMap(i);
-                   mapFeed.put(i, map.getString(URL_PROPERTY));
+                   mapFeed.add(map.getString(URL_PROPERTY));
                    if(init && id.equalsIgnoreCase(map.getString(ID_PROPERTY))){
                 	model.setDisplayName(map.getString(DISPLAY_NAME_PROPERTY));
                 	model.setSyncId(id);
@@ -214,8 +213,14 @@ public class FeedRepositoryImpl implements FeedRepository{
                 }
             }     	
         }
-        model.setMap(mapFeed);
         
+        // When Edition feed and only modification of the name you don't have to control the url
+        if(name != null && url == null) {
+        	mapFeed = null;
+        } else {
+            model.setMap(mapFeed);        	
+        }
+
         return model;
     }
     
@@ -313,17 +318,17 @@ public class FeedRepositoryImpl implements FeedRepository{
         
 		// Nuxeo command
 		// Read doc RssItems with syncId
-		nuxeoCommand = this.applicationContext.getBean(ItemListCommand.class, syncId, document.getPath());
-
-        List<String> items;
-		
-        Documents documents = (Documents) nuxeoController.executeNuxeoCommand(nuxeoCommand);
-        items = new ArrayList<String>(documents.size());
-        
-        for (Document document2 : documents) {
-        	String id = document2.getString("rssi:syncId");
-        	items.add(id);
-        }
+//		nuxeoCommand = this.applicationContext.getBean(ItemListCommand.class, syncId, document.getPath());
+//
+//        List<String> items;
+//		
+//        Documents documents = (Documents) nuxeoController.executeNuxeoCommand(nuxeoCommand);
+//        items = new ArrayList<String>(documents.size());
+//        
+//        for (Document document2 : documents) {
+//        	String id = document2.getString("rssi:syncId");
+//        	items.add(id);
+//        }
         
         // Delete Items with syncId
 //		nuxeoCommand = this.applicationContext.getBean(ItemsDeleteCommand.class, items);
@@ -346,7 +351,6 @@ public class FeedRepositoryImpl implements FeedRepository{
 					feedNuxeo.setDisplayName(map.getString(DISPLAY_NAME_PROPERTY));					
 					feedNuxeo.setSyncId(map.getString(ID_PROPERTY));
 					listFeed.add(feedNuxeo);
-
 				} 
             }        	
         }

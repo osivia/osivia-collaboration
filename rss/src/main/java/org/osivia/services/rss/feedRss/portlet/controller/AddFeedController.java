@@ -1,8 +1,6 @@
 package org.osivia.services.rss.feedRss.portlet.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -16,7 +14,6 @@ import javax.portlet.RenderResponse;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
-import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.common.model.FeedRssModel;
 import org.osivia.services.rss.feedRss.portlet.service.FeedService;
 import org.osivia.services.rss.feedRss.portlet.validator.FeedFormValidator;
@@ -40,7 +37,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
  * @author Frédéric Boudan
  */
 @Controller
-@RequestMapping(value = "VIEW", params="view=add")
+@RequestMapping(value = "VIEW", params="add=feed")
 @SessionAttributes({"form"})
 public class AddFeedController {
 
@@ -86,7 +83,7 @@ public class AddFeedController {
     public String view(RenderRequest request, RenderResponse response)
             throws PortletException {
 
-        return "viewAdd";
+        return "addFeed";
     }
 
      /**
@@ -105,14 +102,9 @@ public class AddFeedController {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         if(result.hasErrors()) {
-            response.setRenderParameter("view", "add");
+            response.setRenderParameter("add", "feed");
         } else {
-        	ContainerRssModel container = applicationContext.getBean(ContainerRssModel.class);
-        	List<FeedRssModel> list = new ArrayList<FeedRssModel>();
-        	list.add(form);
-        	container.setFeedSources(list);        	
-        	
-        	this.service.creatFeed(portalControllerContext, container);
+        	this.service.creatFeed(portalControllerContext, form);
            	status.setComplete();
         }
        	
