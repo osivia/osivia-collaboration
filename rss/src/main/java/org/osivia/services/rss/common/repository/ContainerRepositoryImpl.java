@@ -13,6 +13,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.command.ContainerCreatCommand;
 import org.osivia.services.rss.common.command.ContainerListCommand;
 import org.osivia.services.rss.common.command.ContainerRemoveCommand;
+import org.osivia.services.rss.common.command.ContainerUpdateCommand;
 import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -113,7 +114,7 @@ public class ContainerRepositoryImpl implements ContainerRepository{
      * Remove container RSS
      */
 	public void remove(PortalControllerContext portalControllerContext, String docid) throws PortletException {
-        // Nuxeo controller
+		// Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // Nuxeo command
@@ -121,4 +122,19 @@ public class ContainerRepositoryImpl implements ContainerRepository{
         nuxeoController.executeNuxeoCommand(nuxeoCommand);
         
 	}
+	
+    /**
+     * Modification Container RSS
+     */    
+	public void modifContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // Nuxeo command
+        INuxeoCommand nuxeoCommand;
+        nuxeoCommand = this.applicationContext.getBean(ContainerUpdateCommand.class, model);
+        
+        nuxeoController.executeNuxeoCommand(nuxeoCommand);
+	}	
+	
 }

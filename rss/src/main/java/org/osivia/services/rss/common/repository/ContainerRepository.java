@@ -65,4 +65,14 @@ public interface ContainerRepository {
     * @throws PortletException
     */
 	Set<String> getMapContainer(PortalControllerContext portalControllerContext) throws PortletException;
+
+	/**
+	 * Modification container RSS.
+	 *
+	 * @param portalControllerContext portal controller context
+	 * @param model
+	 * @throws PortletException
+	 */
+	void modifContainer(PortalControllerContext portalControllerContext, ContainerRssModel model)
+			throws PortletException;
 }

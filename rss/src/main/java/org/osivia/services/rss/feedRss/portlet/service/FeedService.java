@@ -1,5 +1,6 @@
 package org.osivia.services.rss.feedRss.portlet.service;
 
+import java.io.IOException;
 import java.util.Set;
 
 import javax.portlet.PortletException;
@@ -102,13 +103,13 @@ public interface FeedService {
 	ContainerRssModel getMapContainer(PortalControllerContext portalControllerContext) throws PortletException;
 	
     /**
-     * create Container.
+     * Modif Container.
      *
      * @param portalControllerContext portal controller context
      * @param model ContainerRssModel
      * @throws PortletException
      */
-	void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;
+	void modifContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException, IOException;
 	
     /**
      * remove Container.
@@ -117,6 +118,6 @@ public interface FeedService {
      * @param docid String
      * @throws PortletException
      */
-	void removeContainer(PortalControllerContext portalControllerContext, String docid) throws PortletException;	
+	void removeContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException, IOException;	
 	
 }

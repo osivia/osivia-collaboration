@@ -31,7 +31,7 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 /**
- * View Container Rss controller.
+ * Add Container Rss controller.
  *
  * @author Frédéric Boudan
  */

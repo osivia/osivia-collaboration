@@ -1,15 +1,19 @@
 package org.osivia.services.rss.feedRss.portlet.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.common.model.FeedRssModel;
 import org.osivia.services.rss.common.repository.ContainerRepository;
@@ -47,9 +51,13 @@ public class FeedServiceImpl implements FeedService {
     @Autowired
     protected ApplicationContext applicationContext;    
     
+    /** Portal URL factory. */
+    @Autowired
+    private IPortalUrlFactory portalUrlFactory;    
+    
     /** logger */
 	protected static final Log logger = LogFactory.getLog(FeedServiceImpl.class);
-
+	
     /**
      * {@inheritDoc}
      */
@@ -169,17 +177,46 @@ public class FeedServiceImpl implements FeedService {
         return container; 
     }	
     
-    public void creatContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
-
-    	this.repositoryContainer.creatContainer(portalControllerContext, model);  	
+    public void modifContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException, IOException {
+    	this.repositoryContainer.modifContainer(portalControllerContext, model);  	
+        // Action response
+        ActionResponse response = (ActionResponse) portalControllerContext.getResponse();
+        
+        String redirectionUrl = this.getRedirectionUrl(portalControllerContext, false, model.getPath());    
+        response.sendRedirect(redirectionUrl);
     }
 
     /**
      * Remove container service
+     * @throws IOException 
      */
-	public void removeContainer(PortalControllerContext portalControllerContext, String docid)
-			throws PortletException {
-    	this.repositoryContainer.remove(portalControllerContext, docid);
+	public void removeContainer(PortalControllerContext portalControllerContext, ContainerRssModel model)
+			throws PortletException, IOException {
 		
-	}        
+        // Action response
+        ActionResponse response = (ActionResponse) portalControllerContext.getResponse();
+        
+        String docid = model.getDocId();
+    	this.repositoryContainer.remove(portalControllerContext, docid);
+    	
+        // Redirection URL
+        String path = StringUtils.substringBeforeLast(model.getPath(), "/");
+    	
+        String redirectionUrl = this.getRedirectionUrl(portalControllerContext, false, path);        
+        response.sendRedirect(redirectionUrl);
+		
+	} 
+	
+    /**
+     * Get redirection URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @param refresh refresh indicator
+     * @return URL
+     * @throws PortletException
+     */
+    private String getRedirectionUrl(PortalControllerContext portalControllerContext, boolean refresh, String path) throws PortletException {
+        // Redirection URL
+        return this.portalUrlFactory.getCMSUrl(portalControllerContext, null, path, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null, null);
+    }	
 }

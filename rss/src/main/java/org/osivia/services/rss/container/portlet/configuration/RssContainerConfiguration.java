@@ -35,7 +35,7 @@ public class RssContainerConfiguration extends CMSPortlet implements PortletConf
 	    InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 	    viewResolver.setCache(true);
 	    viewResolver.setViewClass(JstlView.class);
-	    viewResolver.setPrefix("/WEB-INF/jsp/container/");
+	    viewResolver.setPrefix("/WEB-INF/jsp/containers/");
 	    viewResolver.setSuffix(".jsp");
 	    return viewResolver;
 	  }

@@ -26,7 +26,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
@@ -109,7 +108,7 @@ public class EditContainerController {
 		if (result.hasErrors()) {
 			response.setRenderParameter("edit", "container");
 		} else {
-			this.service.creatContainer(portalControllerContext, form);
+			this.service.modifContainer(portalControllerContext, form);
 			status.setComplete();
 		}
 	}
@@ -125,14 +124,14 @@ public class EditContainerController {
 	 */
 	@ActionMapping(value = "del")
 	public void del(ActionRequest request, ActionResponse response,
-			@RequestParam(value = DOCID, required = false) String docId, SessionStatus status)
+			@ModelAttribute("form") ContainerRssModel form, SessionStatus status)
 			throws PortletException, IOException {
 
 		// Portal controller context
 		PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request,
 				response);
 
-		this.service.removeContainer(portalControllerContext, docId);
+		this.service.removeContainer(portalControllerContext, form);
 		status.setComplete();
 	}
 

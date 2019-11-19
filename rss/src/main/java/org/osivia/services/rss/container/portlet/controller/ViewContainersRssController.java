@@ -1,10 +1,7 @@
-package org.osivia.services.rss.feedRss.portlet.controller;
+package org.osivia.services.rss.container.portlet.controller;
 
-import java.io.IOException;
 import java.util.List;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -16,32 +13,36 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.services.rss.common.model.ContainerRssModel;
-import org.osivia.services.rss.common.model.FeedRssModel;
-import org.osivia.services.rss.feedRss.portlet.service.FeedService;
+import org.osivia.services.rss.common.service.ContainerRssService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.portlet.bind.annotation.ActionMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 /**
- * View Flux Rss controller.
+ * View Container Rss controller.
  *
  * @author Frédéric Boudan
  */
 @Controller
 @RequestMapping(value = "VIEW")
-public class ViewFeedController {
+@SessionAttributes(value= "ContainerRssModel")
+public class ViewContainersRssController {
 
     /** Portlet context. */
     @Autowired
     protected PortletContext portletContext;
-
-    /** Feed RSS service. */
+    
+    /** Application context. */
     @Autowired
-    protected FeedService service;
+    public ApplicationContext applicationContext;    
+
+    /** Container RSS service. */
+    @Autowired
+    protected ContainerRssService service;
     
     /** Bundle factory. */
     @Autowired
@@ -50,15 +51,12 @@ public class ViewFeedController {
     /** Notifications service. */
     @Autowired
     protected INotificationsService notificationsService;
-    
-    /** Application context. */
-    @Autowired
-    public ApplicationContext applicationContext;    
+
 
     /**
      * Constructor.
      */
-    public ViewFeedController() {
+    public ViewContainersRssController() {
         super();
     }
 
@@ -74,35 +72,16 @@ public class ViewFeedController {
     public String view(RenderRequest request, RenderResponse response)
             throws PortletException {
 
-        return "viewFeed";
+        return "viewContainers";
     }
 
-    @ModelAttribute("feeds")
-    public List<FeedRssModel> getContainers(PortletRequest request, PortletResponse response) throws PortletException
+    @ModelAttribute("containers")
+    public List<ContainerRssModel> getContainers(PortletRequest request, PortletResponse response) throws PortletException
     {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-             
-        ContainerRssModel container = this.service.getListFeed(portalControllerContext);
-        return container.getFeedSources();
-    }
+        List<ContainerRssModel> container = this.service.getListContainer(portalControllerContext);
+        return container;
+    }    
     
-	/**
-	 * Add container
-	 * 
-	 * @param request
-	 * @param response
-	 * @throws PortletException
-	 * @throws IOException
-	 */
-	@ActionMapping(value = "synchro")
-	public void add(ActionRequest request, ActionResponse response)
-			throws PortletException, IOException {
-
-		// Portal controller context
-		PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request,
-				response);
-
-		this.service.synchro(portalControllerContext);
-	}
 }
