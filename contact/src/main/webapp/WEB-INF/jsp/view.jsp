@@ -8,7 +8,7 @@
 <jsp:useBean id="currentdate" class="java.util.Date"/>
 
 
-<portlet:actionURL var="submitUrl" name="submit" />
+<portlet:actionURL var="envoiMail" />
 <portlet:resourceURL var="captchaURL" id="captcha">
 	<portlet:param name="ts" value="${currentdate.time}"/>
 </portlet:resourceURL>
@@ -18,11 +18,11 @@
         <op:translate key="MAIL_SENT"/>
     </c:when>
     <c:otherwise>
-            <form:form modelAttribute="form" action="${submitUrl}" method="POST">
+            <form:form modelAttribute="form" action="${envoiMail}" method="POST">
     			
     			<spring:bind path="from">
 					<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">    			
-	        			<form:label path="from" cssClass="control-label"><op:translate key="ENTER_EMAIL"/></form:label>
+	        			<form:label path="from" cssClass="control-label">${form.fromLabel}</form:label>
           				<form:input type="email" path="from" cssClass="form-control" placeholder="exemple@mail.com" />
             			<form:errors path="from" cssClass="help-block" />
       				</div>
@@ -30,7 +30,7 @@
         		
         		<spring:bind path="nom">
     				<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
-        				<form:label path="nom" cssClass="control-label"><op:translate key="NAMES"/></form:label>
+        				<form:label path="nom" cssClass="control-label">${form.nomLabel}</form:label>
           				<form:input path="nom" cssClass="form-control"/>
             			<form:errors path="nom" cssClass="help-block" />
 	  				</div>      				  
@@ -38,7 +38,7 @@
 				
 	        	<spring:bind path="object">
 	    			<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
-	        			<form:label path="object" cssClass="control-label"><op:translate key="SUBJECT"/></form:label>
+	        			<form:label path="object" cssClass="control-label">${form.objectLabel}</form:label>
           				<form:input path="object" cssClass="form-control"/>
            				<form:errors path="object" cssClass="help-block" />
 	  				</div>
@@ -46,7 +46,7 @@
 
 	        	<spring:bind path="body">
 	    			<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
-	        			<form:label path="body" cssClass="control-label"><op:translate key="MESSAGE"/></form:label>
+	        			<form:label path="body" cssClass="control-label">${form.bodyLabel}</form:label>
           			  	<form:textarea path="body" cssClass="form-control tinymce tinymce-simple"/>
             			<form:errors path="body" cssClass="help-block" />
 	      			</div>      				  
