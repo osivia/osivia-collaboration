@@ -38,6 +38,11 @@ public class FileBrowserAdminController {
     }
 
 
+    /**
+     * View render mapping.
+     *
+     * @return view path
+     */
     @RenderMapping
     public String view() {
         return "admin";
