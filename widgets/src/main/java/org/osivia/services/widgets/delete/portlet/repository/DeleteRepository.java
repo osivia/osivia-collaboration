@@ -45,6 +45,16 @@ public interface DeleteRepository {
 
 
     /**
+     * Check if documents have remote proxies.
+     *
+     * @param portalControllerContext portal controller context
+     * @param documents               documents
+     * @return remote proxies indicator, sorted by document
+     */
+    Map<Document, Boolean> haveRemoteProxies(PortalControllerContext portalControllerContext, List<Document> documents) throws PortletException;
+
+
+    /**
      * Delete documents.
      *
      * @param portalControllerContext portal controller context

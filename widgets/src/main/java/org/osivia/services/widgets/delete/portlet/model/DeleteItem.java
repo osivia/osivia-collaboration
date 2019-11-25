@@ -17,6 +17,10 @@ public class DeleteItem {
      * Document children count.
      */
     private Integer childrenCount;
+    /**
+     * Document remote proxies indicator.
+     */
+    private boolean remoteProxies;
 
 
     /**
@@ -41,5 +45,13 @@ public class DeleteItem {
 
     public void setChildrenCount(Integer childrenCount) {
         this.childrenCount = childrenCount;
+    }
+
+    public boolean isRemoteProxies() {
+        return remoteProxies;
+    }
+
+    public void setRemoteProxies(boolean remoteProxies) {
+        this.remoteProxies = remoteProxies;
     }
 }

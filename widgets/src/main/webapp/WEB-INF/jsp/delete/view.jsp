@@ -41,10 +41,32 @@
                             </c:choose>
                         </span>
                     </c:if>
+                    
+                    <c:if test="${item.remoteProxies}">
+                        <span class="badge badge-danger"><op:translate key="DELETE_REMOTE_PROXIES_ERROR"/></span>
+                    </c:if>
                 </p>
             </li>
         </c:forEach>
     </ul>
+
+
+    <%--Remote proxies error message--%>
+    <c:if test="${form.remoteProxiesCount gt 0}">
+        <div class="alert alert-danger">
+            <c:choose>
+                <c:when test="${form.remoteProxiesCount gt 1}">
+                    <span><op:translate key="DELETE_REMOTE_PROXIES_MULTIPLE_ERRORS_MESSAGE" args="${form.remoteProxiesCount}"/></span>
+                </c:when>
+                <c:when test="${fn:length(form.items) eq 1}">
+                    <span><op:translate key="DELETE_REMOTE_PROXIES_ONE_DOCUMENT_ERROR_MESSAGE"/></span>
+                </c:when>
+                <c:otherwise>
+                    <span><op:translate key="DELETE_REMOTE_PROXIES_ONE_ERROR_MESSAGE"/></span>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </c:if>
 
 
     <%--Buttons--%>
@@ -54,9 +76,19 @@
         </button>
 
         <c:if test="${not empty form.items}">
-            <a href="${deleteUrl}" class="btn btn-primary">
-                <span><op:translate key="DELETE_ACTION"/></span>
-            </a>
+            <c:choose>
+                <c:when test="${form.remoteProxiesCount eq 0}">
+                    <a href="${deleteUrl}" class="btn btn-primary ml-2">
+                        <span><op:translate key="DELETE_ACTION"/></span>
+                    </a>
+                </c:when>
+
+                <c:otherwise>
+                    <a href="#" class="btn btn-primary disabled ml-2">
+                        <span><op:translate key="DELETE_ACTION"/></span>
+                    </a>
+                </c:otherwise>
+            </c:choose>
         </c:if>
     </div>
 </div>

@@ -5,6 +5,7 @@ import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -125,6 +126,9 @@ public class DeleteServiceImpl implements DeleteService {
 
             // Children counts
             Map<Document, Integer> childrenCounts = this.repository.getChildrenCounts(portalControllerContext, documents);
+            // Remote proxies indicators
+            Map<Document, Boolean> remoteProxiesMap = this.repository.haveRemoteProxies(portalControllerContext, documents);
+            form.setRemoteProxiesCount(remoteProxiesMap.size());
 
             for (Document document : documents) {
                 // Delete item
@@ -137,6 +141,10 @@ public class DeleteServiceImpl implements DeleteService {
                 // Children count
                 Integer childrenCount = childrenCounts.get(document);
                 item.setChildrenCount(childrenCount);
+
+                // Remote proxies indicator
+                boolean remoteProxies = BooleanUtils.isTrue(remoteProxiesMap.get(document));
+                item.setRemoteProxies(remoteProxies);
 
                 items.add(item);
             }

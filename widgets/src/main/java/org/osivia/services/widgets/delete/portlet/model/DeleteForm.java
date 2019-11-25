@@ -21,6 +21,11 @@ public class DeleteForm {
     private SortedSet<DeleteItem> items;
 
     /**
+     * Remote proxies count.
+     */
+    private int remoteProxiesCount;
+
+    /**
      * Redirection path.
      */
     private String redirectionPath;
@@ -37,6 +42,14 @@ public class DeleteForm {
 
     public void setItems(SortedSet<DeleteItem> items) {
         this.items = items;
+    }
+
+    public int getRemoteProxiesCount() {
+        return remoteProxiesCount;
+    }
+
+    public void setRemoteProxiesCount(int remoteProxiesCount) {
+        this.remoteProxiesCount = remoteProxiesCount;
     }
 
     public String getRedirectionPath() {

@@ -7,49 +7,53 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 /**
- * Get documents Nuxeo command.
+ * Get remote proxies Nuxeo command.
  *
  * @author Cédric Krommenhoek
  * @see INuxeoCommand
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class GetDocumentsCommand implements INuxeoCommand {
+public class GetProxiesCommand implements INuxeoCommand {
 
     /**
-     * Document identifiers.
+     * WebIds.
      */
-    private final List<String> identifiers;
+    private final Set<String> webIds;
 
 
     /**
      * Constructor.
      *
-     * @param identifiers document identifiers
+     * @param webIds webIds
      */
-    public GetDocumentsCommand(List<String> identifiers) {
+    public GetProxiesCommand(Set<String> webIds) {
         super();
-        this.identifiers = identifiers;
+        this.webIds = webIds;
     }
 
 
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
         // Nuxeo request
-        String nuxeoRequest = "ecm:uuid IN ('" + StringUtils.join(this.identifiers, "', '") + "') ";
+        StringBuilder nuxeoRequest = new StringBuilder();
+        nuxeoRequest.append("ttc:webid IN ('");
+        nuxeoRequest.append(StringUtils.join(this.webIds, "', '"));
+        nuxeoRequest.append("')");
 
         // Query filter
-        NuxeoQueryFilterContext queryFilterContext = new NuxeoQueryFilterContext(NuxeoQueryFilterContext.STATE_LIVE_N_PUBLISHED,
-                InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER);
-        String filteredRequest = NuxeoQueryFilter.addPublicationFilter(queryFilterContext, nuxeoRequest);
+        NuxeoQueryFilterContext queryFilterContext = NuxeoQueryFilterContext.CONTEXT_DEFAULT;
+        String filteredRequest = NuxeoQueryFilter.addPublicationFilter(queryFilterContext, nuxeoRequest.toString());
 
         // Operation request
         OperationRequest operationRequest = nuxeoSession.newRequest("Document.QueryES");

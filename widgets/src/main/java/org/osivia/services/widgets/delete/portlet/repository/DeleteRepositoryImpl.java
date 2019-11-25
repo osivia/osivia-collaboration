@@ -15,6 +15,7 @@ import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.services.widgets.delete.portlet.repository.command.GetChildrenCommand;
 import org.osivia.services.widgets.delete.portlet.repository.command.GetDocumentsCommand;
+import org.osivia.services.widgets.delete.portlet.repository.command.GetProxiesCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
@@ -122,6 +123,42 @@ public class DeleteRepositoryImpl implements DeleteRepository {
         }
 
         return childrenCounts;
+    }
+
+
+    @Override
+    public Map<Document, Boolean> haveRemoteProxies(PortalControllerContext portalControllerContext, List<Document> documents) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // WebIds
+        Map<String, Document> webIds = new HashMap<>(documents.size());
+        for (Document document : documents) {
+            webIds.put(document.getString("ttc:webid"), document);
+        }
+
+        // Remote proxies indicators
+        Map<Document, Boolean> remoteProxies = new HashMap<>(documents.size());
+
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(GetProxiesCommand.class, webIds.keySet());
+        Documents proxies = (Documents) nuxeoController.executeNuxeoCommand(command);
+
+        Iterator<Document> iterator = proxies.iterator();
+        while (iterator.hasNext()) {
+            // Proxy
+            Document proxy = iterator.next();
+            String proxyWebId = proxy.getString("ttc:webid");
+
+            // Live
+            Document live = webIds.get(proxyWebId);
+
+            if ((live != null) && !StringUtils.equals(live.getPath() + ".proxy", proxy.getPath())) {
+                remoteProxies.put(live, true);
+            }
+        }
+
+        return remoteProxies;
     }
 
 
