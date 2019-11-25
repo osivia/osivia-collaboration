@@ -32,7 +32,8 @@ public class ReportQuotasCommand implements INuxeoCommand {
 	public Object execute(Session nuxeoSession) throws Exception {
 
         OperationRequest request = nuxeoSession.newRequest("Document.QueryES");
-        request.set("query", "SELECT * FROM DOcument WHERE ecm:primaryType = 'Workspace' AND ecm:path STARTSWITH '/default-domain/workspaces'");
+        request.set("query", "SELECT * FROM DOcument WHERE ecm:primaryType = 'Workspace' AND ecm:path STARTSWITH '/default-domain/workspaces'" +
+        		" AND ecm:isVersion = 0 AND ecm:currentLifecycleState <> 'deleted'");
         request.set("pageSize", PAGE_SIZE);
         request.set("currentPageIndex", currentPageIndex);
         request.set(Constants.HEADER_NX_SCHEMAS, "dublincore, quota_computation, quota");
