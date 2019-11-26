@@ -173,7 +173,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
             // File
             File file = form.getTemporaryFile();
             // File name
-            String name = file.getName();
+            String name = form.getTitle();
             // File content type
             String contentType;
             if (form.getTemporaryFileMimeType() == null) {

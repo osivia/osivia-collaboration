@@ -194,7 +194,7 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
             // Check title availability
             boolean available = this.checkTitleAvailability(form);
             if (!available) {
-                errors.rejectValue("title", "Unavailable");
+                errors.rejectValue("upload", "Unavailable");
             }
         }
     }
