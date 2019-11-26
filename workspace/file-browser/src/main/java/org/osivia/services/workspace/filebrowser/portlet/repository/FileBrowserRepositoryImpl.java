@@ -331,13 +331,8 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // Link
-        Link link;
-        if ("Picture".equals(document.getType())) {
-            String url = nuxeoController.createPictureLink(document.getPath(), "Original");
-            link = new Link(url, false);
-        } else {
-            link = nuxeoController.getLink(document, "download");
-        }
+        Link link = nuxeoController.getLink(document, "download");
+
 
         // URL
         String url;
@@ -447,8 +442,8 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
                     // CRC
                     CheckedInputStream checkedInputStream = new CheckedInputStream(fileInputStream, new CRC32());
                     try {
-//                        while (checkedInputStream.read(buffer) >= 0) {
-//                        }
+                        while (checkedInputStream.read(buffer) >= 0) {
+                        }
                         zipEntry.setCrc(checkedInputStream.getChecksum().getValue());
 
                         zipOutputStream.putNextEntry(zipEntry);
