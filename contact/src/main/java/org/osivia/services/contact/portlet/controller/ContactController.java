@@ -25,6 +25,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -103,6 +104,10 @@ implements PortletConfigAware, PortletContextAware
         form.setTo(window.getProperty("osivia.contact.mailto"));
         form.setObject(window.getProperty("osivia.contact.object"));
         form.setToken(gcage.getTokenGenerator().next());
+        form.setFromLabel(StringUtils.defaultIfBlank(window.getProperty("osivia.contact.fromLabel"), bundle.getString("ENTER_EMAIL")));
+        form.setNomLabel(StringUtils.defaultIfBlank(window.getProperty("osivia.contact.nomLabel"), bundle.getString("NAMES")));
+        form.setObjectLabel(StringUtils.defaultIfBlank(window.getProperty("osivia.contact.objectLabel"), bundle.getString("SUBJECT")));
+        form.setBodyLabel(StringUtils.defaultIfBlank(window.getProperty("osivia.contact.bodyLabel"), bundle.getString("MESSAGE")));        
         return form;
     }
 
