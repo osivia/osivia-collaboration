@@ -99,7 +99,8 @@ public class QuotaComputer extends NuxeoBatch {
 
 					JSONObject quotaContent = JSONObject.fromObject(quotaInfosContent);
 
-					double treeSize = new Double(quotaContent.getLong("treesize"));
+					long treeSizeLong = quotaContent.getLong("treesize");
+					double treeSize = new Double(treeSizeLong);
 					double quota = new Double(quotaContent.getLong("quota"));
 
 					logger.warn("Quota : " + workspace.getTitle() + " (" + treeSize + "/" + quota + ")");
@@ -160,7 +161,7 @@ public class QuotaComputer extends NuxeoBatch {
 					}
 					
 					getNuxeoController().executeNuxeoCommand(
-							new UpdateQuotaComputationCommand(workspace, treeSize, uuid));
+							new UpdateQuotaComputationCommand(workspace, treeSizeLong, uuid));
 
 
 				}

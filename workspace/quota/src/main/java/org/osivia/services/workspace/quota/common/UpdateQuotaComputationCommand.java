@@ -20,11 +20,11 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 public class UpdateQuotaComputationCommand implements INuxeoCommand {
 
 	private Document workspace;
-	private double treeSize;
+	private long treeSize;
 	private String uuid;
 
 
-	public UpdateQuotaComputationCommand(Document workspace, double treeSize, String uuid) {
+	public UpdateQuotaComputationCommand(Document workspace, long treeSize, String uuid) {
 		this.workspace = workspace;
 		this.treeSize = treeSize;
 		this.uuid = uuid;
@@ -41,7 +41,7 @@ public class UpdateQuotaComputationCommand implements INuxeoCommand {
 		c.setTime(new Date());
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String ts = sdf.format(c.getTime());
-        documentService.setProperty(this.workspace, "qtc:currentSize", Double.toString(treeSize));		
+        documentService.setProperty(this.workspace, "qtc:currentSize", Long.toString(treeSize));		
         documentService.setProperty(this.workspace, "qtc:lastDateCheck", ts);
         documentService.setProperty(this.workspace, "qtc:uuid", uuid);
 		
