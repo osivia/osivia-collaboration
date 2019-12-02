@@ -1,4 +1,4 @@
-<div class="text-dark ml-3 pt-1">
+<div class="d-none d-sm-block text-dark ml-2 pt-1">
     <c:choose>
         <c:when test="${empty form.items}"><c:set var="text"><op:translate
                 key="FILE_BROWSER_TOOLBAR_STATE_NO_ITEM"/></c:set></c:when>

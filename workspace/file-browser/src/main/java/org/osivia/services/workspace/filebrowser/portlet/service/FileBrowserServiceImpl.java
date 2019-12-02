@@ -719,7 +719,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      */
     protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon) {
         // Base HTML classes
-        String baseHtmlClasses = "btn btn-primary btn-sm ml-2";
+        String baseHtmlClasses = "btn btn-primary btn-sm ml-1";
 
         // Item
         Element item;
@@ -794,7 +794,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
 
         // Live edition group
-        Element liveEditionGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm d-none d-md-flex ml-2");
+        Element liveEditionGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm d-none d-md-flex ml-1");
         // Dropdown
         Element dropdownGroup;
         Element dropdownMenu;
