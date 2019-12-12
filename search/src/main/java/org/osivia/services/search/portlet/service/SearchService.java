@@ -4,6 +4,7 @@ import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.search.portlet.model.SearchForm;
+import org.osivia.services.search.portlet.model.SearchSettings;
 
 /**
  * Search portlet service interface.
@@ -35,5 +36,24 @@ public interface SearchService {
      * @throws PortletException
      */
     String search(PortalControllerContext portalControllerContext, SearchForm form) throws PortletException;
+
+
+    /**
+     * Get portlet settings.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return portlet settings
+     * @throws PortletException
+     */
+    SearchSettings getSettings(PortalControllerContext portalControllerContext);
+
+    /**
+     * Save portlet settings.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param settings portlet settings
+     * @throws PortletException
+     */
+    void save(PortalControllerContext portalControllerContext, SearchSettings settings);
 
 }

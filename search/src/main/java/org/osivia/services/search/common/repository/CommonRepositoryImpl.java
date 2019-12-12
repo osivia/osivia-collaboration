@@ -65,7 +65,7 @@ public abstract class CommonRepositoryImpl implements CommonRepository {
                 // Document type
                 DocumentType documentType = spaceConfig.getType();
 
-                if ((documentType != null) && ("Workspace".equals(documentType.getName()))) {
+                if ((documentType != null) && (("Workspace".equals(documentType.getName())) || ("PortalSite".equals(documentType.getName()))  )) {
                     workspace = (Document) spaceConfig.getNativeItem();
                 } else {
                     // Loop on parent path
