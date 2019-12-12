@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.portlet.PortletException;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.PortalException;
@@ -98,6 +99,10 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         // Welcome title
         String welcomeTitle = workspace.getString("ttcs:welcomeTitle");
         form.setWelcomeTitle(welcomeTitle);
+        
+        // Space commentable
+        String spaceCommentable = workspace.getString("ttcs:spaceCommentable");
+        form.setSpaceCommentable(BooleanUtils.toBoolean(spaceCommentable));
 
         // Templates
         if (root) {

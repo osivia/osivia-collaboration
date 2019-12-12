@@ -35,6 +35,8 @@ public class WorkspaceEditionForm {
     private WorkspaceType workspaceType;
     /** Allowed invitation requests indicator (only for root). */
     private boolean allowedInvitationRequests;
+    /** Allowed comments on documents. */
+    private boolean spaceCommentable;
     /** Workspace vignette. */
     private Image vignette;
     /** Workspace tasks. */
@@ -195,7 +197,25 @@ public class WorkspaceEditionForm {
         this.allowedInvitationRequests = allowedInvitationRequests;
     }
 
+    
     /**
+     * Getter for spaceCommentable.
+     * @return
+     */
+    public boolean isSpaceCommentable() {
+		return spaceCommentable;
+	}
+
+    /**
+     * Setter for spaceCommentable.
+     * @param spaceCommentable
+     */
+	public void setSpaceCommentable(boolean spaceCommentable) {
+		this.spaceCommentable = spaceCommentable;
+	}
+
+
+	/**
      * Getter for vignette.
      * 
      * @return the vignette

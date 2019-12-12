@@ -58,6 +58,7 @@ public class UpdatePropertiesCommand implements INuxeoCommand {
         PropertyMap properties = new PropertyMap();
         properties.set("dc:title", this.form.getTitle());
         properties.set("ttcs:welcomeTitle", this.form.getWelcomeTitle());
+        properties.set("ttcs:spaceCommentable", this.form.isSpaceCommentable());
         properties.set("dc:description", this.form.getDescription());
         if (this.form.isRoot()) {
             properties.set("ttc:pageTemplate", StringUtils.trimToNull(this.form.getTemplate()));

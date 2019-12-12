@@ -129,7 +129,24 @@
                             </div>
                         </div>
                     </div>
+                    
                 </c:if>
+                
+                <!-- Comments allowed -->
+                <div class="form-group">
+                    <form:label path="spaceCommentable" cssClass="col-sm-3 control-label"><op:translate key="SPACE_COMMENTABLE" /></form:label>
+                    <div class="col-sm-9">
+                        <div class="checkbox">
+                            <label>
+                                <form:checkbox path="spaceCommentable" />
+                                <span><op:translate key="SPACE_COMMENTABLE_ACTION" /></span>
+                            </label>
+                            <p class="text-muted">
+                                <span><op:translate key="SPACE_COMMENTABLE_HELP" /></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>                
             </div>
             
             <div class="col-lg-4">
