@@ -8,7 +8,7 @@
 <jsp:useBean id="currentdate" class="java.util.Date"/>
 
 
-<portlet:actionURL var="envoiMail" />
+<portlet:actionURL var="submitUrl" name="submit"/>
 <portlet:resourceURL var="captchaURL" id="captcha">
 	<portlet:param name="ts" value="${currentdate.time}"/>
 </portlet:resourceURL>
@@ -18,12 +18,12 @@
         <op:translate key="MAIL_SENT"/>
     </c:when>
     <c:otherwise>
-            <form:form modelAttribute="form" action="${envoiMail}" method="POST">
+            <form:form modelAttribute="form" action="${submitUrl}" method="POST">
     			
     			<spring:bind path="from">
 					<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">    			
 	        			<form:label path="from" cssClass="control-label">${form.fromLabel}</form:label>
-          				<form:input type="email" path="from" cssClass="form-control" placeholder="exemple@mail.com" />
+          				<form:input type="email" path="from" cssClass="form-control" placeholder="${form.to}" />
             			<form:errors path="from" cssClass="help-block" />
       				</div>
 				</spring:bind>
