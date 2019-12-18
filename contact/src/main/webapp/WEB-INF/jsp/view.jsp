@@ -23,7 +23,7 @@
     			<spring:bind path="from">
 					<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">    			
 	        			<form:label path="from" cssClass="control-label">${form.fromLabel}</form:label>
-          				<form:input type="email" path="from" cssClass="form-control" placeholder="${form.to}" />
+          				<form:input type="email" path="from" cssClass="form-control" placeholder="exemple@mail.com" />
             			<form:errors path="from" cssClass="help-block" />
       				</div>
 				</spring:bind>
