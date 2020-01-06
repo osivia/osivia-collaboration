@@ -60,7 +60,7 @@
 													<portlet:param name="pageSize" value="${options.pageSize}"/>
 													<portlet:param name="way" value="other"/>
 												</portlet:actionURL>
-												<a href="${restoreUrl}" class="btn btn-default btn-sm"> 
+												<a href="${restoreUrl}" class="btn btn-secondary btn-sm">
 													<span><op:translate key="WORKSPACE_RESTORE" /></span>
 												</a>
 											</c:if>

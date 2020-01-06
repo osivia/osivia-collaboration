@@ -74,6 +74,7 @@ public class CreateSearchStapleCommand implements INuxeoCommand {
             properties.set("dc:title", this.task.getDisplayName());
             properties.set("ttc:showInMenu", true);
             properties.set("ttc:webid", webId);
+            properties.set("ttc:pageTemplate", StringUtils.trimToNull(this.task.getTemplate()));
 
             // Creation
             document = documentService.createDocument(workspace, "Staple", null, properties);

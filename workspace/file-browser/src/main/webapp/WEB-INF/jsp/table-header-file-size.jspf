@@ -1,0 +1,18 @@
+<div class="portal-table-cell" data-column="file-size">
+    <div class="portal-table-cell-inner" data-column="file-size">
+        <portlet:actionURL name="sort" copyCurrentRenderParameters="true" var="url">
+            <portlet:param name="field" value="file-size"/>
+            <portlet:param name="alt" value="${form.criteria.field.id eq 'file-size' and not form.criteria.alt}"/>
+        </portlet:actionURL>
+
+        <a href="${url}">
+            <span><op:translate key="FILE_BROWSER_SORT_FIELD_FILE_SIZE"/></span>
+
+            <c:if test="${form.criteria.field.id eq 'file-size'}">
+                <small class="d-inline-block align-text-bottom">
+                    <i class="glyphicons glyphicons-arrow-${form.criteria.alt ? 'up' : 'down'}"></i>
+                </small>
+            </c:if>
+        </a>
+    </div>
+</div>

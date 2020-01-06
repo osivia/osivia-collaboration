@@ -53,7 +53,7 @@
 
             <div>
                 <!-- Upload -->
-                <label class="btn btn-sm btn-default btn-file">
+                <label class="btn btn-sm btn-secondary btn-file">
                     <i class="halflings halflings-folder-open"></i>
                     <span><op:translate key="CALENDAR_VIGNETTE_UPLOAD" /></span>
                     <form:input type="file" path="vignette.upload" data-change-submit="${namespace}-vignette-submit" />
@@ -62,7 +62,7 @@
 
                 <!-- Delete -->
                 <c:set var="title"><op:translate key="CALENDAR_VIGNETTE_DELETE" /></c:set>
-                <button type="submit" name="delete-vignette" title="${title}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" ${empty form.vignette.url and empty form.vignette.temporaryFile ? 'disabled' : ''}>
+                <button type="submit" name="delete-vignette" title="${title}" class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="bottom" ${empty form.vignette.url and empty form.vignette.temporaryFile ? 'disabled' : ''}>
                     <i class="halflings halflings-trash"></i>
                     <span class="sr-only">${title}</span>
                 </button>

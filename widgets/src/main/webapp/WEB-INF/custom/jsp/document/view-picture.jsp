@@ -10,5 +10,5 @@
 
 <div class="picture">
     <!-- Preview -->
-    <p><img src="${previewUrl}" alt="${name}" class="img-responsive"></p>
+    <p><img src="${previewUrl}" alt="${name}" class="img-fluid rounded mx-auto d-block"></p>
 </div>

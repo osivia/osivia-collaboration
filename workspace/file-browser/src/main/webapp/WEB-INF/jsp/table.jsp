@@ -5,14 +5,14 @@
 <%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
 
 
-<!-- Table -->
+<%--Table--%>
 <div class="portal-table-container">
     <div class="portlet-filler">
         <div class="portal-table">
-            <!-- Header -->
+            <%--Header--%>
             <%@ include file="table-header.jspf" %>
             
-            <!-- Body -->
+            <%--Body--%>
             <%@ include file="table-body.jspf" %>
         </div>
     </div>

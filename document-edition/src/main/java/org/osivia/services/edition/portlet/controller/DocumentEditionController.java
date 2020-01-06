@@ -7,6 +7,7 @@ import org.osivia.services.edition.portlet.service.DocumentEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -123,7 +124,7 @@ public class DocumentEditionController {
         if (!result.hasErrors()) {
             sessionStatus.setComplete();
 
-            this.service.save(portalControllerContext, form);
+            this.service.save(portalControllerContext, form, result);
         }
     }
 
@@ -170,7 +171,7 @@ public class DocumentEditionController {
     @InitBinder("form")
     public void editionFormInitBinder(WebDataBinder binder) {
         binder.addValidators(this.validator);
-        binder.setDisallowedFields("name", "creation", "path", "originalTitle");
+        binder.setDisallowedFields("name", "creation", "path", "originalTitle", "breadcrumb");
     }
 
 }

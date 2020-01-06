@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.portlet.model;
 
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,11 +17,10 @@ public class ParentDocument extends ObjectDocument {
 
     /**
      * Constructor.
-     * 
-     * @param path document path
+     * @param document document DTO
      */
-    public ParentDocument(String path) {
-        super(path);
+    public ParentDocument(DocumentDTO document) {
+        super(document);
     }
 
 }

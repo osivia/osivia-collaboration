@@ -59,7 +59,7 @@
         </c:choose>
 
         <!-- Upload -->
-        <label class="btn btn-default btn-sm btn-file">
+        <label class="btn btn-secondary btn-sm btn-file">
             <span><op:translate key="CALENDAR_EVENT_ATTACHMENTS_UPLOAD"/></span>
             <input type="file" name="attachments.upload" multiple data-change-submit="${namespace}-attachments-submit">
         </label>

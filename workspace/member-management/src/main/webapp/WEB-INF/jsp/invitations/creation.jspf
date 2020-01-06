@@ -115,7 +115,7 @@
                     </button>
                     
                     <!-- Cancel -->
-                    <button type="reset" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-creation-buttons">
+                    <button type="reset" class="btn btn-secondary" data-toggle="collapse" data-target="#${namespace}-creation-buttons">
                         <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATION_CANCEL" /></span>
                     </button>
                 </div>

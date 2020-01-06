@@ -105,23 +105,23 @@
     <div class="dhx_cal_navline btn-toolbar" role="toolbar">
         <div class="btn-group grp-btn-next-prev">
             <!-- Previous period -->
-            <a href="${previous}" onclick="this.href=addScrollParam(this.href,null);" class="dhx_cal_prev_button btn btn-default btn-sm">
+            <a href="${previous}" onclick="this.href=addScrollParam(this.href,null);" class="dhx_cal_prev_button btn btn-secondary btn-sm">
                 <i class="halflings halflings-chevron-left"></i>
             </a>
             <!-- Next period -->
-            <a href="${next}" onclick="this.href=addScrollParam(this.href,null);" class="dhx_cal_next_button btn btn-default btn-sm">
+            <a href="${next}" onclick="this.href=addScrollParam(this.href,null);" class="dhx_cal_next_button btn btn-secondary btn-sm">
                 <i class="halflings halflings-chevron-right"></i>
             </a>
         </div>
         <!-- Today -->
-        <a href="${today}" onclick="this.href=addScrollParam(this.href,null);" class="dhx_cal_today_button btn btn-default btn-sm">
+        <a href="${today}" onclick="this.href=addScrollParam(this.href,null);" class="dhx_cal_today_button btn btn-secondary btn-sm">
             <span><op:translate key="CALENDAR_TODAY" /></span>
         </a>
 
 
 
         <div id="btn-period" class="period-button dropdown pull-right">
-            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">
                 <span><op:translate key="${calendarData.periodType.internationalizationKey}" ></op:translate></span>
                 <span class="caret"></span>
             </button>
@@ -154,5 +154,5 @@
 
     </div>
     <div class="dhx_cal_header small"></div>
-    <div class="dhx_cal_data small"></div><!-- Ajout de la classe portlet-filler pour que la hauteur soit définie automatiquement avec la place restante -->
+    <div class="dhx_cal_data small"></div><!-- Ajout de la classe portlet-filler pour que la hauteur soit definie automatiquement avec la place restante -->
 </div>

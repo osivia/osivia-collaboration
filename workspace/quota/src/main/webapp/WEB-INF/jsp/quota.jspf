@@ -18,8 +18,11 @@
 	<div class="progress"> 
 		<div class="progress-bar" role="progressbar" style="width: ${quotaForm.ratio}%" aria-valuenow="${quotaForm.ratio}" aria-valuemin="0" aria-valuemax="100"></div> 
 	</div> 
-		<div> <small class="text-muted"> <span>${quotaForm.sizeMessage}</span>
-		<br> <a href="${redirectUpdate}" class="stretched-link"><op:translate key="QUOTA_UPGRADE" /></a></small> 	
+	<div> <small class="text-muted"> <span>${quotaForm.sizeMessage}</span>
+                <c:if test="${updatePolicy eq 'sample'}">       	
+		      <br> <a href="${redirectUpdate}" class="stretched-link"><op:translate key="QUOTA_UPGRADE" /></a> 	
+		</c:if>
+	       </small>
 	</div>
 
 </div>  

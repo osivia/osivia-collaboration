@@ -9,7 +9,7 @@
 <div class="portal-table-toolbar-container" data-url="${toolbarUrl}">
     <!-- Export tools -->
     <div class="btn-group btn-group-sm">
-        <a class="btn btn-default" href="${exportCsvUrl}">
+        <a class="btn btn-secondary" href="${exportCsvUrl}">
             <i class="glyphicons glyphicons-table"></i>
             <span class="hidden-xs"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_EXPORT" /></span>
         </a>

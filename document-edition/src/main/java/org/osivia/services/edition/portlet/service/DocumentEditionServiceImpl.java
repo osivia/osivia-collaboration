@@ -1,5 +1,6 @@
 package org.osivia.services.edition.portlet.service;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -18,6 +19,7 @@ import org.osivia.services.edition.portlet.repository.DocumentEditionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 
 import javax.portlet.*;
 import java.io.IOException;
@@ -71,6 +73,10 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
         // Window properties
         DocumentEditionWindowProperties properties = this.applicationContext.getBean(DocumentEditionWindowProperties.class);
+
+        // Base path
+        String basePath = window.getProperty(BASE_PATH_WINDOW_PROPERTY);
+        properties.setBasePath(basePath);
 
         // Document path
         String documentPath = window.getProperty(DOCUMENT_PATH_WINDOW_PROPERTY);
@@ -174,7 +180,7 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
 
     @Override
-    public void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
+    public void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form,  BindingResult result) throws PortletException, IOException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
         // Internationalization bundle
@@ -183,9 +189,25 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         // Repository
         DocumentEditionRepository repository = this.getRepository(form.getName());
 
+        try {
+            // Save document
+            repository.save(portalControllerContext, form);
+        } catch (NuxeoException e) {
+            if (e instanceof NuxeoException) {
+                // Nuxeo user messages (quota, virus) are displayed on current form
+                String message = ((NuxeoException) e).getUserMessage(portalControllerContext);
+                if (message != null) {
+                    result.rejectValue("upload", null, message);
+                    return;
+                }
+            }
 
-        // Save document
-        repository.save(portalControllerContext, form);
+            throw e;
+       }
+
+        
+        
+
 
 
         // Notification

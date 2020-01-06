@@ -1,23 +1,5 @@
 package org.osivia.services.workspace.filebrowser.portlet.controller;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.PortletContext;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
@@ -27,7 +9,7 @@ import org.dom4j.io.HTMLWriter;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserBulkDownloadContent;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserForm;
-import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserSort;
+import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserSortField;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserView;
 import org.osivia.services.workspace.filebrowser.portlet.service.FileBrowserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,20 +23,32 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
+import javax.portlet.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * File browser portlet controller.
- * 
+ *
  * @author Cédric Krommenhoek
  */
 @Controller
 @RequestMapping("VIEW")
 public class FileBrowserController {
 
-    /** Portlet context. */
+    /**
+     * Portlet context.
+     */
     @Autowired
     private PortletContext portletContext;
 
-    /** Portlet service. */
+    /**
+     * Portlet service.
+     */
     @Autowired
     private FileBrowserService service;
 
@@ -69,11 +63,10 @@ public class FileBrowserController {
 
     /**
      * View render mapping.
-     * 
-     * @param request render request
+     *
+     * @param request  render request
      * @param response render response
      * @return view path
-     * @throws PortletException
      */
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response, @RequestParam(name = "view", required = false) String viewId) throws PortletException {
@@ -85,7 +78,7 @@ public class FileBrowserController {
         request.setAttribute("view", view.getId());
 
         // Update menubar
-        this.service.updateMenubar(portalControllerContext);
+        //this.service.updateMenubar(portalControllerContext);
 
         return "view";
     }
@@ -93,12 +86,11 @@ public class FileBrowserController {
 
     /**
      * Change view action mapping.
-     * 
-     * @param request action request
+     *
+     * @param request  action request
      * @param response action response
-     * @param viewId view identifier request parameter
-     * @param form form model attribute
-     * @throws PortletException
+     * @param viewId   view identifier request parameter
+     * @param form     form model attribute
      */
     @ActionMapping("change-view")
     public void changeView(ActionRequest request, ActionResponse response, @RequestParam("view") String viewId, @ModelAttribute("form") FileBrowserForm form)
@@ -118,22 +110,25 @@ public class FileBrowserController {
 
     /**
      * Sort action mapping.
-     * 
-     * @param request action request
+     *
+     * @param request  action request
      * @param response action response
-     * @param sort sort request parameter
-     * @param viewId view identifier render parameter
-     * @param alt alternative sort indicator request parameter
-     * @param form form model attribute
-     * @throws PortletException
+     * @param fieldId  sort field request parameter
+     * @param viewId   view identifier render parameter
+     * @param alt      alternative sort indicator request parameter
+     * @param form     form model attribute
      */
     @ActionMapping("sort")
-    public void sort(ActionRequest request, ActionResponse response, @RequestParam("sort") String sort, @RequestParam("alt") String alt,
-            @RequestParam(name = "view", required = false) String viewId, @ModelAttribute("form") FileBrowserForm form) throws PortletException {
+    public void sort(ActionRequest request, ActionResponse response, @RequestParam("field") String fieldId, @RequestParam("alt") String alt,
+                     @RequestParam(name = "view", required = false) String viewId, @ModelAttribute("form") FileBrowserForm form) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.sortItems(portalControllerContext, form, FileBrowserSort.fromId(sort), BooleanUtils.toBoolean(alt));
+        // Sort field
+        FileBrowserSortField field = this.service.getSortField(portalControllerContext, fieldId);
+
+        // Sort
+        this.service.sortItems(portalControllerContext, form, field, BooleanUtils.toBoolean(alt));
 
         // Copy view render parameter
         FileBrowserView view = this.service.getView(portalControllerContext, viewId);
@@ -143,17 +138,16 @@ public class FileBrowserController {
 
     /**
      * Duplicate document action mapping.
-     * 
-     * @param request action request
+     *
+     * @param request  action request
      * @param response action response
-     * @param path document path request parameter
-     * @param viewId view identifier request parameter
-     * @param form form model attribute
-     * @throws PortletException
+     * @param path     document path request parameter
+     * @param viewId   view identifier request parameter
+     * @param form     form model attribute
      */
     @ActionMapping("duplicate")
     public void duplicate(ActionRequest request, ActionResponse response, @RequestParam("path") String path,
-            @RequestParam(name = "view", required = false) String viewId, @ModelAttribute("form") FileBrowserForm form) throws PortletException {
+                          @RequestParam(name = "view", required = false) String viewId, @ModelAttribute("form") FileBrowserForm form) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
@@ -166,41 +160,17 @@ public class FileBrowserController {
 
 
     /**
-     * Delete documents action mapping.
-     * 
-     * @param request action request
-     * @param response action response
-     * @param identifiers document identifiers request parameter
-     * @throws PortletException
-     * @throws IOException
-     */
-    @ActionMapping("delete")
-    public void delete(ActionRequest request, ActionResponse response, @RequestParam("identifiers") String identifiers,
-            @RequestParam(name = "view", required = false) String viewId) throws PortletException, IOException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        this.service.delete(portalControllerContext, Arrays.asList(StringUtils.split(identifiers, ",")));
-
-        // Copy view render parameter
-        FileBrowserView view = this.service.getView(portalControllerContext, viewId);
-        response.setRenderParameter("view", view.getId());
-    }
-
-
-    /**
      * Drop action mapping.
-     * 
-     * @param request action request
-     * @param response action response
+     *
+     * @param request   action request
+     * @param response  action response
      * @param sourceIds source identifiers request parameter
-     * @param targetId target identifier request parameter
-     * @param viewId view identifier request parameter
-     * @throws PortletException
+     * @param targetId  target identifier request parameter
+     * @param viewId    view identifier request parameter
      */
     @ActionMapping("drop")
     public void drop(ActionRequest request, ActionResponse response, @RequestParam("sourceIds") String sourceIds, @RequestParam("targetId") String targetId,
-            @RequestParam(name = "view", required = false) String viewId) throws PortletException {
+                     @RequestParam(name = "view", required = false) String viewId) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
@@ -214,17 +184,15 @@ public class FileBrowserController {
 
     /**
      * Upload action mapping.
-     * 
-     * @param request action request
+     *
+     * @param request  action request
      * @param response action response
-     * @param viewId view identifier request parameter
-     * @param form form model attribute
-     * @throws PortletException
-     * @throws IOException
+     * @param viewId   view identifier request parameter
+     * @param form     form model attribute
      */
     @ActionMapping("upload")
     public void upload(ActionRequest request, ActionResponse response, @RequestParam(name = "view", required = false) String viewId,
-            @ModelAttribute("form") FileBrowserForm form) throws PortletException, IOException {
+                       @ModelAttribute("form") FileBrowserForm form) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
@@ -237,19 +205,16 @@ public class FileBrowserController {
 
     /**
      * End upload action mapping.
-     * 
-     * @param request action request
+     *
+     * @param request  action request
      * @param response action response
-     * @param viewId view identifier request parameter
-     * @param form form model attribute
-     * @throws PortletException
-     * @throws IOException
+     * @param viewId   view identifier request parameter
      */
     @ActionMapping("endUpload")
     public void endUpload(ActionRequest request, ActionResponse response, @RequestParam(name = "view", required = false) String viewId) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
- 
+
         this.service.endUpload(portalControllerContext);
 
         // Copy view render parameter
@@ -257,20 +222,19 @@ public class FileBrowserController {
         response.setRenderParameter("view", view.getId());
     }
 
+
     /**
      * Get toolbar resource mapping.
-     * 
-     * @param request resource request
+     *
+     * @param request  resource request
      * @param response resource response
-     * @param indexes selected items indexes
-     * @param viewId view identifier request parameter
-     * @param form form model attribute
-     * @throws PortletException
-     * @throws IOException
+     * @param indexes  selected items indexes
+     * @param viewId   view identifier request parameter
+     * @param form     form model attribute
      */
     @ResourceMapping("toolbar")
     public void getToolbar(ResourceRequest request, ResourceResponse response, @RequestParam(name = "indexes", required = false) String indexes,
-            @RequestParam(name = "view", required = false) String viewId, @ModelAttribute("form") FileBrowserForm form) throws PortletException, IOException {
+                           @RequestParam(name = "view", required = false) String viewId, @ModelAttribute("form") FileBrowserForm form) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
@@ -290,12 +254,10 @@ public class FileBrowserController {
 
     /**
      * Get bulk download content resouce mapping.
-     * 
-     * @param request resource request
+     *
+     * @param request  resource request
      * @param response resource response
-     * @param paths document paths
-     * @throws PortletException
-     * @throws IOException
+     * @param paths    document paths
      */
     @ResourceMapping("bulk-download")
     public void getBulkDownload(ResourceRequest request, ResourceResponse response, @RequestParam("paths") String paths) throws PortletException, IOException {
@@ -327,12 +289,36 @@ public class FileBrowserController {
 
 
     /**
+     * Get location resource mapping.
+     *
+     * @param request  resource request
+     * @param response resource response
+     * @param path     document path request parameter
+     */
+    @ResourceMapping("location")
+    public void getLocation(ResourceRequest request, ResourceResponse response, @RequestParam("path") String path) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        // Toolbar
+        Element location = this.service.getLocationBreadcrumb(portalControllerContext, path);
+
+        // Content type
+        response.setContentType("text/html");
+
+        // Content
+        HTMLWriter htmlWriter = new HTMLWriter(response.getPortletOutputStream());
+        htmlWriter.write(location);
+        htmlWriter.close();
+    }
+
+
+    /**
      * Get form model attribute.
-     * 
-     * @param request portlet request
+     *
+     * @param request  portlet request
      * @param response portlet response
      * @return form
-     * @throws PortletException
      */
     @ModelAttribute("form")
     public FileBrowserForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
@@ -345,40 +331,39 @@ public class FileBrowserController {
 
     /**
      * Form init binder.
-     * 
+     *
      * @param binder data binder
      */
     @InitBinder("form")
     public void formInitBinder(PortletRequestDataBinder binder) {
-        binder.setDisallowedFields("path", "initialized");
+        binder.setDisallowedFields("basePath", "path", "listMode", "initialized");
     }
 
 
     /**
      * Get views model attribute.
-     * 
-     * @param request portlet request
-     * @param response portlet response
+     *
      * @return views
-     * @throws PortletException
      */
     @ModelAttribute("views")
-    public List<FileBrowserView> getViews(PortletRequest request, PortletResponse response) throws PortletException {
+    public List<FileBrowserView> getViews() {
         return Arrays.asList(FileBrowserView.values());
     }
 
 
     /**
-     * Get sorts model attribute.
-     * 
-     * @param request portlet request
+     * Get sort fields model attribute.
+     *
+     * @param request  portlet request
      * @param response portlet response
-     * @return sorts
-     * @throws PortletException
+     * @return sort fields
      */
-    @ModelAttribute("sorts")
-    public List<FileBrowserSort> getSorts(PortletRequest request, PortletResponse response) throws PortletException {
-        return Arrays.asList(FileBrowserSort.values());
+    @ModelAttribute("sortFields")
+    public List<FileBrowserSortField> getSortFields(PortletRequest request, PortletResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        return this.service.getSortFields(portalControllerContext);
     }
 
 }

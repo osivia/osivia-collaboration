@@ -1,5 +1,9 @@
 package org.osivia.services.workspace.filebrowser.portlet.repository.command;
 
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
@@ -8,13 +12,9 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilter;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
-
 /**
  * Get file browser documents Nuxeo command.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see INuxeoCommand
  */
@@ -22,17 +22,25 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class GetFileBrowserDocumentsCommand implements INuxeoCommand {
 
-    /** Parent document identifier. */
+    /**
+     * NXQL request.
+     */
+    private final String nxql;
+    /**
+     * Parent document identifier.
+     */
     private final String parentId;
 
 
     /**
      * Constructor.
-     * 
+     *
+     * @param nxql       NXQL request
      * @param parentId parent document identifier
      */
-    public GetFileBrowserDocumentsCommand(String parentId) {
+    public GetFileBrowserDocumentsCommand(String nxql, String parentId) {
         super();
+        this.nxql = nxql;
         this.parentId = parentId;
     }
 
@@ -44,11 +52,17 @@ public class GetFileBrowserDocumentsCommand implements INuxeoCommand {
     public Object execute(Session nuxeoSession) throws Exception {
         // Nuxeo request
         StringBuilder nuxeoRequest = new StringBuilder();
-        nuxeoRequest.append("ecm:parentId = '").append(this.parentId).append("' ");
-        nuxeoRequest.append("AND NOT ecm:primaryType IN ('Workspace', 'WorkspaceRoot', 'PortalSite', 'Favorites') ");
+
+        nuxeoRequest.append("NOT ecm:primaryType IN ('Workspace', 'WorkspaceRoot', 'PortalSite', 'Favorites') ");
+        if (StringUtils.isEmpty(this.nxql)) {
+            nuxeoRequest.append("AND ecm:parentId = '").append(this.parentId).append("' ");
+        } else {
+            nuxeoRequest.append("AND ");
+            nuxeoRequest.append(this.nxql);
+        }
 
         // Query filter
-        NuxeoQueryFilterContext queryFilterContext = new NuxeoQueryFilterContext(NuxeoQueryFilterContext.STATE_LIVE,
+        NuxeoQueryFilterContext queryFilterContext = new NuxeoQueryFilterContext(NuxeoQueryFilterContext.STATE_LIVE_N_PUBLISHED,
                 InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER);
         String filteredRequest = NuxeoQueryFilter.addPublicationFilter(queryFilterContext, nuxeoRequest.toString());
 
@@ -66,11 +80,7 @@ public class GetFileBrowserDocumentsCommand implements INuxeoCommand {
      */
     @Override
     public String getId() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(this.getClass().getSimpleName());
-        builder.append("/");
-        builder.append(this.parentId);
-        return builder.toString();
+        return null;
     }
 
 }

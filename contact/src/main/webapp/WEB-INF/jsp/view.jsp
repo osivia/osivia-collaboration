@@ -63,7 +63,7 @@
 		        				</div>
 	        				</div>
 	        				<div class="col-sm-6">
-	        				<button type="button" onclick="$JQry('#reload').click()" class="btn btn-default">
+	        				<button type="button" onclick="$JQry('#reload').click()" class="btn btn-secondary">
 	        					<i class="glyphicons glyphicons-refresh"></i>
 	        				</button>
 	        				</div>

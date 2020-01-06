@@ -11,9 +11,13 @@
 
 
 <form:form action="${url}" method="post" modelAttribute="form">
+    <%--Location--%>
+    <%@include file="fragments/location.jspf" %>
+
     <%--Title--%>
-    <%@include file="fragments/title.jspf"%>
+    <c:set var="placeholder" scope="request"><op:translate key="DOCUMENT_EDITION_FORM_TITLE_PLACEHOLDER_FOLDER"/></c:set>
+    <%@include file="fragments/title.jspf" %>
 
     <%--Buttons--%>
-    <%@include file="fragments/buttons.jspf"%>
+    <%@include file="fragments/buttons.jspf" %>
 </form:form>

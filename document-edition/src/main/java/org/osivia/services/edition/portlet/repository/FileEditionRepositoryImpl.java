@@ -183,7 +183,6 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
             }
 
             FileBlob blob = new FileBlob(file, name, contentType);
-            blob.setFileName(form.getTitle());
             binaries.put(BINARY_PROPERTY, blob);
         }
     }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <portlet-app
-    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
-    version="2.0">
+        xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+        version="2.0">
 
     <!-- Widgets -->
     <portlet>
@@ -21,8 +21,8 @@
             <title>Widget plugin</title>
         </portlet-info>
     </portlet>
-    
-    
+
+
     <!-- Issued date -->
     <portlet>
         <portlet-name>osivia-services-widgets-issued</portlet-name>
@@ -48,13 +48,13 @@
             <title>Issued date</title>
         </portlet-info>
     </portlet>
-    
-    
+
+
     <!-- Issued date plugin -->
     <portlet>
         <portlet-name>osivia-services-widgets-issued-plugin</portlet-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-        
+
         <init-param>
             <name>contextClass</name>
             <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
@@ -63,7 +63,7 @@
             <name>contextConfigLocation</name>
             <value>org.osivia.services.widgets.issued.plugin.configuration.IssuedPluginConfiguration</value>
         </init-param>
-        
+
         <expiration-cache>180</expiration-cache>
 
         <supports>
@@ -72,6 +72,165 @@
 
         <portlet-info>
             <title>Issued date plugin</title>
+        </portlet-info>
+    </portlet>
+
+
+    <!-- Move -->
+    <portlet>
+        <portlet-name>osivia-services-widgets-move</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.widgets.move.portlet.configuration.MoveConfiguration</value>
+        </init-param>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+
+        <portlet-info>
+            <title>Move</title>
+        </portlet-info>
+    </portlet>
+
+
+    <!-- Move plugin -->
+    <portlet>
+        <portlet-name>osivia-services-widgets-move-plugin</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.widgets.move.plugin.configuration.MovePluginConfiguration</value>
+        </init-param>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+
+        <portlet-info>
+            <title>Move plugin</title>
+        </portlet-info>
+    </portlet>
+
+
+    <!-- Rename -->
+    <portlet>
+        <portlet-name>osivia-services-widgets-rename</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.widgets.rename.portlet.configuration.RenameConfiguration</value>
+        </init-param>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+
+        <portlet-info>
+            <title>Rename</title>
+        </portlet-info>
+    </portlet>
+
+
+    <!-- Rename plugin -->
+    <portlet>
+        <portlet-name>osivia-services-widgets-rename-plugin</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.widgets.rename.plugin.configuration.RenamePluginConfiguration</value>
+        </init-param>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+
+        <portlet-info>
+            <title>Rename plugin</title>
+        </portlet-info>
+    </portlet>
+
+
+    <!--Delete-->
+    <portlet>
+        <portlet-name>osivia-services-widgets-delete</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.widgets.delete.portlet.configuration.DeleteConfiguration</value>
+        </init-param>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+
+        <portlet-info>
+            <title>Delete</title>
+        </portlet-info>
+    </portlet>
+
+
+    <!-- Delete plugin -->
+    <portlet>
+        <portlet-name>osivia-services-widgets-delete-plugin</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.widgets.delete.plugin.configuration.DeletePluginConfiguration</value>
+        </init-param>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+
+        <portlet-info>
+            <title>Delete plugin</title>
         </portlet-info>
     </portlet>
 

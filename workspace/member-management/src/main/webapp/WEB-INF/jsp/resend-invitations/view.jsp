@@ -53,7 +53,7 @@
                         <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_EDITION_RESEND" /></span>
                     </button>
                     
-                    <a href="${cancelUrl}" class="btn btn-default">
+                    <a href="${cancelUrl}" class="btn btn-secondary">
                         <span><op:translate key="CANCEL" /></span>
                     </a>
                 </div>

@@ -66,7 +66,7 @@
                                         <span><op:translate key="CONFIRM" /></span>
                                     </a>
                                     
-                                    <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-confirm-reset">
+                                    <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#${namespace}-confirm-reset">
                                         <span><op:translate key="CANCEL" /></span>
                                     </button>
                                 </div>
@@ -227,7 +227,7 @@
                                     <!-- Deletion -->
                                     <c:if test="${entry.editable}">
                                         <div class="col-xs-2 col-sm-1">
-                                            <button type="button" class="btn btn-default delete">
+                                            <button type="button" class="btn btn-secondary delete">
                                                 <i class="glyphicons glyphicons-remove"></i>
                                                 <span class="sr-only"><op:translate key="DELETE" /></span>
                                             </button>
@@ -256,7 +256,7 @@
                     </button>
                     
                     <!-- Cancel -->
-                    <button type="submit" name="cancel" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-buttons">
+                    <button type="submit" name="cancel" class="btn btn-secondary" data-toggle="collapse" data-target="#${namespace}-buttons">
                         <span><op:translate key="CANCEL" /></span>
                     </button>
                 </div>

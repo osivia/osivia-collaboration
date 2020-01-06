@@ -382,7 +382,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         }
 
         // HTML classes
-        String htmlClass = "btn btn-default btn-sm";
+        String htmlClass = "btn btn-secondary btn-sm";
         // Text
         String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_CHANGE_ROLE");
         // Icon
@@ -431,7 +431,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         }
 
         // HTML classes
-        String htmlClass = "btn btn-default btn-sm";
+        String htmlClass = "btn btn-secondary btn-sm";
         // Text
         String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ADD_TO_GROUP");
         // Icon
@@ -475,7 +475,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // URL
         String url;
         // HTML classes
-        String htmlClass = "btn btn-default btn-sm no-ajax-link";
+        String htmlClass = "btn btn-secondary btn-sm no-ajax-link";
         // Text
         String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_REMOVE_MEMBER");
         // Icon
@@ -667,7 +667,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         modalFooter.add(confirm);
 
         // Cancel button
-        Element cancel = DOM4JUtils.generateElement("button", "btn btn-default", bundle.getString("CANCEL"), null, null);
+        Element cancel = DOM4JUtils.generateElement("button", "btn btn-secondary", bundle.getString("CANCEL"), null, null);
         DOM4JUtils.addAttribute(cancel, "type", "button");
         DOM4JUtils.addDataAttribute(cancel, "dismiss", "modal");
         modalFooter.add(cancel);
@@ -1354,7 +1354,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         }
         
         // HTML classes
-        String htmlClass = "btn btn-default btn-sm";
+        String htmlClass = "btn btn-secondary btn-sm";
         // Text
         String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_EDIT");
         // Icon
@@ -1403,7 +1403,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         }
 
         // HTML classes
-        String htmlClass = "btn btn-default btn-sm";
+        String htmlClass = "btn btn-secondary btn-sm";
         // Text
         String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_EDITION_RESEND");
         // Icon
@@ -1446,7 +1446,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // URL
         String url;
         // HTML classes
-        String htmlClass = "btn btn-default btn-sm no-ajax-link";
+        String htmlClass = "btn btn-secondary btn-sm no-ajax-link";
         // Text
         String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_DELETE");
         // Icon

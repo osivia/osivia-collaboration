@@ -14,6 +14,11 @@ import org.springframework.stereotype.Component;
 public class DocumentEditionWindowProperties {
 
     /**
+     * Base path.
+     */
+    private String basePath;
+
+    /**
      * Document path.
      */
     private String documentPath;
@@ -36,6 +41,14 @@ public class DocumentEditionWindowProperties {
         super();
     }
 
+
+    public String getBasePath() {
+        return basePath;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
+    }
 
     public String getDocumentPath() {
         return documentPath;

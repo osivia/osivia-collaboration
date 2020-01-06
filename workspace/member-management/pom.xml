@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.osivia.services.workspace</groupId>
         <artifactId>osivia-services-workspace-parent</artifactId>
-        <version>4.7-SNAPSHOT</version>
+        <version>4.9-SNAPSHOT</version>
     </parent>
 
     <artifactId>osivia-services-workspace-member-management</artifactId>
@@ -16,7 +16,7 @@
 
 	<build>
 		<plugins>
-		
+
             <!-- WAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -25,14 +25,14 @@
                     <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
-            
+
             <!-- LESS -->
             <plugin>
                 <groupId>org.lesscss</groupId>
                 <artifactId>lesscss-maven-plugin</artifactId>
             </plugin>
+
         </plugins>
-        
     </build>
     
 </project>

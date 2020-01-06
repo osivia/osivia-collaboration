@@ -1,27 +1,20 @@
-<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="op" uri="http://www.osivia.org/jsp/taglib/osivia-portal" %>
 
 
-<portlet:resourceURL id="toolbar" var="toolbarUrl" />
+<portlet:resourceURL id="toolbar" var="toolbarUrl"/>
 
 
 <div class="portal-table-toolbar-container" data-url="${toolbarUrl}">
-    <!-- View -->
-    <div class="btn-group btn-group-sm">
-        <c:forEach var="item" items="${views}">
-            <portlet:actionURL name="change-view" var="url">
-                <portlet:param name="view" value="${item.id}"/>
-            </portlet:actionURL>
-            <c:set var="title"><op:translate key="${item.key}" /></c:set>
-        
-            <a href="${url}" class="btn btn-default ${item.id eq view ? 'active' : ''}" title="${title}">
-                <i class="${item.icon}"></i>
-            </a>
-        </c:forEach>
-    </div>
+    <%--View--%>
+    <%@ include file="toolbar-view.jspf" %>
 
-    <!-- Toolbar -->
+    <%--State--%>
+    <%@ include file="toolbar-state.jspf" %>
+
+    <%--Contextual toolbar--%>
     <div class="portal-table-toolbar">
         <div></div>
     </div>

@@ -13,14 +13,15 @@
 
 
 <form:form action="${url}" method="post" enctype="multipart/form-data" modelAttribute="form">
-    <c:if test="${not form.creation}">
-        <%--Title--%>
-        <%@include file="fragments/title.jspf" %>
-    </c:if>
+    <%--Location--%>
+    <%@include file="fragments/location.jspf" %>
 
     <%--File--%>
     <%@include file="fragments/file.jspf" %>
 
     <%--Buttons--%>
     <%@include file="fragments/buttons.jspf" %>
+
+    <%--File footer--%>
+    <%@include file="fragments/file-footer.jspf"%>
 </form:form>

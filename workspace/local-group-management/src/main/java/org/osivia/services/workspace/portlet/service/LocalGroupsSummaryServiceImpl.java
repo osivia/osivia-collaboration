@@ -223,7 +223,7 @@ public class LocalGroupsSummaryServiceImpl extends LocalGroupsServiceImpl implem
         }
 
         // HTML classes
-        String htmlClass = "btn btn-default btn-sm";
+        String htmlClass = "btn btn-secondary btn-sm";
         // Text
         String text = bundle.getString("TOOLBAR_BUTTON_EDIT_LOCAL_GROUP");
         // Icon
@@ -270,7 +270,7 @@ public class LocalGroupsSummaryServiceImpl extends LocalGroupsServiceImpl implem
         }
 
         // HTML classes
-        String htmlClass = "btn btn-default btn-sm";
+        String htmlClass = "btn btn-secondary btn-sm";
         // Text
         String text = bundle.getString("TOOLBAR_BUTTON_ADD_MEMBER_TO_LOCAL_GROUPS");
         // Icon
@@ -310,7 +310,7 @@ public class LocalGroupsSummaryServiceImpl extends LocalGroupsServiceImpl implem
         PortletResponse response = portalControllerContext.getResponse();
 
         // HTML classes
-        String htmlClass = "btn btn-default btn-sm no-ajax-link";
+        String htmlClass = "btn btn-secondary btn-sm no-ajax-link";
         // Text
         String text = bundle.getString("TOOLBAR_BUTTON_DELETE_LOCAL_GROUPS");
         // Icon
@@ -444,7 +444,7 @@ public class LocalGroupsSummaryServiceImpl extends LocalGroupsServiceImpl implem
         modalFooter.add(confirm);
 
         // Cancel button
-        Element cancel = DOM4JUtils.generateElement("button", "btn btn-default", bundle.getString("CANCEL"), null, null);
+        Element cancel = DOM4JUtils.generateElement("button", "btn btn-secondary", bundle.getString("CANCEL"), null, null);
         DOM4JUtils.addAttribute(cancel, "type", "button");
         DOM4JUtils.addDataAttribute(cancel, "dismiss", "modal");
         modalFooter.add(cancel);

@@ -55,7 +55,7 @@
                     <p>
                         <c:choose>
                             <c:when test="${empty memberStatus}">
-                                <button type="button" onclick="$JQry('#${namespace}-confirmation-form').attr('action', '${createRequestUrl}');" class="btn btn-default btn-sm" data-toggle="modal" data-target="#${namespace}-confirmation">
+                                <button type="button" onclick="$JQry('#${namespace}-confirmation-form').attr('action', '${createRequestUrl}');" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#${namespace}-confirmation">
                                     <span><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CREATION" /></span>
                                 </button>
                             </c:when>
@@ -114,7 +114,7 @@
 	                    <span><op:translate key="LIST_TEMPLATE_WORKSPACE_MEMBER_REQUESTS_CONFIRM" /></span>
 	                </button>
 	                
-	                <button type="button" class="btn btn-default" data-dismiss="modal">
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">
 	                    <span><op:translate key="CANCEL" /></span>
 	                </button>
 	            </div>

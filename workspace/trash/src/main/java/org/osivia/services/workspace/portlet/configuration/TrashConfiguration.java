@@ -1,11 +1,15 @@
 package org.osivia.services.workspace.portlet.configuration;
 
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCustomizer;
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -14,12 +18,9 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCustomizer;
-import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
-
 /**
  * Trash portlet configuration.
- * 
+ *
  * @author Cédric Krommenhoek
  */
 @Configuration
@@ -65,7 +66,7 @@ public class TrashConfiguration {
 
     /**
      * Get CMS service locator.
-     * 
+     *
      * @return CMS service locator
      */
     @Bean
@@ -76,7 +77,7 @@ public class TrashConfiguration {
 
     /**
      * Get Nuxeo service.
-     * 
+     *
      * @return Nuxeo service
      */
     @Bean
@@ -87,7 +88,7 @@ public class TrashConfiguration {
 
     /**
      * Get Nuxeo customizer.
-     * 
+     *
      * @param nuxeoService Nuxeo service
      * @return Nuxeo customizer
      */
@@ -98,8 +99,19 @@ public class TrashConfiguration {
 
 
     /**
+     * Get portal URL factory.
+     *
+     * @return portal URL factory
+     */
+    @Bean
+    public IPortalUrlFactory getPortalUrlFactory() {
+        return Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
+    }
+
+
+    /**
      * Get internationalization service.
-     * 
+     *
      * @return internationalization service
      */
     @Bean
@@ -110,7 +122,7 @@ public class TrashConfiguration {
 
     /**
      * Get internationalization bundle factory.
-     * 
+     *
      * @param internationalizationService internationalization service
      * @return internationalization bundle factory
      */
@@ -122,7 +134,7 @@ public class TrashConfiguration {
 
     /**
      * Get notifications service.
-     * 
+     *
      * @return notifications service
      */
     @Bean
@@ -132,8 +144,19 @@ public class TrashConfiguration {
 
 
     /**
+     * Get document DAO.
+     *
+     * @return document DAO
+     */
+    @Bean
+    public DocumentDAO getDocumentDao() {
+        return DocumentDAO.getInstance();
+    }
+
+
+    /**
      * Get person service.
-     * 
+     *
      * @return person service
      */
     @Bean

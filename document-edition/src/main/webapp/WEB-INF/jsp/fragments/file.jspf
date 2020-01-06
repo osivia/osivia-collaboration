@@ -7,38 +7,35 @@
 
 <c:set var="namespace"><portlet:namespace/></c:set>
 
+<c:set var="browse"><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_ACTION"/></c:set>
+
 
 <spring:bind path="upload">
-    <div class="form-group required ${status.error ? 'has-error' : ''}">
+    <div class="form-group required">
         <form:label path="upload"><op:translate key="DOCUMENT_EDITION_FORM_FILE_LABEL"/></form:label>
-        <div>
-            <div class="media-left">
-                <label class="btn btn-default btn-file">
-                    <i class="glyphicons glyphicons-folder-open"></i>
-                    <span><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_ACTION"/></span>
-                    <form:input type="file" path="upload" data-change-submit="${namespace}-file-upload-submit"/>
-                </label>
-            </div>
-
-            <div class="media-body">
-                <p class="form-control-static text-muted">
-                    <c:choose>
-                        <c:when test="${not empty form.temporaryFileName}">${form.temporaryFileName}</c:when>
-                        <c:when test="${form.creation}"><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_TEXT"/></c:when>
-                        <c:otherwise>${form.title}</c:otherwise>
-                    </c:choose>
-                </p>
+        <div class="form-row">
+            <div class="col">
+                <div class="custom-file">
+                    <form:input type="file" path="upload" cssClass="custom-file-input ${status.error ? 'is-invalid' : ''}" data-change-submit="${namespace}-file-upload-submit"/>
+                    <form:label path="upload" cssClass="custom-file-label" data-browse="${browse}">
+                        <c:choose>
+                            <c:when test="${not empty form.temporaryFileName}">${form.temporaryFileName}</c:when>
+                            <c:when test="${form.creation}"><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_TEXT"/></c:when>
+                            <c:otherwise>${form.title}</c:otherwise>
+                        </c:choose>
+                    </form:label>
+                    <form:errors path="upload" cssClass="invalid-feedback"/>
+                </div>
             </div>
 
             <c:if test="${not empty form.temporaryFileName and not form.creation}">
-                <div class="media-right">
+                <div class="col-auto">
                     <button type="submit" name="restore" class="btn btn-link">
                         <span><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_RESTORE"/></span>
                     </button>
                 </div>
             </c:if>
         </div>
-        <form:errors path="upload" cssClass="help-block"/>
-        <input id="${namespace}-file-upload-submit" type="submit" name="upload" class="hidden">
+        
     </div>
 </spring:bind>

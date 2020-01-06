@@ -28,7 +28,7 @@
                 </div>
                 
                 <div class="pull-right">
-                    <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-disable-confirmation">
+                    <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#${namespace}-disable-confirmation">
                         <span><op:translate key="DISABLE_SHARING" /></span>
                     </button>
                 </div>
@@ -47,7 +47,7 @@
                             <span><op:translate key="CONFIRM" /></span>
                         </button>
                         
-                        <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#${namespace}-disable-confirmation">
+                        <button type="button" class="btn btn-secondary" data-toggle="collapse" data-target="#${namespace}-disable-confirmation">
                             <span><op:translate key="CANCEL" /></span>
                         </button>
                     </div>
@@ -61,7 +61,7 @@
             <div class="input-group">
                 <form:input id="${namespace}-link-url" path="link.url" readonly="true" cssClass="form-control" />
                 <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" data-clipboard-target="#${namespace}-link-url">
+                    <button type="button" class="btn btn-secondary" data-clipboard-target="#${namespace}-link-url">
                         <i class="glyphicons glyphicons-copy"></i>
                         <span><op:translate key="SHARING_LINK_URL_COPY" /></span>
                     </button>

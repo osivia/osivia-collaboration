@@ -12,7 +12,7 @@
 <div class="portal-table-toolbar-container" data-url="${toolbarUrl}">
     <div>
         <!-- Create local group -->
-        <a href="${createUrl}" class="btn btn-default btn-sm">
+        <a href="${createUrl}" class="btn btn-secondary btn-sm">
             <i class="glyphicons glyphicons-plus"></i>
             <span class="hidden-xs"><op:translate key="TOOLBAR_BUTTON_CREATE_LOCAL_GROUP" /></span>
         </a>

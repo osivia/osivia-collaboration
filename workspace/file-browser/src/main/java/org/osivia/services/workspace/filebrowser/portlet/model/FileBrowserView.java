@@ -10,9 +10,9 @@ import org.apache.commons.lang.StringUtils;
 public enum FileBrowserView {
 
     /** Table view. */
-    TABLE("glyphicons glyphicons-show-thumbnails-with-lines"),
+    TABLE("glyphicons glyphicons-basic-thumbnails-list"),
     /** Thumbnails view. */
-    THUMBNAILS("glyphicons glyphicons-show-thumbnails");
+    THUMBNAILS("glyphicons glyphicons-basic-thumbnails");
 
     
     /** Default view. */

@@ -10,6 +10,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.services.edition.portlet.repository.FileEditionRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -37,7 +38,9 @@ import javax.portlet.PortletException;
 @ComponentScan(basePackages = "org.osivia.services.edition.portlet")
 public class DocumentEditionConfiguration extends CMSPortlet implements PortletConfigAware {
 
-    /** Max upload size per file. */
+    /**
+     * Max upload size per file.
+     */
     public static final Long MAX_UPLOAD_SIZE_PER_FILE = NumberUtils.toLong(System.getProperty("osivia.filebrowser.max.upload.size"), 500) * FileUtils.ONE_MB;
 
 
@@ -120,6 +123,17 @@ public class DocumentEditionConfiguration extends CMSPortlet implements PortletC
     @Bean(name = {"Picture", "Audio", "Video"})
     public FileEditionRepositoryImpl getMirroredFileEditionRepository(FileEditionRepositoryImpl repository) {
         return repository;
+    }
+
+
+    /**
+     * Get CMS service locator.
+     *
+     * @return CMS service locator
+     */
+    @Bean
+    public ICMSServiceLocator getCmsServiceLocator() {
+        return Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
     }
 
 

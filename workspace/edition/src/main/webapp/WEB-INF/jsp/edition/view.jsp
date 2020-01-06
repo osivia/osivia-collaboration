@@ -191,7 +191,7 @@
                     
                         <div>
                             <!-- Upload -->
-                            <label class="btn btn-sm btn-default btn-file">
+                            <label class="btn btn-sm btn-secondary btn-file">
                                 <i class="halflings halflings-folder-open"></i>
                                 <span><op:translate key="WORKSPACE_IMAGE_UPLOAD" /></span>
                                 <form:input type="file" path="visual.upload" />
@@ -199,7 +199,7 @@
                             <input type="submit" name="upload-visual" class="hidden">
                             
                             <!-- Delete -->
-                            <button type="submit" name="delete-visual" class="btn btn-sm btn-default">
+                            <button type="submit" name="delete-visual" class="btn btn-sm btn-secondary">
                                 <i class="halflings halflings-trash"></i>
                                 <span class="sr-only"><op:translate key="WORKSPACE_IMAGE_DELETE" /></span>
                             </button>
@@ -334,11 +334,11 @@
                         <p class="form-control-static">
                             <c:set var="editionUrl"><ttc:documentLink document="${editionForm.editorial.document}" /></c:set>
                                 
-                            <a href="${editionUrl}" class="btn btn-default no-ajax-link">
+                            <a href="${editionUrl}" class="btn btn-secondary no-ajax-link">
                                 <span><op:translate key="WORKSPACE_EDITORIAL_EDIT" /></span>
                             </a>
                         
-                            <a href="#${namespace}-editorial-preview" data-toggle="collapse" class="btn btn-default no-ajax-link">
+                            <a href="#${namespace}-editorial-preview" data-toggle="collapse" class="btn btn-secondary no-ajax-link">
                                 <span><op:translate key="WORKSPACE_EDITORIAL_PREVIEW_DISPLAY" /></span>
                             </a>
                         </p>
@@ -383,7 +383,7 @@
                     </button>
                     
                     <!-- Cancel -->
-                    <button type="submit" name="cancel" class="btn btn-default">
+                    <button type="submit" name="cancel" class="btn btn-secondary">
                         <span><op:translate key="CANCEL" /></span>
                     </button>
                     
@@ -425,7 +425,7 @@
                         <span><op:translate key="DELETE" /></span>
                     </a>
                     
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
                         <span><op:translate key="CANCEL" /></span>
                     </button>
                 </div>

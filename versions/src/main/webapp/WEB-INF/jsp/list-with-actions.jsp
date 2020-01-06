@@ -36,7 +36,7 @@
 					
 					<div class="col-sm-4 actions">
                         <!-- Restore -->
-                        <a href="${restoreUrl}" class="btn btn-default">
+                        <a href="${restoreUrl}" class="btn btn-secondary">
                             <i class="glyphicons glyphicons-pencil"></i>
                             <span class="sr-only"><op:translate key="RESTORE" /></span>
                         </a>

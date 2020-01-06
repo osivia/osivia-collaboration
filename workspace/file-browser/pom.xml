@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.osivia.services.workspace</groupId>
         <artifactId>osivia-services-workspace-parent</artifactId>
-        <version>4.7-SNAPSHOT</version>
+        <version>4.9-SNAPSHOT</version>
     </parent>
 
     <artifactId>osivia-services-workspace-file-browser</artifactId>
@@ -25,7 +25,14 @@
             <groupId>org.jboss.portal</groupId>
             <artifactId>portal-common-lib</artifactId>
         </dependency>
-    
+
+        <!-- BeanShell -->
+        <dependency>
+            <groupId>org.beanshell</groupId>
+            <artifactId>bsh</artifactId>
+            <version>2.0b5</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     
     
@@ -36,6 +43,15 @@
             <plugin>
                 <groupId>org.lesscss</groupId>
                 <artifactId>lesscss-maven-plugin</artifactId>
+            </plugin>
+
+            <!--WAR-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <attachClasses>true</attachClasses>
+                </configuration>
             </plugin>
             
         </plugins>

@@ -72,7 +72,7 @@
                 </button>
                 
                 <!-- Cancel -->
-                <button type="reset" class="btn btn-default" onclick="closeFancybox()">
+                <button type="reset" class="btn btn-secondary" onclick="closeFancybox()">
                     <span><op:translate key="CANCEL" /></span>
                 </button>
             </div>

@@ -4,18 +4,20 @@
 
     <groupId>org.osivia.services</groupId>
     <artifactId>osivia-services-collaboration-parent</artifactId>
-    <version>4.7-SNAPSHOT</version>
+    <version>4.9-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OSIVIA Services - Collaboration parent</name>
 
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <!-- Toutatice -->
-        <toutatice.version>4.7.23-jdk8</toutatice.version>
+        <toutatice.version>4.9-SNAPSHOT</toutatice.version>
 
         <!-- Directory -->
-        <directory.version>4.7.21-jdk8</directory.version>
+        <directory.version>4.9-SNAPSHOT</directory.version>
 
         <!-- JBoss -->
         <jboss-portal.version>2.7.2</jboss-portal.version>
@@ -45,20 +47,6 @@
     <dependencyManagement>
         <dependencies>
 
-            <!-- Toutatice -->
-            <dependency>
-                <groupId>toutatice-portail.cms</groupId>
-                <artifactId>toutatice-portail-cms-nuxeo-dependencies</artifactId>
-                <version>${toutatice.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>toutatice-portail.cms</groupId>
-                <artifactId>toutatice-portail-cms-nuxeo-dependencies-test</artifactId>
-                <version>${toutatice.version}</version>
-                <scope>test</scope>
-            </dependency>
-
             <!-- JBoss -->
             <dependency>
                 <groupId>org.jboss.portal</groupId>
@@ -83,10 +71,22 @@
         <dependency>
             <groupId>toutatice-portail.cms</groupId>
             <artifactId>toutatice-portail-cms-nuxeo-dependencies</artifactId>
+            <version>${toutatice.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>toutatice-portail.cms</groupId>
             <artifactId>toutatice-portail-cms-nuxeo-dependencies-test</artifactId>
+            <version>${toutatice.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Directory -->
+        <dependency>
+            <groupId>org.osivia.services.directory.socle</groupId>
+            <artifactId>osivia-services-directory-socle-interfaces</artifactId>
+            <version>${directory.version}</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
@@ -100,11 +100,13 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.3</version>
+                    <version>3.8.1</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <source>1.8</source>
                         <target>1.8</target>
+                        <testSource>1.8</testSource>
+                        <testTarget>1.8</testTarget>
                     </configuration>
                 </plugin>
 
@@ -112,7 +114,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.7</version>
+                    <version>3.1.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                     </configuration>
@@ -122,14 +124,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.2.1</version>
+                    <version>2.5.3</version>
+                    <configuration>
+                        <releaseProfiles>unpack,pack</releaseProfiles>
+                    </configuration>
                 </plugin>
 
                 <!-- WAR -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>3.2.3</version>
                     <configuration>
                         <archive>
                             <manifest>
@@ -143,7 +148,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-ear-plugin</artifactId>
-                    <version>2.10.1</version>
+                    <version>3.0.1</version>
                     <configuration>
                         <archive>
                             <manifest>
@@ -224,6 +229,31 @@
 
         <plugins>
 
+            <!-- Maven enforcer -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M2</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.0</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>1.8</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Javadocs -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -260,8 +290,8 @@
         <url>https://github.com/osivia/osivia-collaboration</url>
         <connection>scm:git:ssh://git@github.com/osivia/osivia-collaboration.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/osivia/osivia-collaboration.git</developerConnection>
-        <tag>HEAD</tag>
-	</scm>
+	  <tag>HEAD</tag>
+  </scm>
 
 
     <distributionManagement>

@@ -44,7 +44,7 @@
             </c:choose>
 
             <!-- Download -->
-            <a href="${url}" target="_blank" class="btn btn-default btn-block no-ajax-link">
+            <a href="${url}" target="_blank" class="btn btn-secondary btn-block no-ajax-link">
                 <span><op:translate key="DOWNLOAD" /></span>
             </a>
         </div>
