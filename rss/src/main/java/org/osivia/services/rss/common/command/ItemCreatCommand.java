@@ -7,9 +7,8 @@ import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.osivia.services.rss.common.repository.ContainerRepository;
+import org.osivia.services.rss.common.repository.ItemRepository;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
-import org.osivia.services.rss.feedRss.portlet.repository.ItemRepository;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -57,12 +56,14 @@ public class ItemCreatCommand implements INuxeoCommand {
         properties.set(ItemRepository.AUTHOR_PROPERTY, this.form.getAuthor());
         properties.set(ItemRepository.CATEGORY_PROPERTY, this.form.getCategory());
         properties.set(ItemRepository.DESCRIPTION_PROPERTY, this.form.getDescription());
+        properties.set(ItemRepository.DESC_PROPERTY, this.form.getDescription());
         properties.set(ItemRepository.ENCLOSURE_PROPERTY, this.form.getEnclosure());
         properties.set(ItemRepository.GUID_PROPERTY, this.form.getGuid());
         properties.set(ItemRepository.LINK_PROPERTY, this.form.getLink());
         properties.set(ItemRepository.PUBDATE_PROPERTY, this.form.getPubDate());
         properties.set(ItemRepository.SOURCES_PROPERTY, this.form.getSourceRss());
-        properties.set(ItemRepository.TITLE_PROPERTY, this.form.getTitle());     
+        properties.set(ItemRepository.TITLE_PROPERTY, this.form.getTitle());
+        properties.set(ItemRepository.NAME_PROPERTY, this.form.getTitle()); 
         properties.set(ItemRepository.CONTENEUR_PROPERTY, this.form.getIdConteneur());
         
         // Mise à jour du conteneur RSS avec l'url, le nom du flux, la synchronisation

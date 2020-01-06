@@ -1,5 +1,7 @@
 package org.osivia.services.rss.feedRss.portlet.model;
 
+import java.util.Date;
+
 public class ItemRssModel {
 
     public String idConteneur;   
@@ -7,14 +9,14 @@ public class ItemRssModel {
     public String link;
     public String description;
     public String author;    
-    public String pubDate;
+    public Date pubDate;
     public String guid; 
     public String category;
     public String enclosure;
     public String sourceRss;
     public String path;
 
-    public ItemRssModel(String title, String link, String description, String author, String pubDate, String guid, String idConteneur,
+    public ItemRssModel(String title, String link, String description, String author, Date pubDate, String guid, String idConteneur,
     		String category, String enclosure, String sourceRss) {
         this.idConteneur = idConteneur;
     	this.title = title;
@@ -43,10 +45,6 @@ public class ItemRssModel {
         return description;
     }
 
-    public String getPubDate() {
-        return pubDate;
-    }
-
 	public void setTitle(String title) {
 		this.title = title;
 	}
@@ -57,10 +55,6 @@ public class ItemRssModel {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public void setPubDate(String pubDate) {
-		this.pubDate = pubDate;
 	}
 
 	public String getIdConteneur() {
@@ -149,6 +143,14 @@ public class ItemRssModel {
         } else if (!guid.equals(other.guid))
             return false;
         return true;
-    }	
+    }
+
+	public Date getPubDate() {
+		return pubDate;
+	}
+
+	public void setPubDate(Date pubDate) {
+		this.pubDate = pubDate;
+	}	
 	
 }

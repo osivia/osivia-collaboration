@@ -10,19 +10,19 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Feed form validator.
+ * Modif form validator.
  * 
  * @author Frédéric Boudan
  * 
  * @see Validator
  */
 @Component
-public class FeedFormValidator implements Validator {
+public class ModifFormValidator implements Validator {
 
     /**
      * Constructor.
      */
-    public FeedFormValidator() {
+    public ModifFormValidator() {
         super();
     }
 
@@ -42,23 +42,6 @@ public class FeedFormValidator implements Validator {
 
 		// Form
 		FeedRssModel form = (FeedRssModel) target;
-		
-		// URL feed 
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "url", "NotEmpty");
-		
-		// validate url	
-		if (!errors.hasFieldErrors()) {
-			try {
-				URL url = new URL(form.getUrl()); 
-				url.openStream();
-			} catch (IOException e) {
-				errors.rejectValue("url", "Invalid");
-			}
-			
-			if(form.getMap().containsValue(form.getUrl())) {
-				errors.rejectValue("url", "Duplicated");
-			}
-		}
 		
 		// DisplayName feed 
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "displayName", "NotEmpty");

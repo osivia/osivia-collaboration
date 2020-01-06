@@ -3,6 +3,7 @@ package org.osivia.services.rss.feedRss.portlet.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.ActionResponse;
@@ -17,10 +18,10 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.common.model.FeedRssModel;
 import org.osivia.services.rss.common.repository.ContainerRepository;
+import org.osivia.services.rss.common.repository.ItemRepository;
 import org.osivia.services.rss.common.utility.RssUtility;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
 import org.osivia.services.rss.feedRss.portlet.repository.FeedRepository;
-import org.osivia.services.rss.feedRss.portlet.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -89,9 +90,9 @@ public class FeedServiceImpl implements FeedService {
 			if (items != null) {
 				if (items.size() >= 1) {
 					// Recherche la liste des Items correspondant au flux
-					List<ItemRssModel> itemsNuxeo = this.repositoryItem.getListItemRss(portalControllerContext);
+					List<ItemRssModel> itemsNuxeo = this.repositoryItem.getListItemRss(portalControllerContext, feed.getSyncId());
 
-					List<ItemRssModel> itemsSav = items;
+					List<ItemRssModel> itemsSav = new ArrayList<ItemRssModel>(items);;
 					// Comparaison de la liste restituée par la lecture du flux et les Items
 					// présents dans Nuxeo
 					// Si Item Nuxeo présent dans le flux lut alors on le supprime de la liste (afin
@@ -121,9 +122,9 @@ public class FeedServiceImpl implements FeedService {
 		return this.repository.getCurrentDocument(portalControllerContext);
 	}
 	
-    public Set<String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException {
+    public Map<String, String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException {
 
-    	Set<String> map = this.repository.getMapFeed(portalControllerContext);    	
+    	Map<String, String> map = this.repository.getMapFeed(portalControllerContext);    	
         return map; 
     }
 

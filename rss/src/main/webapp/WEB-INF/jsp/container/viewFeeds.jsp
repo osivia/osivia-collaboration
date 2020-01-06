@@ -37,7 +37,7 @@
 						</portlet:renderURL>
 						<tr>
 							<td><a href="${editFeed}">${feed.displayName}</a></td>
-							<td><a href="${editFeed}">${feed.url}</a></td>
+							<td>${feed.url}</td>
 						</tr>
 					</c:forEach>
 				</table>

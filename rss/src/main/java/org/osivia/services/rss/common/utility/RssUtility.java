@@ -4,9 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -52,7 +57,7 @@ public class RssUtility {
         String title = "";
         String link = "";
         String author = "";
-        String pubDate = "";
+        Date pubDate = null;
         String guid = "";
         String category = "";
         String enclosure = "";
@@ -60,6 +65,7 @@ public class RssUtility {
         String idConteneur = feed.getSyncId();
     	ItemRssModel rss = null;
         List<ItemRssModel> list = new ArrayList<ItemRssModel>();
+	    SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH);
     	
 		try {
 			
@@ -107,7 +113,11 @@ public class RssUtility {
                         guid = getCharacterData(event, eventReader);
                         break;
                     case PUB_DATE:
-                        pubDate = getCharacterData(event, eventReader);
+                		try {
+                			pubDate = format.parse(getCharacterData(event, eventReader).substring(0, 16));
+                		} catch (ParseException e) {
+                			e.printStackTrace();
+                		}                    	
                         break;
                     case SOURCE:
                     	sourceRss = getCharacterData(event, eventReader);
@@ -142,6 +152,8 @@ public class RssUtility {
 	public static String getEnclosure(XMLEvent event, XMLEventReader eventReader)
             throws XMLStreamException {
         String result = "";
+        QName hrefQName = new QName("", "url");
+        result = event.asStartElement().getAttributeByName(hrefQName).getValue();
 //        Iterator<Attribute> attributes = event.ATTRIBUTE.getName;      
 //        while(attributes.hasNext()) {
 //        	if(attributes.equals("URL")){

@@ -21,27 +21,18 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ItemListCommand implements INuxeoCommand {
 
-//    private final String syncId;
+    private final String syncId;
 //    private final String path;
 //	
 //	/**
 //	 * Constructor.
 //	 *
 //	 */
-//	public ItemListCommand(String syncId, String path) {
-//		super();
-//        this.syncId = syncId;
-//        this.path = path; 
-//	}
-	
-	/**
-	 * Constructor.
-	 *
-	 */
-	public ItemListCommand() {
+	public ItemListCommand(String syncId) {
 		super();
+        this.syncId = syncId;
+//        this.path = path; 
 	}
-
 
 	@Override
 	public Object execute(Session nuxeoSession) throws Exception {
@@ -49,7 +40,7 @@ public class ItemListCommand implements INuxeoCommand {
 		// Clause
 		StringBuilder clause = new StringBuilder();
 		clause.append("ecm:primaryType = 'RssItem' ");
-//		clause.append("AND rssi:syncId = '").append(this.syncId).append("' ");;
+		clause.append("AND rssi:syncId = '").append(this.syncId).append("' ");;
 
 		String filteredRequest = NuxeoQueryFilter.addPublicationFilter(NuxeoQueryFilterContext.CONTEXT_LIVE, clause.toString());
 		

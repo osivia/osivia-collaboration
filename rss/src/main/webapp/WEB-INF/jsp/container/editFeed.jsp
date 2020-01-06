@@ -7,36 +7,38 @@
 <%@ page isELIgnored="false" %>
 
 <portlet:actionURL name="modif" var="modif" copyCurrentRenderParameters="true" />
-<portlet:actionURL name="del" var="delFeed" copyCurrentRenderParameters="true"/>
+<portlet:actionURL name="del" var="delFeed" copyCurrentRenderParameters="true" />
 <portlet:renderURL var="cancelFeed">
 	<portlet:param name="view" value="container" />
 </portlet:renderURL>
 
 <form:form action="${modif}" method="post" modelAttribute="form">
 
-		<spring:bind path="url">
-			<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">    			
-   				<form:label path="url" cssClass="control-label"><op:translate key="URL"/></form:label>
-          		<form:input path="url" type="text" cssClass="form-control" />
-            	<form:errors path="url" cssClass="help-block" />
-      		</div>
-		</spring:bind>
-		
+	<fieldset>
+		<legend align="left">Edition du flux ${form.url}:</legend>
 		<spring:bind path="displayName">
-			<div class="form-group ${status.error ? 'has-error has-feedback' : ''}">    			
-   				<form:label path="displayName" cssClass="control-label"><op:translate key="NAME_TITLE"/></form:label>
-          		<form:input path="displayName" type="text" cssClass="form-control" />
-            	<form:errors path="displayName" cssClass="help-block" />
-      		</div>
-		</spring:bind>		
-			
-	    <div>
-	        <!-- Cancel -->
-	        <a href="${cancelFeed}" class="btn btn-default">
-	            <span><op:translate key="CANCEL"/></span>
-	        </a>
-	    	<button type="submit" class="btn btn-primary"><op:translate key="MOD_FEED"/></button>
-	 		<a href="${delFeed}" class="btn btn-primary"><span><op:translate key="DEL_FEED"/></span></a>
-	 	</div>
-		
+			<div
+				class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
+				<form:label path="displayName" cssClass="control-label">
+					<op:translate key="NAME_TITLE" />
+				</form:label>
+				<form:input path="displayName" type="text" cssClass="form-control" />
+				<form:errors path="displayName" cssClass="help-block" />
+			</div>
+		</spring:bind>
+
+	</fieldset>
+
+	<div>
+		<!-- Cancel -->
+		<a href="${cancelFeed}" class="btn btn-default"> <span><op:translate
+					key="CANCEL" /></span>
+		</a>
+		<button type="submit" class="btn btn-primary">
+			<op:translate key="MOD_FEED" />
+		</button>
+		<a href="${delFeed}" class="btn btn-primary"><span><op:translate
+					key="DEL_FEED" /></span></a>
+	</div>
+
 </form:form>

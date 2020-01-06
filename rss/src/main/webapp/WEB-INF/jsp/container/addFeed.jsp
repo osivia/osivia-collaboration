@@ -22,7 +22,7 @@
 		</spring:bind>
 		
 		<spring:bind path="displayName">
-			<div class="form-group ${status.error ? 'has-error has-feedback' : ''}">    			
+			<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">    			
    				<form:label path="displayName" cssClass="control-label"><op:translate key="NAME_TITLE"/></form:label>
           		<form:input path="displayName" type="text" cssClass="form-control" />
             	<form:errors path="displayName" cssClass="help-block" />

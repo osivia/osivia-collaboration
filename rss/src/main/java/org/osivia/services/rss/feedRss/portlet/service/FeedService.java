@@ -1,7 +1,7 @@
 package org.osivia.services.rss.feedRss.portlet.service;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.Map;
 
 import javax.portlet.PortletException;
 
@@ -19,7 +19,7 @@ import org.osivia.services.rss.common.model.FeedRssModel;
 public interface FeedService {
 
     /**
-     * get List Container.
+     * get List Feed.
      *
      * @param portalControllerContext portal controller context
      * @return List<ContainerRssModel>
@@ -31,7 +31,7 @@ public interface FeedService {
      * create Feed.
      *
      * @param portalControllerContext portal controller context
-     * @param model ContainerRssModel
+     * @param model FeedRssModel
      * @throws PortletException
      */
 	void creatFeed(PortalControllerContext portalControllerContext, FeedRssModel model) throws PortletException;	
@@ -40,7 +40,6 @@ public interface FeedService {
      * synchronization Feed with Items.
      *
      * @param portalControllerContext portal controller context
-     * @param model ContainerRssModel
      * @throws PortletException
      */
 	void synchro(PortalControllerContext portalControllerContext) throws PortletException;
@@ -61,7 +60,7 @@ public interface FeedService {
      * @return Map
      * @throws PortletException
      */
-	Set<String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException;
+    Map<String, String> getMapFeed(PortalControllerContext portalControllerContext) throws PortletException;
 	
     /**
      * Modification Feed.
@@ -115,7 +114,7 @@ public interface FeedService {
      * remove Container.
      *
      * @param portalControllerContext portal controller context
-     * @param docid String
+     * @param model ContainerRssModel
      * @throws PortletException
      */
 	void removeContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException, IOException;	

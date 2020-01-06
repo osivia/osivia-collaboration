@@ -20,6 +20,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 @Configuration
 @ComponentScan(basePackages={"org.osivia.services.rss.feedRss.portlet", "org.osivia.services.rss.common"})
@@ -82,4 +83,15 @@ public class FeedRssConfiguration extends CMSPortlet implements PortletConfigAwa
     public IPortalUrlFactory getPortalUrlFactory() {
         return Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
     }	
+    
+
+    /**
+     * Get document DAO.
+     *
+     * @return DAO
+     */
+    @Bean
+    public DocumentDAO getDocumentDao() {
+        return DocumentDAO.getInstance();
+    }
 }
