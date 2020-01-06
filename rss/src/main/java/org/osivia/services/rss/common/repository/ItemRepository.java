@@ -1,16 +1,13 @@
 package org.osivia.services.rss.common.repository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
-import org.osivia.services.rss.templateRss.portlet.model.Containers;
 
 /**
  * RSS repository interface.
@@ -83,15 +80,6 @@ public interface ItemRepository {
    List<ItemRssModel> getListItemRss(PortalControllerContext portalControllerContext, String syncid) throws PortletException;   
    
    /**
-    * Search documents with criteria
-    * @param portalControllerContext
-    * @param filter
-    * @param page
-    * @return PaginableDocuments
-    */
-   PaginableDocuments searchDocuments(PortalControllerContext portalControllerContext, String basePath, String filter, int page) throws PortletException;
-   
-   /**
     * Get document properties.
     *
     * @param document Nuxeo document
@@ -100,14 +88,4 @@ public interface ItemRepository {
     */
    Map<String, String> getDocumentProperties(PortalControllerContext portalControllerContext, Document document) throws PortletException;
    
-	/**
-	 * get feeds list RSS.
-	 *
-	 * @param portalControllerContext portal controller context
-	 * @throws PortletException
-	 */
-	Containers getListFeedRss(PortalControllerContext portalControllerContext) throws PortletException;
-
-	List<ItemRssModel> getListItemRss(PortalControllerContext portalControllerContext, HashMap<List<String>, List<String>> map, int nbItems)
-			throws PortletException;
 }
