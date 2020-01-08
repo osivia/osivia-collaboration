@@ -204,7 +204,7 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
      * @param nxql                  NXQL request
      * @return interpreted NXQL request
      */
-    private String beanShellInterpretation(NuxeoController nuxeoController, NuxeoDocumentContext parentDocumentContext, String nxql) throws PortletException, EvalError {
+    protected String beanShellInterpretation(NuxeoController nuxeoController, NuxeoDocumentContext parentDocumentContext, String nxql) throws PortletException, EvalError {
         // Request
         PortletRequest request = nuxeoController.getRequest();
 
