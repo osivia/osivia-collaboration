@@ -18,9 +18,7 @@ public class Form {
     private String bodyLabel;
     private String nom;
     private String nomLabel;
-    private String captcha;
-    private String token;
-    private boolean captchaValidate;
+    private FormCaptcha captcha;
     private boolean sent;
 
     public String getTo() {
@@ -63,7 +61,6 @@ public class Form {
         this.sent = sent;
     }
 
-
     public String getNom() {
         return nom;
     }
@@ -71,7 +68,6 @@ public class Form {
     public void setNom(String nom) {
         this.nom = nom;
     }
-
 
     public String getFromLabel() {
         return fromLabel;
@@ -105,29 +101,12 @@ public class Form {
         this.nomLabel = nomLabel;
     }
 
-    public String getCaptcha() {
+    public FormCaptcha getCaptcha() {
         return captcha;
     }
 
-    public void setCaptcha(String captcha) {
+    public void setCaptcha(FormCaptcha captcha) {
         this.captcha = captcha;
     }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public boolean isCaptchaValidate() {
-        return captchaValidate;
-    }
-
-    public void setCaptchaValidate(boolean captchaValidate) {
-        this.captchaValidate = captchaValidate;
-    }
-
 }
 
