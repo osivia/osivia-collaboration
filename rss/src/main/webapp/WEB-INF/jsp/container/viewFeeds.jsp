@@ -45,7 +45,7 @@
 		</ul>
 	</div>
 
-	<div>
+	<div  class="float-right">
 		<a href="${addUrl}" class="btn btn-primary"><op:translate
 				key="ADD_FEED" /></a>
 		<button type="submit" name="synchro" class="btn btn-primary">

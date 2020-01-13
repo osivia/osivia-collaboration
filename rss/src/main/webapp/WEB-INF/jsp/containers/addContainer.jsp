@@ -29,7 +29,7 @@
       		</div>
 		</spring:bind>		
 		
-	    <div class="col-sm-offset-4 col-sm-8 col-lg-offset-5 col-lg-7">
+	    <div class="float-right"">
 	        <!-- Cancel -->
 	        <a href="${cancelUrl}" class="btn btn-default">
 	            <span><op:translate key="CANCEL"/></span>

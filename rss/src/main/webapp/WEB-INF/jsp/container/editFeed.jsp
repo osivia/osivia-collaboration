@@ -15,7 +15,7 @@
 <form:form action="${modif}" method="post" modelAttribute="form">
 
 	<fieldset>
-		<legend align="left">Edition du flux ${form.url}:</legend>
+		<legend align="left">Edition du flux ${form.url} :</legend>
 		<spring:bind path="displayName">
 			<div
 				class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
@@ -25,11 +25,16 @@
 				<form:input path="displayName" type="text" cssClass="form-control" />
 				<form:errors path="displayName" cssClass="help-block" />
 			</div>
+			
 		</spring:bind>
+		
+<%-- 		<spring:bind path="image">
+			<div c
+		</spring:bind>  --%>
 
 	</fieldset>
 
-	<div>
+	<div class="float-right">
 		<!-- Cancel -->
 		<a href="${cancelFeed}" class="btn btn-default"> <span><op:translate
 					key="CANCEL" /></span>

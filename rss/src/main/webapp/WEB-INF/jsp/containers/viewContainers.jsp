@@ -32,8 +32,7 @@
 		</table>
 	</c:if>
 
-</div>
-
-<div>
-	<a href="${addUrl}" class="btn btn-primary"><op:translate key="ADD_CONTAINER"/></a>
+	<div class="float-right">
+		<a href="${addUrl}" class="btn btn-primary"><op:translate key="ADD_CONTAINER"/></a>
+	</div>
 </div>

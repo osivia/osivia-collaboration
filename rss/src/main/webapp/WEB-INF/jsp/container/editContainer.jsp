@@ -22,7 +22,7 @@
       		</div>
 		</spring:bind>
 		
-	    <div>
+	    <div  class="float-right">
 	        <!-- Cancel -->
 	        <a href="${cancelUrl}" class="btn btn-default">
 	            <span><op:translate key="CANCEL"/></span>
