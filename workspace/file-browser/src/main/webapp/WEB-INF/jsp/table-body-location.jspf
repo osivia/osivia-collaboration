@@ -1,9 +1,7 @@
 <div class="portal-table-cell" data-column="location">
-    <div class="portal-table-cell-inner" data-column="location">
-        <div class="text-truncate">
-            <a href="javascript:" data-location-path="${item.parentDocument.path}">
-                <span><ttc:title document="${item.parentDocument}" linkable="false" /></span>
-            </a>
-        </div>
+    <div class="text-truncate">
+        <a href="javascript:" data-location-path="${item.parentDocument.path}">
+            <span><ttc:title document="${item.parentDocument}" linkable="false" /></span>
+        </a>
     </div>
 </div>
