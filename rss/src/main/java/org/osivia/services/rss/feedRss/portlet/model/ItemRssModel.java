@@ -2,6 +2,8 @@ package org.osivia.services.rss.feedRss.portlet.model;
 
 import java.util.Date;
 
+import org.osivia.services.rss.common.model.Picture;
+
 public class ItemRssModel {
 
     public String idConteneur;   
@@ -15,9 +17,10 @@ public class ItemRssModel {
     public String enclosure;
     public String sourceRss;
     public String path;
+    public Picture visual;    
 
     public ItemRssModel(String title, String link, String description, String author, Date pubDate, String guid, String idConteneur,
-    		String category, String enclosure, String sourceRss) {
+    		String category, String enclosure, String sourceRss, Picture visual) {
         this.idConteneur = idConteneur;
     	this.title = title;
         this.link = link;
@@ -28,6 +31,7 @@ public class ItemRssModel {
         this.category = category;
         this.enclosure = enclosure;
         this.sourceRss = sourceRss;
+        this.visual = visual;
     }
 
     public ItemRssModel() {
@@ -151,6 +155,14 @@ public class ItemRssModel {
 
 	public void setPubDate(Date pubDate) {
 		this.pubDate = pubDate;
+	}
+
+	public Picture getVisual() {
+		return visual;
+	}
+
+	public void setVisual(Picture visual) {
+		this.visual = visual;
 	}	
 	
 }

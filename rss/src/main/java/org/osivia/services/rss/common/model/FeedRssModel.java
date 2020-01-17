@@ -14,6 +14,7 @@ public class FeedRssModel {
 	public String url;
 	public String syncId;
 	public Map<String, String> map;
+	public Picture visual; 
 
 	public FeedRssModel() {
 	}
@@ -48,5 +49,13 @@ public class FeedRssModel {
 
 	public void setMap(Map<String, String> map) {
 		this.map = map;
+	}
+
+	public Picture getVisual() {
+		return visual;
+	}
+
+	public void setVisual(Picture visual) {
+		this.visual = visual;
 	}
 }

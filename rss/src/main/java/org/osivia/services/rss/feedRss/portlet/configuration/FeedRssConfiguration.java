@@ -3,6 +3,8 @@ package org.osivia.services.rss.feedRss.portlet.configuration;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -16,6 +18,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.portlet.context.PortletConfigAware;
+import org.springframework.web.portlet.multipart.CommonsPortletMultipartResolver;
+import org.springframework.web.portlet.multipart.PortletMultipartResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
@@ -94,4 +98,17 @@ public class FeedRssConfiguration extends CMSPortlet implements PortletConfigAwa
     public DocumentDAO getDocumentDao() {
         return DocumentDAO.getInstance();
     }
+    
+    /**
+     * Get multipart resolver.
+     *
+     * @return multipart resolver
+     */
+    @Bean(name = "portletMultipartResolver")
+    public PortletMultipartResolver getMultipartResolver() {
+        CommonsPortletMultipartResolver multipartResolver = new CommonsPortletMultipartResolver();
+        multipartResolver.setDefaultEncoding(CharEncoding.UTF_8);
+        multipartResolver.setMaxUploadSizePerFile(2 * FileUtils.ONE_MB);
+        return multipartResolver;
+    }    
 }

@@ -1,5 +1,6 @@
 package org.osivia.services.rss.feedRss.portlet.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.common.model.FeedRssModel;
+import org.osivia.services.rss.common.model.Picture;
 import org.osivia.services.rss.common.repository.ContainerRepository;
 import org.osivia.services.rss.common.repository.ItemRepository;
 import org.osivia.services.rss.common.utility.RssUtility;
@@ -25,6 +27,7 @@ import org.osivia.services.rss.feedRss.portlet.repository.FeedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * RSS service interface
@@ -219,5 +222,38 @@ public class FeedServiceImpl implements FeedService {
     private String getRedirectionUrl(PortalControllerContext portalControllerContext, boolean refresh, String path) throws PortletException {
         // Redirection URL
         return this.portalUrlFactory.getCMSUrl(portalControllerContext, null, path, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null, null);
-    }	
+    }
+
+	@Override
+	public void uploadVisual(PortalControllerContext portalControllerContext, FeedRssModel form)
+			throws PortletException, IOException {
+		// Visual
+		Picture visual = form.getVisual();
+		visual.setUpdated(true);
+		visual.setDeleted(false);
+
+		// Temporary file
+		MultipartFile upload = visual.getUpload();
+		File temporaryFile = File.createTempFile("visual-", ".tmp");
+		temporaryFile.deleteOnExit();
+		upload.transferTo(temporaryFile);
+		visual.setTemporaryFile(temporaryFile);
+		form.setVisual(visual);
+	}
+
+	@Override
+	public void deleteVisual(PortalControllerContext portalControllerContext, FeedRssModel form)
+			throws PortletException {
+		// Visual
+		Picture visual = form.getVisual();
+		visual.setUpdated(false);
+		visual.setDeleted(true);
+	}	
+	
+	@Override
+	public void setVisual(PortalControllerContext portalControllerContext, FeedRssModel form) throws PortletException {
+		// TODO Auto-generated method stub
+		
+	}	
+	
 }

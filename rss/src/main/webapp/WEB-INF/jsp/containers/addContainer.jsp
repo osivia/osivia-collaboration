@@ -31,7 +31,7 @@
 		
 	    <div class="float-right"">
 	        <!-- Cancel -->
-	        <a href="${cancelUrl}" class="btn btn-default">
+	        <a href="${cancelUrl}" class="btn btn-secondary">
 	            <span><op:translate key="CANCEL"/></span>
 	        </a>
 	    	<button type="submit" name="add" class="btn btn-primary"><op:translate key="ADD_CONTAINER"/></button>

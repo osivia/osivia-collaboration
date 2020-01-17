@@ -27,6 +27,8 @@ public interface ContainerRepository {
 	String URL_PROPERTY = "url";
 	/** Id sync flux RSS */
 	String ID_PROPERTY = "syncId";
+	/** Logo flux RSS */
+	String LOGO_PROPERTY = "logo";	
     /** CMS path window property name. */
     String CMS_PATH_WINDOW_PROPERTY = "osivia.feed.cmsPath";	
 	   

@@ -15,5 +15,20 @@
 	<packaging>war</packaging>
 
 	<name>OSIVIA Services - RSS</name>
+	
+	<build>
+		<plugins>
+
+            <!-- WAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <attachClasses>true</attachClasses>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>	
 
 </project>

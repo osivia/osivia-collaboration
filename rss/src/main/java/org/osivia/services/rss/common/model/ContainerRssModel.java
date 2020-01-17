@@ -20,6 +20,8 @@ public class ContainerRssModel {
 	public Document doc;
 	public Set<String> map;
 	public String docId;
+	// Picture for button slider
+	public Picture visual;
 	
     /** feeds sources. */
     private List<FeedRssModel> feedSources;	
@@ -79,6 +81,14 @@ public class ContainerRssModel {
 
 	public void setDocId(String docId) {
 		this.docId = docId;
+	}
+
+	public Picture getVisual() {
+		return visual;
+	}
+
+	public void setVisual(Picture visual) {
+		this.visual = visual;
 	}
 
 }

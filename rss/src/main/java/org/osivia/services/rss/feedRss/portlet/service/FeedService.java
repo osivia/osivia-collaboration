@@ -119,4 +119,32 @@ public interface FeedService {
      */
 	void removeContainer(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException, IOException;	
 	
+    /**
+     * Upload visual.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form FeedRssModel 
+     * @throws PortletException
+     * @throws IOException
+     */
+    void uploadVisual(PortalControllerContext portalControllerContext, FeedRssModel form) throws PortletException, IOException;
+
+
+    /**
+     * Delete visual.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form FeedRssModel 
+     * @throws PortletException
+     */
+    void deleteVisual(PortalControllerContext portalControllerContext, FeedRssModel form) throws PortletException;    
+    
+    /**
+     * Set Visual 
+     * 
+     * @param portalControllerContext portal controller context
+     * @param form FeedRssModel 
+     * @throws PortletException
+     */
+    void setVisual(PortalControllerContext portalControllerContext, FeedRssModel form) throws PortletException;
 }

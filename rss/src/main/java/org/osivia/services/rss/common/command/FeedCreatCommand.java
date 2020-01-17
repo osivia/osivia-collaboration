@@ -1,5 +1,6 @@
 package org.osivia.services.rss.common.command;
 
+import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,13 +9,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
+import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.NuxeoPropertyList;
 import org.nuxeo.ecm.automation.client.model.NuxeoPropertyMap;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.common.model.FeedRssModel;
+import org.osivia.services.rss.common.model.Picture;
 import org.osivia.services.rss.common.repository.ContainerRepository;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -62,9 +66,28 @@ public class FeedCreatCommand implements INuxeoCommand {
         PropertyMap properties = new PropertyMap();
         String feedsSources = this.getFeedsSourcesProperty(form.getFeedSources());
         properties.set(ContainerRepository.FEEDS_PROPERTY, feedsSources);
-        
+
         // Mise à jour du conteneur RSS avec l'url, le nom du flux, l'id de synchronisation
         Document document = documentService.update(parent, properties, true);
+        
+        // Visual
+        Picture visual = this.form.getVisual();
+        if(visual != null) {
+        int i = form.getFeedSources().size() -1 ;        	
+        if (visual.isUpdated()) {
+            // Temporary file
+            File temporaryFile = visual.getTemporaryFile();
+            
+            // File blob
+            Blob blob = new FileBlob(temporaryFile);
+            blob.setFileName(visual.getName());
+            documentService.setBlob(this.form.doc, blob, "rssc:feeds/" + i + "/logos");
+
+            // Delete temporary file
+            temporaryFile.delete();
+        } else if (visual.isDeleted()) {
+            documentService.removeBlob(this.form.doc, "rssc:feeds[ " + i + "].logos");
+        }        }
         
     	return document;
 	}
@@ -81,8 +104,6 @@ public class FeedCreatCommand implements INuxeoCommand {
 	 * @return property
 	 */
 	private String getFeedsSourcesProperty(List<FeedRssModel> sources) {
-
-
 
 		String property;
 
@@ -110,4 +131,5 @@ public class FeedCreatCommand implements INuxeoCommand {
 
 		return property;
 	}
+	
 }

@@ -24,7 +24,7 @@
 		
 	    <div  class="float-right">
 	        <!-- Cancel -->
-	        <a href="${cancelUrl}" class="btn btn-default">
+	        <a href="${cancelUrl}" class="btn btn-secondary">
 	            <span><op:translate key="CANCEL"/></span>
 	        </a>
 	    	<a href="${del}" class="btn btn-primary"><op:translate key="DEL_CONTAINER"/></a>

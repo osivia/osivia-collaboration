@@ -65,6 +65,7 @@ public class FeedRepositoryImpl implements FeedRepository{
         }
         
 		model.setFeedSources(feed);
+		
 		// Nuxeo command
 		INuxeoCommand nuxeoCommand;
 		nuxeoCommand = this.applicationContext.getBean(FeedCreatCommand.class, model);
@@ -120,9 +121,6 @@ public class FeedRepositoryImpl implements FeedRepository{
 		
         ArrayList<FeedRssModel> listFeed = new ArrayList<FeedRssModel>();
         PropertyList propertyList = (PropertyList) document.getProperties().get(FEEDS_PROPERTY);
-        for (FeedRssModel feed : model.getFeedSources()) {
-        	listFeed.add(feed);
-        }
         if (propertyList != null) {
         	FeedRssModel feedNuxeo;
             for (int i = 0; i < propertyList.size(); i++) {
@@ -133,6 +131,11 @@ public class FeedRepositoryImpl implements FeedRepository{
 				feedNuxeo.setDisplayName(map.getString(DISPLAY_NAME_PROPERTY));
 				listFeed.add(feedNuxeo);
             }        	
+        }
+        for (FeedRssModel feed : model.getFeedSources()) {
+        	model.setVisual(feed.getVisual());
+        	feed.getVisual().setName(feed.getSyncId());;
+        	listFeed.add(feed);
         }
 	    return listFeed;
 	}	

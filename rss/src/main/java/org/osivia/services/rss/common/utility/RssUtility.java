@@ -1,5 +1,7 @@
 package org.osivia.services.rss.common.utility;
 
+import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -11,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -21,7 +24,9 @@ import javax.xml.stream.events.XMLEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.services.rss.common.model.FeedRssModel;
+import org.osivia.services.rss.common.model.Picture;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Read RSS feed
@@ -62,6 +67,7 @@ public class RssUtility {
         String category = "";
         String enclosure = "";
         String sourceRss = "";
+        Picture visual = null;
         String idConteneur = feed.getSyncId();
     	ItemRssModel rss = null;
         List<ItemRssModel> list = new ArrayList<ItemRssModel>();
@@ -126,7 +132,7 @@ public class RssUtility {
                 } else if (event.isEndElement()) {
                     if (event.asEndElement().getName().getLocalPart() == (ITEM)) {
                     	// Création du document nuxeo contenant le flux RSS
-                        rss = new ItemRssModel(title, link, description, author, pubDate, guid, idConteneur, category, enclosure, sourceRss);   
+                        rss = new ItemRssModel(title, link, description, author, pubDate, guid, idConteneur, category, enclosure, sourceRss, visual);   
                         list.add(rss);
                         event = eventReader.nextEvent();
                         continue;
@@ -154,14 +160,17 @@ public class RssUtility {
         String result = "";
         QName hrefQName = new QName("", "url");
         result = event.asStartElement().getAttributeByName(hrefQName).getValue();
-//        Iterator<Attribute> attributes = event.ATTRIBUTE.getName;      
-//        while(attributes.hasNext()) {
-//        	if(attributes.equals("URL")){
-//        		System.out.println("cpipci");
-//        		break;
-//        	}
-//        }        
 
+        // Add picture with the url
+    	Image image = null;
+    	URL url = null;
+        try {
+            url = new URL(result);
+            image = ImageIO.read(url);
+        } catch (IOException e) {
+        	e.printStackTrace();
+        }
+        
         return result;
     }    
 	
