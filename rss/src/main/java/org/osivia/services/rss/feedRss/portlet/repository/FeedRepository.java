@@ -28,7 +28,9 @@ public interface FeedRepository {
 	String URL_PROPERTY = "url";
 	/** Id sync flux RSS */
 	String ID_PROPERTY = "syncId";
-   
+	/** Logos flux RSS */
+	String LOGO_PROPERTY = "logos";
+	
    /**
     * remove Feed.
     *

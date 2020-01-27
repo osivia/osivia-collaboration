@@ -14,7 +14,8 @@ public class FeedRssModel {
 	public String url;
 	public String syncId;
 	public Map<String, String> map;
-	public Picture visual; 
+	public Picture visual;
+	public int indexNuxeo; 
 
 	public FeedRssModel() {
 	}
@@ -57,5 +58,13 @@ public class FeedRssModel {
 
 	public void setVisual(Picture visual) {
 		this.visual = visual;
+	}
+
+	public int getIndexNuxeo() {
+		return indexNuxeo;
+	}
+
+	public void setIndexNuxeo(int indexNuxeo) {
+		this.indexNuxeo = indexNuxeo;
 	}
 }

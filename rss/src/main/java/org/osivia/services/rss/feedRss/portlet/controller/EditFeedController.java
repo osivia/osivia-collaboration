@@ -48,7 +48,7 @@ import org.springframework.web.portlet.bind.annotation.ResourceMapping;
  */
 @Controller
 @RequestMapping(value = "VIEW", params="edit=feed")
-@SessionAttributes({"form"})
+@SessionAttributes("form")
 public class EditFeedController {
 
     /** Portlet context. */
@@ -185,14 +185,14 @@ public class EditFeedController {
      * @throws PortletException
      * @throws IOException
      */
-    @ActionMapping(name = "save", params = "upload-visual")
+    @ActionMapping(name = "modif", params = "upload-visual")
     public void uploadVisual(ActionRequest request, ActionResponse response, @ModelAttribute("form") FeedRssModel form)
             throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         this.service.uploadVisual(portalControllerContext, form);
-        response.setRenderParameter("add", "feed");
+        response.setRenderParameter("edit", "feed");
     }    
     
 
@@ -204,14 +204,14 @@ public class EditFeedController {
      * @param form workspace edition form model attribute
      * @throws PortletException
      */
-    @ActionMapping(name = "save", params = "delete-visual")
+    @ActionMapping(name = "modif", params = "delete-visual")
     public void deleteVisual(ActionRequest request, ActionResponse response, @ModelAttribute("form") FeedRssModel form)
             throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         this.service.deleteVisual(portalControllerContext, form);
-        response.setRenderParameter("add", "feed");
+        response.setRenderParameter("edit", "feed");
     }
 
     /**

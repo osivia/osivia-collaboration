@@ -17,6 +17,7 @@ import org.osivia.services.rss.common.command.ItemListCommand;
 import org.osivia.services.rss.common.command.ItemsDeleteCommand;
 import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.common.model.FeedRssModel;
+import org.osivia.services.rss.common.model.Picture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -47,7 +48,6 @@ public class FeedRepositoryImpl implements FeedRepository{
         super();
     }
 	
-
     /**
      * Create Feed RSS
      */ 
@@ -68,7 +68,7 @@ public class FeedRepositoryImpl implements FeedRepository{
 		
 		// Nuxeo command
 		INuxeoCommand nuxeoCommand;
-		nuxeoCommand = this.applicationContext.getBean(FeedCreatCommand.class, model);
+		nuxeoCommand = this.applicationContext.getBean(FeedCreatCommand.class, model, "add");
 
 		nuxeoController.executeNuxeoCommand(nuxeoCommand);
         // Refresh document
@@ -121,20 +121,23 @@ public class FeedRepositoryImpl implements FeedRepository{
 		
         ArrayList<FeedRssModel> listFeed = new ArrayList<FeedRssModel>();
         PropertyList propertyList = (PropertyList) document.getProperties().get(FEEDS_PROPERTY);
-        if (propertyList != null) {
-        	FeedRssModel feedNuxeo;
-            for (int i = 0; i < propertyList.size(); i++) {
-                PropertyMap map = propertyList.getMap(i);
-				feedNuxeo = new FeedRssModel();
-				feedNuxeo.setSyncId(map.getString(ID_PROPERTY));
-				feedNuxeo.setUrl(map.getString(URL_PROPERTY));
-				feedNuxeo.setDisplayName(map.getString(DISPLAY_NAME_PROPERTY));
-				listFeed.add(feedNuxeo);
-            }        	
-        }
+//        	FeedRssModel feedNuxeo;
+//            for (int i = 0; i < propertyList.size(); i++) {
+//                PropertyMap map = propertyList.getMap(i);
+//				feedNuxeo = new FeedRssModel();
+//				feedNuxeo.setSyncId(map.getString(ID_PROPERTY));
+//				feedNuxeo.setUrl(map.getString(URL_PROPERTY));
+//				feedNuxeo.setDisplayName(map.getString(DISPLAY_NAME_PROPERTY));
+////				document.getProperties().getBlob((String) map.get(LOGO_PROPERTY));
+//				listFeed.add(feedNuxeo);
+//            }        	
+//        }
+        // Add new feed
         for (FeedRssModel feed : model.getFeedSources()) {
         	model.setVisual(feed.getVisual());
-        	feed.getVisual().setName(feed.getSyncId());;
+        	feed.getVisual().setName(feed.getSyncId());
+        	feed.setIndexNuxeo(propertyList.size());
+        	model.setFeed(feed);
         	listFeed.add(feed);
         }
 	    return listFeed;
@@ -196,11 +199,12 @@ public class FeedRepositoryImpl implements FeedRepository{
     public FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, String name, String url) throws PortletException {
         
         FeedRssModel model = applicationContext.getBean(FeedRssModel.class);
-        
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         Map<String, String> mapFeed = new HashMap<String, String>();
         
         // Current Nuxeo document
         Document document = this.getCurrentDocument(portalControllerContext);
+        nuxeoController.setCurrentDoc(document);
         boolean init = false;
         if(model.getSyncId() == null) {
         	init = true;
@@ -215,6 +219,9 @@ public class FeedRepositoryImpl implements FeedRepository{
 						model.setDisplayName(map.getString(DISPLAY_NAME_PROPERTY));
 						model.setSyncId(id);
 						model.setUrl(map.getString(URL_PROPERTY));
+						Picture visual = applicationContext.getBean(Picture.class);
+						visual.setUrl(nuxeoController.createFileLink(document, "rssc:feeds/" + i + "/logos"));
+						model.setVisual(visual);
 					}
                 }
             }     	
@@ -249,7 +256,7 @@ public class FeedRepositoryImpl implements FeedRepository{
 		model.setFeedSources(feed);
 		// Nuxeo command
 		INuxeoCommand nuxeoCommand;
-		nuxeoCommand = this.applicationContext.getBean(FeedCreatCommand.class, model);
+		nuxeoCommand = this.applicationContext.getBean(FeedCreatCommand.class, model, "mod");
 
 		nuxeoController.executeNuxeoCommand(nuxeoCommand);
         // Refresh document
@@ -314,7 +321,7 @@ public class FeedRepositoryImpl implements FeedRepository{
 		model.setFeedSources(feed);
 		// Nuxeo command
 		INuxeoCommand nuxeoCommand;
-		nuxeoCommand = this.applicationContext.getBean(FeedCreatCommand.class, model);
+		nuxeoCommand = this.applicationContext.getBean(FeedCreatCommand.class, model, "del");
 
 		nuxeoController.executeNuxeoCommand(nuxeoCommand);
         // Refresh document
@@ -338,7 +345,6 @@ public class FeedRepositoryImpl implements FeedRepository{
         // Delete Items with syncId
 		nuxeoCommand = this.applicationContext.getBean(ItemsDeleteCommand.class, items);
 		nuxeoController.executeNuxeoCommand(nuxeoCommand);
-        
 	}     
     
 	private List<FeedRssModel> delFeed(Document document, NuxeoController nuxeoController, ContainerRssModel model, String syncId) {

@@ -24,7 +24,9 @@ public class ContainerRssModel {
 	public Picture visual;
 	
     /** feeds sources. */
-    private List<FeedRssModel> feedSources;	
+    private List<FeedRssModel> feedSources;
+    
+    private FeedRssModel feed;
 
 
 	public String getName() {
@@ -89,6 +91,14 @@ public class ContainerRssModel {
 
 	public void setVisual(Picture visual) {
 		this.visual = visual;
+	}
+
+	public FeedRssModel getFeed() {
+		return feed;
+	}
+
+	public void setFeed(FeedRssModel feed) {
+		this.feed = feed;
 	}
 
 }
