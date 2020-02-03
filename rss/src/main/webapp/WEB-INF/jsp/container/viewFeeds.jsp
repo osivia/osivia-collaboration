@@ -34,6 +34,7 @@
 						<portlet:renderURL var="editFeed">
 							<portlet:param name="edit" value="feed" />
 							<portlet:param name="id" value="${feed.syncId}" />
+							<portlet:param name="index" value="${feed.indexNuxeo}" />
 						</portlet:renderURL>
 						<tr>
 							<td><a href="${editFeed}">${feed.displayName}</a></td>

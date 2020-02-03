@@ -30,14 +30,6 @@ public interface FeedRepository {
 	String ID_PROPERTY = "syncId";
 	/** Logos flux RSS */
 	String LOGO_PROPERTY = "logos";
-	
-   /**
-    * remove Feed.
-    *
-    * @param portalControllerContext portal controller context
-    * @throws PortletException
-    */
-   void remove(PortalControllerContext portalControllerContext) throws PortletException;
    
    /**
     * Create feed RSS.
@@ -80,10 +72,13 @@ public interface FeedRepository {
      *
      * @param portalControllerContext portal controller context
      * @param id syncId
+     * @param name 
+     * @param url
+     * @param index
      * @return FeedRssModel
      * @throws PortletException
      */
- 	FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, String name, String url) throws PortletException;
+ 	FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, String name, String url, int index) throws PortletException;
  	
  	/**
      * Modification feed RSS.
@@ -92,8 +87,8 @@ public interface FeedRepository {
      * @param model
      * @throws PortletException
      */
- 	void modFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;	
- 	
+ 	void modFeed(PortalControllerContext portalControllerContext, FeedRssModel model) throws PortletException;	
+
  	
     /**
      * Delete feed RSS.
@@ -102,6 +97,6 @@ public interface FeedRepository {
      * @param model
      * @throws PortletException
      */
- 	void delFeed(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;
+ 	void delFeed(PortalControllerContext portalControllerContext, FeedRssModel model) throws PortletException;
 
 }

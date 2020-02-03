@@ -131,9 +131,9 @@ public class FeedServiceImpl implements FeedService {
         return map; 
     }
 
-    public FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, String name, String url) throws PortletException {
+    public FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, String name, String url, int index) throws PortletException {
 
-    	FeedRssModel mod = this.repository.getMapFeed(portalControllerContext, id, name, url);
+    	FeedRssModel mod = this.repository.getMapFeed(portalControllerContext, id, name, url, index);
         return mod; 
     }
     
@@ -142,12 +142,8 @@ public class FeedServiceImpl implements FeedService {
      */
 	public void modFeed(PortalControllerContext portalControllerContext, FeedRssModel model)
 			throws PortletException {
-		ContainerRssModel container = applicationContext.getBean(ContainerRssModel.class);
-		List<FeedRssModel> list = new ArrayList<FeedRssModel>();
-		list.add(model);
-		container.setFeedSources(list);		
-		this.repository.modFeed(portalControllerContext, container);
 		
+		this.repository.modFeed(portalControllerContext, model);
 	}
 
     /**
@@ -156,12 +152,7 @@ public class FeedServiceImpl implements FeedService {
 	public void delFeed(PortalControllerContext portalControllerContext, FeedRssModel model)
 			throws PortletException {
 		
-		ContainerRssModel container = applicationContext.getBean(ContainerRssModel.class);
-		List<FeedRssModel> list = new ArrayList<FeedRssModel>();
-		list.add(model);
-		container.setFeedSources(list);		
-		
-		this.repository.delFeed(portalControllerContext, container);
+		this.repository.delFeed(portalControllerContext, model);
 	}	
 	
     /**

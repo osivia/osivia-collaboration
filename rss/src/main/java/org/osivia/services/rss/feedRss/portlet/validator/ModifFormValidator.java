@@ -1,8 +1,5 @@
 package org.osivia.services.rss.feedRss.portlet.validator;
 
-import java.io.IOException;
-import java.net.URL;
-
 import org.osivia.services.rss.common.model.FeedRssModel;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -46,10 +43,13 @@ public class ModifFormValidator implements Validator {
 		// DisplayName feed 
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "displayName", "NotEmpty");
 		
+		String url = form.getMap().get(form.getDisplayName());
 		// Duplicated Name
-		if(form.getMap().containsKey(form.getDisplayName())) {
-			errors.rejectValue("displayName", "Duplicated");
+		if(url != null) {
+			if(!url.equalsIgnoreCase(form.getUrl())) {
+				if(form.getMap().containsKey(form.getDisplayName()) ) {
+					errors.rejectValue("displayName", "Duplicated");
+				}			
 		}
     }
-
-}
+}}

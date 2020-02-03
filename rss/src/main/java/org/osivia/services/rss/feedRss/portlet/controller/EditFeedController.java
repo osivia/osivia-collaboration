@@ -79,6 +79,7 @@ public class EditFeedController {
     public final static String DISPLAY = "displayName";
     public final static String URL = "url";
     public final static String ID = "id";
+    public final static String INDEX = "index";    
     
     /** Feed request attribute. */
     protected static final String FEED_ATTRIBUTE = "form";    
@@ -161,11 +162,11 @@ public class EditFeedController {
     }    
     
     @ModelAttribute("form")
-    public FeedRssModel getForm(PortletRequest request, PortletResponse response, @RequestParam(value=ID, required=false) String id, @RequestParam(value=DISPLAY, required=false) String name, @RequestParam(value=URL, required=false) String url ) throws PortletException
+    public FeedRssModel getForm(PortletRequest request, PortletResponse response, @RequestParam(value=ID, required=false) String id, @RequestParam(value=DISPLAY, required=false) String name, @RequestParam(value=URL, required=false) String url, @RequestParam(value=INDEX, required=false) String index) throws PortletException
     {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         
-    	return this.service.getMapFeed(portalControllerContext, id, name, url);
+    	return this.service.getMapFeed(portalControllerContext, id, name, url, Integer.parseInt(index));
     }
     
 	/**

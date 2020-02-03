@@ -15,7 +15,7 @@ public class FeedRssModel {
 	public String syncId;
 	public Map<String, String> map;
 	public Picture visual;
-	public int indexNuxeo; 
+	public int indexNuxeo;
 
 	public FeedRssModel() {
 	}

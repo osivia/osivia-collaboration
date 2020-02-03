@@ -87,10 +87,11 @@ public interface FeedService {
      * @param id syncId
      * @param name 
      * @param url
+     * @param index
      * @return FeedRssModel
      * @throws PortletException
      */
-	FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, String name, String url) throws PortletException;
+	FeedRssModel getMapFeed(PortalControllerContext portalControllerContext, String id, String name, String url, int index) throws PortletException;
 
     /**
      * get Map Container.
