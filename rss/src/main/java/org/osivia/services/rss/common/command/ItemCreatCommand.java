@@ -1,11 +1,14 @@
 package org.osivia.services.rss.common.command;
 
-import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 
-import javax.imageio.ImageIO;
-
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.Session;
@@ -79,13 +82,21 @@ public class ItemCreatCommand implements INuxeoCommand {
         
 		if (this.form.getEnclosure() != null) {
 			URL url = new URL(this.form.getEnclosure());
-			BufferedImage img = ImageIO.read(url);
-			File file = new File(url.getFile());
-			ImageIO.write(img, "jpg", file);
+			File file = File.createTempFile("rss-enclosure-", "tmp");
+			InputStream in = null;
+			OutputStream out = null;
+			try {
+				in = new BufferedInputStream(url.openStream());
+				out = new BufferedOutputStream(new FileOutputStream(file));				
+				IOUtils.copy(in, out);
+			} finally {
+				IOUtils.closeQuietly(in);
+				IOUtils.closeQuietly(out);
+			}
 
 			// File blob
 			Blob blob = new FileBlob(file);
-			// blob.setFileName(visual.getName()); Voir si c'est ok ?
+			// blob.setFileName(visual.getName());
 			documentService.setBlob(document, blob, ItemRepository.PICTURE_PROPERTY);
 
 			// Delete temporary file
