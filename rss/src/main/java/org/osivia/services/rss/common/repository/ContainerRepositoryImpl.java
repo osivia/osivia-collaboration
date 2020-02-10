@@ -88,6 +88,7 @@ public class ContainerRepositoryImpl implements ContainerRepository{
         nuxeoCommand = this.applicationContext.getBean(ContainerCreatCommand.class, model);
         
         nuxeoController.executeNuxeoCommand(nuxeoCommand);
+        
 	}
 	
     /**
@@ -136,5 +137,4 @@ public class ContainerRepositoryImpl implements ContainerRepository{
         
         nuxeoController.executeNuxeoCommand(nuxeoCommand);
 	}	
-	
 }

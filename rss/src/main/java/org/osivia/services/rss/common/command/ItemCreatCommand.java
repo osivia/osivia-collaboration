@@ -1,6 +1,10 @@
 package org.osivia.services.rss.common.command;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.URL;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,7 +15,6 @@ import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.osivia.services.rss.common.model.Picture;
 import org.osivia.services.rss.common.repository.ItemRepository;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -74,23 +77,19 @@ public class ItemCreatCommand implements INuxeoCommand {
         // Mise à jour du conteneur RSS avec l'url, le nom du flux, la synchronisation
         Document document = documentService.createDocument(parent, ItemRepository.DOCUMENT_TYPE_EVENEMENT, null, properties);
         
-        // Visual
-        Picture visual = this.form.getVisual();
-		if (visual != null) {
-			if (visual.isUpdated()) {
-				// Temporary file
-				File temporaryFile = visual.getTemporaryFile();
+		if (this.form.getEnclosure() != null) {
+			URL url = new URL(this.form.getEnclosure());
+			BufferedImage img = ImageIO.read(url);
+			File file = new File(url.getFile());
+			ImageIO.write(img, "jpg", file);
 
-				// File blob
-				Blob blob = new FileBlob(temporaryFile);
-				blob.setFileName(visual.getName());
-				documentService.setBlob(document, blob, "rssi:picture");
+			// File blob
+			Blob blob = new FileBlob(file);
+			// blob.setFileName(visual.getName()); Voir si c'est ok ?
+			documentService.setBlob(document, blob, ItemRepository.PICTURE_PROPERTY);
 
-				// Delete temporary file
-				temporaryFile.delete();
-			} else if (visual.isDeleted()) {
-				documentService.removeBlob(document, "rssi:picture");
-			}
+			// Delete temporary file
+			file.delete();
 		}
         
     	return document;

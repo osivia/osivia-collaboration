@@ -39,7 +39,9 @@ public interface ItemRepository {
 	/** pubDate Nuxeo property. */
 	String PUBDATE_PROPERTY = "rssi:pubDate";
 	/** source Nuxeo property. */
-	String SOURCES_PROPERTY = "rssi:source";	 
+	String SOURCES_PROPERTY = "rssi:source";
+	/** source Nuxeo property. */
+	String PICTURE_PROPERTY = "rssi:picture";
 	
     /** Select2 results page size. */
     int SELECT2_RESULTS_PAGE_SIZE = 10;	

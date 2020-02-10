@@ -1,7 +1,5 @@
 package org.osivia.services.rss.common.utility;
 
-import java.awt.Image;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -13,7 +11,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -26,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.osivia.services.rss.common.model.FeedRssModel;
 import org.osivia.services.rss.common.model.Picture;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Read RSS feed
@@ -161,16 +157,6 @@ public class RssUtility {
         QName hrefQName = new QName("", "url");
         result = event.asStartElement().getAttributeByName(hrefQName).getValue();
 
-        // Add picture with the url
-    	Image image = null;
-    	URL url = null;
-        try {
-            url = new URL(result);
-            image = ImageIO.read(url);
-        } catch (IOException e) {
-        	e.printStackTrace();
-        }
-        
         return result;
     }    
 	
