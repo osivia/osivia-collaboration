@@ -46,7 +46,7 @@
 			        	<jsp:useBean id="currentDate" class="java.util.Date" />
 			        	<portlet:resourceURL id="visualPreview" var="previewUrl"><portlet:param name="ts" value="${currentDate.time}" /></portlet:resourceURL>
 			        	<p class="form-control-static">
-			        		<img src="${previewUrl}" alt="" class="img-responsive" style="max-height:250px; max-width: 250px;">
+			        		<img src="${previewUrl}" alt="" class="img-fluid" style="max-height:250px; max-width: 250px;">
 			       		 </p>
 			        </c:when>
 			                            

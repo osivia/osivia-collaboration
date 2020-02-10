@@ -23,6 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.osivia.services.rss.common.model.FeedRssModel;
 import org.osivia.services.rss.common.model.Picture;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
 
 /**
  * Read RSS feed
@@ -100,7 +102,7 @@ public class RssUtility {
                         link = getCharacterData(event, eventReader);
                         break;
                     case DESCRIPTION:
-                        description = getCharacterData(event, eventReader);
+                        description = getCharacterDataSanitazier(event, eventReader);
                         break;
                     case AUTHOR:
                         author = getCharacterData(event, eventReader);
@@ -150,6 +152,20 @@ public class RssUtility {
         }
         return result;
     }
+	
+	public static String getCharacterDataSanitazier(XMLEvent event, XMLEventReader eventReader)
+            throws XMLStreamException {
+        String result = "";
+        event = eventReader.nextEvent();
+        if (event instanceof Characters) {
+//            result = event.asCharacters().getData();
+            // Add sanitizer
+            PolicyFactory policy = new HtmlPolicyBuilder().allowElements("b", "i", "u", "em", "strong").toFactory();
+
+            	result = policy.sanitize(event.asCharacters().getData());
+        }
+        return result;
+    }	
 	
 	public static String getEnclosure(XMLEvent event, XMLEventReader eventReader)
             throws XMLStreamException {
