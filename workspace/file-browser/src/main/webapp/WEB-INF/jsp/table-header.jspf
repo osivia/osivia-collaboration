@@ -4,17 +4,6 @@
 <%@ taglib prefix="op" uri="http://www.osivia.org/jsp/taglib/osivia-portal" %>
 
 
-<%--Column group--%>
-<div class="portal-table-column-group">
-    <div class="portal-table-column" data-column="title"></div>
-    <c:if test="${form.listMode}">
-        <div class="portal-table-column" data-column="location"></div>
-    </c:if>
-    <div class="portal-table-column" data-column="last-modification"></div>
-    <div class="portal-table-column" data-column="file-size"></div>
-    <div class="portal-table-column" data-column="checkbox"></div>
-</div>
-
 <%--Header--%>
 <div class="portal-table-header-group">
     <%--Title--%>

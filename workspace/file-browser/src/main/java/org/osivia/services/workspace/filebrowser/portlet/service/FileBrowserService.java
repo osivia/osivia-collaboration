@@ -43,6 +43,12 @@ public interface FileBrowserService {
 
 
     /**
+     * Sort criteria attribute.
+     */
+    String SORT_CRITERIA_ATTRIBUTE = "file-browser.criteria";
+
+
+    /**
      * Get window properties.
      *
      * @param portalControllerContext portal controller context
