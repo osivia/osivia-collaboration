@@ -24,6 +24,17 @@ import org.osivia.services.calendar.view.portlet.model.events.EventToSync;
  */
 public interface CalendarViewRepository extends CalendarRepository {
 
+    /** CMS path window property name. */
+    String CMS_PATH_WINDOW_PROPERTY = "osivia.calendar.cmsPath";
+    /** Default view window property name. */
+    String DEFAULT_VIEW_WINDOW_PROPERTY = "osivia.calendar.defaultView";
+    /** Compact view indicator window property name. */
+    String COMPACT_VIEW_WINDOW_PROPERTY = "osivia.calendar.compactView";
+    /** Read only indicator window property name. */
+    String READ_ONLY_WINDOW_PROPERTY = "osivia.calendar.readOnly";
+    /** Integration indicator window property name. */
+    String INTEGRATION_WINDOW_PROPERTY = "osivia.calendar.integration";
+
     //Constants of VEVENT
     /** Calendar event document type name. */
     String DOCUMENT_TYPE_EVENEMENT = "VEVENT";

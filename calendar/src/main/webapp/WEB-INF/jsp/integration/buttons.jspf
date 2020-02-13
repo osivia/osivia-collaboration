@@ -1,0 +1,9 @@
+<div class="media">
+    <div class="media-body">
+        <div class="pull-right">
+            <button type="button" class="btn btn-default" data-dismiss="modal">
+                <span><op:translate key="CLOSE"/></span>
+            </button>
+        </div>
+    </div>
+</div>

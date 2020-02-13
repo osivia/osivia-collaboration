@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE portlet-app PUBLIC "-//JBoss Portal//DTD JBoss Portlet 2.6//EN" "http://www.jboss.org/portal/dtd/jboss-portlet_2_6.dtd">
+
+<portlet-app>
+
+    <portlet>
+        <portlet-name>osivia-collaboration-search</portlet-name>
+
+        <transaction>
+            <trans-attribute>Required</trans-attribute>
+        </transaction>
+    </portlet>
+    
+    
+    <portlet>
+        <portlet-name>osivia-collaboration-scope-selector</portlet-name>
+
+        <transaction>
+            <trans-attribute>Required</trans-attribute>
+        </transaction>
+        
+        <header-content>
+            <script type="text/javascript" src="/js/scope-selector.js"></script>
+        </header-content>
+    </portlet>
+
+    
+    <portlet>
+        <portlet-name>osivia-collaboration-type-selector</portlet-name>
+
+        <transaction>
+            <trans-attribute>Required</trans-attribute>
+        </transaction>
+        
+        <header-content>
+            <script type="text/javascript" src="/js/type-selector.js"></script>
+        </header-content>
+    </portlet>
+</portlet-app>

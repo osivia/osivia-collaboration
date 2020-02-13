@@ -1,0 +1,11 @@
+<div class="panel panel-default">
+    <div class="panel-body">
+        <p><op:translate key="CALENDAR_INTEGRATION_INSTRUCTIONS_TITLE"/></p>
+        <ol>
+            <li><op:translate key="CALENDAR_INTEGRATION_INSTRUCTIONS_STEP_1"/></li>
+            <li><op:translate key="CALENDAR_INTEGRATION_INSTRUCTIONS_STEP_2"/></li>
+            <li><op:translate key="CALENDAR_INTEGRATION_INSTRUCTIONS_STEP_3"/></li>
+            <li><op:translate key="CALENDAR_INTEGRATION_INSTRUCTIONS_STEP_4"/></li>
+        </ol>
+    </div>
+</div>
