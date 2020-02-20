@@ -322,4 +322,13 @@ public interface MemberManagementRepository {
      */
     boolean resendInvitations(PortalControllerContext portalControllerContext, List<Invitation> invitations, String message, Date date) throws PortletException;
 
+
+    /**
+     * Drop invitation workflow
+     * 
+     * @param portalControllerContext
+     * @param invitationPath
+     */
+	void dropInvitation(PortalControllerContext portalControllerContext, String invitationPath);
+
 }

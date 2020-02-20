@@ -435,4 +435,14 @@ public interface MemberManagementService {
     void resendInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, ResendInvitationsForm form)
             throws PortletException;
 
+
+    /**
+     * Drop invitation workflow
+     * 
+     * @param portalControllerContext
+     * @param form
+     * @param invitationPath
+     */
+	void dropInvitation(PortalControllerContext portalControllerContext, String path);
+
 }

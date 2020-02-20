@@ -1320,6 +1320,15 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 // Delete
                 Element delete = this.getDeleteInvitationsToolbarButton(portalControllerContext, allEditable, bundle);
                 toolbar.add(delete);
+                
+                // #2071 Admins can delete the workflow
+                Boolean administrator = Boolean.TRUE.equals(portalControllerContext.getRequest().getAttribute("osivia.isAdministrator"));
+                if(selectedInvitations.size() == 1 && administrator) {
+                    Invitation invitation = selectedInvitations.get(0);
+
+                    Element drop = this.getDropInvitationToolbarButton(portalControllerContext, invitation, bundle, "invitations");
+                    toolbar.add(drop);
+                }
 
                 if (allEditable) {
                     // Delete confirmation modal
@@ -1380,6 +1389,56 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         return DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
     }
 
+    
+    /**
+     * Get drop invitation toolbar button DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param invitation invitation
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getDropInvitationToolbarButton(PortalControllerContext portalControllerContext, InvitationObject invitation, 
+    		Bundle bundle, String tab) {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+        // MIME response
+        MimeResponse mimeResponse;
+        if (portletResponse instanceof MimeResponse) {
+            mimeResponse = (MimeResponse) portletResponse;
+        } else {
+            mimeResponse = null;
+        }
+        
+        // HTML classes
+        String htmlClass = "btn btn-danger btn-sm";
+        // Text
+        String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_DROP");
+        // Icon
+        String icon = "glyphicons glyphicons-remove";
+        // URL
+        String url;
+        if ((invitation.getState() != null) && invitation.getState().isEditable() && (mimeResponse != null)) {
+            // Render URL
+            PortletURL actionUrl = mimeResponse.createActionURL();
+            actionUrl.setParameter(ActionRequest.ACTION_NAME, "drop");
+            actionUrl.setParameter("invitationPath", invitation.getDocument().getPath());
+            actionUrl.setParameter("view", "tab=invitations");
+            actionUrl.setParameter("fromtab", tab);
+
+
+            url = actionUrl.toString();
+        } else {
+            url = null;
+        }
+
+        if (StringUtils.isEmpty(url)) {
+            url = "#";
+            htmlClass += " disabled";
+        }
+
+        return DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
+    }
 
     /**
      * Get resend invitations toolbar button DOM element.
@@ -1700,6 +1759,16 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 // Decline
                 Element decline = this.getDeclineInvitationRequestToolbarButton(portalControllerContext, allEditable, bundle);
                 toolbar.add(decline);
+                
+                // #2071 Admins can delete the workflow
+                Boolean administrator = Boolean.TRUE.equals(portalControllerContext.getRequest().getAttribute("osivia.isAdministrator"));
+                if(selectedRequests.size() == 1 && administrator) {
+                    InvitationRequest request = selectedRequests.get(0);
+
+                    Element drop = this.getDropInvitationToolbarButton(portalControllerContext, request, bundle, "requests");
+                    toolbar.add(drop);
+                }
+                
 
                 if (allEditable) {
                     // Accept confirmation modal
@@ -2318,5 +2387,21 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         this.applicationContext = applicationContext;
         ApplicationContextProvider.setApplicationContext(applicationContext);
     }
+
+
+	@Override
+	public void dropInvitation(PortalControllerContext portalControllerContext, String invitationPath) {
+		this.repository.dropInvitation(portalControllerContext, invitationPath);
+	    
+	    // Update model
+	    this.invalidateLoadedForms();
+	
+	    Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+	    
+	    // Notification
+	    String message = bundle.getString("MESSAGE_WORKSPACE_DROP_WF_SUCCESS");
+	    this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+		
+	}
 
 }

@@ -1168,4 +1168,18 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         return status;
     }
 
+
+	@Override
+	public void dropInvitation(PortalControllerContext portalControllerContext, String invitationPath) {
+
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        boolean status = true;
+
+        // Nuxeo command
+        INuxeoCommand command = this.applicationContext.getBean(DropProcedureCommand.class, invitationPath);
+        nuxeoController.executeNuxeoCommand(command);
+		
+	}
+
 }
