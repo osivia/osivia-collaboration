@@ -1,21 +1,34 @@
 package org.osivia.services.rss.common.command;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import org.apache.commons.collections.CollectionUtils;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
-import org.nuxeo.ecm.automation.client.model.*;
+import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.automation.client.model.DocRef;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.FileBlob;
+import org.nuxeo.ecm.automation.client.model.PathRef;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.services.rss.common.repository.ItemRepository;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
 /**
  * Create RSS items Nuxeo command.
@@ -23,6 +36,8 @@ import java.util.List;
  * @author Cédric Krommenhoek
  * @see INuxeoCommand
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CreateRssItemsCommand implements INuxeoCommand {
 
     /**
