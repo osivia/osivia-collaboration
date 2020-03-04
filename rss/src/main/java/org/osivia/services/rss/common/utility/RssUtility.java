@@ -55,7 +55,6 @@ public class RssUtility {
      */
 	public static List<ItemRssModel> readRss(FeedRssModel feed) {
     	// Restitution d'une map
-    	logger.info("Lecture du flux RSS");
         String description = "";
         String title = "";
         String link = "";
@@ -80,9 +79,11 @@ public class RssUtility {
 			try {
 				url = new URL(feed.getUrl());
 			} catch (MalformedURLException e) {
-				e.printStackTrace();
+				logger.error("Erreur lors de la lecture du flux :" + e.getMessage());
 			}
+	    	logger.info("Lecture du flux RSS :" +  url);			
             InputStream in = read(url);
+            if(in != null) {
             XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
             
             // lecture du document XML 
@@ -137,8 +138,9 @@ public class RssUtility {
                     }
                 }
             }
+		}
         } catch (XMLStreamException e) {
-            throw new RuntimeException(e);
+        	logger.error("Erreur lors de la lecture du flux:" + e.getMessage());
         }
 		return list;
     }
@@ -158,11 +160,9 @@ public class RssUtility {
         String result = "";
         event = eventReader.nextEvent();
         if (event instanceof Characters) {
-//            result = event.asCharacters().getData();
-            // Add sanitizer
-            PolicyFactory policy = new HtmlPolicyBuilder().allowElements("b", "i", "u", "em", "strong").toFactory();
-
-            	result = policy.sanitize(event.asCharacters().getData());
+			// Add sanitizer
+			PolicyFactory policy = new HtmlPolicyBuilder().allowElements("b", "i", "u", "em", "strong").toFactory();
+			result = policy.sanitize(event.asCharacters().getData());
         }
         return result;
     }	
@@ -180,7 +180,8 @@ public class RssUtility {
 		try {
 			return url.openStream();
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+        	logger.error("Erreur lors de la lecture du flux:" + e.getMessage());
+    		return null;
 		}
 	}
     	
