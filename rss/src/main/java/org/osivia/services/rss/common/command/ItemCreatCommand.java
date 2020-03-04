@@ -6,9 +6,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.Session;
@@ -35,27 +37,36 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ItemCreatCommand implements INuxeoCommand {
-    
-    /** RSS Model. */
-    private ItemRssModel form;
-    
-	/** logger */
-    protected static final Log logger = LogFactory.getLog(ItemCreatCommand.class);
-    
+
     /**
-    * Constructor.
-    *
-    * @param form ItemRssModel
-    */
-   public ItemCreatCommand(ItemRssModel form) {
-       super();
-       this.form = form;
-   }
-    
-    
+     * Log.
+     */
+    private final Log log;
+
+
+    /**
+     * RSS Model.
+     */
+    private ItemRssModel form;
+
+
+    /**
+     * Constructor.
+     *
+     * @param form form
+     */
+    public ItemCreatCommand(ItemRssModel form) {
+        super();
+        this.form = form;
+
+        // Log
+        this.log = LogFactory.getLog(this.getClass());
+    }
+
+
     @Override
-	public Object execute(Session nuxeoSession) throws Exception {
-    
+    public Object execute(Session nuxeoSession) throws Exception {
+
         // Document service
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
 
@@ -74,41 +85,55 @@ public class ItemCreatCommand implements INuxeoCommand {
         properties.set(ItemRepository.PUBDATE_PROPERTY, this.form.getPubDate());
         properties.set(ItemRepository.SOURCES_PROPERTY, this.form.getSourceRss());
         properties.set(ItemRepository.TITLE_PROPERTY, this.form.getTitle());
-        properties.set(ItemRepository.NAME_PROPERTY, this.form.getTitle()); 
+        properties.set(ItemRepository.NAME_PROPERTY, this.form.getTitle());
         properties.set(ItemRepository.CONTENEUR_PROPERTY, this.form.getIdConteneur());
-        
+
         // Mise à jour du conteneur RSS avec l'url, le nom du flux, la synchronisation
         Document document = documentService.createDocument(parent, ItemRepository.DOCUMENT_TYPE_EVENEMENT, null, properties);
-        
-		if (this.form.getEnclosure() != null) {
-			URL url = new URL(this.form.getEnclosure());
-			File file = File.createTempFile("rss-enclosure-", "tmp");
-			InputStream in = null;
-			OutputStream out = null;
-			try {
-				in = new BufferedInputStream(url.openStream());
-				out = new BufferedOutputStream(new FileOutputStream(file));				
-				IOUtils.copy(in, out);
-			} finally {
-				IOUtils.closeQuietly(in);
-				IOUtils.closeQuietly(out);
-			}
 
-			// File blob
-			Blob blob = new FileBlob(file);
-			// blob.setFileName(visual.getName());
-			documentService.setBlob(document, blob, ItemRepository.PICTURE_PROPERTY);
 
-			// Delete temporary file
-			file.delete();
-		}
-        
-    	return document;
-	}
-	
+        // Enclosure URL
+        URL url;
+        if (StringUtils.isBlank(this.form.getEnclosure())) {
+            url = null;
+        } else {
+            try {
+                url = new URL(this.form.getEnclosure());
+            } catch (MalformedURLException e) {
+                url = null;
+                this.log.error(e.getLocalizedMessage());
+            }
+        }
+
+        if (url != null) {
+            File file = File.createTempFile("rss-enclosure-", "tmp");
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                in = new BufferedInputStream(url.openStream());
+                out = new BufferedOutputStream(new FileOutputStream(file));
+                IOUtils.copy(in, out);
+            } finally {
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+            }
+
+            // File blob
+            Blob blob = new FileBlob(file);
+            // blob.setFileName(visual.getName());
+            documentService.setBlob(document, blob, ItemRepository.PICTURE_PROPERTY);
+
+            // Delete temporary file
+            file.delete();
+        }
+
+        return document;
+    }
+
+
     @Override
-	public String getId() {
-		return null;
-	}
-    
+    public String getId() {
+        return null;
+    }
+
 }
