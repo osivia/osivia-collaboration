@@ -46,14 +46,6 @@ public interface ItemRepository {
     /** Select2 results page size. */
     int SELECT2_RESULTS_PAGE_SIZE = 10;	
    
-   /**
-    * Create Item RSS.
-    *
-    * @param portalControllerContext portal controller context
-    * @param model
-    * @throws PortletException
-    */
-   void creatItem(PortalControllerContext portalControllerContext, ItemRssModel model) throws PortletException;
 
    /**
     * Create Item RSS.

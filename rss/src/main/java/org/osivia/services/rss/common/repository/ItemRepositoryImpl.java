@@ -12,7 +12,7 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.rss.common.command.ItemCreatCommand;
+import org.osivia.services.rss.common.command.CreateRssItemsCommand;
 import org.osivia.services.rss.common.command.ItemListCommand;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,19 +68,6 @@ public class ItemRepositoryImpl implements ItemRepository {
 		super();
 	}
 
-	/**
-	 * Create Item RSS
-	 */
-	public void creatItem(PortalControllerContext portalControllerContext, ItemRssModel model) throws PortletException {
-		// Nuxeo controller
-		NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-
-		// Nuxeo command
-		INuxeoCommand command;
-		command = this.applicationContext.getBean(ItemCreatCommand.class, model);
-
-		nuxeoController.executeNuxeoCommand(command);
-	}
 
 	private ItemRssModel fillItem(Document document, NuxeoController nuxeoController) {
 		String id = document.getString(CONTENEUR_PROPERTY);
@@ -115,32 +102,27 @@ public class ItemRepositoryImpl implements ItemRepository {
 		return item;
 	}
 
-	@Override
-	public void creatItems(PortalControllerContext portalControllerContext, List<ItemRssModel> items)
-			throws PortletException {
 
+	@Override
+	public void creatItems(PortalControllerContext portalControllerContext, List<ItemRssModel> items)  throws PortletException {
 		// Nuxeo controller
 		NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-		// Nuxeo command
-		INuxeoCommand command;
+		// Parent document path
+		String parentPath = nuxeoController.getCurrentDocumentContext().getCmsPath();
 
-		for (ItemRssModel item : items) {
-			item.setPath(nuxeoController.getCurrentDocumentContext().getCmsPath());
-			command = this.applicationContext.getBean(ItemCreatCommand.class, item);
-			nuxeoController.executeNuxeoCommand(command);
-		}
+		// Nuxeo command
+		INuxeoCommand command = this.applicationContext.getBean(CreateRssItemsCommand.class, parentPath, items);
+		nuxeoController.executeNuxeoCommand(command);
 	}
+
 
 	@Override
-	public void removeItems(PortalControllerContext portalControllerContext, List<ItemRssModel> items)
-			throws PortletException {
-
+	public void removeItems(PortalControllerContext portalControllerContext, List<ItemRssModel> items) throws PortletException {
+		// TODO
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+
 	@Override
 	public Map<String, String> getDocumentProperties(PortalControllerContext portalControllerContext, Document document)
 			throws PortletException {
