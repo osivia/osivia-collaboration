@@ -59,12 +59,6 @@ import java.util.*;
 public class FileBrowserServiceImpl implements FileBrowserService {
 
     /**
-     * Sort criteria attribute.
-     */
-    private static final String SORT_CRITERIA_ATTRIBUTE = "file-browser.criteria";
-
-
-    /**
      * Application context.
      */
     @Autowired
@@ -99,7 +93,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      */
     @Autowired
     private DocumentDAO documentDao;
-
 
     /**
      * User preferences service.
@@ -446,7 +439,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
 
     @Override
-    public void sortItems(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserSortField field, boolean alt) {
+    public void sortItems(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserSortField field, boolean alt) throws PortletException {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 

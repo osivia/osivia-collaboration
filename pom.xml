@@ -14,10 +14,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Toutatice -->
-        <toutatice.version>4.9-SNAPSHOT</toutatice.version>
+        <toutatice.version>4.9.3-RC1</toutatice.version>
 
         <!-- Directory -->
-        <directory.version>4.9-SNAPSHOT</directory.version>
+        <directory.version>4.9.3</directory.version>
+
 
         <!-- JBoss -->
         <jboss-portal.version>2.7.2</jboss-portal.version>

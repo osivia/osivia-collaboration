@@ -6,14 +6,12 @@
 
 
 <%--Table--%>
-<div class="portal-table-container">
+<div class="portal-table">
+    <%--Header--%>
+    <%@ include file="table-header.jspf" %>
+
     <div class="portlet-filler">
-        <div class="portal-table">
-            <%--Header--%>
-            <%@ include file="table-header.jspf" %>
-            
-            <%--Body--%>
-            <%@ include file="table-body.jspf" %>
-        </div>
+        <%--Body--%>
+        <%@ include file="table-body.jspf" %>
     </div>
 </div>

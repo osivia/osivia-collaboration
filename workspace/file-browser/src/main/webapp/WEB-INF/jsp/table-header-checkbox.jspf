@@ -1,10 +1,8 @@
 <div class="portal-table-cell" data-column="checkbox">
-    <div class="portal-table-cell-inner" data-column="checkbox">
-        <div class="portal-table-checkbox">
-            <c:set var="title"><op:translate key="TABLE_SELECT_ALL_CHECKBOX_TITLE"/></c:set>
-            <a href="javascript:;" class="no-ajax-link" title="${title}">
-                <i class="glyphicons glyphicons-basic-square-empty"></i>
-            </a>
-        </div>
+    <div class="portal-table-checkbox">
+        <c:set var="title"><op:translate key="TABLE_SELECT_ALL_CHECKBOX_TITLE"/></c:set>
+        <a href="javascript:;" class="no-ajax-link" title="${title}">
+            <i class="glyphicons glyphicons-basic-square-empty"></i>
+        </a>
     </div>
 </div>
