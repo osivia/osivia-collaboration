@@ -386,12 +386,6 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
-        // Permission check
-        if (!form.isAdmin()) {
-            throw new PortletException("Current user is not a global portal administrator.");
-        }
-
-
         // Delete
         this.repository.delete(portalControllerContext, form);
 
