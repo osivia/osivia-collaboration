@@ -14,11 +14,10 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.command.CreateRssItemsCommand;
 import org.osivia.services.rss.common.command.ItemListCommand;
+import org.osivia.services.rss.common.command.ItemsDeleteCommand;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
@@ -32,7 +31,6 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
  * @author Frédéric Boudan
  */
 @Repository
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ItemRepositoryImpl implements ItemRepository {
 
 	/** Document DAO. */
@@ -70,6 +68,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
 
 	private ItemRssModel fillItem(Document document, NuxeoController nuxeoController) {
+		String docid = document.getId();
 		String id = document.getString(CONTENEUR_PROPERTY);
 		String title = document.getString(TITLE_PROPERTY);
 		String link = document.getString(LINK_PROPERTY);
@@ -89,6 +88,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 		String sources = document.getString(SOURCES_PROPERTY);
 
 		ItemRssModel item = new ItemRssModel();
+		item.setDocid(docid);
 		item.setIdConteneur(id);
 		item.setTitle(title);
 		item.setLink(link);
@@ -119,7 +119,12 @@ public class ItemRepositoryImpl implements ItemRepository {
 
 	@Override
 	public void removeItems(PortalControllerContext portalControllerContext, List<ItemRssModel> items) throws PortletException {
-		// TODO
+		// Nuxeo controller
+		NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+		// Nuxeo command
+		INuxeoCommand command = this.applicationContext.getBean(ItemsDeleteCommand.class, items);
+		nuxeoController.executeNuxeoCommand(command);
 	}
 
 

@@ -23,7 +23,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.services.rss.common.model.FeedRssModel;
-import org.osivia.services.rss.feedRss.portlet.service.FeedService;
+import org.osivia.services.rss.common.service.FeedService;
 import org.osivia.services.rss.feedRss.portlet.validator.FeedFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

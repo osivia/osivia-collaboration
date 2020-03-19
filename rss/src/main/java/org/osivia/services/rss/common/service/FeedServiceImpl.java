@@ -1,4 +1,4 @@
-package org.osivia.services.rss.feedRss.portlet.service;
+package org.osivia.services.rss.common.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,10 +20,10 @@ import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.common.model.FeedRssModel;
 import org.osivia.services.rss.common.model.Picture;
 import org.osivia.services.rss.common.repository.ContainerRepository;
+import org.osivia.services.rss.common.repository.FeedRepository;
 import org.osivia.services.rss.common.repository.ItemRepository;
 import org.osivia.services.rss.common.utility.RssUtility;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
-import org.osivia.services.rss.feedRss.portlet.repository.FeedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -79,17 +79,18 @@ public class FeedServiceImpl implements FeedService {
     	this.repository.creatFeed(portalControllerContext, container);
     }
     
-	public void synchro(PortalControllerContext portalControllerContext) throws PortletException {
+	public void synchro(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
 
 		// Recherche la liste des feeds
-		ContainerRssModel model = this.repository.getListFeedRss(portalControllerContext);
-
+		if(model.getFeedSources() == null) {
+			model = this.repository.getListFeedRss(portalControllerContext);	
+		}
+		
 		for (FeedRssModel feed : model.getFeedSources()) {
 			// retourne une map d'item à faire correspondre avec les items déjà enregistré
 			List<ItemRssModel> items = RssUtility.readRss(feed);
 
 			// Si la liste est vide on ne supprime pas d'Items dans Nuxeo
-			// Doit-on le faire si <5 ?
 			if (items != null) {
 				if (items.size() >= 1) {
 					// Recherche la liste des Items correspondant au flux
@@ -111,7 +112,7 @@ public class FeedServiceImpl implements FeedService {
 					if (itemsNuxeo != null) {
 						itemsNuxeo.removeAll(itemsSav);
 						if (itemsNuxeo != null && itemsNuxeo.size() != 0) {
-							// Tous les Item Nuxeo pas trouver dans le flux seront supprimé
+							// Tous les Item Nuxeo pas trouvés dans le flux seront supprimés
 							this.repositoryItem.removeItems(portalControllerContext, itemsNuxeo);
 						}
 					}
@@ -242,9 +243,7 @@ public class FeedServiceImpl implements FeedService {
 	}	
 	
 	@Override
-	public void setVisual(PortalControllerContext portalControllerContext, FeedRssModel form) throws PortletException {
-		// TODO Auto-generated method stub
-		
-	}	
-	
+	public List<FeedRssModel> fillFeed(Document document) throws PortletException {
+		return this.repository.fillFeed(document);
+	}
 }

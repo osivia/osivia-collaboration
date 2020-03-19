@@ -17,10 +17,11 @@ public class ItemRssModel {
     public String enclosure;
     public String sourceRss;
     public String path;
-    public Picture visual;    
+    public Picture visual;
+    public String docid;
 
     public ItemRssModel(String title, String link, String description, String author, Date pubDate, String guid, String idConteneur,
-    		String category, String enclosure, String sourceRss, Picture visual) {
+    		String category, String enclosure, String sourceRss, Picture visual, String docid) {
         this.idConteneur = idConteneur;
     	this.title = title;
         this.link = link;
@@ -32,6 +33,7 @@ public class ItemRssModel {
         this.enclosure = enclosure;
         this.sourceRss = sourceRss;
         this.visual = visual;
+        this.docid = docid;
     }
 
     public ItemRssModel() {
@@ -163,6 +165,14 @@ public class ItemRssModel {
 
 	public void setVisual(Picture visual) {
 		this.visual = visual;
+	}
+
+	public String getDocid() {
+		return docid;
+	}
+
+	public void setDocid(String docid) {
+		this.docid = docid;
 	}	
 	
 }

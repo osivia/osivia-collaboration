@@ -64,6 +64,7 @@ public class RssUtility {
         String category = "";
         String enclosure = "";
         String sourceRss = "";
+        String docid = "";
         Picture visual = null;
         String idConteneur = feed.getSyncId();
     	ItemRssModel rss = null;
@@ -131,7 +132,7 @@ public class RssUtility {
                 } else if (event.isEndElement()) {
                     if (event.asEndElement().getName().getLocalPart() == (ITEM)) {
                     	// Création du document nuxeo contenant le flux RSS
-                        rss = new ItemRssModel(title, link, description, author, pubDate, guid, idConteneur, category, enclosure, sourceRss, visual);   
+                        rss = new ItemRssModel(title, link, description, author, pubDate, guid, idConteneur, category, enclosure, sourceRss, visual, docid);   
                         list.add(rss);
                         event = eventReader.nextEvent();
                         continue;

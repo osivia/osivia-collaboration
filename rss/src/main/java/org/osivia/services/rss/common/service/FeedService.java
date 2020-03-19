@@ -1,6 +1,7 @@
-package org.osivia.services.rss.feedRss.portlet.service;
+package org.osivia.services.rss.common.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletException;
@@ -40,9 +41,10 @@ public interface FeedService {
      * synchronization Feed with Items.
      *
      * @param portalControllerContext portal controller context
+     * @param ContainerRssModel model
      * @throws PortletException
      */
-	void synchro(PortalControllerContext portalControllerContext) throws PortletException;
+	void synchro(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException;
 	
     /**
      * Get current Nuxeo document.
@@ -140,12 +142,11 @@ public interface FeedService {
      */
     void deleteVisual(PortalControllerContext portalControllerContext, FeedRssModel form) throws PortletException;    
     
-    /**
-     * Set Visual 
+ 	/**
+ 	 * Fill Feeds
      * 
-     * @param portalControllerContext portal controller context
-     * @param form FeedRssModel 
+     * @param Document document
      * @throws PortletException
-     */
-    void setVisual(PortalControllerContext portalControllerContext, FeedRssModel form) throws PortletException;
+ 	 * */
+ 	List<FeedRssModel> fillFeed(Document document) throws PortletException;;    
 }

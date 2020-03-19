@@ -1,5 +1,6 @@
-package org.osivia.services.rss.feedRss.portlet.repository;
+package org.osivia.services.rss.common.repository;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletException;
@@ -99,4 +100,11 @@ public interface FeedRepository {
      */
  	void delFeed(PortalControllerContext portalControllerContext, FeedRssModel model) throws PortletException;
 
+ 	/**
+ 	 * Fill Feeds
+     * 
+     * @param Document document
+     * @throws PortletException
+ 	 * */
+ 	List<FeedRssModel> fillFeed(Document document) throws PortletException;;
 }

@@ -70,5 +70,29 @@
             <title>Rss plugin</title>
         </portlet-info>
     </portlet>
+    
+    <portlet>
+        <portlet-name>synchronisation-rss-batch</portlet-name>
+        <portlet-class>org.osivia.services.rss.batch.RssProviderPortlet</portlet-class>
+
+
+        <init-param>
+            <name>contextClass</name>
+            <value>org.osivia.portal.api.portlet.AnnotationPortletApplicationContext</value>
+        </init-param>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>org.osivia.services.rss.batch.BatchRssConfiguration</value>
+        </init-param>
+        
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+
+        <portlet-info>
+            <title>Rss : synchronisation des flux RSS</title>
+        </portlet-info>
+    </portlet>
+    
 
 </portlet-app>

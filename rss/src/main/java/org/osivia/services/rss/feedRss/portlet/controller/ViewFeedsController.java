@@ -17,7 +17,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.common.model.FeedRssModel;
-import org.osivia.services.rss.feedRss.portlet.service.FeedService;
+import org.osivia.services.rss.common.service.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -103,6 +103,6 @@ public class ViewFeedsController {
 		PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request,
 				response);
 
-		this.service.synchro(portalControllerContext);
+		this.service.synchro(portalControllerContext, null);
 	}
 }

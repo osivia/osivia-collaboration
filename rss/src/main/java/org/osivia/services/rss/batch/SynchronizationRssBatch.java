@@ -1,18 +1,21 @@
 package org.osivia.services.rss.batch;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.batch.AbstractBatch;
-import org.osivia.portal.api.cache.services.CacheInfo;
-import org.osivia.services.rss.feedRss.portlet.service.FeedService;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.rss.common.model.ContainerRssModel;
+import org.osivia.services.rss.common.model.FeedRssModel;
+import org.osivia.services.rss.common.service.ContainerRssService;
+import org.osivia.services.rss.common.service.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 
 /**
  * Batch de synchronisation des flux RSS
@@ -28,6 +31,10 @@ public class SynchronizationRssBatch extends AbstractBatch {
     @Autowired
     protected FeedService service;
     
+    /** Container RSS service. */
+    @Autowired
+    protected ContainerRssService serviceContainer;    
+    
     /**
      * Portlet context.
      */
@@ -42,44 +49,47 @@ public class SynchronizationRssBatch extends AbstractBatch {
     }
 
     @Override
-    public String getJobScheduling() {
-        return System.getProperty("CRON_BATCH_RSS", CRON_DEFAULT_VALUE);
-    }
+	public String getJobScheduling() {
+		String quotaCron = System.getProperty("osivia.services.quota.cron");
+		if (StringUtils.isNotBlank(quotaCron)) {
+			return quotaCron;
+		} else
+			return System.getProperty("CRON_BATCH_RSS", CRON_DEFAULT_VALUE);
+	}
+    
 
     @Override
     public void execute(Map<String, Object> parameters) {
         logger.info("Exécution du batch RSS");
 
-        NuxeoController nuxeoController = new NuxeoController(portletContext);
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
+        // Récupération des containers 
+        List<ContainerRssModel> containers = null;
+        try {
+        	containers = serviceContainer.getListContainer(new PortalControllerContext(portletContext, null, null));
+        } catch (Exception e) {
+        	logger.error("Synchornisation: Problème lors récupération des containers :" + e.getMessage());
+		}
+        
 
-//        service.synchro(portalControllerContext);
-//        
-//        INuxeoCommand nuxeoCommand = new ListInteractikAgendaCommand(NuxeoQueryFilterContext.CONTEXT_LIVE_N_PUBLISHED);
-//        Documents agendasInteractik = (Documents) nuxeoController.executeNuxeoCommand(nuxeoCommand);
-//
-//        // 2) For each interactik agenda, search synchronization source
-//        for (Document agenda : agendasInteractik) {
-//            PropertyList propertyList = (PropertyList) agenda.getProperties().get(LIST_SOURCE_SYNCHRO);
-//            if (propertyList != null) {
-//                CalendarSynchronizationSource source;
-//                for (int i = 0; i < propertyList.size(); i++) {
-//                    PropertyMap map = propertyList.getMap(i);
-//                    source = new CalendarSynchronizationSource();
-//                    source.setUrl(map.getString(URL_SYNCHRONIZATION));
-//                    source.setId(map.getString(SOURCEID_SYNCHRONIZATION));
-//                    // 3) Synchronize each synchronization source
-//                    try {
-//                        Map<EventKey, EventToSync> mapEvents = getEventsFromUrl(new URL(source.getUrl()), source.getId());
-//                        nuxeoCommand = new InteractikSynchronizationCommand(NuxeoQueryFilterContext.CONTEXT_LIVE_N_PUBLISHED, agenda.getPath(), mapEvents);
-//                        nuxeoController.executeNuxeoCommand(nuxeoCommand);
-//                    } catch (MalformedURLException e) {
-//                        logger.error("Impossible d'accéder à l'URL de synchronisation, détail:" + e.getMessage());
-//                    }
-//                }
-//            }
-//        }
+        for(ContainerRssModel container: containers) {
+            // Pour chaque conteneur, récupération des flux associés
+        	try {
+        		List<FeedRssModel> feeds = service.fillFeed(container.getDoc());
+        		container.setFeedSources(feeds);
+			} catch (PortletException e1) {
+				logger.error("Synchronisation: Problème lors récupération des flux du conteneur :" + container.getName());
+			}
+        	
+        	// Synchronisation des flux par conteneur
+			try {
+				service.synchro(new PortalControllerContext(portletContext, null, null), container);
+			} catch (PortletException e) {
+				logger.error("Synchronisation: Problème lors de la mise à jour des flux :" + e.getMessage());
+			}
+        }
+
+
+        logger.info("Fin de la synchronisation");
 
     }
 
