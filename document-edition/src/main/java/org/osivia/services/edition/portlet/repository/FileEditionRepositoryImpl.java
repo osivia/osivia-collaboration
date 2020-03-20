@@ -42,7 +42,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
     /**
      * File binary name Nuxeo document property.
      */
-    private static final String BINARY_NAME_PROPERTY = BINARY_PROPERTY + "/name";
+    private static final String BINARY_NAME_PROPERTY = "file:filename";;
 
 
     /**
@@ -83,6 +83,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
         // Required primary type
         String requiredPrimaryType = this.requiredPrimaryTypes.get(document.getType());
         form.setRequiredPrimaryType(requiredPrimaryType);
+        form.setOriginalFileName(document.getProperties().getString(BINARY_NAME_PROPERTY));
     }
 
 
@@ -167,13 +168,11 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
     @Override
     protected void customizeProperties(PortalControllerContext portalControllerContext, FileEditionForm form, PropertyMap properties, Map<String, Blob> binaries) {
-        if (form.getTemporaryFile() == null) {
-            properties.set(BINARY_NAME_PROPERTY, form.getTitle());
-        } else {
+
+        	
+    	if (form.getTemporaryFile() != null) {
             // File
             File file = form.getTemporaryFile();
-            // File name
-            String name = form.getTitle();
             // File content type
             String contentType;
             if (form.getTemporaryFileMimeType() == null) {
@@ -182,8 +181,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
                 contentType = form.getTemporaryFileMimeType().toString();
             }
 
-            FileBlob blob = new FileBlob(file, name, contentType);
-            blob.setFileName(form.getTitle());
+            FileBlob blob = new FileBlob(file, form.getTemporaryFileName(), contentType);
             binaries.put(BINARY_PROPERTY, blob);
         }
     }

@@ -25,7 +25,7 @@
                     <c:choose>
                         <c:when test="${not empty form.temporaryFileName}">${form.temporaryFileName}</c:when>
                         <c:when test="${form.creation}"><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_TEXT"/></c:when>
-                        <c:otherwise>${form.title}</c:otherwise>
+                        <c:when test="${not empty form.originalFileName}">${form.originalFileName}</c:when>
                     </c:choose>
                 </p>
             </div>
