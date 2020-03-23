@@ -73,8 +73,7 @@
     
     <portlet>
         <portlet-name>synchronisation-rss-batch</portlet-name>
-        <portlet-class>org.osivia.services.rss.batch.RssProviderPortlet</portlet-class>
-
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 
         <init-param>
             <name>contextClass</name>
@@ -82,7 +81,7 @@
         </init-param>
         <init-param>
             <name>contextConfigLocation</name>
-            <value>org.osivia.services.rss.batch.BatchRssConfiguration</value>
+            <value>org.osivia.services.rss.batch.configuration.RssBatchConfiguration</value>
         </init-param>
         
         <supports>

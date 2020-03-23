@@ -47,7 +47,8 @@ public class RssUtility {
     static final String GUID = "guid";
     static final String CATEGORY = "category";
     static final String SOURCE = "source";
-    static final String ENCLOSURE = "enclosure";     
+    static final String ENCLOSURE = "enclosure";
+    private static final String MEDIA_CONTENT = "media:content";
     
     /**
      * Read RSS feed.

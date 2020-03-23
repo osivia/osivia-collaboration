@@ -7,8 +7,10 @@ import java.util.Set;
 
 import javax.portlet.PortletException;
 
+import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
+import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.command.ContainerCreatCommand;
 import org.osivia.services.rss.common.command.ContainerListCommand;
@@ -48,7 +50,14 @@ public class ContainerRepositoryImpl implements ContainerRepository{
      */
     public List<ContainerRssModel> getListContainerRss(PortalControllerContext portalControllerContext) throws PortletException {
         // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        NuxeoController nuxeoController;
+        if (portalControllerContext.getRequest() == null) {
+            // Batch mode
+            nuxeoController = new NuxeoController(portalControllerContext.getPortletCtx());
+            nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+        } else {
+            nuxeoController = new NuxeoController(portalControllerContext);
+        }
 
         List<ContainerRssModel> containers;
         
@@ -70,6 +79,7 @@ public class ContainerRepositoryImpl implements ContainerRepository{
 	    
 	    ContainerRssModel container = this.applicationContext.getBean(ContainerRssModel.class);
 	    container.setName(name);
+	    container.setDoc(document);
 	    DocumentDTO dto = DocumentDAO.getInstance().toDTO(document);
 		container.setDocument(dto);
 	    return container;
