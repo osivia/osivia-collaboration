@@ -16,12 +16,14 @@ import org.osivia.services.rss.common.model.FeedRssModel;
 import org.osivia.services.rss.common.service.ContainerRssService;
 import org.osivia.services.rss.common.service.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Batch de synchronisation des flux RSS
  *
  * @author Frédéric Boudan
  */
+@Component
 public class SynchronizationRssBatch extends AbstractBatch {
 
     protected static final Log logger = LogFactory.getLog(SynchronizationRssBatch.class);
@@ -33,13 +35,13 @@ public class SynchronizationRssBatch extends AbstractBatch {
     
     /** Container RSS service. */
     @Autowired
-    protected ContainerRssService serviceContainer;    
+    protected ContainerRssService serviceContainer;
     
     /**
      * Portlet context.
      */
     private static PortletContext portletContext;
-
+    
     public SynchronizationRssBatch() {
     }
 
@@ -61,7 +63,7 @@ public class SynchronizationRssBatch extends AbstractBatch {
     @Override
     public void execute(Map<String, Object> parameters) {
         logger.info("Exécution du batch RSS");
-
+        
         // Récupération des containers 
         List<ContainerRssModel> containers = null;
         try {
@@ -70,24 +72,25 @@ public class SynchronizationRssBatch extends AbstractBatch {
         	logger.error("Synchornisation: Problème lors récupération des containers :" + e.getMessage());
 		}
         
-
-        for(ContainerRssModel container: containers) {
-            // Pour chaque conteneur, récupération des flux associés
-        	try {
-        		List<FeedRssModel> feeds = service.fillFeed(container.getDoc());
-        		container.setFeedSources(feeds);
-			} catch (PortletException e1) {
-				logger.error("Synchronisation: Problème lors récupération des flux du conteneur :" + container.getName());
-			}
+        if(containers != null) {
         	
-        	// Synchronisation des flux par conteneur
-			try {
-				service.synchro(new PortalControllerContext(portletContext, null, null), container);
-			} catch (PortletException e) {
-				logger.error("Synchronisation: Problème lors de la mise à jour des flux :" + e.getMessage());
-			}
+	        for(ContainerRssModel container: containers) {
+	            // Pour chaque conteneur, récupération des flux associés
+	        	try {
+	        		List<FeedRssModel> feeds = service.fillFeed(container.getDoc());
+	        		container.setFeedSources(feeds);
+				} catch (PortletException e1) {
+					logger.error("Synchronisation: Problème lors récupération des flux du conteneur :" + container.getName());
+				}
+	        	
+	        	// Synchronisation des flux par conteneur
+				try {
+					service.synchro(new PortalControllerContext(portletContext, null, null), container);
+				} catch (PortletException e) {
+					logger.error("Synchronisation: Problème lors de la mise à jour des flux :" + e.getMessage());
+				}
+	        }
         }
-
 
         logger.info("Fin de la synchronisation");
 
@@ -96,6 +99,5 @@ public class SynchronizationRssBatch extends AbstractBatch {
     public void setPortletContext(PortletContext portletContext) {
     	SynchronizationRssBatch.portletContext = portletContext;
     }
-
 
 }

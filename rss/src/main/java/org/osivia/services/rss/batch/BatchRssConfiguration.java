@@ -25,7 +25,7 @@ import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 @Configuration
-@ComponentScan(basePackages={"org.osivia.services.rss.common"})
+@ComponentScan(basePackages={"org.osivia.services.rss.common", "org.osivia.services.rss.batch"})
 public class BatchRssConfiguration extends CMSPortlet implements PortletConfigAware {
 
     /** Application context. */

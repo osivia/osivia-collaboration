@@ -1,29 +1,27 @@
 package org.osivia.services.rss.batch;
 
 import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.batch.IBatchService;
-import org.osivia.portal.api.directory.v2.IDirProvider;
 import org.osivia.portal.api.locator.Locator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 
 /**
  * @author Frédéric Boudan
  */
+@Component
 public class RssProviderPortlet extends CMSPortlet{
 	
-
-	/** The provider (socle) */
-	private IDirProvider provider;
-
-	/** Batch rss */
-	private SynchronizationRssBatch batch = new SynchronizationRssBatch();	
+ 	/** Batch rss */
+	@Autowired
+	private SynchronizationRssBatch batch;
 	
     protected static final Log logger = LogFactory.getLog(SynchronizationRssBatch.class);
     
@@ -32,9 +30,6 @@ public class RssProviderPortlet extends CMSPortlet{
         super.init(config);
         
         logger.info("Démarre la planification du batch de synchronisation");
-        
-        // Portlet context
-        PortletContext portletContext = this.getPortletContext();
         
         IBatchService batchService = Locator.findMBean(IBatchService.class, IBatchService.MBEAN_NAME);
 

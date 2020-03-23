@@ -148,5 +148,6 @@ public interface FeedService {
      * @param Document document
      * @throws PortletException
  	 * */
- 	List<FeedRssModel> fillFeed(Document document) throws PortletException;;    
+ 	List<FeedRssModel> fillFeed(Document document) throws PortletException;
+ 	
 }

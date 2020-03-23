@@ -82,7 +82,7 @@ public class FeedServiceImpl implements FeedService {
 	public void synchro(PortalControllerContext portalControllerContext, ContainerRssModel model) throws PortletException {
 
 		// Recherche la liste des feeds
-		if(model.getFeedSources() == null) {
+		if(model == null) {
 			model = this.repository.getListFeedRss(portalControllerContext);	
 		}
 		
@@ -246,4 +246,5 @@ public class FeedServiceImpl implements FeedService {
 	public List<FeedRssModel> fillFeed(Document document) throws PortletException {
 		return this.repository.fillFeed(document);
 	}
+	
 }
