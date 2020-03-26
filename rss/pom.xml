@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>osivia-services-collaboration-parent</artifactId>
 		<groupId>org.osivia.services</groupId>
-		<version>4.9-SNAPSHOT</version>
+		<version>4.9.3-RC2</version>
 	</parent>
 
 
