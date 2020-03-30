@@ -35,6 +35,7 @@ import org.osivia.services.workspace.edition.portlet.repository.command.CheckTit
 import org.osivia.services.workspace.edition.portlet.repository.command.CheckWebIdAvailabilityCommand;
 import org.osivia.services.workspace.edition.portlet.repository.command.DeleteWorkspaceCommand;
 import org.osivia.services.workspace.edition.portlet.repository.command.GetTemplatesCommand;
+import org.osivia.services.workspace.edition.portlet.repository.command.HiddenWorkspaceCommand;
 import org.osivia.services.workspace.edition.portlet.repository.command.ReIndexCommand;
 import org.osivia.services.workspace.edition.portlet.repository.command.UpdatePropertiesCommand;
 import org.osivia.services.workspace.edition.portlet.repository.command.UpdateTasksCommand;
@@ -576,11 +577,16 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
-        nuxeoController.setAsynchronousCommand(true);
-
+        
         // Workspace identifier
         Document workspace = form.getDocument();
-
+        
+        // Nuxeo command
+        INuxeoCommand hiddenCommand = this.applicationContext.getBean(HiddenWorkspaceCommand.class, workspace.getPath());
+        nuxeoController.executeNuxeoCommand(hiddenCommand);
+        
+        
+        nuxeoController.setAsynchronousCommand(true);
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(DeleteWorkspaceCommand.class, workspace.getPath());
         nuxeoController.executeNuxeoCommand(command);
