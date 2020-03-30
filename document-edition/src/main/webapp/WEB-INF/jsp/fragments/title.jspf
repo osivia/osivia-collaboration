@@ -1,8 +1,3 @@
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="op" uri="http://www.osivia.org/jsp/taglib/osivia-portal" %>
-
-
 <spring:bind path="title">
     <div class="form-group required">
         <form:label path="title"><op:translate key="DOCUMENT_EDITION_FORM_TITLE_LABEL"/></form:label>
