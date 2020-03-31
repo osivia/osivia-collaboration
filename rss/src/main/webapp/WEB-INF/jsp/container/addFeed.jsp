@@ -37,7 +37,7 @@
 	</div>
 	
 	<div class="form-group">
-		<form:label path="visual.upload" class="control-label"><op:translate key="PICTURE_SLIDER" /></form:label>		
+		<form:label path="visual.upload" class="control-label"><op:translate key="PICTURE_RSS" /></form:label>		
 		    <div>
 			    <!-- Preview -->
 			    <c:choose>
@@ -58,12 +58,11 @@
 			       	</c:when>
 			                        
 			       	<c:when test="${empty form.visual.url}">
-			       	<!-- No visual -->
+			       	    <!-- No visual -->
 			      		<p class="form-control-static text-muted">
 			      			<span><op:translate key="NO_VISUAL" /></span>
 			        	</p>
 			       	</c:when>
-			       	
 			       			                            
 			       	<c:otherwise>
 			       	<!-- Visual -->
@@ -76,16 +75,15 @@
 				<div class="d-flex">
 					<div class="mr-2">
 						<!-- Upload -->
-			    		<label class="btn btn-outline-secondary btn-file btn-sm">
-			   				<i class="halflings halflings-folder-open"></i>
-			   				<span><op:translate key="PICTURE_UPLOAD" /></span>
-				      		<form:input type="file" path="visual.upload" data-change-submit="${namespace}-preview"/>
-				      	</label>
-				     	<input type="submit" name="upload-visual" class="d-none" id="${namespace}-preview">
+                        <div class="custom-file">
+                          <form:input type="file" path="visual.upload" class="custom-file-input" id="customFileLang" data-change-submit="${namespace}-preview"/>
+                          <label class="custom-file-label" for="customFileLangHTML" data-browse="Parcourir">Sélectionner une image</label>
+                        </div>
+                        <input type="submit" name="upload-visual" class="d-none" id="${namespace}-preview">     
 			         </div>                   
 					<div>
 				      	<!-- Delete -->
-				      	<button type="submit" name="delete-visual" class="btn btn-outline-secondary btn-sm">
+				      	<button type="submit" name="delete-visual" class="btn btn-outline-secondary">
 				     	 <i class="halflings halflings-trash"></i>
 				       		<span class="sr-only"><op:translate key="DELETE" /></span>
 				      	</button>
