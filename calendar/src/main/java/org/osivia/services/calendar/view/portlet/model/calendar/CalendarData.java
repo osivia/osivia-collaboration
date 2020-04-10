@@ -39,6 +39,8 @@ public class CalendarData {
     private String agendaBackgroundColor;
     /** Read only indicator. */
     private boolean readOnly;
+    /** Integration URL. */
+    private String integrationUrl;
 
 
     /**
@@ -230,6 +232,14 @@ public class CalendarData {
      */
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
+    }
+
+    public String getIntegrationUrl() {
+        return integrationUrl;
+    }
+
+    public void setIntegrationUrl(String integrationUrl) {
+        this.integrationUrl = integrationUrl;
     }
 
 }

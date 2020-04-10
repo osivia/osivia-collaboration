@@ -8,18 +8,21 @@ import java.util.Set;
 
 import javax.portlet.PortletException;
 
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.DocumentType;
+import org.osivia.portal.api.cms.PublicationInfos;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.calendar.edition.portlet.service.CalendarEditionService;
+import org.osivia.services.calendar.event.edition.portlet.service.CalendarEventEditionService;
 
 /**
  * Calendar menubar module.
@@ -54,7 +57,7 @@ public class CalendarMenubarModule implements MenubarModule {
     /** Calendar edition portlet instance. */
     protected static final String CALENDAR_EDITION_PORTLET_INSTANCE = "osivia-services-calendar-edition-instance";
     /** Calendar event edition portlet instance. */
-    protected static final String EVENT_EDITION_PORTLET_INSTANCE = "osivia-services-calendar-event-edition-instance";
+    protected static final String EVENT_EDITION_PORTLET_INSTANCE = CalendarEventEditionService.PORTLET_INSTANCE;
 
     /** Portal URL factory. */
     protected final IPortalUrlFactory portalUrlFactory;
@@ -106,8 +109,10 @@ public class CalendarMenubarModule implements MenubarModule {
         if (documentContext != null) {
             // Document type
             DocumentType documentType = documentContext.getDocumentType();
+            // Publication infos
+            PublicationInfos publicationInfos = documentContext.getPublicationInfos();
 
-            if (documentType != null) {
+            if ((documentType != null) && publicationInfos.isLiveSpace()) {
                 // Document
                 Document document = (Document) documentContext.getDocument();
 

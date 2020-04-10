@@ -1,5 +1,9 @@
 package org.osivia.services.editor.link.portlet.model.validator;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.apache.commons.lang.StringUtils;
 import org.osivia.services.editor.link.portlet.model.EditorLinkForm;
 import org.osivia.services.editor.link.portlet.model.UrlType;
 import org.springframework.stereotype.Component;
@@ -40,7 +44,21 @@ public class EditorLinkFormValidator implements Validator {
     public void validate(Object target, Errors errors) {
         EditorLinkForm form = (EditorLinkForm) target;
         if (UrlType.MANUAL.equals(form.getUrlType())) {
-            ValidationUtils.rejectIfEmpty(errors, "manualUrl", "NotEmpty");
+        	ValidationUtils.rejectIfEmpty(errors, "manualUrl", "NotEmpty");
+        	if (StringUtils.isNotBlank(form.getManualUrl())) {
+        		try {
+        			if (StringUtils.startsWith(form.getManualUrl(), "/")) {
+        				// Relative
+        				URL baseUrl = new URL("http://www.example.com");
+						new URL(baseUrl, form.getManualUrl());
+        			} else {
+        				// Absolute
+        				new URL(form.getManualUrl());
+        			}
+    			} catch (MalformedURLException e) {
+    				errors.rejectValue("manualUrl", "Malformed");
+    			}
+        	}
         } else if (UrlType.DOCUMENT.equals(form.getUrlType())) {
             ValidationUtils.rejectIfEmpty(errors, "documentWebId", "NotEmpty");
         }

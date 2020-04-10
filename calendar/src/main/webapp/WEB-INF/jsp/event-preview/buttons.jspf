@@ -1,0 +1,22 @@
+<div class="media">
+    <div class="media-body">
+        <div class="text-right">
+            <%--Detail--%>
+            <a href="${form.detailUrl}" class="btn btn-link no-ajax-link">
+                <span><op:translate key="CALENDAR_EVENT_PREVIEW_DETAIL"/></span>
+            </a>
+
+            <%--Edit--%>
+            <c:if test="${not empty form.editUrl}">
+                <a href="${form.editUrl}" class="btn btn-link no-ajax-link">
+                    <span><op:translate key="CALENDAR_EVENT_PREVIEW_EDIT"/></span>
+                </a>
+            </c:if>
+
+            <%--Close--%>
+            <button type="button" class="btn btn-link" data-dismiss="modal">
+                <span><op:translate key="CLOSE"/></span>
+            </button>
+        </div>
+    </div>
+</div>

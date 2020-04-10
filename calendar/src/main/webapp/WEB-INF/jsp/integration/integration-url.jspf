@@ -1,0 +1,16 @@
+<div class="media">
+    <div class="media-body relative">
+        <div class="absolute absolute-full">
+            <div class="text-overflow text-middle">
+                <a id="${namespace}-integration-url" href="${form.url}" target="_blank"
+                   class="no-ajax-link">${form.url}</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="media-right">
+        <button type="button" class="btn btn-default btn-sm" data-clipboard-target="#${namespace}-integration-url">
+            <span><op:translate key="CALENDAR_INTEGRATION_ACTION"/></span>
+        </button>
+    </div>
+</div>

@@ -1,5 +1,6 @@
 package org.osivia.services.contact.portlet.controller;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
 
@@ -8,7 +9,6 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -22,44 +22,56 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
-import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.contact.portlet.model.Form;
+import org.osivia.services.contact.portlet.model.validation.ContactFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import org.springframework.web.portlet.context.PortletConfigAware;
 import org.springframework.web.portlet.context.PortletContextAware;
 
+import com.github.cage.GCage;
 import com.sun.mail.smtp.SMTPTransport;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 
 @Controller
 @RequestMapping({"VIEW"})
+@SessionAttributes("form")
 public class ContactController
 extends CMSPortlet
 implements PortletConfigAware, PortletContextAware
 {
     private static final String DEFAULT_VIEW = "view";
 
-    private static final String RETOUR_LIGNE = "<br />";
-
     @Autowired
     private IBundleFactory bundleFactory;
 
     @Autowired
     private INotificationsService notificationService;
+    
+    /** Contact form validator. */
+    @Autowired
+    private ContactFormValidator formValidator;    
 
     private PortletConfig portletConfig;
 
@@ -85,73 +97,34 @@ implements PortletConfigAware, PortletContextAware
         PortalWindow window = WindowFactory.getWindow(request);
 
         Bundle bundle = bundleFactory.getBundle(request.getLocale());
+		GCage gcage = new GCage();
 
         Form form = new Form();
         form.setTo(window.getProperty("osivia.contact.mailto"));
-        form.setFromLabel(StringUtils.defaultIfBlank(window.getProperty("osivia.contact.fromLabel"), bundle.getString("ENTER_EMAIL")));
-        form.setNomLabel(StringUtils.defaultIfBlank(window.getProperty("osivia.contact.nomLabel"), bundle.getString("NAMES")));
-        form.setObjectLabel(StringUtils.defaultIfBlank(window.getProperty("osivia.contact.objectLabel"), bundle.getString("SUBJECT")));
         form.setObject(window.getProperty("osivia.contact.object"));
-        form.setBodyLabel(StringUtils.defaultIfBlank(window.getProperty("osivia.contact.bodyLabel"), bundle.getString("MESSAGE")));
+        form.setToken(gcage.getTokenGenerator().next());
         return form;
     }
 
-    @ActionMapping
-    public void sendMail(ActionRequest request, ActionResponse response, @ModelAttribute("form") Form form)
-            throws PortletException
+	@ActionMapping(name="submit", params="send")
+    public void sendMail(ActionRequest request, ActionResponse response, @ModelAttribute("form") @Validated Form form, BindingResult result, SessionStatus status)
+            throws PortletException, IOException
     {
-        PortalControllerContext pcc = new PortalControllerContext(getPortletContext(), request, response);
+    	PortalControllerContext pcc = new PortalControllerContext(getPortletContext(), request, response);
 
-        Bundle bundle = bundleFactory.getBundle(request.getLocale());
+		Bundle bundle = bundleFactory.getBundle(request.getLocale());
 
-        Properties props = System.getProperties();
+		Properties props = System.getProperties();
 
-        Session mailSession = Session.getInstance(props, null);
+		Session mailSession = Session.getInstance(props, null);
 
-        MimeMessage msg = new MimeMessage(mailSession);
-
-        InternetAddress from = null;
-        try
+		MimeMessage msg = new MimeMessage(mailSession);        
+		try
         {
-            from = new InternetAddress(form.getFrom());
-            form.setFromError(false);
-        }
-        catch (AddressException e1)
-        {
-            notificationService.addSimpleNotification(pcc, bundle.getString("MAILTO_ERROR_MSG"), NotificationsType.ERROR);
-            form.setFromError(true);
-        }
-        if (StringUtils.isBlank(form.getNom()))
-        {
-            notificationService.addSimpleNotification(pcc, bundle.getString("NAME_ERROR_MSG"), NotificationsType.ERROR);
-            form.setNomError(true);
-        }
-        else
-        {
-            form.setNomError(false);
-        }
-        if (StringUtils.isBlank(form.getObject()))
-        {
-            notificationService.addSimpleNotification(pcc, bundle.getString("SUBJECT_ERROR_MSG"), NotificationsType.ERROR);
-            form.setObjectError(true);
-        }
-        else
-        {
-            form.setObjectError(false);
-        }
-        if (StringUtils.isBlank(form.getBody()))
-        {
-            notificationService.addSimpleNotification(pcc, bundle.getString("MESSAGE_ERROR_MSG"), NotificationsType.ERROR);
-            form.setBodyError(true);
-        }
-        else
-        {
-            form.setBodyError(false);
-        }
-        try
-        {
-            if (!form.hasError())
+            if (!result.hasErrors())
             {
+            	status.setComplete();
+                InternetAddress from = new InternetAddress(form.getFrom());
                 msg.setFrom(from);
                 msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(form.getTo(), false));
                 msg.setSubject(form.getObject(), "UTF-8");
@@ -174,7 +147,7 @@ implements PortletConfigAware, PortletContextAware
         catch (MessagingException e)
         {
             throw new PortletException(e);
-        }
+        }	
     }
 
     private static String bodyFormat(Form form, Bundle bundle)
@@ -204,6 +177,39 @@ implements PortletConfigAware, PortletContextAware
     public void setPortletContext(PortletContext portletContext)
     {
         this.portletContext = portletContext;
+    }
+    
+    /**
+     * Contactform init binder.
+     *
+     * @param binder data binder
+     */
+    @InitBinder("form")
+    public void formInitBinder(WebDataBinder binder) {
+        binder.addValidators(this.formValidator);
+        binder.setDisallowedFields("token", "captchaValidate");
+    }    
+    
+    /**
+     * @throws IOException 
+     * 
+     *
+     */
+    @ResourceMapping("captcha")
+    public void captchaImage(ResourceRequest request, ResourceResponse response, @ModelAttribute("form") Form form) throws IOException {
+		GCage gcage = new GCage();
+		
+		response.setContentType("image/" + gcage.getFormat());
+		response.setProperty("Cache-Control", "no-cache");
+		response.setProperty("Progma", "no-cache");
+		
+		gcage.draw(form.getToken(), response.getPortletOutputStream());
+    }        
+    
+    @ActionMapping(name="submit", params="reload")
+    public void reloadImage(ActionRequest request, ActionResponse response, @ModelAttribute("form") Form form) {
+		GCage gcage = new GCage();
+		form.setToken(gcage.getTokenGenerator().next());
     }
 }
 
