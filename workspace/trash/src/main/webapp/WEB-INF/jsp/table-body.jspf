@@ -24,9 +24,9 @@
                      data-location-path="${trashedDocument.location.document.path}">
                     <%--Document--%>
                     <div class="portal-table-cell" data-column="document">
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center mr-auto flex-shrink-1">
                             <span class="mr-2"><ttc:icon document="${trashedDocument.document}" style="flat-inverse"/></span>
-                            <span><ttc:title document="${trashedDocument.document}" linkable="false"/></span>
+                            <span class="text-truncate"><ttc:title document="${trashedDocument.document}" linkable="false"/></span>
                         </div>
                     </div>
 

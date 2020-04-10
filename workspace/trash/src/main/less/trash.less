@@ -2,15 +2,37 @@
 // Trash
 // --------------------------------------------------
 
+@screen-lg-min: 1200px;
+@screen-md-min: 992px;
+@screen-sm-min: 768px;
+
+@screen-md-max: (@screen-lg-min - 1);
+@screen-sm-max: (@screen-md-min - 1);
+@screen-xs-max: (@screen-sm-min - 1);
 
 .trash {
     [data-column="document"] {
         flex-grow: 1;
+        flex-shrink: 1;
+        overflow: hidden;           
     }
     [data-column="date"] {
         width: 200px;
     }
     [data-column="location"] {
-        width: 200px;
+        width: 150px;
+    }
+    
+    
+    @media (max-width: @screen-xs-max) {
+        [data-column="location"] {
+            display: none;
+        }
+        [data-column="date"] {
+            display: none;
+        }
+        [data-column="location"] {
+            display: none;
+        }
     }
 }
