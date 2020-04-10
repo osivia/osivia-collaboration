@@ -10,10 +10,11 @@
 <portlet:defineObjects/>
 
 
-<portlet:actionURL name="submit" var="url"/>
+<portlet:actionURL name="submit" var="submitUrl"/>
+<portlet:resourceURL id="editor" var="editorUrl"/>
 
 
-<form:form action="${url}" method="post" modelAttribute="form">
+<form:form action="${submitUrl}" method="post" modelAttribute="form">
     <%--Location--%>
     <%@include file="fragments/location.jspf" %>
 
@@ -25,9 +26,9 @@
     <c:set var="placeholder"><op:translate key="DOCUMENT_EDITION_FORM_NOTE_CONTENT_PLACEHOLDER"/></c:set>
     <div class="form-group">
         <form:label path="content"><op:translate key="DOCUMENT_EDITION_FORM_NOTE_CONTENT_LABEL"/></form:label>
-        <form:textarea path="content" cssClass="form-control tinymce ${form.windowProperties.modal ? 'tinymce-simple' : 'tinymce-default'}" placeholder="${placeholder}"/>
+        <form:textarea path="content" cssClass="form-control tinymce ${form.windowProperties.modal ? 'tinymce-simple' : 'tinymce-default'}" placeholder="${placeholder}" data-editor-url="${editorUrl}"/>
     </div>
-
+    
     <%--Buttons--%>
     <%@include file="fragments/buttons.jspf" %>
 </form:form>

@@ -17,21 +17,22 @@ public class DocumentEditionWindowProperties {
      * Base path.
      */
     private String basePath;
-
     /**
      * Document path.
      */
     private String documentPath;
-
     /**
      * Parent document path.
      */
     private String parentDocumentPath;
-
     /**
      * Document type.
      */
     private String documentType;
+    /**
+     * Modal indicator.
+     */
+    private boolean modal;
 
 
     /**
@@ -74,4 +75,11 @@ public class DocumentEditionWindowProperties {
         this.documentType = documentType;
     }
 
+    public boolean isModal() {
+        return modal;
+    }
+
+    public void setModal(boolean modal) {
+        this.modal = modal;
+    }
 }

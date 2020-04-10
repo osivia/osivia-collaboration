@@ -36,7 +36,7 @@ import javax.portlet.PortletException;
  */
 @Configuration
 @ComponentScan(basePackages = "org.osivia.services.edition.portlet")
-public class DocumentEditionConfiguration extends CMSPortlet implements PortletConfigAware {
+public class DocumentEditionConfiguration implements PortletConfigAware {
 
     /**
      * Max upload size per file.
@@ -61,12 +61,6 @@ public class DocumentEditionConfiguration extends CMSPortlet implements PortletC
 
     @Override
     public void setPortletConfig(PortletConfig portletConfig) {
-        try {
-            super.init(portletConfig);
-        } catch (PortletException e) {
-            throw new RuntimeException(e);
-        }
-
         // Register application
         PortletAppUtils.registerApplication(portletConfig, this.applicationContext);
     }

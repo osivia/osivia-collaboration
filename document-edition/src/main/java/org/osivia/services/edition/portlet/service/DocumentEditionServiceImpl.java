@@ -3,6 +3,7 @@ package org.osivia.services.edition.portlet.service;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -90,6 +91,10 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         String documentType = window.getProperty(DOCUMENT_TYPE_WINDOW_PROPERTY);
         properties.setDocumentType(documentType);
 
+        // Modal indicator
+        boolean modal = BooleanUtils.toBoolean(window.getProperty(MODAL_INDICATOR_WINDOW_PROPERTY));
+        properties.setModal(modal);
+
         return properties;
     }
 
@@ -108,7 +113,7 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
             throw new PortletException("Unable to find portlet repository name.");
         }
         // Repository
-        DocumentEditionRepository repository = this.getRepository(name);
+        DocumentEditionRepository<?> repository = this.getRepository(name);
 
         // Form
         AbstractDocumentEditionForm form = repository.getForm(portalControllerContext, windowProperties);
@@ -128,7 +133,7 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
 
     @Override
-    public DocumentEditionRepository getRepository(String name) {
+    public DocumentEditionRepository<AbstractDocumentEditionForm> getRepository(String name) {
         return this.applicationContext.getBean(name, DocumentEditionRepository.class);
     }
 
@@ -155,7 +160,7 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         response.setTitle(title);
 
         // Repository
-        DocumentEditionRepository repository = this.getRepository(form.getName());
+        DocumentEditionRepository<?> repository = this.getRepository(form.getName());
 
         return repository.getViewPath(portalControllerContext);
     }
@@ -164,7 +169,7 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
     @Override
     public void upload(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
         // Repository
-        DocumentEditionRepository repository = this.getRepository(form.getName());
+        DocumentEditionRepository<AbstractDocumentEditionForm> repository = this.getRepository(form.getName());
 
         repository.upload(portalControllerContext, form);
     }
@@ -173,41 +178,35 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
     @Override
     public void restore(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
         // Repository
-        DocumentEditionRepository repository = this.getRepository(form.getName());
+        DocumentEditionRepository<AbstractDocumentEditionForm> repository = this.getRepository(form.getName());
 
         repository.restore(portalControllerContext, form);
     }
 
 
     @Override
-    public void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form,  BindingResult result) throws PortletException, IOException {
+    public void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, BindingResult result) throws PortletException, IOException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
         // Repository
-        DocumentEditionRepository repository = this.getRepository(form.getName());
+        DocumentEditionRepository<AbstractDocumentEditionForm> repository = this.getRepository(form.getName());
 
         try {
             // Save document
             repository.save(portalControllerContext, form);
         } catch (NuxeoException e) {
-            if (e instanceof NuxeoException) {
-                // Nuxeo user messages (quota, virus) are displayed on current form
-                String message = ((NuxeoException) e).getUserMessage(portalControllerContext);
-                if (message != null) {
-                    result.rejectValue("upload", null, message);
-                    return;
-                }
+            // Nuxeo user messages (quota, virus) are displayed on current form
+            String message = e.getUserMessage(portalControllerContext);
+            if (message != null) {
+                result.rejectValue("upload", null, message);
+                return;
             }
 
             throw e;
-       }
-
-        
-        
-
+        }
 
 
         // Notification
@@ -225,7 +224,7 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
 
     @Override
-    public void cancel(PortalControllerContext portalControllerContext) throws PortletException, IOException {
+    public void cancel(PortalControllerContext portalControllerContext) throws IOException {
         // Redirect
         this.redirect(portalControllerContext);
     }
@@ -273,7 +272,7 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
                 name = null;
             } else {
                 // Repository
-                DocumentEditionRepository repository = this.getRepository(names[0]);
+                DocumentEditionRepository<?> repository = this.getRepository(names[0]);
                 // Document context
                 NuxeoDocumentContext documentContext = repository.getDocumentContext(portalControllerContext, windowProperties.getDocumentPath());
                 // Document type

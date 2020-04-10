@@ -1,7 +1,9 @@
 package org.osivia.services.edition.portlet.controller;
 
+import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
+import org.osivia.services.edition.portlet.model.NoteEditionForm;
 import org.osivia.services.edition.portlet.model.validator.DocumentEditionFormValidator;
 import org.osivia.services.edition.portlet.service.DocumentEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +12,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
+import org.springframework.web.portlet.context.PortletConfigAware;
 
 import javax.portlet.*;
 import java.io.IOException;
@@ -25,11 +26,13 @@ import java.io.IOException;
  * Document edition portlet controller.
  *
  * @author Cédric Krommenhoek
+ * @see CMSPortlet
+ * @see PortletConfigAware
  */
 @Controller
 @RequestMapping("VIEW")
 @SessionAttributes("form")
-public class DocumentEditionController {
+public class DocumentEditionController extends CMSPortlet implements PortletConfigAware {
 
     /**
      * Portlet context.
@@ -56,6 +59,16 @@ public class DocumentEditionController {
      */
     public DocumentEditionController() {
         super();
+    }
+
+
+    @Override
+    public void setPortletConfig(PortletConfig portletConfig) {
+        try {
+            super.init(portletConfig);
+        } catch (PortletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -124,6 +137,16 @@ public class DocumentEditionController {
         if (!result.hasErrors()) {
             sessionStatus.setComplete();
 
+
+            // FIXME
+            if (form instanceof NoteEditionForm) {
+                NoteEditionForm noteForm = (NoteEditionForm) form;
+                System.out.println("Content: \"" + noteForm.getContent() + "\"");
+            } else {
+                System.out.println("Form class: " + form.getClass());
+            }
+
+
             this.service.save(portalControllerContext, form, result);
         }
     }
@@ -144,6 +167,19 @@ public class DocumentEditionController {
         sessionStatus.setComplete();
 
         this.service.cancel(portalControllerContext);
+    }
+
+
+    /**
+     * Editor resource mapping.
+     *
+     * @param request  resource request
+     * @param response resource response
+     * @param editorId editor identifier request parameter
+     */
+    @ResourceMapping("editor")
+    public void editorResourceMapping(ResourceRequest request, ResourceResponse response, @RequestParam("editorId") String editorId) throws PortletException, IOException {
+        super.serveResourceEditor(request, response, editorId);
     }
 
 

@@ -44,7 +44,7 @@ public class DocumentEditionFormValidator implements Validator {
         AbstractDocumentEditionForm form = (AbstractDocumentEditionForm) target;
 
         // Repository
-        DocumentEditionRepository repository = this.service.getRepository(form.getName());
+        DocumentEditionRepository<AbstractDocumentEditionForm> repository = this.service.getRepository(form.getName());
 
         repository.validate(form, errors);
     }

@@ -36,6 +36,11 @@ public interface DocumentEditionService {
      */
     String DOCUMENT_TYPE_WINDOW_PROPERTY = "osivia.document.edition.document-type";
 
+    /**
+     * Modal indicator window property.
+     */
+    String MODAL_INDICATOR_WINDOW_PROPERTY = "osivia.document.edition.modal";
+
 
     /**
      * Get window properties.
@@ -61,7 +66,7 @@ public interface DocumentEditionService {
      * @param name repository name
      * @return repository
      */
-    DocumentEditionRepository getRepository(String name);
+    DocumentEditionRepository<AbstractDocumentEditionForm> getRepository(String name);
 
 
     /**

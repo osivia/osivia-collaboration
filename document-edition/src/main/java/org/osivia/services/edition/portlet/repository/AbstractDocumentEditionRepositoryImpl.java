@@ -55,16 +55,20 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
      */
     @Autowired
     private ApplicationContext applicationContext;
+
     /**
      * Portlet context.
      */
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private PortletContext portletContext;
+
     /**
      * Portlet service.
      */
     @Autowired
     private DocumentEditionService service;
+
     /**
      * CMS service locator.
      */
@@ -200,6 +204,12 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
     }
 
 
+    /**
+     * Check title availability.
+     *
+     * @param form document edition form
+     * @return true is titre is available
+     */
     private boolean checkTitleAvailability(T form) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(this.portletContext);
