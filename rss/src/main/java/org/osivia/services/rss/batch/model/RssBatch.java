@@ -28,7 +28,7 @@ public class RssBatch extends AbstractBatch {
     /**
      * Cron default value.
      */
-    private static final String CRON_DEFAULT_VALUE = "0 0/2 * * * ?";
+    private static final String CRON_DEFAULT_VALUE = "0 0/10 * * * ?";
 
 
     /**
