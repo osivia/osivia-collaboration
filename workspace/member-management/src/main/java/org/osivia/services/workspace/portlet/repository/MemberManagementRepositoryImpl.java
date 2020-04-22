@@ -968,7 +968,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * @param portalControllerContext portal controller context
      * @return Nuxeo document
      */
-    protected Document getCurrentWorkspace(PortalControllerContext portalControllerContext) {
+    public Document getCurrentWorkspace(PortalControllerContext portalControllerContext) {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
 

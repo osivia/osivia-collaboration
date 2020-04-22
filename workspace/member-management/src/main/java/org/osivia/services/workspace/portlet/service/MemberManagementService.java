@@ -2,15 +2,18 @@ package org.osivia.services.workspace.portlet.service;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.ParseException;
 import java.util.List;
 
 import javax.portlet.PortletException;
 
 import org.dom4j.Element;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.AbstractAddToGroupForm;
 import org.osivia.services.workspace.portlet.model.AbstractChangeRoleForm;
 import org.osivia.services.workspace.portlet.model.AbstractMembersForm;
+import org.osivia.services.workspace.portlet.model.ImportForm;
 import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
 import org.osivia.services.workspace.portlet.model.InvitationRequestsForm;
 import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
@@ -444,5 +447,27 @@ public interface MemberManagementService {
      * @param invitationPath
      */
 	void dropInvitation(PortalControllerContext portalControllerContext, String path);
+
+
+	/**
+	 * Get import form
+	 * 
+	 * @param portalControllerContext
+	 * @return
+	 */
+	ImportForm getImportForm(PortalControllerContext portalControllerContext);
+
+    /**
+     * Prepare invitations import
+     * 
+     * @param portalControllerContext
+     * @param form
+     * @param invitationPath
+     * @throws PortalException 
+     * @throws ParseException 
+     */
+	void prepareImportInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options,
+			ImportForm form) throws ParseException, PortalException;
+
 
 }

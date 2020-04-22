@@ -4,8 +4,12 @@ import javax.annotation.PostConstruct;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.directory.v2.service.PersonUpdateService;
 import org.osivia.directory.v2.service.WorkspaceService;
+import org.osivia.portal.api.batch.IBatchService;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
@@ -19,6 +23,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.portlet.multipart.CommonsPortletMultipartResolver;
+import org.springframework.web.portlet.multipart.PortletMultipartResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
@@ -36,7 +42,9 @@ import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoServiceFactory;
 @ComponentScan(basePackages = "org.osivia.services.workspace.portlet")
 public class MemberManagementConfiguration extends CMSPortlet {
 
-    /** Application context. */
+    public static final Long MAX_UPLOAD_SIZE_PER_FILE = (1 * FileUtils.ONE_MB);
+
+	/** Application context. */
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -162,5 +170,29 @@ public class MemberManagementConfiguration extends CMSPortlet {
         return Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
     }
 
+
+    /**
+     * Get multipart resolver.
+     *
+     * @return multipart resolver
+     */
+    @Bean(name = "portletMultipartResolver")
+    public PortletMultipartResolver getMultipartResolver() {
+        CommonsPortletMultipartResolver multipartResolver = new CommonsPortletMultipartResolver();
+        multipartResolver.setDefaultEncoding(CharEncoding.UTF_8);
+        multipartResolver.setMaxUploadSizePerFile(MAX_UPLOAD_SIZE_PER_FILE);
+        return multipartResolver;
+    }
+
+
+    /**
+     * Get Batch service.
+     * 
+     * @return batch service
+     */
+    @Bean
+    public IBatchService getBatchService() {
+        return Locator.findMBean(IBatchService.class, IBatchService.MBEAN_NAME);
+    }
 
 }

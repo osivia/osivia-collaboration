@@ -1,9 +1,11 @@
 package org.osivia.services.workspace.portlet.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +20,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 import javax.portlet.ActionRequest;
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletException;
@@ -34,8 +38,14 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
+import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.batch.AbstractBatch;
+import org.osivia.portal.api.batch.Batch;
+import org.osivia.portal.api.batch.IBatchService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.html.AccessibilityRoles;
@@ -52,6 +62,7 @@ import org.osivia.services.workspace.portlet.model.AddMembersToGroupForm;
 import org.osivia.services.workspace.portlet.model.ChangeInvitationRequestsRoleForm;
 import org.osivia.services.workspace.portlet.model.ChangeInvitationsRoleForm;
 import org.osivia.services.workspace.portlet.model.ChangeMembersRoleForm;
+import org.osivia.services.workspace.portlet.model.ImportForm;
 import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
 import org.osivia.services.workspace.portlet.model.InvitationObject;
@@ -77,6 +88,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
+import org.springframework.web.multipart.MultipartFile;
 
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 import net.sf.json.JSONArray;
@@ -110,6 +122,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     /** Notifications service. */
     @Autowired
     private INotificationsService notificationsService;
+    
+    /** Batch service. */
+    @Autowired
+    private IBatchService batchService;
 
     /** Local group comparator. */
     @Autowired
@@ -2376,6 +2392,9 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         InvitationRequestsForm requestsForm = this.applicationContext.getBean(InvitationRequestsForm.class);
         requestsForm.setLoaded(false);
+        
+        ImportForm importForm = this.applicationContext.getBean(ImportForm.class);
+        importForm.setLoaded(false);
     }
 
 
@@ -2403,5 +2422,83 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 	    this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
 		
 	}
+
+
+	@Override
+	public ImportForm getImportForm(PortalControllerContext portalControllerContext) {
+		
+        // Form
+		ImportForm form = this.applicationContext.getBean(ImportForm.class);
+		
+		if (!form.isLoaded()) {
+			form.setRole(WorkspaceRole.READER);
+			
+			Person person = (Person) portalControllerContext.getRequest().getAttribute(Constants.ATTR_LOGGED_PERSON_2);
+			form.setInitiator(person.getUid());
+			
+			form.setLocalGroups(null);
+			form.setMessage(null);
+//			form.setTemporaryFile(null);
+			form.setUpload(null);
+
+            form.setLoaded(true);
+           
+        
+		}
+        return form;
+	}
+
+
+	@Override
+	public void prepareImportInvitations(PortalControllerContext portalControllerContext,
+			MemberManagementOptions options, ImportForm form) throws ParseException, PortalException {
+		
+		String batchId = "importmembers_"+options.getWorkspaceId()+"_"+new Date().getTime();
+		
+    	// Temporary file
+        MultipartFile upload = form.getUpload();
+        
+        ImportObject dto = applicationContext.getBean(ImportObject.class);
+        
+        File temporaryFile;
+		try {
+			temporaryFile = File.createTempFile(batchId, ".tmp");
+
+	        temporaryFile.deleteOnExit();
+	        upload.transferTo(temporaryFile);
+
+	        dto.setTemporaryFile(temporaryFile);
+	        dto.setInitiator(form.getInitiator());
+	        dto.setLocalGroups(form.getLocalGroups());
+	        dto.setMessage(form.getMessage());
+	        dto.setRole(form.getRole());
+	        dto.setWorkspaceId(options.getWorkspaceId());
+
+			Document currentWorkspace = repository.getCurrentWorkspace(portalControllerContext);
+			dto.setCurrentWorkspace(currentWorkspace);
+	        
+		} catch (IOException e) {
+			throw new PortalException(e);
+		}
+		
+
+		ImportInvitationsBatch batch = new ImportInvitationsBatch(portalControllerContext.getPortletCtx(), dto);
+
+		batch.setBatchId(batchId);
+		
+		batchService.addBatch(batch);
+		
+
+	    // Update model
+	    this.invalidateLoadedForms();
+	
+	    Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+	    
+	    // Notification
+	    String message = bundle.getString("MESSAGE_IMPORT_IN_PROGRESS");
+	    this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.INFO);
+		
+	}
+
 
 }

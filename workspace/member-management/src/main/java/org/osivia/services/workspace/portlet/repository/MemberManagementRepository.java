@@ -42,6 +42,8 @@ public interface MemberManagementRepository {
     String WORKSPACE_TITLE_PROPERTY = "workspaceTitle";
     /** Person UID property. */
     String PERSON_UID_PROPERTY = "uid";
+    /** Initiator property. */
+    String INITIATOR_PROPERTY = "initiator";    
     /** Invitation state property. */
     String INVITATION_STATE_PROPERTY = "invitationState";
     /** Message sent by the user. */
@@ -330,5 +332,14 @@ public interface MemberManagementRepository {
      * @param invitationPath
      */
 	void dropInvitation(PortalControllerContext portalControllerContext, String invitationPath);
+
+
+	/**
+	 * Get current workspace document
+	 * 
+	 * @param portalControllerContext
+	 * @return
+	 */
+	Document getCurrentWorkspace(PortalControllerContext portalControllerContext);
 
 }
