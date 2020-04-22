@@ -88,7 +88,6 @@ public class FeedServiceImpl implements FeedService {
 
 		// Parent document path
 		String parentPath = model.getDoc().getPath();
-
 		for (FeedRssModel feed : model.getFeedSources()) {
 			// retourne une map d'item à faire correspondre avec les items déjà enregistré
 			List<ItemRssModel> items = RssUtility.readRss(feed);
@@ -120,7 +119,6 @@ public class FeedServiceImpl implements FeedService {
 						}
 					}
 				}
-
 			}
 		}
 	}
