@@ -7,6 +7,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.editor.EditorService;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
@@ -57,6 +58,12 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
      */
     @Autowired
     private INotificationsService notificationsService;
+
+    /**
+     * Editor service.
+     */
+    @Autowired
+    private EditorService editorService;
 
 
     /**
@@ -227,6 +234,12 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
     public void cancel(PortalControllerContext portalControllerContext) throws IOException {
         // Redirect
         this.redirect(portalControllerContext);
+    }
+
+
+    @Override
+    public void serveEditor(PortalControllerContext portalControllerContext, String editorId) throws PortletException, IOException {
+        this.editorService.serveResource(portalControllerContext, editorId);
     }
 
 

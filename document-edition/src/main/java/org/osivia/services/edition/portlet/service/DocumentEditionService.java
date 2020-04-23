@@ -112,4 +112,13 @@ public interface DocumentEditionService {
      */
     void cancel(PortalControllerContext portalControllerContext) throws PortletException, IOException;
 
+
+    /**
+     * Serve editor.
+     *
+     * @param portalControllerContext portal controller context
+     * @param editorId                editor identifier
+     */
+    void serveEditor(PortalControllerContext portalControllerContext, String editorId) throws PortletException, IOException;
+
 }

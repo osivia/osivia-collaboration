@@ -4,6 +4,7 @@ import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.math.NumberUtils;
+import org.osivia.portal.api.editor.EditorService;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -36,7 +37,7 @@ import javax.portlet.PortletException;
  */
 @Configuration
 @ComponentScan(basePackages = "org.osivia.services.edition.portlet")
-public class DocumentEditionConfiguration implements PortletConfigAware {
+public class DocumentEditionConfiguration extends CMSPortlet implements PortletConfigAware {
 
     /**
      * Max upload size per file.
@@ -61,6 +62,12 @@ public class DocumentEditionConfiguration implements PortletConfigAware {
 
     @Override
     public void setPortletConfig(PortletConfig portletConfig) {
+        try {
+            super.init(portletConfig);
+        } catch (PortletException e) {
+            throw new RuntimeException(e);
+        }
+
         // Register application
         PortletAppUtils.registerApplication(portletConfig, this.applicationContext);
     }
@@ -162,6 +169,17 @@ public class DocumentEditionConfiguration implements PortletConfigAware {
     @Bean
     public INotificationsService getNotificationsService() {
         return Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
+    }
+
+
+    /**
+     * Get editor service.
+     *
+     * @return editor service
+     */
+    @Bean
+    public EditorService getEditorService() {
+        return Locator.findMBean(EditorService.class, EditorService.MBEAN_NAME);
     }
 
 }

@@ -26,13 +26,11 @@ import java.io.IOException;
  * Document edition portlet controller.
  *
  * @author Cédric Krommenhoek
- * @see CMSPortlet
- * @see PortletConfigAware
  */
 @Controller
 @RequestMapping("VIEW")
 @SessionAttributes("form")
-public class DocumentEditionController extends CMSPortlet implements PortletConfigAware {
+public class DocumentEditionController {
 
     /**
      * Portlet context.
@@ -59,16 +57,6 @@ public class DocumentEditionController extends CMSPortlet implements PortletConf
      */
     public DocumentEditionController() {
         super();
-    }
-
-
-    @Override
-    public void setPortletConfig(PortletConfig portletConfig) {
-        try {
-            super.init(portletConfig);
-        } catch (PortletException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -137,16 +125,6 @@ public class DocumentEditionController extends CMSPortlet implements PortletConf
         if (!result.hasErrors()) {
             sessionStatus.setComplete();
 
-
-            // FIXME
-            if (form instanceof NoteEditionForm) {
-                NoteEditionForm noteForm = (NoteEditionForm) form;
-                System.out.println("Content: \"" + noteForm.getContent() + "\"");
-            } else {
-                System.out.println("Form class: " + form.getClass());
-            }
-
-
             this.service.save(portalControllerContext, form, result);
         }
     }
@@ -178,8 +156,11 @@ public class DocumentEditionController extends CMSPortlet implements PortletConf
      * @param editorId editor identifier request parameter
      */
     @ResourceMapping("editor")
-    public void editorResourceMapping(ResourceRequest request, ResourceResponse response, @RequestParam("editorId") String editorId) throws PortletException, IOException {
-        super.serveResourceEditor(request, response, editorId);
+    public void serveEditor(ResourceRequest request, ResourceResponse response, @RequestParam("editorId") String editorId) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.serveEditor(portalControllerContext, editorId);
     }
 
 
