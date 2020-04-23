@@ -7,7 +7,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -23,6 +25,7 @@ import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.services.rss.common.repository.ItemRepository;
+import org.osivia.services.rss.common.utility.RssUtility;
 import org.osivia.services.rss.feedRss.portlet.model.ItemRssModel;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -133,8 +136,12 @@ public class CreateRssItemsCommand implements INuxeoCommand {
             File file = File.createTempFile("rss-enclosure-", "tmp");
             InputStream in = null;
             OutputStream out = null;
+            
+            Proxy proxy = RssUtility.getProxy();
+
             try {
-                in = new BufferedInputStream(url.openStream());
+                URLConnection urlConnection = url.openConnection(proxy);
+                in = new BufferedInputStream(urlConnection.getInputStream());
                 out = new BufferedOutputStream(new FileOutputStream(file));
                 IOUtils.copy(in, out);
             } finally {

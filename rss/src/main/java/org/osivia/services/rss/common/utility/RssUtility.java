@@ -51,7 +51,6 @@ public class RssUtility {
     static final String CATEGORY = "category";
     static final String SOURCE = "source";
     static final String ENCLOSURE = "enclosure";
-    private static final String MEDIA_CONTENT = "media:content";
 
     /**
      * Read RSS feed.
@@ -194,7 +193,7 @@ public class RssUtility {
      *
      * @return proxy
      */
-    private static Proxy getProxy() {
+    public static Proxy getProxy() {
         String proxyHost = System.getProperty("http.proxyHost");
         int proxyPort = NumberUtils.toInt(System.getProperty("http.proxyPort"));
 
@@ -208,12 +207,4 @@ public class RssUtility {
         
         return proxy;
     }
-
-
-    // Algo à mettre en place
-    // --> 1 : Lecture d'une url ex: le monde
-    // --> 2 : rapatriement du flux
-    // --> 3 : parsing du flux
-    // --> 4 : enregistrement des données dans une map
-    // --> 5 : Que fait on des anciens Items du flux ? Lecture des anciens Items et si les nouveaux Items sont supérieurs à 5 (nb de flux qui peuvent apparaître) on peut suprimer les anciens flux
 }

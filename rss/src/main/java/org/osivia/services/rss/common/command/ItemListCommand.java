@@ -22,16 +22,10 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoQueryFilterContext;
 public class ItemListCommand implements INuxeoCommand {
 
     private final String syncId;
-//    private final String path;
-//	
-//	/**
-//	 * Constructor.
-//	 *
-//	 */
-	public ItemListCommand(String syncId) {
+
+    public ItemListCommand(String syncId) {
 		super();
         this.syncId = syncId;
-//        this.path = path; 
 	}
 
 	@Override
@@ -55,7 +49,6 @@ public class ItemListCommand implements INuxeoCommand {
 
 	@Override
 	public String getId() {
-//		return this.path;
 		return null;
 	}
 
