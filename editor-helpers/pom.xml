@@ -17,12 +17,6 @@
     <build>
         <plugins>
 
-            <!-- LESS -->
-            <plugin>
-                <groupId>org.lesscss</groupId>
-                <artifactId>lesscss-maven-plugin</artifactId>
-            </plugin>
-            
             <!-- YUI compressor -->
             <plugin>
                 <groupId>net.alchim31.maven</groupId>

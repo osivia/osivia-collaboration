@@ -42,7 +42,6 @@ tinymce.PluginManager.add("osivia-link", function (editor, url) {
                 $modal.data("callback-function", "tinymceLinkModalCallback");
                 $modal.data("callback-function-args", [editor.id, text, onlyText].join("|"));
                 $modal.data("title", data.title);
-                $modal.data("size", "large");
 
                 $modal.modal("show");
             }

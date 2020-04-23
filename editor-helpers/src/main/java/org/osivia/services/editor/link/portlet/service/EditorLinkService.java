@@ -19,6 +19,11 @@ import net.sf.json.JSONObject;
  */
 public interface EditorLinkService {
 
+    /**
+     * Portlet instance.
+     */
+    String PORTLET_INSTANCE = "osivia-services-editor-link-instance";
+
     /** URL window property. */
     String URL_PROPERTY = "osivia.editor.url";
     /** Text window property. */
@@ -85,7 +90,7 @@ public interface EditorLinkService {
 
     /**
      * Get filter types.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return filter types
      * @throws PortletException
@@ -96,7 +101,7 @@ public interface EditorLinkService {
 
     /**
      * Resolve view path.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param name view name
      * @return path

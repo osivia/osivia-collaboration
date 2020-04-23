@@ -18,7 +18,6 @@
 <c:set var="namespace"><portlet:namespace/></c:set>
 
 
-<%--<link rel="stylesheet" href="${contextPath}/css/editor.min.css">--%>
 <script type="text/javascript" src="${contextPath}/js/link/editor.min.js"></script>
 
 
