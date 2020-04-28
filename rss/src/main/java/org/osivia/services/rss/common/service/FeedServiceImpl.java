@@ -110,6 +110,7 @@ public class FeedServiceImpl implements FeedService {
 
 					if (items != null && items.size() != 0) {
 						this.repositoryItem.creatItems(portalControllerContext, parentPath, items);
+						logger.info("BATCH RSS - I01 - Nombre d'items créés:" + items.size() + ";" );
 					}
 
 					if (itemsNuxeo != null) {
@@ -117,6 +118,7 @@ public class FeedServiceImpl implements FeedService {
 						if (itemsNuxeo != null && itemsNuxeo.size() != 0) {
 							// Tous les Item Nuxeo pas trouvés dans le flux seront supprimés
 							this.repositoryItem.removeItems(portalControllerContext, itemsNuxeo);
+							logger.info("BATCH RSS - I02 - Nombre d'items supprimés:" + itemsNuxeo.size() + ";" );
 						}
 					}
 				}
