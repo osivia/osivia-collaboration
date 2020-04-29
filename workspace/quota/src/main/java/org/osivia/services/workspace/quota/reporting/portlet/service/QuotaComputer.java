@@ -48,6 +48,8 @@ public class QuotaComputer extends NuxeoBatch {
 
 	public QuotaComputer() {
 		
+		super();
+		
 		String thresholdParam = System.getProperty("osivia.services.quota.threshold");
 		
 		if(StringUtils.isNotBlank(thresholdParam)) {

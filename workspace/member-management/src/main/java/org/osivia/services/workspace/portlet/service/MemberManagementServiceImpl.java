@@ -20,8 +20,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 import javax.portlet.ActionRequest;
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletException;
@@ -43,8 +41,6 @@ import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
-import org.osivia.portal.api.batch.AbstractBatch;
-import org.osivia.portal.api.batch.Batch;
 import org.osivia.portal.api.batch.IBatchService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
@@ -54,6 +50,8 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.services.workspace.batch.ImportInvitationsBatch;
+import org.osivia.services.workspace.batch.ImportObject;
 import org.osivia.services.workspace.portlet.model.AbstractAddToGroupForm;
 import org.osivia.services.workspace.portlet.model.AbstractChangeRoleForm;
 import org.osivia.services.workspace.portlet.model.AbstractMembersForm;
@@ -2458,13 +2456,12 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     	// Temporary file
         MultipartFile upload = form.getUpload();
         
-        ImportObject dto = applicationContext.getBean(ImportObject.class);
+        ImportObject dto = new ImportObject();
         
         File temporaryFile;
 		try {
 			temporaryFile = File.createTempFile(batchId, ".tmp");
 
-	        temporaryFile.deleteOnExit();
 	        upload.transferTo(temporaryFile);
 
 	        dto.setTemporaryFile(temporaryFile);
@@ -2484,8 +2481,6 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
 		ImportInvitationsBatch batch = new ImportInvitationsBatch(portalControllerContext.getPortletCtx(), dto);
 
-		batch.setBatchId(batchId);
-		
 		batchService.addBatch(batch);
 		
 

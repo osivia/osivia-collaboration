@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.portlet.service;
+package org.osivia.services.workspace.batch;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -58,11 +58,19 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.batch.NuxeoBatch;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 
+/**
+ * 
+ * @author Loïc Billon
+ *
+ */
 public class ImportInvitationsBatch extends NuxeoBatch {
 	
-
+	/** Process only MAX_RECORDS on a single file */
+	private static final int MAX_RECORDS = 100;
+	
 	private final static Log logger = LogFactory.getLog("batch");
 
+	/** POJO for the batch */
 	private ImportObject dto;
 	
 	private static PortletContext portletCtx;
@@ -70,6 +78,8 @@ public class ImportInvitationsBatch extends NuxeoBatch {
     /** regex for mails */
     private static final String MAIL_REGEX = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+    
     /** Mail pattern. */
     private final Pattern mailPattern;
 
@@ -77,20 +87,25 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 
 	private WorkspaceService workspaceService;
 
-//	private String workspaceId;
-
+	/** current invitations in workspace */
 	private List<String> invitations;
 
+	/** current request in workspace */
 	private List<String> requests;
 
 	private CSVPrinter rejectsPrinter;
 
+	/** rejects file sended to the initiator */
 	private File rejects;
+
+	/** white list pattern for mail adresses */
+	private String[] whiteList;
     
 
 	public ImportInvitationsBatch(PortletContext portletCtx, ImportObject dto) {
 		
-//		this.workspaceId = workspaceId;
+		super(dto.getTemporaryFile().getName());
+		
 		ImportInvitationsBatch.portletCtx = portletCtx;
 		this.dto = dto;
 		
@@ -100,6 +115,12 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 		personService = DirServiceFactory.getService(PersonUpdateService.class);
 		
 		workspaceService = DirServiceFactory.getService(WorkspaceService.class);
+		
+		String whiteListStr = System.getProperty("osivia.invitations.whitelist");
+		if(StringUtils.isNotEmpty(whiteListStr)) {
+			whiteList = whiteListStr.split(",");
+		}
+		
 	}
 
 
@@ -130,8 +151,23 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 			boolean hasRejects = false;
 			for(CSVRecord record : parser) {
 				
+				if(count >= MAX_RECORDS) { // security for large csv files
+					break;
+				}
+				List<String> invitationsValidated = new ArrayList<String>();
+				
 				String uid = record.get(0); // skip blank lines
 				
+				// Duplicates
+				if(invitationsValidated.contains(uid)) {
+                	logger.debug(getBatchId()+" / "+count+"/"+uid+" : reject");
+                	
+    				rejectsPrinter = getRejectPrinter();
+    				rejectsPrinter.printRecord(uid, "Doublon ");
+                	
+                	countreject++;
+                	hasRejects = true;
+				}
 				if(StringUtils.isNotBlank(uid)) {
 					
 					// syntax control or reject
@@ -141,13 +177,14 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 		    		// trim
 		    		uid = uid.trim();
 		    		
+		    		
 		    		Matcher matcher = this.mailPattern.matcher(uid);
-	                if (!matcher.matches()) {
+	                if (!matcher.matches() || !isAllowedInList(uid)) {
 	                	
 	                	logger.debug(getBatchId()+" / "+count+"/"+uid+" : reject");
 	                	
 	    				rejectsPrinter = getRejectPrinter();
-	    				rejectsPrinter.printRecord(uid, "Entrée invalide");
+	    				rejectsPrinter.printRecord(uid, "Entrée invalide / non autorisée ");
 	                	
 	                	countreject++;
 	                	hasRejects = true;
@@ -235,6 +272,8 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 		                        INuxeoCommand command =  new SetProcedureInstanceAcl(dto.getWorkspaceId(), false, uid, groups);
 		                        getNuxeoController().executeNuxeoCommand(command);
 		                        
+		                        invitationsValidated.add(uid);
+		                        
 		                        countinvitation++;
 		                        
 			                	logger.debug(getBatchId()+" / "+count+"/"+uid+" : invitation sent");
@@ -273,7 +312,7 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 			
 			if(hasRejects) {
 				rejectsPrinter.flush();
-				rejectsPrinter.close();
+
 			}
 		
 			dto.setCount(count);
@@ -282,12 +321,42 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 			dto.setCountreject(countreject);
 			dto.setCountwf(countwf);
 			sendMailReport();
+			
+			if(hasRejects) {
+				rejectsPrinter.flush();
+
+			}
 		
 		} catch (IOException | FormFilterException e) {
 			throw new PortalException(e);
 		}
-	
+		finally {
+	        	
+	        dto.getTemporaryFile().delete();
 
+	        if(rejects != null) {
+	        	rejects.delete();
+	        }
+	        
+		}
+
+	}
+
+
+	private boolean isAllowedInList(String uid) {
+		boolean ret = true; // default : no white list, all allowed
+		
+		if(whiteList != null) {
+			ret = false; // if white list, deny
+			for(int i = 0; i < whiteList.length; i++) {
+				if(uid.contains(whiteList[i])) {
+					ret = true; // if pattern found, allox
+					break;
+				}
+			}
+		}
+		
+		return ret;
 	}
 
 
@@ -337,16 +406,19 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 			message.setSentDate(new Date());
 	
             // From
-            InternetAddress from = new InternetAddress(initiatorMail);
+			String fromProperty = System.getProperty("osivia.procedures.default.mail.from");
+			
+			if(fromProperty == null) {
+				throw new PortalException("No osivia.procedures.default.mail.from configured !");
+			}
+			
+            InternetAddress from = new InternetAddress(fromProperty);
             message.setFrom(from);
 
             // To
             InternetAddress[] to = InternetAddress.parse(initiatorMail);
             message.setRecipients(Message.RecipientType.TO, to);
 
-            // Reply to
-            InternetAddress[] replyTo = new InternetAddress[]{from};
-            message.setReplyTo(replyTo);
 			
             // Subject
             String subject = "Import de comptes";
@@ -375,14 +447,7 @@ public class ImportInvitationsBatch extends NuxeoBatch {
                 body.append(dto.getCountwf());
                 body.append("</p>");
             }
-            
-            if(dto.getCountalreadymember() > 0) {
-            	attachment = true;
-            	
-                body.append("<p> Personnes déjà membres de l'espace : ");
-                body.append(dto.getCountalreadymember());
-                body.append("</p>");
-            }
+
             
             if(dto.getCountreject() > 0) {
             	attachment = true;
@@ -419,7 +484,7 @@ public class ImportInvitationsBatch extends NuxeoBatch {
         } catch (MessagingException e) {
             throw new PortalException("Error sending email report", e);
         }
-        
+
         
 	}
 	
@@ -431,7 +496,8 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 	private CSVPrinter getRejectPrinter() throws IOException {
 
 		if(rejectsPrinter == null) {
-			rejects = new File(dto.getTemporaryFile().getAbsolutePath() + "_rejects");
+			
+			rejects = File.createTempFile(dto.getWorkspaceId() +"_"+new Date().getTime(), "_rejets.csv");			
 			rejects.createNewFile();
 			
 			rejectsPrinter = new CSVPrinter(new FileWriter(rejects), CSVFormat.EXCEL);
