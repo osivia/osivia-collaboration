@@ -20,6 +20,10 @@ public enum ImageSourceType {
 
 
     /**
+     * identifier.
+     */
+    private final String id;
+    /**
      * Internationalization key.
      */
     private final String key;
@@ -29,9 +33,14 @@ public enum ImageSourceType {
      * Constructor.
      */
     ImageSourceType() {
+        this.id = StringUtils.lowerCase(this.name());
         this.key = "EDITOR_IMAGE_SOURCE_TYPE_" + StringUtils.upperCase(this.name());
     }
 
+
+    public String getId() {
+        return id;
+    }
 
     public String getKey() {
         return key;

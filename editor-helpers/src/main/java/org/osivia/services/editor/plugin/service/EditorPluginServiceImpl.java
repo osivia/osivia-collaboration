@@ -2,6 +2,7 @@ package org.osivia.services.editor.plugin.service;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.osivia.portal.api.editor.EditorModule;
+import org.osivia.services.editor.common.service.CommonServiceImpl;
 import org.osivia.services.editor.plugin.model.editor.EditorHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -16,10 +17,11 @@ import java.util.Set;
  * Editor plugin service implementation.
  *
  * @author Cédric Krommenhoek
+ * @see CommonServiceImpl
  * @see EditorPluginService
  */
 @Service
-public class EditorPluginServiceImpl implements EditorPluginService {
+public class EditorPluginServiceImpl extends CommonServiceImpl implements EditorPluginService {
 
     /**
      * Application context.

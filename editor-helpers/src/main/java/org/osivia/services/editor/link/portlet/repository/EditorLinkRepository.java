@@ -1,28 +1,30 @@
 package org.osivia.services.editor.link.portlet.repository;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-
-import javax.portlet.PortletException;
-
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.cms.FileMimeType;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.editor.common.repository.CommonRepository;
 import org.osivia.services.editor.link.portlet.model.EditorLinkForm;
 
-import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+import javax.portlet.PortletException;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Editor link portlet repository interface.
  *
  * @author Cédric Krommenhoek
+ * @see CommonRepository
  */
-public interface EditorLinkRepository {
+public interface EditorLinkRepository extends CommonRepository {
 
-    /** Select2 results page size. */
+    /**
+     * Select2 results page size.
+     */
     int SELECT2_RESULTS_PAGE_SIZE = 10;
 
 
@@ -87,7 +89,7 @@ public interface EditorLinkRepository {
 
     /**
      * Get document types.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return document types
      * @throws PortletException
@@ -97,7 +99,7 @@ public interface EditorLinkRepository {
 
     /**
      * Get file MIME types.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return file MIME types
      * @throws PortletException

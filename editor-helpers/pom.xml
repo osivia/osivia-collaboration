@@ -17,6 +17,12 @@
     <build>
         <plugins>
 
+            <!-- SASS -->
+            <plugin>
+                <groupId>com.github.warmuuh</groupId>
+                <artifactId>libsass-maven-plugin</artifactId>
+            </plugin>
+
             <!-- YUI compressor -->
             <plugin>
                 <groupId>net.alchim31.maven</groupId>

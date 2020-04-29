@@ -77,7 +77,7 @@ public class EditorImageController {
      * @param form          form model attribute
      * @param bindingResult binding result
      */
-    @ActionMapping("submit")
+    @ActionMapping(name = "submit", params = "save")
     public void save(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("form") EditorImageForm form, BindingResult bindingResult) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
@@ -85,6 +85,32 @@ public class EditorImageController {
         if (!bindingResult.hasErrors()) {
             this.service.save(portalControllerContext, form);
         }
+    }
+
+
+    /**
+     * Attached image source redirection.
+     *
+     * @param request  action request
+     * @param response action response
+     * @param form     form model attribute
+     */
+    @ActionMapping(name = "submit", params = "source-attached")
+    public void sourceAttachedRedirection(ActionRequest request, ActionResponse response, @ModelAttribute("form") EditorImageForm form) {
+        response.setRenderParameter("view", ImageSourceType.ATTACHED.getId());
+    }
+
+
+    /**
+     * Document image source redirection.
+     *
+     * @param request  action request
+     * @param response action response
+     * @param form     form model attribute
+     */
+    @ActionMapping(name = "submit", params = "source-document")
+    public void sourceDocumentRedirection(ActionRequest request, ActionResponse response, @ModelAttribute("form") EditorImageForm form) {
+        response.setRenderParameter("view", ImageSourceType.DOCUMENT.getId());
     }
 
 
@@ -111,24 +137,8 @@ public class EditorImageController {
      */
     @InitBinder("form")
     public void formInitBinder(PortletRequestDataBinder binder) {
-        binder.setDisallowedFields("done");
+        binder.setDisallowedFields("done", "availableSourceTypes", "loaded");
         binder.setValidator(this.formValidator);
-    }
-
-
-    /**
-     * Get image source types model attribute.
-     *
-     * @param request  portlet request
-     * @param response portlet response
-     * @return image source types
-     */
-    @ModelAttribute("sourceTypes")
-    public List<ImageSourceType> getSourceTypes(PortletRequest request, PortletResponse response) throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        return this.service.getSourceTypes(portalControllerContext);
     }
 
 }

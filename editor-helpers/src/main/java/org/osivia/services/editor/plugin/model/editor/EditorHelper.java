@@ -14,11 +14,11 @@ public enum EditorHelper {
     /**
      * Image editor helper.
      */
-    IMAGE("image", EditorImageService.PORTLET_INSTANCE, "src", "alt"),
+    IMAGE("image", EditorImageService.PORTLET_INSTANCE, EditorImageService.SRC_PARAMETER, EditorImageService.ALT_PARAMETER),
     /**
      * Link editor helper.
      */
-    LINK("link", EditorLinkService.PORTLET_INSTANCE, "url", "text", "title", "onlyText");
+    LINK("link", EditorLinkService.PORTLET_INSTANCE, EditorLinkService.URL_PARAMETER, EditorLinkService.TEXT_PARAMETER, EditorLinkService.TITLE_PARAMETER, EditorLinkService.ONLY_TEXT_PARAMETER);
 
 
     /**
