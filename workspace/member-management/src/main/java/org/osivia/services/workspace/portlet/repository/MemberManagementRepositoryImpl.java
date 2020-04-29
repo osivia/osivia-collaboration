@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.naming.Name;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.RandomStringUtils;
@@ -558,6 +559,13 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
+        // Procedure initiator
+        String initiator = "";
+        HttpServletRequest httpServletRequest = portalControllerContext.getHttpServletRequest();
+        if(httpServletRequest != null) {
+        	initiator = httpServletRequest.getRemoteUser();
+        }
+        
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
@@ -649,6 +657,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     variables.put(INVITATION_LOCAL_GROUPS_PROPERTY, StringUtils.join(localGroupIds, "|"));
                     variables.put(INVITATION_MESSAGE_PROPERTY, form.getMessage());
                     variables.put(NEW_USER_PROPERTY, String.valueOf(unknownUser));
+                    variables.put(INITIATOR_PROPERTY, initiator);
 
                     if (unknownUser) {
                         // Generated password

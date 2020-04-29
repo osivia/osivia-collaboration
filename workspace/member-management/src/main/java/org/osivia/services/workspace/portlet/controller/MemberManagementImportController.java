@@ -1,7 +1,5 @@
 package org.osivia.services.workspace.portlet.controller;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 
 import javax.portlet.ActionRequest;
@@ -19,14 +17,17 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.ImportForm;
 import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
 import org.osivia.services.workspace.portlet.model.converter.LocalGroupPropertyEditor;
+import org.osivia.services.workspace.portlet.model.validator.ImportValidator;
 import org.osivia.services.workspace.portlet.service.MemberManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.portlet.bind.PortletRequestDataBinder;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
@@ -55,6 +56,8 @@ public class MemberManagementImportController {
     @Autowired
     private LocalGroupPropertyEditor localGroupPropertyEditor;
     
+    @Autowired
+    private ImportValidator validator;
     
     /**
      * View render mapping.
@@ -71,35 +74,6 @@ public class MemberManagementImportController {
 
         return "importcsv/view";
     }
-
-
-//    /**
-//     * Upload document file action mapping.
-//     *
-//     * @param request  action request
-//     * @param response action response
-//     * @param form     document edition form model attribute
-//     * @throws IOException 
-//     */
-//    @ActionMapping(name = "submit", params = "upload")
-//    public void upload(ActionRequest request, ActionResponse response, @ModelAttribute("form") ImportForm form) 
-//    		throws PortletException, IOException {
-//        // Portal controller context
-//        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-//		
-//        // Delete previous temporary file
-//        if (form.getTemporaryFile() != null) {
-//            form.getTemporaryFile().delete();
-//        }
-//
-//        // Upload
-//        MultipartFile upload = form.getUpload();
-//        File temporaryFile = File.createTempFile("document-edition-file-", ".tmp");
-//        temporaryFile.deleteOnExit();
-//        upload.transferTo(temporaryFile);
-//        form.setTemporaryFile(temporaryFile);
-//        form.setTemporaryFileName(upload.getOriginalFilename());
-//    }
 
     /**
      * Get import form model attribute.
@@ -147,14 +121,22 @@ public class MemberManagementImportController {
      */
     @ActionMapping("launchImport")
     public void launchImport(ActionRequest request, ActionResponse response, @ModelAttribute("options") MemberManagementOptions options,
-            @ModelAttribute("import") ImportForm form) throws PortletException, ParseException, PortalException {
+    		@Validated  @ModelAttribute("import") ImportForm form,  BindingResult result,
+            SessionStatus sessionStatus) throws PortletException, ParseException, PortalException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.prepareImportInvitations(portalControllerContext, options, form);
+        if (!result.hasErrors()) {
+        	this.service.prepareImportInvitations(portalControllerContext, options, form);
 
-        // Copy render parameter
-        response.setRenderParameter("tab", "members");
+            response.setRenderParameter("tab", "members");
+
+            sessionStatus.setComplete();
+        }
+        else {
+            response.setRenderParameter("tab", "importCsv");
+    	}
+
     }
 
 
@@ -165,6 +147,7 @@ public class MemberManagementImportController {
      */
     @InitBinder("import")
     public void importFormInitBinder(PortletRequestDataBinder binder) {
+        binder.addValidators(this.validator);
         binder.registerCustomEditor(CollabProfile.class, this.localGroupPropertyEditor);
     }
 
