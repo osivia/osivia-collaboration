@@ -1,5 +1,11 @@
 package org.osivia.services.rss.batch.model;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
@@ -11,11 +17,6 @@ import org.osivia.services.rss.common.service.ContainerRssService;
 import org.osivia.services.rss.common.service.FeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.portlet.PortletContext;
-import javax.portlet.PortletException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * RSS batch.
@@ -69,7 +70,7 @@ public class RssBatch extends AbstractBatch {
         super();
 
         // Log
-        this.log = LogFactory.getLog(this.getClass());
+        this.log = LogFactory.getLog("RSS_MANAGEMENT");
 
         // Job scheduling
         this.scheduling = System.getProperty("CRON_BATCH_RSS", CRON_DEFAULT_VALUE);
@@ -84,7 +85,7 @@ public class RssBatch extends AbstractBatch {
 
     @Override
     public void execute(Map<String, Object> parameters) throws PortalException {
-        this.log.info("Exécution du batch RSS");
+        this.log.info("BATCH RSS de synchronisation des flux - Exécution - I00");
 
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, null, null);
@@ -94,7 +95,8 @@ public class RssBatch extends AbstractBatch {
         try {
             containers = this.containerRssService.getListContainer(portalControllerContext);
         } catch (Exception e) {
-            this.log.error("Synchornisation: Problème lors récupération des containers :" + e.getMessage());
+        	// Problème récupération des containers - 
+            this.log.error("BATCH RSS - E01 - methode containerRssService.getListContainer :" + e.getMessage() + ";");
         }
 
         if (containers != null) {
@@ -104,19 +106,21 @@ public class RssBatch extends AbstractBatch {
                     List<FeedRssModel> feeds = this.feedService.fillFeed(container.getDoc());
                     container.setFeedSources(feeds);
                 } catch (PortletException e) {
-                    this.log.error("Synchronisation: Problème lors récupération des flux du conteneur :" + container.getName());
+                	// Problème récupération des flux du conteneur
+                    this.log.error("BATCH RSS - E02 - méthode feedService.fillFeed :" + container.getName() + ";" + e.getMessage() + ";");
                 }
 
                 // Synchronisation des flux par conteneur
                 try {
                     this.feedService.synchro(portalControllerContext, container);
                 } catch (PortletException e) {
-                    this.log.error("Synchronisation: Problème lors de la mise à jour des flux :" + e.getMessage());
+                	// Problème lors de la mise à jour des flux  
+                    this.log.error("BATCH RSS - E03 - méthode feedService.synchro:" + e.getMessage() + ";");
                 }
             }
         }
 
-        this.log.info("Fin de la synchronisation");
+        this.log.info("Fin de la synchronisation - I04");
     }
 
 }

@@ -82,9 +82,9 @@ public class RssUtility {
             try {
                 url = new URL(feed.getUrl());
             } catch (MalformedURLException e) {
-                logger.error("Erreur lors de la lecture du flux :" + e.getMessage());
+                logger.error("BATCH RSS - E04 - methode readRss - MalformedURLException" );
             }
-            logger.info("Lecture du flux RSS :" + url);
+            logger.info("BATCH RSS - I03 - Lecture du flux RSS :" + url + ";");
             InputStream inputStream = null;
             try {
                 Proxy proxy = getProxy();
