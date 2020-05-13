@@ -101,6 +101,11 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 	/** white list pattern for mail adresses */
 	private String[] whiteList;
     
+	
+	@Override
+	public boolean isRunningOnMasterOnly() {
+		return false;
+	}
 
 	public ImportInvitationsBatch(PortletContext portletCtx, ImportObject dto) {
 		
