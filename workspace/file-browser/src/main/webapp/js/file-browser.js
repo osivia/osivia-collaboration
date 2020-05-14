@@ -8,13 +8,6 @@ $JQry(function () {
             cancel: "a, button, .file-browser-draggable",
             filter: ".file-browser-selectable-filter",
 
-            selected: function (event, ui) {
-                var $selected = $JQry(ui.selected);
-
-                $selected.removeClass("bg-info border-info");
-                $selected.addClass("bg-primary border-primary");
-            },
-
             selecting: function (event, ui) {
                 var $selecting = $JQry(ui.selecting);
                 var $selectable = $selecting.closest(".file-browser-selectable");
@@ -22,9 +15,8 @@ $JQry(function () {
                 var currentIndex = $selectee.index(ui.selecting);
 
                 if (event.shiftKey && previousIndex > -1) {
-                    $selectee.slice(Math.min(previousIndex, currentIndex), Math.max(previousIndex, currentIndex) + 1).addClass("ui-selected bg-primary border-primary");
+                    $selectee.slice(Math.min(previousIndex, currentIndex), Math.max(previousIndex, currentIndex) + 1).addClass("ui-selected");
                 } else {
-                    $selecting.addClass("bg-info border-info");
                     previousIndex = currentIndex;
                 }
             },
@@ -34,20 +26,6 @@ $JQry(function () {
 
                 // Update toolbar
                 updateFileBrowserToolbar($target);
-            },
-
-            unselected: function (event, ui) {
-                var $unselected = $JQry(ui.unselected);
-
-                if (!event.shiftKey) {
-                    $unselected.removeClass("bg-primary border-primary");
-                }
-            },
-
-            unselecting: function (event, ui) {
-                var $unselecting = $JQry(ui.unselecting);
-
-                $unselecting.removeClass("bg-primary border-primary bg-info border-info");
             }
         });
 

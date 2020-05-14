@@ -77,7 +77,7 @@
             
             <c:if test="${count eq 0}">
                 <div class="file-browser-cell">
-                    <span class="text-muted"><op:translate key="FILE_BROWSER_EMPTY" /></span>
+                    <span class="text-muted"><op:translate key="FILE_BROWSER_EMPTY_FOLDER" /></span>
                 </div>
             </c:if>
         </div>
@@ -139,7 +139,7 @@
             
             <c:if test="${count eq 0}">
                 <div class="file-browser-cell">
-                    <span class="text-muted"><op:translate key="FILE_BROWSER_EMPTY" /></span>
+                    <span class="text-muted"><op:translate key="FILE_BROWSER_EMPTY_FILE" /></span>
                 </div>
             </c:if>
         </div>
