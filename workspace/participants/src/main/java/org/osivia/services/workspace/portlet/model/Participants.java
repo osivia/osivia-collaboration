@@ -21,6 +21,9 @@ public class Participants {
     private List<Group> groups;
     /** Loaded indicator. */
     private boolean loaded;
+    
+    /** show personal data */
+    private boolean showPrivacyData = true;
 
 
     /**
@@ -66,5 +69,24 @@ public class Participants {
     public void setLoaded(boolean loaded) {
         this.loaded = loaded;
     }
+
+    /**
+     * 
+     * @return
+     */
+	public boolean isShowPrivacyData() {
+		return showPrivacyData;
+	}
+
+
+	/**
+	 * 
+	 * @param showPrivacyData
+	 */
+	public void setShowPrivacyData(boolean showPrivacyData) {
+		this.showPrivacyData = showPrivacyData;
+	}
+
+
 
 }
