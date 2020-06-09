@@ -306,7 +306,7 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 		    				countalreadymember++;
 		                	logger.debug(getBatchId()+" / "+count+"/"+uid+" : already member");
 		                	rejectsPrinter = getRejectPrinter();
-    						rejectsPrinter.printRecord(uid, "Déjà mambre");
+    						rejectsPrinter.printRecord(uid, "Déjà membre");
     						hasRejects = true;
 		    			}
 	                }
