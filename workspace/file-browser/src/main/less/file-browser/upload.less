@@ -1,33 +1,31 @@
 .file-browser-upload {
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
+  display: flex;
+  flex-direction: column;
+
+  position: fixed;
+  bottom: 0;
+  right: 0;
   z-index: 5;
 
+  max-height: 100%;
   min-width: 40%;
   max-width: 80%;
 
-  > .panel {
-    margin-bottom: 0;
-  }
-}
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  padding-right: .5rem;
 
+  .card {
+    overflow-y: hidden;
 
-.file-browser-upload-files {
-  p {
-    display: flex;
-    align-items: center;
-
-    > :first-child {
-      flex-grow: 1;
-
-      > :not(:first-child) {
-        margin-left: 5px;
-      }
+    .card-body {
+      flex-shrink: 0;
     }
 
-    > :not(:first-child) {
-      margin-left: 10px;
+    .list-group {
+      flex-shrink: 1;
+
+      overflow-y: auto;
     }
   }
 }
