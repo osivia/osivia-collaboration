@@ -22,6 +22,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 /**
  * Rename portlet configuration.
@@ -131,4 +132,16 @@ public class RenameConfiguration extends CMSPortlet implements PortletConfigAwar
         return Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
     }
 
+
+    /**
+     * Get document DAO.
+     *
+     * @return document DAO
+     */
+    @Bean
+    public DocumentDAO getDocumentDao() {
+        return DocumentDAO.getInstance();
+    }
+
+    
 }
