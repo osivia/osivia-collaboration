@@ -4,7 +4,7 @@
 
     <groupId>org.osivia.services</groupId>
     <artifactId>osivia-services-collaboration-parent</artifactId>
-    <version>4.9-SNAPSHOT</version>
+    <version>4.9.3-RC7</version>
     <packaging>pom</packaging>
 
     <name>OSIVIA Services - Collaboration parent</name>
@@ -311,7 +311,7 @@
         <url>https://github.com/osivia/osivia-collaboration</url>
         <connection>scm:git:ssh://git@github.com/osivia/osivia-collaboration.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/osivia/osivia-collaboration.git</developerConnection>
-	  <tag>HEAD</tag>
+	  <tag>4.9.3-RC7</tag>
   </scm>
 
 
