@@ -7,10 +7,8 @@ import java.util.Set;
 
 import javax.portlet.PortletException;
 
-import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
-import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.command.ContainerCreatCommand;
 import org.osivia.services.rss.common.command.ContainerListCommand;
@@ -24,6 +22,7 @@ import org.springframework.stereotype.Repository;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 /**
@@ -98,7 +97,6 @@ public class ContainerRepositoryImpl implements ContainerRepository{
         nuxeoCommand = this.applicationContext.getBean(ContainerCreatCommand.class, model);
         
         nuxeoController.executeNuxeoCommand(nuxeoCommand);
-        
 	}
 	
     /**
