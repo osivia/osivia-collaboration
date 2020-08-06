@@ -1,13 +1,15 @@
 package org.osivia.services.rss.common.validator;
 
 import org.osivia.services.rss.common.model.ContainerRssModel;
+import org.osivia.services.rss.common.service.ContainerRssService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Contact form validator.
+ * Container form validator.
  * 
  * @author Frédéric Boudan
  * 
@@ -15,6 +17,11 @@ import org.springframework.validation.Validator;
  */
 @Component
 public class ContainerFormValidator implements Validator {
+
+
+    /** Portlet service. */
+    @Autowired
+    private ContainerRssService service;
 
     /**
      * Constructor.
@@ -51,7 +58,16 @@ public class ContainerFormValidator implements Validator {
 			if(container.getMap().contains(container.getName())) {
 				errors.rejectValue("name", "Duplicated");
 			}
+			
+			if (!errors.hasFieldErrors()) {
+				if(!container.getPath().startsWith("/")) {
+					errors.rejectValue("path", "invalid");
+				} else if(this.service.getPathForder(errors, container)) {
+					errors.rejectValue("path", "invalid");
+				}
+			}
 		}
+		
     }
 
 }
