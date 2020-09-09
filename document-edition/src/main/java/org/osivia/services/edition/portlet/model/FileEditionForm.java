@@ -35,6 +35,12 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
      * Temporary file name.
      */
     private String temporaryFileName;
+    
+    /**
+     * Original file name.
+     */
+    private String originalFileName;
+    
     /**
      * Temporary file MIME type.
      */
@@ -89,4 +95,16 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
         this.temporaryFileMimeType = temporaryFileMimeType;
     }
 
+
+	public String getOriginalFileName() {
+		return originalFileName;
+	}
+
+
+	public void setOriginalFileName(String originalFileName) {
+		this.originalFileName = originalFileName;
+	}
+
+    
+    
 }

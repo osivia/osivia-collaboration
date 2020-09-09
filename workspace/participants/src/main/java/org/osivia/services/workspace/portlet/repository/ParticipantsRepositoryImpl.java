@@ -567,14 +567,20 @@ public class ParticipantsRepositoryImpl implements ParticipantsRepository, Appli
         member.setDisplayName(displayName);
         member.setLastName(lastName);
         member.setEmail(email);
-        try {
-            Document document = (Document) personService.getEcmProfile(portalControllerContext, person);
-            DocumentDTO dto = DocumentDAO.getInstance().toDTO(portalControllerContext, document);
-        	
-			member.setNxProfile(dto);
+        
+        Document document = null;
+		try {
+			document = (Document) personService.getEcmProfile(portalControllerContext, person);
 		} catch (PortalException e) {
-			// Do nothing
+			
+			throw new PortletException(e);
 		}
+            
+        if(document != null) {
+        	DocumentDTO dto = DocumentDAO.getInstance().toDTO(portalControllerContext, document);
+			member.setNxProfile(dto);
+        }
+        	
 
         return member;
     }

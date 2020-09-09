@@ -2,6 +2,7 @@ package org.osivia.services.edition.portlet.controller;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
+import org.osivia.services.edition.portlet.model.FileEditionForm;
 import org.osivia.services.edition.portlet.model.validator.DocumentEditionFormValidator;
 import org.osivia.services.edition.portlet.service.DocumentEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +10,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
@@ -172,5 +176,12 @@ public class DocumentEditionController {
         binder.addValidators(this.validator);
         binder.setDisallowedFields("name", "creation", "path", "originalTitle");
     }
+    
+	@ExceptionHandler(MultipartException.class)
+	String handleFileException(Throwable ex, RenderRequest request, RenderResponse response)
+			throws PortletException, IOException {
 
+		return "upload-error";
+
+	}
 }

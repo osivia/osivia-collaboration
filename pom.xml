@@ -12,10 +12,10 @@
 
     <properties>
         <!-- Toutatice -->
-        <toutatice.version>4.7.24-jdk8</toutatice.version>
+        <toutatice.version>4.7.25.1-jdk7</toutatice.version>
 
         <!-- Directory -->
-        <directory.version>4.7.21-jdk8</directory.version>
+        <directory.version>4.7.21-jdk7</directory.version>
 
         <!-- JBoss -->
         <jboss-portal.version>2.7.2</jboss-portal.version>
@@ -102,8 +102,8 @@
                     <version>3.3</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <source>1.7</source>
+                        <target>1.7</target>
                     </configuration>
                 </plugin>
 
