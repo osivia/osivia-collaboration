@@ -12,10 +12,10 @@
 
     <properties>
         <!-- Toutatice -->
-        <toutatice.version>4.7-SNAPSHOT</toutatice.version>
+        <toutatice.version>4.7.28-jdk8</toutatice.version>
 
         <!-- Directory -->
-        <directory.version>4.7-SNAPSHOT</directory.version>
+        <directory.version>4.7.21-jdk8</directory.version>
 
         <!-- JBoss -->
         <jboss-portal.version>2.7.2</jboss-portal.version>
