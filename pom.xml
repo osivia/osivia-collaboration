@@ -12,7 +12,7 @@
 
     <properties>
         <!-- Toutatice -->
-        <toutatice.version>4.7.25.1-jdk7</toutatice.version>
+        <toutatice.version>4.7.28-jdk7</toutatice.version>
 
         <!-- Directory -->
         <directory.version>4.7.21-jdk7</directory.version>
