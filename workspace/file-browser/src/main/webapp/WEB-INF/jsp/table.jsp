@@ -10,7 +10,7 @@
     <%--Header--%>
     <%@ include file="table-header.jspf" %>
 
-    <div class="portlet-filler">
+    <div class="portlet-filler overflow-auto">
         <%--Body--%>
         <%@ include file="table-body.jspf" %>
     </div>

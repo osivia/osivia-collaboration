@@ -676,7 +676,9 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
                     // Live edition
                     Element liveEditionGroup = this.getToolbarLiveEditionGroup(portalControllerContext, documentDto, permissions, bundle);
-                    toolbar.add(liveEditionGroup);
+                    if (liveEditionGroup != null) {
+                        toolbar.add(liveEditionGroup);
+                    }
 
 
                     // Single selection
@@ -763,8 +765,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * @param bundle                  internationalization bundle
      * @return DOM element
      */
-    protected Element getToolbarLiveEditionGroup(PortalControllerContext portalControllerContext, DocumentDTO documentDto, NuxeoPermissions permissions,
-                                                 Bundle bundle) throws PortletException {
+    protected Element getToolbarLiveEditionGroup(PortalControllerContext portalControllerContext, DocumentDTO documentDto, NuxeoPermissions permissions, Bundle bundle) throws PortletException {
         // Portlet request
         PortletRequest portletRequest = portalControllerContext.getRequest();
 
@@ -786,8 +787,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         }
 
 
-        // Live edition group
-        Element liveEditionGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm d-none d-md-flex ml-1");
         // Dropdown
         Element dropdownGroup;
         Element dropdownMenu;
@@ -813,26 +812,30 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             dropdownMenu = null;
         }
 
+        // OnlyOffice
+        Element onlyOffice;
         if (documentDto.isLiveEditable()) {
             if (permissions.isEditable()) {
                 String onlyOfficeTitle = bundle.getString("FILE_BROWSER_TOOLBAR_ONLYOFFICE_EDIT_TITLE");
                 String onlyOfficeAction = bundle.getString("FILE_BROWSER_TOOLBAR_ONLYOFFICE_EDIT");
                 String onlyOfficeUrl = this.getOnlyOfficeUrl(portalControllerContext, path, onlyOfficeTitle);
 
-                // OnlyOffice (with lock)
-                Element onlyOffice = DOM4JUtils.generateLinkElement(onlyOfficeUrl, null, null, "btn btn-primary no-ajax-link", onlyOfficeAction,
+                // With lock
+                onlyOffice = DOM4JUtils.generateLinkElement(onlyOfficeUrl, null, null, "btn btn-primary no-ajax-link", onlyOfficeAction,
                         "glyphicons glyphicons-basic-pencil");
-                liveEditionGroup.add(onlyOffice);
             } else if (StringUtils.isNotEmpty(portletRequest.getRemoteUser())) {
                 String onlyOfficeReadOnlyTitle = bundle.getString("FILE_BROWSER_TOOLBAR_ONLYOFFICE_READ_ONLY_TITLE");
                 String onlyOfficeReadOnlyAction = bundle.getString("FILE_BROWSER_TOOLBAR_ONLYOFFICE_READ_ONLY");
                 String onlyOfficeReadOnlyUrl = this.getOnlyOfficeUrl(portalControllerContext, path, onlyOfficeReadOnlyTitle);
 
-                // OnlyOffice (read only)
-                Element onlyOffice = DOM4JUtils.generateLinkElement(onlyOfficeReadOnlyUrl, null, null, "btn btn-primary no-ajax-link",
+                // Read only
+                onlyOffice = DOM4JUtils.generateLinkElement(onlyOfficeReadOnlyUrl, null, null, "btn btn-primary no-ajax-link",
                         onlyOfficeReadOnlyAction);
-                liveEditionGroup.add(onlyOffice);
+            } else {
+                onlyOffice = null;
             }
+        } else {
+            onlyOffice = null;
         }
 
         if (drive && (dropdownMenu != null)) {
@@ -857,8 +860,18 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         }
 
 
-        if (dropdownGroup != null) {
-            liveEditionGroup.add(dropdownGroup);
+        // Live edition group
+        Element liveEditionGroup;
+        if ((onlyOffice == null) && (dropdownGroup == null)) {
+            liveEditionGroup = null;
+        } else {
+            liveEditionGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm d-none d-md-flex ml-1");
+            if (onlyOffice != null) {
+                liveEditionGroup.add(onlyOffice);
+            }
+            if (dropdownGroup != null) {
+                liveEditionGroup.add(dropdownGroup);
+            }
         }
 
         return liveEditionGroup;
