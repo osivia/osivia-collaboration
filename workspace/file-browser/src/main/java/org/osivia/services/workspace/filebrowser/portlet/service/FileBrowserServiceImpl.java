@@ -290,7 +290,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         form.setPath(path);
 
         // List mode indicator
-        boolean listMode = BooleanUtils.isTrue(windowProperties.getListMode());
+        boolean listMode = this.isListMode(portalControllerContext);
         form.setListMode(listMode);
 
         // Current document type
@@ -364,6 +364,19 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             // Max file size
             form.setMaxFileSize(FileBrowserConfiguration.MAX_UPLOAD_SIZE_PER_FILE);
         }
+    }
+
+
+    /**
+     * Check if file browser is in list mode.
+     * @param portalControllerContext portal controller context
+     * @return true if file browser is in list mode
+     */
+    protected boolean isListMode(PortalControllerContext portalControllerContext) {
+        // Window properties
+        FileBrowserWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
+
+        return BooleanUtils.isTrue(windowProperties.getListMode());
     }
 
 
@@ -447,7 +460,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         FileBrowserWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
 
         // List mode indicator
-        boolean listMode = BooleanUtils.isTrue(windowProperties.getListMode());
+        boolean listMode = this.isListMode(portalControllerContext);
 
         // Sort criteria
         FileBrowserSortCriteria criteria;
@@ -490,7 +503,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         FileBrowserWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
 
         // List mode indicator
-        boolean listMode = BooleanUtils.isTrue(windowProperties.getListMode());
+        boolean listMode = this.isListMode(portalControllerContext);
 
         return this.getSortFields(portalControllerContext, listMode);
     }
@@ -583,7 +596,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         FileBrowserSortField field;
         if (windowProperties.getDefaultSortField() != null) {
             field = this.getSortField(portalControllerContext, windowProperties.getDefaultSortField(), false);
-        } else if (BooleanUtils.isTrue(windowProperties.getListMode())) {
+        } else if (this.isListMode(portalControllerContext)) {
             field = FileBrowserSortEnum.RELEVANCE;
         } else {
             field = FileBrowserSortEnum.TITLE;
