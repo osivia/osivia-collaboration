@@ -14,7 +14,13 @@
 
 <form:form action="${modif}" method="post" modelAttribute="form">
 
-		<spring:bind path="name">
+    <div class="form-group">
+        <label> <op:translate key="PATH_NAME" />
+        </label>
+        <p class="form-control-plaintext">${form.path}</p>
+    </div>
+
+    <spring:bind path="name">
 			<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">    			
    				<form:label path="name" cssClass="control-label"><op:translate key="NAME"/></form:label>
           		<form:input path="name" type="text" cssClass="form-control" placeholder="ex: Toutatice" />

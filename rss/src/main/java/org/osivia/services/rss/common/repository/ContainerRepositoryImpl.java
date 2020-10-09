@@ -5,13 +5,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 
-import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
+import org.apache.commons.lang.BooleanUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
-import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.rss.common.command.CheckPathCommand;
 import org.osivia.services.rss.common.command.ContainerCreatCommand;
 import org.osivia.services.rss.common.command.ContainerListCommand;
 import org.osivia.services.rss.common.command.ContainerRemoveCommand;
@@ -20,10 +21,12 @@ import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
+import org.springframework.validation.Errors;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 /**
@@ -37,6 +40,10 @@ public class ContainerRepositoryImpl implements ContainerRepository{
     /** Application context. */
     @Autowired
     public ApplicationContext applicationContext;
+    
+    /** Portlet context. */
+    @Autowired
+    private PortletContext portletContext;    
     
     /**
      * Constructor.
@@ -98,7 +105,6 @@ public class ContainerRepositoryImpl implements ContainerRepository{
         nuxeoCommand = this.applicationContext.getBean(ContainerCreatCommand.class, model);
         
         nuxeoController.executeNuxeoCommand(nuxeoCommand);
-        
 	}
 	
     /**
@@ -147,4 +153,20 @@ public class ContainerRepositoryImpl implements ContainerRepository{
         
         nuxeoController.executeNuxeoCommand(nuxeoCommand);
 	}	
+	
+	@Override
+	public boolean validateFolderPath(Errors errors, ContainerRssModel model) {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(this.portletContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+        
+        // Nuxeo command
+        INuxeoCommand command;
+        command = this.applicationContext.getBean(CheckPathCommand.class, model.getPath(), model.getName());
+        Boolean available = (Boolean) nuxeoController.executeNuxeoCommand(command);
+
+        return BooleanUtils.isTrue(available);
+
+	}	
+		
 }

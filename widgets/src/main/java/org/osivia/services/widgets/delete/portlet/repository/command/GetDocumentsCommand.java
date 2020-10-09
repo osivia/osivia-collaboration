@@ -53,7 +53,7 @@ public class GetDocumentsCommand implements INuxeoCommand {
 
         // Operation request
         OperationRequest operationRequest = nuxeoSession.newRequest("Document.QueryES");
-        operationRequest.setHeader(Constants.HEADER_NX_SCHEMAS, "common, dublincore, toutatice");
+        operationRequest.setHeader(Constants.HEADER_NX_SCHEMAS, "common, dublincore, toutatice, file");
         operationRequest.set("query", "SELECT * FROM Document WHERE " + filteredRequest);
 
         return operationRequest.execute();

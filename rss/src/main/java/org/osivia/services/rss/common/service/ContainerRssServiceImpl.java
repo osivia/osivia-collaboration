@@ -12,6 +12,7 @@ import org.osivia.services.rss.common.model.ContainerRssModel;
 import org.osivia.services.rss.common.repository.ContainerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
 
 /**
  * RSS service interface
@@ -56,7 +57,11 @@ public class ContainerRssServiceImpl implements ContainerRssService {
 	public void removeContainer(PortalControllerContext portalControllerContext, String docid)
 			throws PortletException {
     	this.repository.remove(portalControllerContext, docid);
-		
 	}    
+	
+	@Override
+	public boolean getPathForder(Errors errors, ContainerRssModel model) {
+		return this.repository.validateFolderPath(errors, model);
+	}	
     
 }

@@ -7,6 +7,7 @@ import javax.portlet.PortletException;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.rss.common.model.ContainerRssModel;
+import org.springframework.validation.Errors;
 
 /**
  * RSS repository interface.
@@ -77,4 +78,13 @@ public interface ContainerRepository {
 	 */
 	void modifContainer(PortalControllerContext portalControllerContext, ContainerRssModel model)
 			throws PortletException;
+
+	/**
+	 * validate forderPath.
+	 *
+	 * @param portalControllerContext portal controller context
+	 * @param model
+	 * @throws PortletException
+	 */
+	boolean validateFolderPath(Errors errors, ContainerRssModel model);
 }

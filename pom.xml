@@ -4,7 +4,7 @@
 
     <groupId>org.osivia.services</groupId>
     <artifactId>osivia-services-collaboration-parent</artifactId>
-    <version>4.9-SNAPSHOT</version>
+    <version>4.9.3</version>
     <packaging>pom</packaging>
 
     <name>OSIVIA Services - Collaboration parent</name>
@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Toutatice -->
-        <toutatice.version>4.9.3-RC5</toutatice.version>
+        <toutatice.version>4.9.3-RC10</toutatice.version>
 
         <!-- Directory -->
         <directory.version>4.9.3</directory.version>

@@ -100,12 +100,12 @@ public class AddContainerRssController {
     public void add(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("form") ContainerRssModel form, BindingResult result, SessionStatus status) throws PortletException, IOException {
 
         // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+//        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         if(result.hasErrors()) {
         	response.setRenderParameter("add", "container");
         } else {
-        	this.service.creatContainer(portalControllerContext, form);
+        	//    	this.service.creatContainer(portalControllerContext, form);
             status.setComplete();
         }
        	

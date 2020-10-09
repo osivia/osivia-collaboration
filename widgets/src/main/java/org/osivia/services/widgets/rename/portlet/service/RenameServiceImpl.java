@@ -1,6 +1,9 @@
 package org.osivia.services.widgets.rename.portlet.service;
 
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
+
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -60,6 +63,12 @@ public class RenameServiceImpl implements RenameService {
      */
     @Autowired
     private INotificationsService notificationsService;
+    
+    /**
+     * Document DAO.
+     */
+    @Autowired
+    private DocumentDAO documentDao;
 
 
     /**
@@ -81,9 +90,10 @@ public class RenameServiceImpl implements RenameService {
         // Rename form
         RenameForm form = this.applicationContext.getBean(RenameForm.class);
 
-        // Document title
-        String title = document.getTitle();
-        form.setTitle(title);
+
+        // Document DTO
+        DocumentDTO dto = this.documentDao.toDTO(document);
+        form.setTitle(dto.getDisplayTitle());
 
         return form;
     }
@@ -103,11 +113,24 @@ public class RenameServiceImpl implements RenameService {
 
         // Current document
         Document document = this.getCurrentDocument(portalControllerContext, false);
+        
+
 
         // Old document title
         String oldTitle = document.getTitle();
+        String hiddenExtension = "";
+        
+
+        // Check if extension extension has been hidden to user
+        DocumentDTO dto = this.documentDao.toDTO(document);
+        if( oldTitle.startsWith(dto.getDisplayTitle())) {
+            hiddenExtension = oldTitle.substring(dto.getDisplayTitle().length());
+        }
+
+        
         // New document title
         String newTitle = StringUtils.trim(form.getTitle());
+        newTitle = newTitle + hiddenExtension;
 
         if (!StringUtils.equals(oldTitle, newTitle)) {
             // Rename
