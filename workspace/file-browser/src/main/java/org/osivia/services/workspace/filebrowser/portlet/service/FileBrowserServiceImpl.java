@@ -286,7 +286,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         form.setBasePath(basePath);
 
         // Document path
-        String path = this.repository.getContentPath(portalControllerContext, windowProperties);
+        String path = this.repository.getDocumentPath(portalControllerContext, windowProperties);
         form.setPath(path);
 
         // List mode indicator

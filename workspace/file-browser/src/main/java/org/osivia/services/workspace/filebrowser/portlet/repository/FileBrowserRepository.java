@@ -32,13 +32,13 @@ public interface FileBrowserRepository {
 
 
     /**
-     * Get content path.
+     * Get document path.
      *
      * @param portalControllerContext portal controller context
      * @param windowProperties        window properties
      * @return path
      */
-    String getContentPath(PortalControllerContext portalControllerContext, FileBrowserWindowProperties windowProperties) throws PortletException;
+    String getDocumentPath(PortalControllerContext portalControllerContext, FileBrowserWindowProperties windowProperties) throws PortletException;
 
 
     /**

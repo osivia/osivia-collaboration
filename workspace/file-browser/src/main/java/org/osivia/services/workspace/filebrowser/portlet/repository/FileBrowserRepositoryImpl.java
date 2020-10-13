@@ -19,7 +19,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
-import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.Link;
@@ -119,14 +118,14 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
 
 
     @Override
-    public String getContentPath(PortalControllerContext portalControllerContext, FileBrowserWindowProperties windowProperties) {
+    public String getDocumentPath(PortalControllerContext portalControllerContext, FileBrowserWindowProperties windowProperties) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // Path
         String path;
         if (StringUtils.isEmpty(windowProperties.getPath())) {
-            path = nuxeoController.getContentPath();
+            path = nuxeoController.getNavigationPath();
         } else {
             path = nuxeoController.getComputedPath(windowProperties.getPath());
         }
