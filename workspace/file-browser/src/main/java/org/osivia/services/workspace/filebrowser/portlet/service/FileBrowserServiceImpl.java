@@ -285,24 +285,18 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         String basePath = this.repository.getBasePath(portalControllerContext, windowProperties);
         form.setBasePath(basePath);
 
-        // Document path
-        String path = this.repository.getDocumentPath(portalControllerContext, windowProperties);
-        form.setPath(path);
-
         // List mode indicator
         boolean listMode = this.isListMode(portalControllerContext);
         form.setListMode(listMode);
 
-        // Current document type
-        DocumentType type;
-        if (StringUtils.isEmpty(path)) {
-            type = null;
+        // Document path
+        String path;
+        if (listMode) {
+            path = null;
         } else {
-            // Current document context
-            NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, path);
-
-            type = documentContext.getDocumentType();
+            path = this.repository.getDocumentPath(portalControllerContext, windowProperties);
         }
+        form.setPath(path);
 
         // Documents
         List<Document> documents = this.repository.getDocuments(portalControllerContext, windowProperties, path);
@@ -357,6 +351,17 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             // Sort
             this.sortItems(portalControllerContext, form, field, false);
 
+            // Current document type
+            DocumentType type;
+            if (StringUtils.isEmpty(path)) {
+                type = null;
+            } else {
+                // Current document context
+                NuxeoDocumentContext documentContext = this.repository.getDocumentContext(portalControllerContext, path);
+
+                type = documentContext.getDocumentType();
+            }
+
             // Uploadable indicator
             boolean uploadable = (type != null) && CollectionUtils.isNotEmpty(type.getSubtypes());
             form.setUploadable(uploadable);
@@ -369,6 +374,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
     /**
      * Check if file browser is in list mode.
+     *
      * @param portalControllerContext portal controller context
      * @return true if file browser is in list mode
      */
