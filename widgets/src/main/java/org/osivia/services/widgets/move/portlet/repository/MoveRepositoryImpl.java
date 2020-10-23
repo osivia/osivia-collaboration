@@ -192,4 +192,24 @@ public class MoveRepositoryImpl implements MoveRepository {
         return root;
     }
 
+    @Override
+    public Document getUserWorkspace(PortalControllerContext portalControllerContext) throws PortletException {
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setPortalControllerContext(portalControllerContext);
+
+        // CMS item
+        CMSItem cmsItem;
+        try {
+            cmsItem = cmsService.getUserWorkspace(cmsContext);
+        } catch (CMSException e) {
+            throw new PortletException(e);
+        }
+
+        // Document
+        return (Document) cmsItem.getNativeItem();
+    }
+    
 }

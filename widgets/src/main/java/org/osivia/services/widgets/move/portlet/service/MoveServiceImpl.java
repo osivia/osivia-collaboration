@@ -1,6 +1,7 @@
 package org.osivia.services.widgets.move.portlet.service;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.PortalException;
@@ -73,6 +74,9 @@ public class MoveServiceImpl implements MoveService {
      */
     @Autowired
     private INotificationsService notificationsService;
+    
+    /** The Constant HIDE_FIRST_LEVEL system property. */
+    protected static final String HIDE_FIRST_LEVEL_SYSTEM_PROPERTY = "osivia.services.userWorkSpace.hideFirstLevel";
 
 
     /**
@@ -93,7 +97,19 @@ public class MoveServiceImpl implements MoveService {
 
         // Base path
         String basePath = this.repository.getBasePath(portalControllerContext, windowProperties);
+        if (BooleanUtils.isTrue(BooleanUtils.toBooleanObject(System.getProperty(HIDE_FIRST_LEVEL_SYSTEM_PROPERTY)))) {
+            // User workspace
+            Document userWorkspace = this.repository.getUserWorkspace(portalControllerContext);
+            if (userWorkspace != null) {
+                if (StringUtils.startsWith(basePath, userWorkspace.getPath())) {
+                    basePath = basePath + "/documents";
+                    }
+                }
+            }
         form.setBasePath(basePath);
+
+        
+        
 
         // Navigation path
         String navigationPath = this.repository.getNavigationPath(portalControllerContext, windowProperties, basePath);

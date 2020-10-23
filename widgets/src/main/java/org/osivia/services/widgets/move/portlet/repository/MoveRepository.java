@@ -55,4 +55,14 @@ public interface MoveRepository {
      */
     void move(PortalControllerContext portalControllerContext, String basePath, List<String> identifiers, String targetPath) throws PortletException;
 
+
+    /**
+     * Gets the user workspace.
+     *
+     * @param portalControllerContext the portal controller context
+     * @return the user workspace
+     * @throws PortletException the portlet exception
+     */
+    Document getUserWorkspace(PortalControllerContext portalControllerContext) throws PortletException;
+
 }
