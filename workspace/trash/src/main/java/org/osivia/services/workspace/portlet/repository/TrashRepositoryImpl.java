@@ -107,7 +107,7 @@ public class TrashRepositoryImpl implements TrashRepository {
      * @param document        Nuxeo document
      * @return trashed document
      */
-    private TrashedDocument getTrashedDocument(NuxeoController nuxeoController, Document document) throws CMSException {
+    protected TrashedDocument getTrashedDocument(NuxeoController nuxeoController, Document document) throws CMSException {
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         // CMS context

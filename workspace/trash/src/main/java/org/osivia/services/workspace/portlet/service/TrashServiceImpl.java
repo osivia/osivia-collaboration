@@ -393,7 +393,7 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
      * @param bundle                  internationalization bundle
      * @return DOM element
      */
-    private Element getRestoreToolbarButton(PortalControllerContext portalControllerContext, Bundle bundle) {
+    protected Element getRestoreToolbarButton(PortalControllerContext portalControllerContext, Bundle bundle) {
         // Portlet response
         PortletResponse response = portalControllerContext.getResponse();
 
@@ -416,7 +416,7 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
      * @param bundle                  internationalization bundle
      * @return DOM element
      */
-    private Element getDeleteToolbarButton(PortalControllerContext portalControllerContext, Bundle bundle) {
+    protected Element getDeleteToolbarButton(PortalControllerContext portalControllerContext, Bundle bundle) {
         // Portlet response
         PortletResponse response = portalControllerContext.getResponse();
 
@@ -440,7 +440,7 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
      * @param icon  button icon
      * @return DOM element
      */
-    private Element getToolbarButton(String id, String title, String icon) {
+    protected Element getToolbarButton(String id, String title, String icon) {
         // URL
         String url = "#" + id;
         // HTML classes
