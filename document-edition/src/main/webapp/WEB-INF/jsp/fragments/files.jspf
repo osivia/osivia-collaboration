@@ -1,0 +1,28 @@
+<c:set var="namespace"><portlet:namespace/></c:set>
+
+<c:set var="browse"><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_ACTION"/></c:set>
+
+
+<spring:bind path="uploads">
+    <div class="form-group required">
+        <form:label path="uploads"><op:translate key="DOCUMENT_EDITION_FORM_FILES_LABEL"/></form:label>
+        <div class="form-row">
+            <div class="col">
+                <div class="custom-file">
+                    <form:input type="file" path="uploads" multiple="multiple" cssClass="custom-file-input ${status.error ? 'is-invalid' : ''}" data-change-submit="${namespace}-file-upload-submit"/>
+                    <form:label path="uploads" cssClass="custom-file-label" data-browse="${browse}">
+                        <c:choose>
+                            <c:when test="${not empty form.temporaryFiles}">
+                                <c:forEach var="file" items="${form.temporaryFiles}" varStatus="status">
+                                    <span>${file.name}${status.last ? '' : ','}</span>
+                                </c:forEach>
+                            </c:when>
+                            <c:otherwise><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_TEXT"/></c:otherwise>
+                        </c:choose>
+                    </form:label>
+                    <form:errors path="uploads" cssClass="invalid-feedback"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</spring:bind>

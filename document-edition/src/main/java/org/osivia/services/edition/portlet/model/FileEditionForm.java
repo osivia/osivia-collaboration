@@ -5,8 +5,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.activation.MimeType;
-import java.io.File;
+import java.util.List;
 
 /**
  * File edition form java-bean.
@@ -22,6 +21,8 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
      * Required primary type.
      */
     private String requiredPrimaryType;
+    /** Multiple files indicator. */
+    private boolean multiple;
 
     /**
      * Upload.
@@ -30,15 +31,16 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
     /**
      * Temporary file.
      */
-    private File temporaryFile;
+    private TemporaryFile temporaryFile;
+
     /**
-     * Temporary file name.
+     * Uploads.
      */
-    private String temporaryFileName;
+    private List<MultipartFile> uploads;
     /**
-     * Temporary file MIME type.
+     * Temporary files.
      */
-    private MimeType temporaryFileMimeType;
+    private List<TemporaryFile> temporaryFiles;
 
 
     /**
@@ -57,6 +59,14 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
         this.requiredPrimaryType = requiredPrimaryType;
     }
 
+    public boolean isMultiple() {
+        return multiple;
+    }
+
+    public void setMultiple(boolean multiple) {
+        this.multiple = multiple;
+    }
+
     public MultipartFile getUpload() {
         return upload;
     }
@@ -65,28 +75,27 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
         this.upload = upload;
     }
 
-    public File getTemporaryFile() {
+    public TemporaryFile getTemporaryFile() {
         return temporaryFile;
     }
 
-    public void setTemporaryFile(File temporaryFile) {
+    public void setTemporaryFile(TemporaryFile temporaryFile) {
         this.temporaryFile = temporaryFile;
     }
 
-    public String getTemporaryFileName() {
-        return temporaryFileName;
+    public List<MultipartFile> getUploads() {
+        return uploads;
     }
 
-    public void setTemporaryFileName(String temporaryFileName) {
-        this.temporaryFileName = temporaryFileName;
+    public void setUploads(List<MultipartFile> uploads) {
+        this.uploads = uploads;
     }
 
-    public MimeType getTemporaryFileMimeType() {
-        return temporaryFileMimeType;
+    public List<TemporaryFile> getTemporaryFiles() {
+        return temporaryFiles;
     }
 
-    public void setTemporaryFileMimeType(MimeType temporaryFileMimeType) {
-        this.temporaryFileMimeType = temporaryFileMimeType;
+    public void setTemporaryFiles(List<TemporaryFile> temporaryFiles) {
+        this.temporaryFiles = temporaryFiles;
     }
-
 }

@@ -30,6 +30,10 @@ public class DocumentEditionWindowProperties {
      */
     private String documentType;
     /**
+     * Multiple files indicator.
+     */
+    private boolean multipleFiles;
+    /**
      * Modal indicator.
      */
     private boolean modal;
@@ -73,6 +77,14 @@ public class DocumentEditionWindowProperties {
 
     public void setDocumentType(String documentType) {
         this.documentType = documentType;
+    }
+
+    public boolean isMultipleFiles() {
+        return multipleFiles;
+    }
+
+    public void setMultipleFiles(boolean multipleFiles) {
+        this.multipleFiles = multipleFiles;
     }
 
     public boolean isModal() {

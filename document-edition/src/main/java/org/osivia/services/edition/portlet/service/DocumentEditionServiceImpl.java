@@ -98,6 +98,10 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         String documentType = window.getProperty(DOCUMENT_TYPE_WINDOW_PROPERTY);
         properties.setDocumentType(documentType);
 
+        // Multiple files indicator
+        boolean multipleFiles = BooleanUtils.toBoolean(window.getProperty(MULTIPLE_FILES_WINDOW_PROPERTY));
+        properties.setMultipleFiles(multipleFiles);
+
         // Modal indicator
         boolean modal = BooleanUtils.toBoolean(window.getProperty(MODAL_INDICATOR_WINDOW_PROPERTY));
         properties.setModal(modal);

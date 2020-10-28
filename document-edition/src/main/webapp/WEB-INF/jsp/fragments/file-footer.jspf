@@ -1,4 +1,4 @@
 <c:set var="namespace"><portlet:namespace/></c:set>
 
 
-<input id="${namespace}-file-upload-submit" type="submit" name="upload" class="d-none">
+<input id="${namespace}-file-upload-submit" type="submit" name="auto-upload" class="d-none">

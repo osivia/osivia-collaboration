@@ -48,9 +48,11 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
      * Description Nuxeo document property.
      */
     protected static final String DESCRIPTION_PROPERTY = "dc:description";
-    
-    
-    /** The Constant HIDE_FIRST_LEVEL system property. */
+
+
+    /**
+     * The Constant HIDE_FIRST_LEVEL system property.
+     */
     protected static final String HIDE_FIRST_LEVEL_SYSTEM_PROPERTY = "osivia.services.userWorkSpace.hideFirstLevel";
 
 
@@ -154,17 +156,15 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
 
         // Breadcrumb
         List<String> breadcrumb = new ArrayList<>();
-        
+
         boolean hideFirstLevel = false;
-        
-        if( BooleanUtils.isTrue(BooleanUtils.toBooleanObject(System.getProperty(HIDE_FIRST_LEVEL_SYSTEM_PROPERTY))))    {
+
+        if (BooleanUtils.isTrue(BooleanUtils.toBooleanObject(System.getProperty(HIDE_FIRST_LEVEL_SYSTEM_PROPERTY)))) {
             String userRootPath = nuxeoController.getUserWorkspacePath();
-            if( StringUtils.startsWith(parentPath, userRootPath))    {
+            if (StringUtils.startsWith(parentPath, userRootPath)) {
                 hideFirstLevel = true;
             }
         }
-        
-        
 
 
         while (StringUtils.startsWith(parentPath, basePath)) {
@@ -195,9 +195,8 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
                 CMSObjectPath parentObjectPath = objectPath.getParent();
                 parentPath = parentObjectPath.toString();
             }
-            
+
         }
-        
 
 
         return breadcrumb;

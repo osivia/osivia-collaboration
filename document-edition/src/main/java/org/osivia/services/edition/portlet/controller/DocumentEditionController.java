@@ -35,6 +35,7 @@ public class DocumentEditionController {
     /**
      * Portlet context.
      */
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private PortletContext portletContext;
 
@@ -83,7 +84,7 @@ public class DocumentEditionController {
      * @param response action response
      * @param form     document edition form model attribute
      */
-    @ActionMapping(name = "submit", params = "upload")
+    @ActionMapping(name = "submit", params = "auto-upload")
     public void upload(ActionRequest request, ActionResponse response, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);

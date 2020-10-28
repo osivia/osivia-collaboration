@@ -20,22 +20,20 @@ public interface DocumentEditionService {
      * Base path window property.
      */
     String BASE_PATH_WINDOW_PROPERTY = "osivia.document.edition.base-path";
-
     /**
      * Document path window property.
      */
     String DOCUMENT_PATH_WINDOW_PROPERTY = "osivia.document.edition.path";
-
     /**
      * Parent document path window property.
      */
     String PARENT_DOCUMENT_PATH_WINDOW_PROPERTY = "osivia.document.edition.parent-path";
-
     /**
      * Document type window property.
      */
     String DOCUMENT_TYPE_WINDOW_PROPERTY = "osivia.document.edition.document-type";
-
+    /** Multiple files indicator window property. */
+    String MULTIPLE_FILES_WINDOW_PROPERTY = "osivia.document.edition.multiple-files";
     /**
      * Modal indicator window property.
      */
