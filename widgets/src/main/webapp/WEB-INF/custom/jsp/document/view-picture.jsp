@@ -10,5 +10,5 @@
 
 <div class="my-auto picture">
     <!-- Preview -->
-    <p><img src="${previewUrl}" alt="${name}" class="img-fluid rounded mx-auto d-block"></p>
+    <img src="${previewUrl}" alt="${name}" class="img-fluid mx-auto">
 </div>
