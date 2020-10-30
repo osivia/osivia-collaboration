@@ -68,6 +68,11 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     private final Log log;
 
     /**
+     * Hide user workspace first level indicator.
+     */
+    private final boolean hideUserWorkspaceFirstLevel;
+
+    /**
      * Zip file name pattern.
      */
     private final Pattern zipFileNamePattern;
@@ -94,6 +99,9 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
 
         // Log
         this.log = LogFactory.getLog(this.getClass());
+
+        // Hide user workspace first level indicator
+        this.hideUserWorkspaceFirstLevel = BooleanUtils.toBoolean(System.getProperty("osivia.services.userWorkSpace.hideFirstLevel"));
 
         // Zip file name pattern
         this.zipFileNamePattern = Pattern.compile(ZIP_FILE_NAME_REGEX);
@@ -542,7 +550,7 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
 
 
     @Override
-    public List<Document> getParentDocuments(PortalControllerContext portalControllerContext, String path) {
+    public List<Document> getParentDocuments(PortalControllerContext portalControllerContext, String path) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -553,13 +561,25 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
 
         // Base path
         String basePath = nuxeoController.getBasePath();
+
+        // Ignore first level indicator
+        boolean ignoreFirstLevel;
+        if (this.hideUserWorkspaceFirstLevel) {
+            // User workspace
+            Document userWorkspace = this.getUserWorkspace(portalControllerContext);
+
+            ignoreFirstLevel = ((userWorkspace != null) && StringUtils.startsWith(basePath, userWorkspace.getPath()));
+        } else {
+            ignoreFirstLevel = false;
+        }
+
         // Parent path
         String parentPath = path;
 
         // Parent documents
         List<Document> documents = new ArrayList<>();
 
-        while (StringUtils.startsWith(parentPath, basePath)) {
+        while (StringUtils.startsWith(parentPath, basePath) && !(ignoreFirstLevel && StringUtils.equals(parentPath, basePath))) {
             // Parent document
             Document document = this.getDocumentFromNavigation(cmsService, cmsContext, basePath, parentPath);
 
@@ -604,6 +624,32 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         }
 
         return document;
+    }
+
+
+    /**
+     * Get user workspace.
+     *
+     * @param portalControllerContext portal controller context
+     * @return user workspace
+     */
+    private Document getUserWorkspace(PortalControllerContext portalControllerContext) throws PortletException {
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setPortalControllerContext(portalControllerContext);
+
+        // CMS item
+        CMSItem cmsItem;
+        try {
+            cmsItem = cmsService.getUserWorkspace(cmsContext);
+        } catch (CMSException e) {
+            throw new PortletException(e);
+        }
+
+        // Document
+        return (Document) cmsItem.getNativeItem();
     }
 
 }
