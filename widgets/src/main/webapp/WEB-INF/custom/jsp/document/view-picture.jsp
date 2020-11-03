@@ -8,7 +8,7 @@
 <c:set var="previewUrl"><ttc:documentLink document="${document}" picture="true" displayContext="Medium" /></c:set>
 
 
-<div class="my-auto picture">
+<div class="my-auto picture d-flex">
     <!-- Preview -->
     <img src="${previewUrl}" alt="${name}" class="img-fluid mx-auto">
 </div>
