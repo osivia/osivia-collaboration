@@ -13,7 +13,9 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.forum.edition.portlet.configuration.ForumEditionConfiguration;
 import org.osivia.services.forum.edition.portlet.model.ForumEditionForm;
 import org.osivia.services.forum.edition.portlet.model.ForumEditionOptions;
 import org.osivia.services.forum.edition.portlet.model.validator.ForumEditionFormValidator;
@@ -281,7 +283,12 @@ public class ForumEditionController extends AbstractForumController {
 	@ExceptionHandler(MultipartException.class)
 	String handleFileException(Throwable ex, RenderRequest request, RenderResponse response)
 			throws PortletException, IOException {
-
+		
+		String uploadMaxSize = StringUtils.defaultIfBlank(System.getProperty("osivia.forum.max.upload.size"), 
+				ForumEditionConfiguration.MAX_UPLOAD_SIZE_PER_FILE_MO);
+		
+		request.setAttribute("uploadMaxSize", uploadMaxSize.toString());
+		
 		return "upload-error";
 
 	}    

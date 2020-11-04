@@ -8,4 +8,4 @@
 <c:set var="namespace"><portlet:namespace/></c:set>
 
 
-<span class="text-danger"><op:translate key="DOCUMENT_EDITION_FORM_FILE_SIZE_LIMIT_EXCEEDED"/></span>
+<span class="text-danger"><op:translate key="DOCUMENT_EDITION_FORM_FILE_SIZE_LIMIT_EXCEEDED" args="${uploadMaxSize}"/></span>

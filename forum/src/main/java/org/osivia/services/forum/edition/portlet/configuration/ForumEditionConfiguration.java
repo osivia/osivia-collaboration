@@ -29,8 +29,8 @@ import org.springframework.web.servlet.view.JstlView;
 public class ForumEditionConfiguration {
 
 
-    /** Max upload size per file. */
-    public static final Long MAX_UPLOAD_SIZE_PER_FILE = NumberUtils.toLong(System.getProperty("osivia.forum.max.upload.size"), 10) * FileUtils.ONE_MB;
+	public static final String MAX_UPLOAD_SIZE_PER_FILE_MO = "10";
+    private static final Long MAX_UPLOAD_SIZE_PER_FILE = NumberUtils.toLong(System.getProperty("osivia.forum.max.upload.size"), new Long(MAX_UPLOAD_SIZE_PER_FILE_MO)) * FileUtils.ONE_MB;
 
 	
     @Autowired

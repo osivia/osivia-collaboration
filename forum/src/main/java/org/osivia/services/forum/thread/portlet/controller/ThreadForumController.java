@@ -13,7 +13,9 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.forum.thread.portlet.configuration.ForumThreadConfiguration;
 import org.osivia.services.forum.thread.portlet.model.ForumThreadForm;
 import org.osivia.services.forum.thread.portlet.model.ForumThreadOptions;
 import org.osivia.services.forum.thread.portlet.model.validator.ForumThreadFormValidator;
@@ -379,8 +381,13 @@ public class ThreadForumController extends AbstractForumController {
 	String handleFileException(Throwable ex, RenderRequest request, RenderResponse response)
 			throws PortletException, IOException {
 
+		String uploadMaxSize = StringUtils.defaultIfBlank(System.getProperty("osivia.forum.max.upload.size"), 
+				ForumThreadConfiguration.MAX_UPLOAD_SIZE_PER_FILE_MO);
+		
+		request.setAttribute("uploadMaxSize", uploadMaxSize.toString());
+		
 		return "upload-error";
 
-	}        
+	}
 
 }
