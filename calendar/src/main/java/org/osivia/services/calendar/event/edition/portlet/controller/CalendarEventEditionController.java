@@ -14,12 +14,17 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.model.CalendarCommonEventForm;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
+import org.osivia.services.calendar.edition.portlet.configuration.CalendarEditionConfiguration;
+import org.osivia.services.calendar.event.edition.portlet.configuration.CalendarEventEditionConfiguration;
 import org.osivia.services.calendar.event.edition.portlet.model.validation.CalendarEventEditionFormValidator;
 import org.osivia.services.calendar.event.edition.portlet.service.CalendarEventEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -287,8 +292,13 @@ public class CalendarEventEditionController extends CMSPortlet implements Portle
 	String handleFileException(Throwable ex, RenderRequest request, RenderResponse response)
 			throws PortletException, IOException {
 
+		String uploadMaxSize = StringUtils.defaultIfBlank(System.getProperty("osivia.agenda.max.upload.size"), 
+				CalendarEventEditionConfiguration.MAX_UPLOAD_SIZE_PER_FILE_MO);
+		
+		request.setAttribute("uploadMaxSize", uploadMaxSize.toString());
+		
 		return "upload-error";
 
 	}    
-	
+
 }

@@ -37,8 +37,12 @@ import javax.portlet.PortletException;
 @ComponentScan(basePackages = "org.osivia.services.edition.portlet")
 public class DocumentEditionConfiguration extends CMSPortlet implements PortletConfigAware {
 
+	
+    public static final String MAX_UPLOAD_SIZE_PER_FILE_MO = "500";
+
     /** Max upload size per file. */
-    public static final Long MAX_UPLOAD_SIZE_PER_FILE = NumberUtils.toLong(System.getProperty("osivia.filebrowser.max.upload.size"), 500) * FileUtils.ONE_MB;
+    private static final Long MAX_UPLOAD_SIZE_PER_FILE = NumberUtils.toLong(System.getProperty("osivia.filebrowser.max.upload.size"), 
+    		new Long(MAX_UPLOAD_SIZE_PER_FILE_MO)) * FileUtils.ONE_MB;
 
 
     /**

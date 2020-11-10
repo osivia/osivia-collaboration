@@ -1,6 +1,8 @@
 package org.osivia.services.edition.portlet.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.edition.portlet.configuration.DocumentEditionConfiguration;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.FileEditionForm;
 import org.osivia.services.edition.portlet.model.validator.DocumentEditionFormValidator;
@@ -181,6 +183,11 @@ public class DocumentEditionController {
 	String handleFileException(Throwable ex, RenderRequest request, RenderResponse response)
 			throws PortletException, IOException {
 
+		String uploadMaxSize = StringUtils.defaultIfBlank(System.getProperty("osivia.filebrowser.max.upload.size"), 
+				DocumentEditionConfiguration.MAX_UPLOAD_SIZE_PER_FILE_MO);
+		
+		request.setAttribute("uploadMaxSize", uploadMaxSize.toString());
+		
 		return "upload-error";
 
 	}

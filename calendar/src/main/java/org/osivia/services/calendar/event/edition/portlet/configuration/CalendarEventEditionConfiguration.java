@@ -44,9 +44,11 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 @ComponentScan(basePackages = {"org.osivia.services.calendar.common", "org.osivia.services.calendar.event.edition.portlet"})
 public class CalendarEventEditionConfiguration extends CMSPortlet implements PortletConfigAware {
 
+	public static final String MAX_UPLOAD_SIZE_PER_FILE_MO = "10";
+
 	/** Max upload size per file. */
-	public static final Long MAX_UPLOAD_SIZE_PER_FILE = NumberUtils
-			.toLong(System.getProperty("osivia.agenda.max.upload.size"), 10) * FileUtils.ONE_MB;
+	private static final Long MAX_UPLOAD_SIZE_PER_FILE = NumberUtils
+			.toLong(System.getProperty("osivia.agenda.max.upload.size"), new Long(MAX_UPLOAD_SIZE_PER_FILE_MO)) * FileUtils.ONE_MB;
 	
     /** Application context. */
     @Autowired
