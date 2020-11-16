@@ -17,7 +17,7 @@
         <toutatice.version>4.9.3-RC13</toutatice.version>
 
         <!-- Directory -->
-        <directory.version>4.9.5</directory.version>
+        <directory.version>4.9.6</directory.version>
 
         <!-- JBoss -->
         <jboss-portal.version>2.7.2</jboss-portal.version>
