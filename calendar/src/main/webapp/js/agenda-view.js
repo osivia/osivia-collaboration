@@ -172,10 +172,11 @@ function isDraggingEnded( last_attached_event, last_dragging_date)	{
 /**
  * Chargement du calendrier au chargement de la portlet
  */
-$JQry(window).load(function() {
+$JQry(window).ready(function() {
     var divScheduler = $JQry("div#scheduler_here");
     var viewEventUrl = divScheduler.data("url-viewevent");
 
+    if (!divScheduler.data("loaded")) {
     // Variable ajoutée pour corriger un bug dans le composant dhtmlx scheduler
     // En cliquant rapidement (moins de 500ms entre chaque clic) pour créer plusieurs événements, ceux-ci étaient créées mais non enregistrés en base
     // L'objectif est de ne plus les créer, en les filtrant lors de l'appel à l'écouter onBeforeEventCreated
@@ -299,34 +300,6 @@ $JQry(window).load(function() {
         scheduler.ignore_week = isIgnoredDate;
         scheduler.ignore_month = isIgnoredDate;
 
-
-        /*scheduler.renderEvent = function(container, ev) {
-            var containerWidth = container.style.width;
-            var containerHeight = container.style.height;
-
-            var cntWidth = parseInt(containerWidth.substring(0,containerWidth.length-2),10)-2;
-            var cntHeight = Math.max(parseInt(containerHeight.substring(0,containerWidth.length-2),10)-29,11);
-            console.log("height:"+cntHeight);
-
-            // move section
-            var html = "<div class='dhx_header' style='background:"+ev.color+"'></div>";
-            html+= "<div class='dhx_event_move dhx_title' style='background:"+ev.color+"'>"
-                +scheduler.templates.event_header(ev.start_date, ev.end_date, ev)
-                +"</div>";
-            // container for event's content
-            html+= "<div class='dhx_event_move dhx_body' style='background:"+ev.color+";height:"+cntHeight+"px;width:"+(cntWidth-8)+"px'>";
-            html += "<a class='event_title' href='"+ev.view_url+"'>";
-            html += scheduler.templates.event_text(ev.start_date,ev.end_date,ev)+
-            "</a>" + "</div>";
-
-            // resize section
-            html += "<div class='dhx_event_resize  dhx_footer' style='width: " +
-            containerWidth + ";background-color:"+ev.color+";height:5px;width:"+cntWidth+"px'></div>";
-
-            container.innerHTML = html;
-            return true; //required, true - display a custom form, false - the default form
-        };*/
-
         var fix_date = function(date) {  // 17:48:56 -> 17:30:00  et  17:05:41 -> 17:00:00
             date = new Date(date);
             if (date.getMinutes() > 30)
@@ -347,6 +320,7 @@ $JQry(window).load(function() {
                 scheduler.addEventNow(fixed_date, scheduler.date.add(fixed_date, event_step, "minute"));
             }
         });
+        
     }
 
 
@@ -356,6 +330,7 @@ $JQry(window).load(function() {
         } else {
             return scheduler.getEvent(id).readonly;
         }
+    }
     }
 });
 
