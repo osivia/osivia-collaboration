@@ -20,6 +20,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
 import org.dom4j.io.HTMLWriter;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.portlet.model.TrashForm;
 import org.osivia.services.workspace.portlet.service.TrashService;
@@ -123,6 +124,10 @@ public class ViewTrashController extends CMSPortlet implements PortletConfigAwar
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         this.service.restoreAll(portalControllerContext, form);
+        
+        // Refresh navigation (for nav elements)
+        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
+        
     }
 
 
@@ -157,6 +162,10 @@ public class ViewTrashController extends CMSPortlet implements PortletConfigAwar
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         this.service.restore(portalControllerContext, form);
+
+        // Refresh navigation (for nav elements)
+        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
+        
     }
 
 

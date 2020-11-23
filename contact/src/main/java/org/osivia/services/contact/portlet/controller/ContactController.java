@@ -11,6 +11,7 @@ import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.contact.portlet.model.Form;
+import org.osivia.services.contact.portlet.model.FormCaptcha;
 import org.osivia.services.contact.portlet.model.validation.ContactFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -45,7 +46,6 @@ import java.util.Properties;
 
 @Controller
 @RequestMapping({"VIEW"})
-@SessionAttributes("form")
 public class ContactController
         extends CMSPortlet
         implements PortletConfigAware, PortletContextAware {
@@ -106,16 +106,23 @@ public class ContactController
         PortalWindow window = WindowFactory.getWindow(request);
 
         Bundle bundle = bundleFactory.getBundle(request.getLocale());
-        GCage gcage = new GCage();
 
         Form form = this.applicationContext.getBean(Form.class);
         form.setTo(window.getProperty("osivia.contact.mailto"));
         form.setObject(window.getProperty("osivia.contact.object"));
-        form.setToken(gcage.getTokenGenerator().next());
         form.setFromLabel(StringUtils.defaultIfBlank(window.getProperty("osivia.contact.fromLabel"), bundle.getString("ENTER_EMAIL")));
         form.setNomLabel(StringUtils.defaultIfBlank(window.getProperty("osivia.contact.nomLabel"), bundle.getString("NAMES")));
         form.setObjectLabel(StringUtils.defaultIfBlank(window.getProperty("osivia.contact.objectLabel"), bundle.getString("SUBJECT")));
         form.setBodyLabel(StringUtils.defaultIfBlank(window.getProperty("osivia.contact.bodyLabel"), bundle.getString("MESSAGE")));
+
+        // Captcha
+        FormCaptcha captcha = this.applicationContext.getBean(FormCaptcha.class);
+        if (StringUtils.isEmpty(captcha.getToken())) {
+            GCage gcage = new GCage();
+            captcha.setToken(gcage.getTokenGenerator().next());
+        }
+        form.setCaptcha(captcha);
+
         return form;
     }
 
@@ -190,13 +197,13 @@ public class ContactController
         response.setProperty("Cache-Control", "no-cache");
         response.setProperty("Progma", "no-cache");
 
-        gcage.draw(form.getToken(), response.getPortletOutputStream());
+        gcage.draw(form.getCaptcha().getToken(), response.getPortletOutputStream());
     }
 
     @ActionMapping(name = "submit", params = "reload")
     public void reloadImage(ActionRequest request, ActionResponse response, @ModelAttribute("form") Form form) {
         GCage gcage = new GCage();
-        form.setToken(gcage.getTokenGenerator().next());
+        form.getCaptcha().setToken(gcage.getTokenGenerator().next());
     }
 }
 

@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+<%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
 
 <%@ page contentType="text/html" isELIgnored="false"%>
 
@@ -35,13 +36,11 @@
                                     </div>
                                 
                                     <div class="panel-body">
-                                        <h4 class="text-center text-overflow">
-                                            <a href="${member.url}" class="no-ajax-link">
-                                                <span>${member.displayName}</span>
-                                            </a>
+                                        <h4 class="text-center text-overflow no-ajax-link">
+                                        	<ttc:user name="${member.id}" hideAvatar="true" linkable="${participants.showPrivacyData}"/>
                                         </h4>
                                             
-                                        <c:if test="${not empty member.email}">
+                                        <c:if test="${not empty member.email && participants.showPrivacyData}">
                                             <p class="small text-center text-overflow">
                                                 <a href="mailto:${member.email}" class="no-ajax-link">
                                                     <span>${member.email}</span>

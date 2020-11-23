@@ -6,6 +6,7 @@ import javax.portlet.PortletException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.Constants;
@@ -43,6 +44,12 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 @ComponentScan(basePackages = {"org.osivia.services.calendar.common", "org.osivia.services.calendar.event.edition.portlet"})
 public class CalendarEventEditionConfiguration extends CMSPortlet implements PortletConfigAware {
 
+	public static final String MAX_UPLOAD_SIZE_PER_FILE_MO = "10";
+
+	/** Max upload size per file. */
+	private static final Long MAX_UPLOAD_SIZE_PER_FILE = NumberUtils
+			.toLong(System.getProperty("osivia.agenda.max.upload.size"), new Long(MAX_UPLOAD_SIZE_PER_FILE_MO)) * FileUtils.ONE_MB;
+	
     /** Application context. */
     @Autowired
     private ApplicationContext applicationContext;
@@ -115,7 +122,7 @@ public class CalendarEventEditionConfiguration extends CMSPortlet implements Por
     public PortletMultipartResolver getMultipartResolver() {
         CommonsPortletMultipartResolver multipartResolver = new CommonsPortletMultipartResolver();
         multipartResolver.setDefaultEncoding(CharEncoding.UTF_8);
-        multipartResolver.setMaxUploadSizePerFile(2 * FileUtils.ONE_MB);
+        multipartResolver.setMaxUploadSizePerFile(MAX_UPLOAD_SIZE_PER_FILE);
         return multipartResolver;
     }
 

@@ -14,12 +14,17 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.common.model.CalendarCommonEventForm;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
+import org.osivia.services.calendar.edition.portlet.configuration.CalendarEditionConfiguration;
+import org.osivia.services.calendar.event.edition.portlet.configuration.CalendarEventEditionConfiguration;
 import org.osivia.services.calendar.event.edition.portlet.model.validation.CalendarEventEditionFormValidator;
 import org.osivia.services.calendar.event.edition.portlet.service.CalendarEventEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +32,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
@@ -269,5 +276,29 @@ public class CalendarEventEditionController extends CMSPortlet implements Portle
         binder.addValidators(this.formValidator);
         binder.registerCustomEditor(CalendarColor.class, this.service.getCalendarColorPropertyEditor());
     }
+
+    
+    /**
+     * Manage upload errors
+     * 
+     * @param ex
+     * @param request
+     * @param response
+     * @return
+     * @throws PortletException
+     * @throws IOException
+     */
+	@ExceptionHandler(MultipartException.class)
+	String handleFileException(Throwable ex, RenderRequest request, RenderResponse response)
+			throws PortletException, IOException {
+
+		String uploadMaxSize = StringUtils.defaultIfBlank(System.getProperty("osivia.agenda.max.upload.size"), 
+				CalendarEventEditionConfiguration.MAX_UPLOAD_SIZE_PER_FILE_MO);
+		
+		request.setAttribute("uploadMaxSize", uploadMaxSize.toString());
+		
+		return "upload-error";
+
+	}    
 
 }

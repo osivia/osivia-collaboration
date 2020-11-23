@@ -52,10 +52,10 @@
 	      			</div>      				  
 				</spring:bind>
                
-               <c:if test="${not form.captchaValidate}">
-		        	<spring:bind path="captcha">
+               <c:if test="${not form.captcha.validated}">
+		        	<spring:bind path="captcha.input">
 		    			<div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
-		        			<form:label path="captcha" cssClass="control-label"><op:translate key="CAPTCHA"/></form:label>
+		        			<form:label path="captcha.input" cssClass="control-label"><op:translate key="CAPTCHA"/></form:label>
 	        				<div class="row">
 	        				<div class="col-sm-6">
 		        				<div class="thumbnail">
@@ -69,8 +69,8 @@
 	        				</div>
 
 	        				</div>
-       						<form:input class="form-control" path="captcha" type="text" autocomplete="off" placeholder="Veuillez saisir le code" />	
-							<form:errors path="captcha" cssClass="help-block" />				
+       						<form:input class="form-control" path="captcha.input" type="text" autocomplete="off" placeholder="Veuillez saisir le code" />
+							<form:errors path="captcha.input" cssClass="help-block" />
 		      			</div>      				  
 					</spring:bind>                
             	</c:if>
