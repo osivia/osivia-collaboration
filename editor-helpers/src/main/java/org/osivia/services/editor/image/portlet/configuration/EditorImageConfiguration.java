@@ -1,29 +1,30 @@
-package org.osivia.services.editor.link.portlet.configuration;
+package org.osivia.services.editor.image.portlet.configuration;
 
 import org.osivia.services.editor.common.configuration.CommonConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Editor link portlet configuration.
+ * Editor image portlet configuration.
  *
  * @author Cédric Krommenhoek
  * @see CommonConfiguration
  */
 @Configuration
-@ComponentScan(basePackages = "org.osivia.services.editor.link.portlet")
-public class EditorLinkConfiguration extends CommonConfiguration {
+@ComponentScan("org.osivia.services.editor.image.portlet")
+public class EditorImageConfiguration extends CommonConfiguration {
 
     /**
      * Constructor.
      */
-    public EditorLinkConfiguration() {
+    public EditorImageConfiguration() {
         super();
     }
 
 
     @Override
     public String getSlug() {
-        return "link";
+        return "image";
     }
+
 }

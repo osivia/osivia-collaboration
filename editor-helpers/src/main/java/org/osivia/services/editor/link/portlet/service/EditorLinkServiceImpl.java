@@ -23,6 +23,7 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.services.editor.common.service.CommonServiceImpl;
 import org.osivia.services.editor.link.portlet.model.EditorLinkForm;
 import org.osivia.services.editor.link.portlet.model.FilterType;
 import org.osivia.services.editor.link.portlet.model.UrlType;
@@ -41,30 +42,41 @@ import net.sf.json.JSONObject;
 
 /**
  * Editor link portlet service implementation.
- * 
+ *
  * @author Cédric Krommenhoek
+ * @see CommonServiceImpl
  * @see EditorLinkService
  */
 @Service
-public class EditorLinkServiceImpl implements EditorLinkService {
+public class EditorLinkServiceImpl extends CommonServiceImpl implements EditorLinkService {
 
-    /** Application context. */
+    /**
+     * Application context.
+     */
     @Autowired
     private ApplicationContext applicationContext;
-    
-    /** Portlet repository. */
+
+    /**
+     * Portlet repository.
+     */
     @Autowired
     private EditorLinkRepository repository;
 
-    /** Filter type comparator. */
+    /**
+     * Filter type comparator.
+     */
     @Autowired
     private FilterTypeComparator filterTypeComparator;
 
-    /** View resolver. */
+    /**
+     * View resolver.
+     */
     @Autowired
     private InternalResourceViewResolver viewResolver;
 
-    /** Internationalization bundle factory. */
+    /**
+     * Internationalization bundle factory.
+     */
     @Autowired
     private IBundleFactory bundleFactory;
 
@@ -129,7 +141,7 @@ public class EditorLinkServiceImpl implements EditorLinkService {
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
         // Base path
-        String basePath = window.getProperty(BASE_PATH_PROPERTY);
+        String basePath = window.getProperty(BASE_PATH_WINDOW_PROPERTY);
 
         // Documents
         PaginableDocuments documents = this.repository.searchDocuments(portalControllerContext, basePath, filter, page - 1);
@@ -200,13 +212,13 @@ public class EditorLinkServiceImpl implements EditorLinkService {
         // Window
         PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
         // URL
-        String url = window.getProperty(URL_PROPERTY);
+        String url = window.getProperty(URL_WINDOW_PROPERTY);
         // Text
-        String text = window.getProperty(TEXT_PROPERTY);
+        String text = window.getProperty(TEXT_WINDOW_PROPERTY);
         // Title
-        String title = window.getProperty(TITLE_PROPERTY);
+        String title = window.getProperty(TITLE_WINDOW_PROPERTY);
         // Only text indicator
-        boolean onlyText = BooleanUtils.toBoolean(window.getProperty(ONLY_TEXT_PROPERTY));
+        boolean onlyText = BooleanUtils.toBoolean(window.getProperty(ONLY_TEXT_WINDOW_PROPERTY));
 
         return this.repository.createForm(portalControllerContext, url, text, title, onlyText);
     }
