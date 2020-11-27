@@ -23,22 +23,17 @@
             <legend><op:translate key="EDITOR_IMAGE_DOCUMENT_FORM_LEGEND"/></legend>
 
             <div class="form-group">
-                <form:label path="filter"><op:translate key="EDITOR_IMAGE_DOCUMENT_FORM_FILTER_LABEL"/></form:label>
-                <div class="form-row">
-                    <div class="col">
-                        <form:input path="filter" cssClass="form-control form-control-sm"/>
-                    </div>
-
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-outline-secondary btn-sm">
-                            <span><op:translate key="EDITOR_IMAGE_DOCUMENT_FORM_FILTER_SUBMIT"/></span>
-                        </button>
-                    </div>
-                </div>
+                <form:label path="filter" cssClass="control-label"><op:translate key="EDITOR_IMAGE_DOCUMENT_FORM_FILTER_LABEL"/></form:label>
+                <p>
+                    <form:input path="filter" cssClass="form-control"/>
+                </p>
+                <button type="submit" class="btn btn-default btn-sm">
+                    <span><op:translate key="EDITOR_IMAGE_DOCUMENT_FORM_FILTER_SUBMIT"/></span>
+                </button>
             </div>
 
             <div class="form-group">
-                <form:label path="documents"><op:translate key="EDITOR_IMAGE_DOCUMENT_FORM_DOCUMENTS_LABEL"/></form:label>
+                <form:label path="documents" cssClass="control-label"><op:translate key="EDITOR_IMAGE_DOCUMENT_FORM_DOCUMENTS_LABEL"/></form:label>
                 <c:choose>
                     <c:when test="${empty documentForm.documents}">
                         <p class="form-control-plaintext">
@@ -47,20 +42,17 @@
                     </c:when>
 
                     <c:otherwise>
-                        <div class="form-row row-cols-2">
+                        <div class="row">
                             <c:forEach var="document" items="${documentForm.documents}">
                                 <ttc:documentLink document="${document}" picture="true" displayContext="Medium" var="imageLink" />
                                 <portlet:actionURL name="select" var="selectUrl" copyCurrentRenderParameters="true">
                                     <portlet:param name="path" value="${document.path}"/>
                                 </portlet:actionURL>
 
-                                <div class="col mb-2">
-                                    <div class="card">
-                                        <img src="${imageLink.url}" alt="" class="card-img-top">
-                                        <div class="card-body p-3">
-                                            <a href="${selectUrl}" class="card-link stretched-link"><ttc:title document="${document}" linkable="false"/></a>
-                                        </div>
-                                    </div>
+                                <div class="col-xs-6">
+                                    <a href="${selectUrl}" class="thumbnail" title="${document.title}">
+                                        <img src="${imageLink.url}" alt="${document.title}">
+                                    </a>
                                 </div>
                             </c:forEach>
                         </div>
@@ -71,7 +63,7 @@
 
         <%--Buttons--%>
         <div class="text-right">
-            <a href="${backUrl}" class="btn btn-outline-secondary">
+            <a href="${backUrl}" class="btn btn-default">
                 <span><op:translate key="BACK"/></span>
             </a>
         </div>

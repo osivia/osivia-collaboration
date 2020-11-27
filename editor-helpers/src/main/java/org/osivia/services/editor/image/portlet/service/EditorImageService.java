@@ -8,6 +8,7 @@ import org.osivia.services.editor.image.portlet.model.EditorImageSourceAttachedF
 import org.osivia.services.editor.image.portlet.model.EditorImageSourceDocumentForm;
 
 import javax.portlet.PortletException;
+import java.io.IOException;
 
 /**
  * Editor image portlet service interface.
@@ -101,5 +102,13 @@ public interface EditorImageService extends CommonService {
      * @param path                    document path
      */
     void selectDocument(PortalControllerContext portalControllerContext, String path) throws PortletException;
+
+
+    /**
+     * Serve image preview.
+     *
+     * @param portalControllerContext portal controller context
+     */
+    void serveImagePreview(PortalControllerContext portalControllerContext) throws PortletException, IOException;
 
 }

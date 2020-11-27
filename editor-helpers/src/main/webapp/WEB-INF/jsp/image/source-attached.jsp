@@ -20,7 +20,7 @@
 
         <%--Buttons--%>
         <div class="text-right">
-            <a href="${backUrl}" class="btn btn-outline-secondary">
+            <a href="${backUrl}" class="btn btn-default">
                 <span><op:translate key="BACK"/></span>
             </a>
         </div>

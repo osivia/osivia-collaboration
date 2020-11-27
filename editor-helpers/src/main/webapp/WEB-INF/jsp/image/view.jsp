@@ -1,5 +1,6 @@
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="op" uri="http://www.osivia.org/jsp/taglib/osivia-portal" %>
 
@@ -23,24 +24,28 @@
         <form:hidden path="done"/>
 
         <%--URL--%>
-        <div class="form-group required">
-            <form:label path="url"><op:translate key="EDITOR_IMAGE_FORM_URL_LABEL"/></form:label>
-            <form:input path="url" cssClass="form-control" cssErrorClass="form-control is-invalid"/>
-            <c:if test="${not empty form.availableSourceTypes}">
-                <div>
-                    <c:forEach var="type" items="${form.availableSourceTypes}" varStatus="status">
-                        <button type="submit" name="source-${type.id}" class="btn btn-outline-secondary btn-sm mt-2 ${status.last ? '' : 'mr-1'}">
-                            <span><op:translate key="${type.key}"/></span>
-                        </button>
-                    </c:forEach>
-                </div>
-            </c:if>
-            <form:errors path="url" cssClass="invalid-feedback"/>
-        </div>
+        <spring:bind path="url">
+            <div class="form-group required ${status.error ? 'has-error' : ''}">
+                <form:label path="url" cssClass="control-label"><op:translate key="EDITOR_IMAGE_FORM_URL_LABEL"/></form:label>
+                <p>
+                    <form:input path="url" cssClass="form-control" />
+                </p>
+                <c:if test="${not empty form.availableSourceTypes}">
+                    <div>
+                        <c:forEach var="type" items="${form.availableSourceTypes}">
+                            <button type="submit" name="source-${type.id}" class="btn btn-default btn-sm">
+                                <span><op:translate key="${type.key}"/></span>
+                            </button>
+                        </c:forEach>
+                    </div>
+                </c:if>
+                <form:errors path="url" cssClass="help-block"/>
+            </div>
+        </spring:bind>
 
         <%--Alternate text--%>
         <div class="form-group">
-            <form:label path="alt"><op:translate key="EDITOR_IMAGE_FORM_ALT_LABEL"/></form:label>
+            <form:label path="alt" cssClass="control-label"><op:translate key="EDITOR_IMAGE_FORM_ALT_LABEL"/></form:label>
             <form:input path="alt" cssClass="form-control"/>
         </div>
 

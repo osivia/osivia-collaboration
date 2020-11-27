@@ -2,16 +2,15 @@ package org.osivia.services.editor.plugin.service;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.osivia.portal.api.editor.EditorModule;
+import org.osivia.portal.api.editor.EditorModuleResource;
 import org.osivia.services.editor.common.service.CommonServiceImpl;
 import org.osivia.services.editor.plugin.model.editor.EditorHelper;
+import org.osivia.services.editor.plugin.model.editor.image.ImagePreviewEditorModuleResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Editor plugin service implementation.
@@ -54,6 +53,12 @@ public class EditorPluginServiceImpl extends CommonServiceImpl implements Editor
                 if (ArrayUtils.isNotEmpty(helper.getParameters())) {
                     Set<String> parameters = new HashSet<>(Arrays.asList(helper.getParameters()));
                     module.setParameters(parameters);
+                }
+
+                if (EditorHelper.IMAGE.equals(helper)) {
+                    Map<String, EditorModuleResource> resources = new HashMap<>(1);
+                    resources.put(ImagePreviewEditorModuleResource.ID, this.applicationContext.getBean(ImagePreviewEditorModuleResource.class));
+                    module.setResources(resources);
                 }
 
                 modules.add(module);

@@ -5,6 +5,8 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.core.cms.CMSBinaryContent;
+import org.osivia.portal.core.web.IWebIdService;
 import org.osivia.services.editor.common.repository.CommonRepositoryImpl;
 import org.osivia.services.editor.image.portlet.repository.command.SearchImageDocumentsCommand;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,10 @@ public class EditorImageRepositoryImpl extends CommonRepositoryImpl implements E
      * Nuxeo document URL prefix.
      */
     private static final String DOCUMENT_URL_PREFIX = "/nuxeo/web/";
+    /**
+     * Nuxeo document URL suffix.
+     */
+    private static final String DOCUMENT_URL_SUFFIX = "?content=Original";
 
 
     /**
@@ -71,7 +77,19 @@ public class EditorImageRepositoryImpl extends CommonRepositoryImpl implements E
         // WebId
         String webId = document.getString(WEB_ID_PROPERTY);
 
-        return DOCUMENT_URL_PREFIX + webId;
+        return DOCUMENT_URL_PREFIX + webId + DOCUMENT_URL_SUFFIX;
+    }
+
+
+    @Override
+    public CMSBinaryContent getImagePreviewBinaryContent(PortalControllerContext portalControllerContext, String webId, String content) {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // Fetch path
+        String fetchPath = IWebIdService.FETCH_PATH_PREFIX + webId;
+
+        return nuxeoController.fetchPicture(fetchPath, content);
     }
 
 }

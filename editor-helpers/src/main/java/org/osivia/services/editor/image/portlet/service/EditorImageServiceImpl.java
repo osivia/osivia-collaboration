@@ -3,10 +3,16 @@ package org.osivia.services.editor.image.portlet.service;
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.portal.core.cms.CMSBinaryContent;
 import org.osivia.services.editor.common.service.CommonServiceImpl;
 import org.osivia.services.editor.image.portlet.model.EditorImageForm;
 import org.osivia.services.editor.image.portlet.model.EditorImageSourceAttachedForm;
@@ -18,6 +24,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.portlet.PortletException;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -149,6 +161,56 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
         // URL
         String url = this.repository.getImageDocumentUrl(portalControllerContext, path);
         form.setUrl(url);
+    }
+
+
+    @Override
+    public void serveImagePreview(PortalControllerContext portalControllerContext) throws PortletException, IOException {
+        // Resource request
+        ResourceRequest request = (ResourceRequest) portalControllerContext.getRequest();
+        // Resource response
+        ResourceResponse response = (ResourceResponse) portalControllerContext.getResponse();
+
+        // Image source
+        String source = request.getParameter("src");
+        // Binary content
+        CMSBinaryContent binaryContent;
+
+        if (source.startsWith("/nuxeo/web")) {
+            String webId = StringUtils.substringAfterLast(StringUtils.substringBefore(source, "?"), "/");
+            String[] parameters = StringUtils.split(StringUtils.substringAfter(source, "?"), "&");
+
+            // Image content
+            String content = "Original";
+            if (ArrayUtils.isNotEmpty(parameters)) {
+                for (String parameter : parameters) {
+                    String[] split = StringUtils.split(parameter, "=");
+                    if (ArrayUtils.getLength(split) == 2) {
+                        if (StringUtils.equals("content", split[0])) {
+                            content = split[1];
+                        }
+                    }
+                }
+            }
+
+            binaryContent = this.repository.getImagePreviewBinaryContent(portalControllerContext, webId, content);
+        } else {
+            throw new FileNotFoundException("Unknown source: " + source);
+        }
+
+        response.setContentType(binaryContent.getMimeType());
+        response.setContentLength(binaryContent.getFileSize().intValue());
+        response.getCacheControl().setExpirationTime(0);
+
+        // Input steam
+        FileInputStream inputStream = new FileInputStream(binaryContent.getFile());
+        // Output stream
+        OutputStream outputStream = response.getPortletOutputStream();
+        // Copy
+        IOUtils.copy(inputStream, outputStream);
+
+        IOUtils.closeQuietly(inputStream);
+        IOUtils.closeQuietly(outputStream);
     }
 
 

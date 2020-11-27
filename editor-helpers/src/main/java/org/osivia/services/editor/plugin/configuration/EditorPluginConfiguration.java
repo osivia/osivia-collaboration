@@ -21,7 +21,7 @@ import javax.portlet.PortletConfig;
  * @see PortletConfigAware
  */
 @Configuration
-@ComponentScan(basePackages = "org.osivia.services.editor.plugin")
+@ComponentScan(basePackages = {"org.osivia.services.editor.plugin", "org.osivia.services.editor.image.portlet"})
 public class EditorPluginConfiguration implements PortletConfigAware {
 
     /**

@@ -2,6 +2,7 @@ package org.osivia.services.editor.image.portlet.repository;
 
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.core.cms.CMSBinaryContent;
 import org.osivia.services.editor.common.repository.CommonRepository;
 
 import javax.portlet.PortletException;
@@ -29,9 +30,20 @@ public interface EditorImageRepository extends CommonRepository {
      * Get image document URL.
      *
      * @param portalControllerContext portal controller context
-     * @param path document path
+     * @param path                    document path
      * @return URL
      */
     String getImageDocumentUrl(PortalControllerContext portalControllerContext, String path) throws PortletException;
+
+
+    /**
+     * Get image preview binary content.
+     *
+     * @param portalControllerContext portal controller context
+     * @param webId                   image webId
+     * @param content                 image content
+     * @return binary content
+     */
+    CMSBinaryContent getImagePreviewBinaryContent(PortalControllerContext portalControllerContext, String webId, String content) throws PortletException;
 
 }
