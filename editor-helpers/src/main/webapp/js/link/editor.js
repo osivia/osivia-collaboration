@@ -3,8 +3,6 @@ $JQry(function() {
     var $radioButtons = $JQry(".editor-link input[type=radio][name=urlType]");
 
     $radioButtons.change(function(event) {
-        console.log("radio change"); // FIXME
-
         $radioButtons.each(function(index, element) {
             var $input = $JQry(element);
             var $collapse = $input.closest(".radio").find(".collapse");

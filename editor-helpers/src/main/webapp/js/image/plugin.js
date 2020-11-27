@@ -44,8 +44,6 @@ tinymce.PluginManager.add("osivia-image", function (editor, url) {
 
 
     editor.on("BeforeSetContent", function(content, format, paste, selection) {
-        console.log("[plugin] BeforeSetContent"); // FIXME
-
         var $textarea = $JQry("#" + $JQry.escapeSelector(editor.id));
         var editorUrl = $textarea.data("editor-url");
 
