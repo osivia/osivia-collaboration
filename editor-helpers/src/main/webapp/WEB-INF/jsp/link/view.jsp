@@ -31,34 +31,44 @@
 
         <%--URL type--%>
         <div class="form-group required">
-            <form:label path="urlType"><op:translate key="EDITOR_URL" /></form:label>
+            <form:label path="urlType" cssClass="control-label"><op:translate key="EDITOR_URL" /></form:label>
             <c:forEach var="type" items="${urlTypes}" varStatus="status">
-                <div class="form-check">
-                    <form:radiobutton id="${namespace}-url-type-${status.index}" path="urlType" value="${type.id}" cssClass="form-check-input" />
-                    <form:label for="${namespace}-url-type-${status.index}" path="urlType" cssClass="form-check-label"><op:translate key="${type.key}" /></form:label>
+                <div class="radio clearfix">
+                    <p>
+                        <form:label for="${namespace}-url-type-${status.index}" path="urlType">
+                            <form:radiobutton id="${namespace}-url-type-${status.index}" path="urlType" value="${type.id}" />
+                            <span><op:translate key="${type.key}" /></span>
+                        </form:label>
+                    </p>
 
-                    <div class="collapse ${type eq form.urlType ? 'show' : ''}">
-                        <div class="pt-1 ${status.last ? '' : 'pb-2'}">
-                            <c:choose>
-                                <c:when test="${type.id eq 'MANUAL'}">
-                                    <form:input path="manualUrl" cssClass="form-control" cssErrorClass="form-control is-invalid" />
-                                    <form:errors path="manualUrl" cssClass="invalid-feedback" />
-                                </c:when>
+                    <div class="collapse ${type eq form.urlType ? 'in' : ''}">
+                        <c:choose>
+                            <c:when test="${type.id eq 'MANUAL'}">
+                                <spring:bind path="manualUrl">
+                                    <div class="${status.error ? 'has-error' : ''}">
+                                        <form:input path="manualUrl" cssClass="form-control" />
+                                        <form:errors path="manualUrl" cssClass="help-block" />
+                                    </div>
+                                </spring:bind>
+                            </c:when>
 
-                                <c:when test="${type.id eq 'DOCUMENT'}">
-                                    <c:set var="noResults"><op:translate key="SELECT2_NO_RESULTS" /></c:set>
-                                    <c:set var="searching"><op:translate key="SELECT2_SEARCHING" /></c:set>
-                                    <c:set var="loadingMore"><op:translate key="SELECT2_LOADING_MORE"/></c:set>
+                            <c:when test="${type.id eq 'DOCUMENT'}">
+                                <c:set var="noResults"><op:translate key="SELECT2_NO_RESULTS" /></c:set>
+                                <c:set var="searching"><op:translate key="SELECT2_SEARCHING" /></c:set>
+                                <c:set var="loadingMore"><op:translate key="SELECT2_LOADING_MORE"/></c:set>
 
-                                    <form:select path="documentWebId" cssClass="form-control select2" cssErrorClass="form-control is-invalid select2" data-url="${searchUrl}" data-no-results="${noResults}" data-searching="${searching}" data-loading-more="${loadingMore}">
-                                        <c:if test="${not empty form.document}">
-                                            <form:option value="${form.document.properties['ttc:webid']}" data-icon="${form.document.icon}">${form.document.title}</form:option>
-                                        </c:if>
-                                    </form:select>
-                                    <form:errors path="documentWebId" cssClass="invalid-feedback" />
-                                </c:when>
-                            </c:choose>
-                        </div>
+                                <spring:bind path="documentWebId">
+                                    <div class="${status.error ? 'has-error' : ''}">
+                                        <form:select path="documentWebId" cssClass="form-control select2" data-url="${searchUrl}" data-no-results="${noResults}" data-searching="${searching}" data-loading-more="${loadingMore}">
+                                            <c:if test="${not empty form.document}">
+                                                <form:option value="${form.document.properties['ttc:webid']}" data-icon="${form.document.icon}">${form.document.title}</form:option>
+                                            </c:if>
+                                        </form:select>
+                                        <form:errors path="documentWebId" cssClass="help-block" />
+                                    </div>
+                                </spring:bind>
+                            </c:when>
+                        </c:choose>
                     </div>
                 </div>
             </c:forEach>
@@ -67,14 +77,14 @@
         <%--Text--%>
         <c:if test="${form.displayText}">
             <div class="form-group">
-                <form:label path="text"><op:translate key="EDITOR_TEXT" /></form:label>
+                <form:label path="text" cssClass="control-label"><op:translate key="EDITOR_TEXT" /></form:label>
                 <form:input path="text" cssClass="form-control" />
             </div>
         </c:if>
 
         <%--Title--%>
         <div class="form-group">
-            <form:label path="title"><op:translate key="EDITOR_TITLE" /></form:label>
+            <form:label path="title" cssClass="control-label"><op:translate key="EDITOR_TITLE" /></form:label>
             <form:input path="title" cssClass="form-control" />
         </div>
 
