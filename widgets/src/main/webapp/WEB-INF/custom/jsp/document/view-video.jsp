@@ -12,11 +12,11 @@
 <c:set var="mimeType" value="${document.properties['file:content']['mime-type']}" />
 
 
-<div class="video">
+<div class="video  d-flex my-auto p-2">
     <!-- Video player -->
     <c:choose>
         <c:when test="${(mimeType eq 'video/mp4') or (mimeType eq 'video/webm') or (mimeType eq 'video/ogg')}">
-            <div class="embed-responsive embed-responsive-16by9">
+            <div class="mx-auto embed-responsive embed-responsive-16by9">
                 <video controls="controls" preload="metadata" class="embed-responsive-item">
                     <source src="${url}" type="${mimeType}">
                     <op:translate key="MESSAGE_VIDEO_CANNOT_BE_PLAYED" />

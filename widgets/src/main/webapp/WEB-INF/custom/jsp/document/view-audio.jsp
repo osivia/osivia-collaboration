@@ -12,11 +12,11 @@
 <c:set var="mimeType" value="${document.properties['file:content']['mime-type']}" />
 
 
-<div class="audio">
+<div class="audio d-flex my-auto">
     <!-- Audio player -->
     <c:choose>
         <c:when test="${(mimeType eq 'audio/mpeg') or (mimeType eq 'audio/ogg') or (mimeType eq 'audio/wav')}">
-            <div>
+            <div class="mx-auto d-flex p-2">
                 <audio src="${url}" controls="controls" preload="metadata">
                     <source src="${url}" type="${mimeType}">
                 </audio>
