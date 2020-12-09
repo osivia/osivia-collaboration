@@ -68,4 +68,27 @@ $JQry(function() {
 		}
 	});
 	
+
+	// Detect public visibility
+	$JQry(".workspace-edition input[type=radio][name='workspaceType'][value='PUBLIC']").change(function(event) {
+		var $target = $JQry(event.target),
+		$originalValue = $target.data("original-value");
+		
+		if($originalValue == "PRIVATE") { // show modal only if current visibility is private
+		
+			$JQry("#change-visibility-modal").modal('show');
+		}
+	});
+	
+	// if cancel is clicked
+	$JQry("#keepPrivateBtn").click(function(event) {
+		
+		var $target = $JQry(event.target),
+		$formGroup = $target.closest(".form-group"),		
+		
+		$privateVisibility = $formGroup.find("input[type=radio][name='workspaceType'][value='PRIVATE']");
+		
+		$privateVisibility.prop('checked', true);
+	});
+	
 });
