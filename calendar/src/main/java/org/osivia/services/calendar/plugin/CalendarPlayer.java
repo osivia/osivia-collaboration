@@ -25,6 +25,7 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.player.Player;
+import org.osivia.services.calendar.portlet.service.ICalendarService;
 
 import fr.toutatice.portail.cms.nuxeo.api.player.INuxeoPlayerModule;
 
@@ -59,6 +60,7 @@ public class CalendarPlayer implements INuxeoPlayerModule {
             windowProperties.put("osivia.ajaxLink", "1");
             windowProperties.put("osivia.cms.hideMetaDatas", "1");
             windowProperties.put("osivia.calendar.cmsPath", "${contentPath}");
+            windowProperties.put(ICalendarService.PERIOD_TYPE_PARAMETER , "month");
 
             Player props = new Player();
             props.setWindowProperties(windowProperties);

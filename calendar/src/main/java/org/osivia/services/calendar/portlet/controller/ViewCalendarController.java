@@ -13,6 +13,8 @@ import javax.portlet.RenderResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.windows.PortalWindow;
+import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.calendar.portlet.model.calendar.CalendarData;
 import org.osivia.services.calendar.portlet.service.ICalendarService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -203,6 +205,13 @@ public class ViewCalendarController extends CMSPortlet implements PortletContext
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
+        PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
+        if(StringUtils.isBlank(periodTypeName)) {
+        	if(StringUtils.isNotBlank(window.getProperty(ICalendarService.PERIOD_TYPE_PARAMETER)))
+        	 periodTypeName = window.getProperty(ICalendarService.PERIOD_TYPE_PARAMETER);
+        	 
+        }
+        
         return this.calendarService.getCalendarData(portalControllerContext, periodTypeName);
     }
 
