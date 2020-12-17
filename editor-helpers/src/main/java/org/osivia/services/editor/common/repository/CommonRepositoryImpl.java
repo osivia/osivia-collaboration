@@ -30,6 +30,9 @@ public abstract class CommonRepositoryImpl implements CommonRepository {
         // Nuxeo document context
         NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
 
+        // Disable cache
+        documentContext.reload();
+
         return documentContext.getDocument();
     }
 

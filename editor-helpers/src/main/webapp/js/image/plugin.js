@@ -12,9 +12,11 @@ tinymce.PluginManager.add("osivia-image", function (editor, url) {
                 "Cache-Control": "max-age=86400, public"
             },
             data: {
-                editorId: "image",
-                src: image ? editor.dom.getAttrib(image, "src") : "",
-                alt: image ? editor.dom.getAttrib(image, "alt") : "",
+                "editorId": "image",
+                "src": image ? editor.dom.getAttrib(image, "src") : "",
+                "alt": image ? editor.dom.getAttrib(image, "alt") : "",
+                "height": image ? editor.dom.getAttrib(image, "height") : "",
+                "width": image ? editor.dom.getAttrib(image, "width") : ""
             },
             dataType: "json",
             success: function (data, status, xhr) {
@@ -81,13 +83,22 @@ function tinymceImageModalCallback(arguments) {
     var $done = $form.find("input[name=done]"), done = ($done.val() === "true");
     var $url = $form.find("input[name=url]"), url = $url.val();
     var $alt = $form.find("input[name=alt]"), alt = $alt.val();
-    var $originalUrl = $form.find("input[name=originalUrl]"), originalUrl = $originalUrl.val();
+    var $height = $form.find("input[name=height]"), height = $height.val();
+    var $width = $form.find("input[name=width]"), width = $width.val();
 
     if (done) {
         var attribs = {
             "src": url,
             "alt": alt,
+            "height": height,
+            "width": width
         };
+        // if (height) {
+        //     attribs["height"] = height;
+        // }
+        // if (width) {
+        //     attribs["width"] = width;
+        // }
 
         editor.undoManager.transact(function() {
             if (image) {

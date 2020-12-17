@@ -24,6 +24,14 @@ public class EditorImageForm {
      */
     private String alt;
     /**
+     * Height.
+     */
+    private Integer height;
+    /**
+     * Width.
+     */
+    private Integer width;
+    /**
      * Source type.
      */
     private ImageSourceType sourceType;
@@ -63,6 +71,22 @@ public class EditorImageForm {
 
     public void setAlt(String alt) {
         this.alt = alt;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
     }
 
     public ImageSourceType getSourceType() {

@@ -9,13 +9,13 @@
 
 <portlet:defineObjects/>
 
-<c:set var="namespace"><portlet:namespace/></c:set>
-<c:set var="contextPath" value="${pageContext.request.contextPath}" />
-
 <portlet:actionURL name="submit" var="submitUrl"/>
 
+<c:set var="contextPath" value="${pageContext.request.contextPath}" />
 
-<link rel="stylesheet" href="${contextPath}/css/image/image.css" />
+
+<link rel="stylesheet" type="text/css" href="${contextPath}/css/image/style.min.css">
+
 
 
 <div class="editor-image" data-close-modal="${form.done}">
@@ -34,6 +34,7 @@
                     <div>
                         <c:forEach var="type" items="${form.availableSourceTypes}">
                             <button type="submit" name="source-${type.id}" class="btn btn-default btn-sm">
+                                <i class="${type.icon}"></i>
                                 <span><op:translate key="${type.key}"/></span>
                             </button>
                         </c:forEach>
@@ -47,6 +48,24 @@
         <div class="form-group">
             <form:label path="alt" cssClass="control-label"><op:translate key="EDITOR_IMAGE_FORM_ALT_LABEL"/></form:label>
             <form:input path="alt" cssClass="form-control"/>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-6">
+                <%--Height--%>
+                <div class="form-group">
+                    <form:label path="height" cssClass="control-label"><op:translate key="EDITOR_IMAGE_FORM_HEIGHT_LABEL"/></form:label>
+                    <form:input path="height" type="number" min="1" cssClass="form-control"/>
+                </div>
+            </div>
+
+            <div class="col-xs-6">
+                <%--Width--%>
+                <div class="form-group">
+                    <form:label path="width" cssClass="control-label"><op:translate key="EDITOR_IMAGE_FORM_WIDTH_LABEL"/></form:label>
+                    <form:input path="width" type="number" min="1" cssClass="form-control"/>
+                </div>
+            </div>
         </div>
 
         <%--Buttons--%>

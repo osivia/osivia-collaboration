@@ -12,11 +12,11 @@ public enum ImageSourceType {
     /**
      * Attached image.
      */
-    ATTACHED,
+    ATTACHED("glyphicons glyphicons-paperclip"),
     /**
      * Document.
      */
-    DOCUMENT;
+    DOCUMENT("glyphicons glyphicons-search");
 
 
     /**
@@ -27,14 +27,19 @@ public enum ImageSourceType {
      * Internationalization key.
      */
     private final String key;
+    /**
+     * Icon.
+     */
+    private final String icon;
 
 
     /**
      * Constructor.
      */
-    ImageSourceType() {
+    ImageSourceType(String icon) {
         this.id = StringUtils.lowerCase(this.name());
         this.key = "EDITOR_IMAGE_SOURCE_TYPE_" + StringUtils.upperCase(this.name());
+        this.icon = icon;
     }
 
 
@@ -44,5 +49,9 @@ public enum ImageSourceType {
 
     public String getKey() {
         return key;
+    }
+
+    public String getIcon() {
+        return icon;
     }
 }

@@ -10,10 +10,11 @@
 <portlet:actionURL name="submit" var="submitUrl" copyCurrentRenderParameters="true"/>
 <portlet:renderURL var="backUrl"/>
 
+
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 
 
-<link rel="stylesheet" href="${contextPath}/css/image/image.css" />
+<link rel="stylesheet" type="text/css" href="${contextPath}/css/image/style.min.css">
 
 
 <div class="editor-image">

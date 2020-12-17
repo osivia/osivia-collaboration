@@ -7,17 +7,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSBinaryContent;
 import org.osivia.services.editor.common.service.CommonServiceImpl;
-import org.osivia.services.editor.image.portlet.model.EditorImageForm;
-import org.osivia.services.editor.image.portlet.model.EditorImageSourceAttachedForm;
-import org.osivia.services.editor.image.portlet.model.EditorImageSourceDocumentForm;
-import org.osivia.services.editor.image.portlet.model.ImageSourceType;
+import org.osivia.services.editor.image.portlet.model.*;
 import org.osivia.services.editor.image.portlet.repository.EditorImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -26,12 +22,13 @@ import org.springframework.stereotype.Service;
 import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Editor image portlet service implementation.
@@ -42,6 +39,18 @@ import java.util.List;
  */
 @Service
 public class EditorImageServiceImpl extends CommonServiceImpl implements EditorImageService {
+
+    /**
+     * Attached image URL RegEx.
+     */
+    private static final String ATTACHED_IMAGE_URL_REGEX = EditorImageRepository.ATTACHED_IMAGE_URL_PREFIX + "(?<property>[^/]+)/(?<index>[0-9]+)/file.*";
+
+
+    /**
+     * Attached image URL pattern.
+     */
+    private final Pattern attachedImageUrlPattern;
+
 
     /**
      * Application context.
@@ -67,6 +76,9 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
      */
     public EditorImageServiceImpl() {
         super();
+
+        // Attached image URL pattern
+        this.attachedImageUrlPattern = Pattern.compile(ATTACHED_IMAGE_URL_REGEX);
     }
 
 
@@ -85,7 +97,7 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
             Document document = this.repository.getDocument(portalControllerContext, path);
 
             // Attachments indicator
-            boolean attachments = (document.getProperties().getList("files:files") != null);
+            boolean attachments = (document.getProperties().getList(EditorImageRepository.ATTACHED_IMAGES_PROPERTY) != null);
 
 
             // Source URL
@@ -95,6 +107,20 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
             // Alternate text
             String alt = window.getProperty(ALT_WINDOW_PROPERTY);
             form.setAlt(alt);
+
+            // Height
+            Integer height = NumberUtils.toInt(window.getProperty(HEIGHT_WINDOW_PROPERTY));
+            if (height < 1) {
+                height = null;
+            }
+            form.setHeight(height);
+
+            // Width
+            Integer width = NumberUtils.toInt(window.getProperty(WIDTH_WINDOW_PROPERTY));
+            if (width < 1) {
+                width = null;
+            }
+            form.setWidth(width);
 
             // Available image source types
             List<ImageSourceType> availableSourceTypes = new ArrayList<>();
@@ -113,23 +139,133 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
 
 
     @Override
-    public void save(PortalControllerContext portalControllerContext, EditorImageForm form) throws PortletException {
+    public void save(PortalControllerContext portalControllerContext, EditorImageForm form) {
         form.setDone(true);
     }
 
 
     @Override
     public EditorImageSourceAttachedForm getAttachedForm(PortalControllerContext portalControllerContext) throws PortletException {
-        return this.applicationContext.getBean(EditorImageSourceAttachedForm.class);
+        // Window
+        PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
+
+        // Current document path
+        String path = window.getProperty(PATH_WINDOW_PROPERTY);
+
+        // Attached image form
+        EditorImageSourceAttachedForm attachedForm = this.applicationContext.getBean(EditorImageSourceAttachedForm.class);
+
+        // Attached images
+        SortedSet<AttachedImage> attachedImages = this.repository.getAttachedImages(portalControllerContext, path);
+        attachedForm.setAttachedImages(attachedImages);
+
+        return attachedForm;
     }
 
 
     @Override
-    public void selectAttached(PortalControllerContext portalControllerContext, EditorImageSourceAttachedForm attachedForm) throws PortletException {
+    public void addAttachedImage(PortalControllerContext portalControllerContext, EditorImageSourceAttachedForm attachedForm) throws PortletException, IOException {
+        // Window
+        PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
+
+        // Current document path
+        String path = window.getProperty(PATH_WINDOW_PROPERTY);
+
+        // Attached image temporary file
+        File temporaryFile = File.createTempFile("attached-image-", ".tmp");
+        attachedForm.getUpload().transferTo(temporaryFile);
+        // Attached image file name
+        String fileName = attachedForm.getUpload().getOriginalFilename();
+        // Attached image content type
+        String contentType = attachedForm.getUpload().getContentType();
+
+        this.repository.addAttachedImage(portalControllerContext, path, temporaryFile, fileName, contentType);
+
+        // Delete temporary file
+        if (!temporaryFile.delete()) {
+            temporaryFile.deleteOnExit();
+        }
+
+
+        // Attached image index
+        int index;
+        if (CollectionUtils.isEmpty(attachedForm.getAttachedImages())) {
+            index = 0;
+        } else {
+            index = attachedForm.getAttachedImages().size();
+        }
+
+
+        // Update attached images
+        SortedSet<AttachedImage> attachedImages = this.repository.getAttachedImages(portalControllerContext, path);
+        attachedForm.setAttachedImages(attachedImages);
+
+        this.selectAttachedImage(portalControllerContext, attachedForm, index);
+    }
+
+
+    @Override
+    public void selectAttachedImage(PortalControllerContext portalControllerContext, EditorImageSourceAttachedForm attachedForm, int index) throws PortletException {
         // Form
         EditorImageForm form = this.getForm(portalControllerContext);
 
-        // TODO
+        // Attached image
+        AttachedImage attachedImage = this.getAttachedImage(attachedForm.getAttachedImages(), index);
+
+        // URL
+        String url;
+        if (attachedImage == null) {
+            url = null;
+        } else {
+            url = this.repository.getAttachedImageUrl(portalControllerContext, attachedImage);
+        }
+        form.setUrl(url);
+    }
+
+
+    @Override
+    public void deleteAttachedImage(PortalControllerContext portalControllerContext, EditorImageSourceAttachedForm attachedForm, int index) throws PortletException {
+        // Window
+        PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
+
+        // Current document path
+        String path = window.getProperty(PATH_WINDOW_PROPERTY);
+
+        // Attached images
+        SortedSet<AttachedImage> attachedImages = attachedForm.getAttachedImages();
+        // Attached image
+        AttachedImage attachedImage = this.getAttachedImage(attachedImages, index);
+
+        if (attachedImage != null) {
+            this.repository.deleteAttachedImage(portalControllerContext, path, index);
+
+            // Update model
+            attachedImages.remove(attachedImage);
+        }
+    }
+
+
+    /**
+     * Get attached image.
+     *
+     * @param attachedImages attached images
+     * @param index          attached image index
+     * @return attached image, or null if not found
+     */
+    private AttachedImage getAttachedImage(SortedSet<AttachedImage> attachedImages, int index) {
+        AttachedImage result = null;
+
+        if (CollectionUtils.isNotEmpty(attachedImages)) {
+            Iterator<AttachedImage> iterator = attachedImages.iterator();
+            while ((result == null) && iterator.hasNext()) {
+                AttachedImage item = iterator.next();
+                if (index == item.getIndex()) {
+                    result = item;
+                }
+            }
+        }
+
+        return result;
     }
 
 
@@ -176,7 +312,9 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
         // Binary content
         CMSBinaryContent binaryContent;
 
-        if (source.startsWith("/nuxeo/web")) {
+        Matcher attachedImageUrlMatcher = this.attachedImageUrlPattern.matcher(source);
+
+        if (StringUtils.startsWith(source, EditorImageRepository.DOCUMENT_URL_PREFIX)) {
             String webId = StringUtils.substringAfterLast(StringUtils.substringBefore(source, "?"), "/");
             String[] parameters = StringUtils.split(StringUtils.substringAfter(source, "?"), "&");
 
@@ -193,7 +331,12 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
                 }
             }
 
-            binaryContent = this.repository.getImagePreviewBinaryContent(portalControllerContext, webId, content);
+            binaryContent = this.repository.getImageDocumentPreviewBinaryContent(portalControllerContext, webId, content);
+        } else if (attachedImageUrlMatcher.matches()) {
+            // Attached image index
+            int index = NumberUtils.toInt(attachedImageUrlMatcher.group("index"));
+
+            binaryContent = this.repository.getAttachedImagePreviewBinaryContent(portalControllerContext, index);
         } else {
             throw new FileNotFoundException("Unknown source: " + source);
         }

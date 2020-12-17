@@ -39,6 +39,22 @@ public interface EditorImageService extends CommonService {
      * Alternate text window property.
      */
     String ALT_WINDOW_PROPERTY = EditorService.WINDOW_PROPERTY_PREFIX + ALT_PARAMETER;
+    /**
+     * Height parameter.
+     */
+    String HEIGHT_PARAMETER = "height";
+    /**
+     * Height window property.
+     */
+    String HEIGHT_WINDOW_PROPERTY = EditorService.WINDOW_PROPERTY_PREFIX + HEIGHT_PARAMETER;
+    /**
+     * Width parameter.
+     */
+    String WIDTH_PARAMETER = "width";
+    /**
+     * Width window property.
+     */
+    String WIDTH_WINDOW_PROPERTY = EditorService.WINDOW_PROPERTY_PREFIX + WIDTH_PARAMETER;
 
 
     /**
@@ -69,12 +85,32 @@ public interface EditorImageService extends CommonService {
 
 
     /**
-     * Select attached image.
+     * Add attached image.
      *
      * @param portalControllerContext portal controller context
      * @param attachedForm            attached image form
      */
-    void selectAttached(PortalControllerContext portalControllerContext, EditorImageSourceAttachedForm attachedForm) throws PortletException;
+    void addAttachedImage(PortalControllerContext portalControllerContext, EditorImageSourceAttachedForm attachedForm) throws PortletException, IOException;
+
+
+    /**
+     * Select attached image.
+     *
+     * @param portalControllerContext portal controller context
+     * @param attachedForm            attached image form
+     * @param index                   attached image index
+     */
+    void selectAttachedImage(PortalControllerContext portalControllerContext, EditorImageSourceAttachedForm attachedForm, int index) throws PortletException;
+
+
+    /**
+     * Delete attached image.
+     *
+     * @param portalControllerContext portal controller context
+     * @param attachedForm            attached image form
+     * @param index                   attached image index
+     */
+    void deleteAttachedImage(PortalControllerContext portalControllerContext, EditorImageSourceAttachedForm attachedForm, int index) throws PortletException;
 
 
     /**
