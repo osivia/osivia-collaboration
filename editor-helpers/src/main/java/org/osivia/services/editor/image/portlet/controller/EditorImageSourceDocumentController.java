@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 import javax.portlet.*;
+import java.io.IOException;
 
 /**
  * Editor document image source portlet controller.
@@ -88,6 +90,26 @@ public class EditorImageSourceDocumentController {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         this.service.selectDocument(portalControllerContext, path);
+    }
+
+
+    /**
+     * Search resource mapping.
+     *
+     * @param request  resource request
+     * @param response resource response
+     * @param filter   search filter request parameter
+     * @param scope    search scope request parameter
+     */
+    @ResourceMapping("search")
+    public void search(ResourceRequest request, ResourceResponse response, @RequestParam(name = "filter", required = false) String filter, @RequestParam(name = "scope", required = false) String scope) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        // Content type
+        response.setContentType("text/html");
+
+        this.service.serveSearchResults(portalControllerContext, filter, scope);
     }
 
 

@@ -123,15 +123,4 @@ public interface EditorLinkService extends CommonService {
      */
     List<FilterType> getFilterTypes(PortalControllerContext portalControllerContext) throws PortletException, IOException;
 
-
-    /**
-     * Resolve view path.
-     *
-     * @param portalControllerContext portal controller context
-     * @param name                    view name
-     * @return path
-     * @throws PortletException
-     */
-    String resolveViewPath(PortalControllerContext portalControllerContext, String name) throws PortletException;
-
 }

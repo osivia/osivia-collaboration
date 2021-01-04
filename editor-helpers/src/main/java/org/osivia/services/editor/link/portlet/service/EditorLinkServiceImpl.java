@@ -69,12 +69,6 @@ public class EditorLinkServiceImpl extends CommonServiceImpl implements EditorLi
     private FilterTypeComparator filterTypeComparator;
 
     /**
-     * View resolver.
-     */
-    @Autowired
-    private InternalResourceViewResolver viewResolver;
-
-    /**
      * Internationalization bundle factory.
      */
     @Autowired
@@ -283,26 +277,6 @@ public class EditorLinkServiceImpl extends CommonServiceImpl implements EditorLi
         Collections.sort(filterTypes, filterTypeComparator);
 
         return filterTypes;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String resolveViewPath(PortalControllerContext portalControllerContext, String name) throws PortletException {
-        // Path
-        String path;
-
-        try {
-            View view = this.viewResolver.resolveViewName(name, null);
-            JstlView jstlView = (JstlView) view;
-            path = jstlView.getUrl();
-        } catch (Exception e) {
-            throw new PortletException(e);
-        }
-
-        return path;
     }
 
 }

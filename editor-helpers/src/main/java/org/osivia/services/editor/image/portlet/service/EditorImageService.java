@@ -132,6 +132,16 @@ public interface EditorImageService extends CommonService {
 
 
     /**
+     * Serve search results.
+     *
+     * @param portalControllerContext portal controller context
+     * @param filter                  search filter
+     * @param scope                   search scope
+     */
+    void serveSearchResults(PortalControllerContext portalControllerContext, String filter, String scope) throws PortletException, IOException;
+
+
+    /**
      * Select image document.
      *
      * @param portalControllerContext portal controller context

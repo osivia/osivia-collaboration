@@ -19,14 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import javax.portlet.PortletException;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
+import javax.portlet.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -270,22 +265,81 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
 
 
     @Override
-    public EditorImageSourceDocumentForm getDocumentForm(PortalControllerContext portalControllerContext) throws PortletException {
+    public EditorImageSourceDocumentForm getDocumentForm(PortalControllerContext portalControllerContext) {
         // Form
         EditorImageSourceDocumentForm form = this.applicationContext.getBean(EditorImageSourceDocumentForm.class);
 
-        // Documents
-        List<DocumentDTO> documents = this.search(portalControllerContext, null);
-        form.setDocuments(documents);
+        // Search scope
+        form.setScope(SearchScope.DEFAULT);
+        // Available search scopes
+        form.setAvailableScopes(Arrays.asList(SearchScope.values()));
 
         return form;
     }
 
 
     @Override
-    public void filterDocuments(PortalControllerContext portalControllerContext, EditorImageSourceDocumentForm documentForm) throws PortletException {
-        List<DocumentDTO> documents = this.search(portalControllerContext, documentForm.getFilter());
-        documentForm.setDocuments(documents);
+    public void filterDocuments(PortalControllerContext portalControllerContext, EditorImageSourceDocumentForm documentForm) {
+        // Do nothing
+    }
+
+
+    @Override
+    public void serveSearchResults(PortalControllerContext portalControllerContext, String filter, String scope) throws PortletException, IOException {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+        // Portlet response
+        PortletResponse response = portalControllerContext.getResponse();
+        // Portlet context
+        PortletContext portletContext = portalControllerContext.getPortletCtx();
+
+        // JSP path
+        String jspPath = this.resolveViewPath(portalControllerContext, "search-results");
+
+        // Search results
+        List<DocumentDTO> results = this.search(portalControllerContext, filter, SearchScope.fromId(scope));
+        request.setAttribute("results", results);
+
+        // Request dispatcher
+        PortletRequestDispatcher dispatcher = portletContext.getRequestDispatcher(jspPath);
+        dispatcher.include(request, response);
+    }
+
+
+    /**
+     * Search documents.
+     *
+     * @param portalControllerContext portal controller context
+     * @param filter                  search filter
+     * @param scope                   search scope
+     * @return documents
+     */
+    private List<DocumentDTO> search(PortalControllerContext portalControllerContext, String filter, SearchScope scope) throws PortletException {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+        // Window
+        PortalWindow window = WindowFactory.getWindow(request);
+
+        // Base path
+        String basePath = window.getProperty(BASE_PATH_WINDOW_PROPERTY);
+
+        // Nuxeo documents
+        List<Document> nuxeoDocuments = this.repository.search(portalControllerContext, basePath, filter, scope);
+
+        // Documents
+        List<DocumentDTO> documents;
+        if (CollectionUtils.isEmpty(nuxeoDocuments)) {
+            documents = null;
+        } else {
+            documents = new ArrayList<>(nuxeoDocuments.size());
+
+            for (Document nuxeoDocument : nuxeoDocuments) {
+                DocumentDTO document = this.documentDao.toDTO(nuxeoDocument);
+                documents.add(document);
+            }
+        }
+
+        return documents;
     }
 
 
@@ -354,34 +408,6 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
 
         IOUtils.closeQuietly(inputStream);
         IOUtils.closeQuietly(outputStream);
-    }
-
-
-    /**
-     * Search documents.
-     *
-     * @param portalControllerContext portal controller context
-     * @param filter                  search filter
-     * @return documents
-     */
-    private List<DocumentDTO> search(PortalControllerContext portalControllerContext, String filter) throws PortletException {
-        // Nuxeo documents
-        List<Document> nuxeoDocuments = this.repository.search(portalControllerContext, filter);
-
-        // Documents
-        List<DocumentDTO> documents;
-        if (CollectionUtils.isEmpty(nuxeoDocuments)) {
-            documents = null;
-        } else {
-            documents = new ArrayList<>(nuxeoDocuments.size());
-
-            for (Document nuxeoDocument : nuxeoDocuments) {
-                DocumentDTO document = this.documentDao.toDTO(nuxeoDocument);
-                documents.add(document);
-            }
-        }
-
-        return documents;
     }
 
 }

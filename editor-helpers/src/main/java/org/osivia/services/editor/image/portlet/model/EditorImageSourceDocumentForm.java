@@ -1,6 +1,5 @@
 package org.osivia.services.editor.image.portlet.model;
 
-import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,11 +19,14 @@ public class EditorImageSourceDocumentForm {
      * Filter.
      */
     private String filter;
-
     /**
-     * Documents.
+     * Search scope.
      */
-    private List<DocumentDTO> documents;
+    private SearchScope scope;
+    /**
+     * Available search scopes.
+     */
+    private List<SearchScope> availableScopes;
 
 
     /**
@@ -43,11 +45,19 @@ public class EditorImageSourceDocumentForm {
         this.filter = filter;
     }
 
-    public List<DocumentDTO> getDocuments() {
-        return documents;
+    public SearchScope getScope() {
+        return scope;
     }
 
-    public void setDocuments(List<DocumentDTO> documents) {
-        this.documents = documents;
+    public void setScope(SearchScope scope) {
+        this.scope = scope;
+    }
+
+    public List<SearchScope> getAvailableScopes() {
+        return availableScopes;
+    }
+
+    public void setAvailableScopes(List<SearchScope> availableScopes) {
+        this.availableScopes = availableScopes;
     }
 }

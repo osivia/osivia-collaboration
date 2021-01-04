@@ -7,14 +7,16 @@
 <%@ page isELIgnored="false" %>
 
 
-<portlet:actionURL name="submit" var="submitUrl" copyCurrentRenderParameters="true"/>
 <portlet:renderURL var="backUrl"/>
+<portlet:actionURL name="submit" var="submitUrl" copyCurrentRenderParameters="true"/>
+<portlet:resourceURL id="search" var="searchUrl"/>
 
 
-<c:set var="contextPath" value="${pageContext.request.contextPath}" />
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
 
 <link rel="stylesheet" type="text/css" href="${contextPath}/css/image/style.min.css">
+<script type="text/javascript" src="${contextPath}/js/image/editor.min.js"></script>
 
 
 <div class="editor-image">
@@ -24,41 +26,24 @@
             <legend><op:translate key="EDITOR_IMAGE_DOCUMENT_FORM_LEGEND"/></legend>
 
             <div class="form-group">
-                <form:label path="filter" cssClass="control-label"><op:translate key="EDITOR_IMAGE_DOCUMENT_FORM_FILTER_LABEL"/></form:label>
-                <p>
-                    <form:input path="filter" cssClass="form-control"/>
-                </p>
-                <button type="submit" class="btn btn-default btn-sm">
-                    <span><op:translate key="EDITOR_IMAGE_DOCUMENT_FORM_FILTER_SUBMIT"/></span>
-                </button>
+                <form:label path="filter" cssClass="control-label"><op:translate
+                        key="EDITOR_IMAGE_DOCUMENT_FORM_FILTER_LABEL"/></form:label>
+                <form:input path="filter" type="search" cssClass="form-control"/>
+                <c:forEach var="scope" items="${documentForm.availableScopes}">
+                    <div class="radio">
+                        <label>
+                            <form:radiobutton path="scope" value="${scope}"/>
+                            <span><op:translate key="${scope.key}"/></span>
+                        </label>
+                    </div>
+                </c:forEach>
             </div>
 
             <div class="form-group">
-                <form:label path="documents" cssClass="control-label"><op:translate key="EDITOR_IMAGE_DOCUMENT_FORM_DOCUMENTS_LABEL"/></form:label>
-                <c:choose>
-                    <c:when test="${empty documentForm.documents}">
-                        <p class="form-control-plaintext">
-                            <span class="text-muted"><op:translate key="EDITOR_IMAGE_DOCUMENT_FORM_DOCUMENTS_EMPTY"/></span>
-                        </p>
-                    </c:when>
-
-                    <c:otherwise>
-                        <div class="row">
-                            <c:forEach var="document" items="${documentForm.documents}">
-                                <ttc:documentLink document="${document}" picture="true" displayContext="Medium" var="imageLink" />
-                                <portlet:actionURL name="select" var="selectUrl" copyCurrentRenderParameters="true">
-                                    <portlet:param name="path" value="${document.path}"/>
-                                </portlet:actionURL>
-
-                                <div class="col-xs-6">
-                                    <a href="${selectUrl}" class="thumbnail" title="${document.title}">
-                                        <img src="${imageLink.url}" alt="${document.title}">
-                                    </a>
-                                </div>
-                            </c:forEach>
-                        </div>
-                    </c:otherwise>
-                </c:choose>
+                <label class="control-label"><op:translate key="EDITOR_IMAGE_DOCUMENT_FORM_DOCUMENTS_LABEL"/></label>
+                <div data-search-url="${searchUrl}">
+                    <p class="text-center text-muted"><op:translate key="EDITOR_IMAGE_SEARCH_LOADING"/></p>
+                </div>
             </div>
         </fieldset>
 

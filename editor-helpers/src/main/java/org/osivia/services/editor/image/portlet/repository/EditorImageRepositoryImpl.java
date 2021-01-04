@@ -11,6 +11,7 @@ import org.osivia.portal.core.cms.CMSBinaryContent;
 import org.osivia.portal.core.web.IWebIdService;
 import org.osivia.services.editor.common.repository.CommonRepositoryImpl;
 import org.osivia.services.editor.image.portlet.model.AttachedImage;
+import org.osivia.services.editor.image.portlet.model.SearchScope;
 import org.osivia.services.editor.image.portlet.repository.command.AddAttachedImageCommand;
 import org.osivia.services.editor.image.portlet.repository.command.DeleteAttachedImageCommand;
 import org.osivia.services.editor.image.portlet.repository.command.SearchImageDocumentsCommand;
@@ -115,11 +116,11 @@ public class EditorImageRepositoryImpl extends CommonRepositoryImpl implements E
 
 
     @Override
-    public List<Document> search(PortalControllerContext portalControllerContext, String filter) {
+    public List<Document> search(PortalControllerContext portalControllerContext, String basePath, String filter, SearchScope scope) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(SearchImageDocumentsCommand.class, filter);
+        INuxeoCommand command = this.applicationContext.getBean(SearchImageDocumentsCommand.class, basePath, filter, scope);
 
         Documents result = (Documents) nuxeoController.executeNuxeoCommand(command);
 

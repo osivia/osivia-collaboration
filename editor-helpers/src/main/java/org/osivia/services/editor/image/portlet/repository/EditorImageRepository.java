@@ -5,6 +5,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.cms.CMSBinaryContent;
 import org.osivia.services.editor.common.repository.CommonRepository;
 import org.osivia.services.editor.image.portlet.model.AttachedImage;
+import org.osivia.services.editor.image.portlet.model.SearchScope;
 
 import javax.portlet.PortletException;
 import java.io.File;
@@ -87,11 +88,13 @@ public interface EditorImageRepository extends CommonRepository {
     /**
      * Search image documents.
      *
-     * @param portalControllerContext portal controller
+     * @param portalControllerContext portal controller context
+     * @param basePath                base path
      * @param filter                  search filter
+     * @param scope                   search scope
      * @return documents
      */
-    List<Document> search(PortalControllerContext portalControllerContext, String filter) throws PortletException;
+    List<Document> search(PortalControllerContext portalControllerContext, String basePath, String filter, SearchScope scope) throws PortletException;
 
 
     /**

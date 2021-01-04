@@ -15,7 +15,7 @@
 
 
 <link rel="stylesheet" type="text/css" href="${contextPath}/css/image/style.min.css">
-
+<script type="text/javascript" src="${contextPath}/js/image/editor.min.js"></script>
 
 
 <div class="editor-image" data-close-modal="${form.done}">
