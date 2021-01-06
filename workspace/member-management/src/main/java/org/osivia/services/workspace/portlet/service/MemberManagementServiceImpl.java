@@ -1,9 +1,11 @@
 package org.osivia.services.workspace.portlet.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,8 +36,12 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
+import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.batch.IBatchService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.html.AccessibilityRoles;
@@ -44,6 +50,8 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.services.workspace.batch.ImportInvitationsBatch;
+import org.osivia.services.workspace.batch.ImportObject;
 import org.osivia.services.workspace.portlet.model.AbstractAddToGroupForm;
 import org.osivia.services.workspace.portlet.model.AbstractChangeRoleForm;
 import org.osivia.services.workspace.portlet.model.AbstractMembersForm;
@@ -52,6 +60,7 @@ import org.osivia.services.workspace.portlet.model.AddMembersToGroupForm;
 import org.osivia.services.workspace.portlet.model.ChangeInvitationRequestsRoleForm;
 import org.osivia.services.workspace.portlet.model.ChangeInvitationsRoleForm;
 import org.osivia.services.workspace.portlet.model.ChangeMembersRoleForm;
+import org.osivia.services.workspace.portlet.model.ImportForm;
 import org.osivia.services.workspace.portlet.model.Invitation;
 import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
 import org.osivia.services.workspace.portlet.model.InvitationObject;
@@ -77,6 +86,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
+import org.springframework.web.multipart.MultipartFile;
 
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 import net.sf.json.JSONArray;
@@ -110,6 +120,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     /** Notifications service. */
     @Autowired
     private INotificationsService notificationsService;
+    
+    /** Batch service. */
+    @Autowired
+    private IBatchService batchService;
 
     /** Local group comparator. */
     @Autowired
@@ -1320,6 +1334,15 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 // Delete
                 Element delete = this.getDeleteInvitationsToolbarButton(portalControllerContext, allEditable, bundle);
                 toolbar.add(delete);
+                
+                // #2071 Admins can delete the workflow
+                Boolean administrator = Boolean.TRUE.equals(portalControllerContext.getRequest().getAttribute("osivia.isAdministrator"));
+                if(selectedInvitations.size() == 1 && administrator) {
+                    Invitation invitation = selectedInvitations.get(0);
+
+                    Element drop = this.getDropInvitationToolbarButton(portalControllerContext, invitation, bundle, "invitations");
+                    toolbar.add(drop);
+                }
 
                 if (allEditable) {
                     // Delete confirmation modal
@@ -1380,6 +1403,56 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         return DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
     }
 
+    
+    /**
+     * Get drop invitation toolbar button DOM element.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param invitation invitation
+     * @param bundle internationalization bundle
+     * @return DOM element
+     */
+    protected Element getDropInvitationToolbarButton(PortalControllerContext portalControllerContext, InvitationObject invitation, 
+    		Bundle bundle, String tab) {
+        // Portlet response
+        PortletResponse portletResponse = portalControllerContext.getResponse();
+        // MIME response
+        MimeResponse mimeResponse;
+        if (portletResponse instanceof MimeResponse) {
+            mimeResponse = (MimeResponse) portletResponse;
+        } else {
+            mimeResponse = null;
+        }
+        
+        // HTML classes
+        String htmlClass = "btn btn-danger btn-sm";
+        // Text
+        String text = bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_INVITATION_DROP");
+        // Icon
+        String icon = "glyphicons glyphicons-remove";
+        // URL
+        String url;
+        if ((invitation.getState() != null) && invitation.getState().isEditable() && (mimeResponse != null)) {
+            // Render URL
+            PortletURL actionUrl = mimeResponse.createActionURL();
+            actionUrl.setParameter(ActionRequest.ACTION_NAME, "drop");
+            actionUrl.setParameter("invitationPath", invitation.getDocument().getPath());
+            actionUrl.setParameter("view", "tab=invitations");
+            actionUrl.setParameter("fromtab", tab);
+
+
+            url = actionUrl.toString();
+        } else {
+            url = null;
+        }
+
+        if (StringUtils.isEmpty(url)) {
+            url = "#";
+            htmlClass += " disabled";
+        }
+
+        return DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
+    }
 
     /**
      * Get resend invitations toolbar button DOM element.
@@ -1700,6 +1773,16 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 // Decline
                 Element decline = this.getDeclineInvitationRequestToolbarButton(portalControllerContext, allEditable, bundle);
                 toolbar.add(decline);
+                
+                // #2071 Admins can delete the workflow
+                Boolean administrator = Boolean.TRUE.equals(portalControllerContext.getRequest().getAttribute("osivia.isAdministrator"));
+                if(selectedRequests.size() == 1 && administrator) {
+                    InvitationRequest request = selectedRequests.get(0);
+
+                    Element drop = this.getDropInvitationToolbarButton(portalControllerContext, request, bundle, "requests");
+                    toolbar.add(drop);
+                }
+                
 
                 if (allEditable) {
                     // Accept confirmation modal
@@ -2307,6 +2390,9 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         InvitationRequestsForm requestsForm = this.applicationContext.getBean(InvitationRequestsForm.class);
         requestsForm.setLoaded(false);
+        
+        ImportForm importForm = this.applicationContext.getBean(ImportForm.class);
+        importForm.setLoaded(false);
     }
 
 
@@ -2318,5 +2404,96 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         this.applicationContext = applicationContext;
         ApplicationContextProvider.setApplicationContext(applicationContext);
     }
+
+
+	@Override
+	public void dropInvitation(PortalControllerContext portalControllerContext, String invitationPath) {
+		this.repository.dropInvitation(portalControllerContext, invitationPath);
+	    
+	    // Update model
+	    this.invalidateLoadedForms();
+	
+	    Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+	    
+	    // Notification
+	    String message = bundle.getString("MESSAGE_WORKSPACE_DROP_WF_SUCCESS");
+	    this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+		
+	}
+
+
+	@Override
+	public ImportForm getImportForm(PortalControllerContext portalControllerContext) {
+		
+        // Form
+		ImportForm form = this.applicationContext.getBean(ImportForm.class);
+		
+		if (!form.isLoaded()) {
+			form.setRole(WorkspaceRole.READER);
+			
+			Person person = (Person) portalControllerContext.getRequest().getAttribute(Constants.ATTR_LOGGED_PERSON_2);
+			form.setInitiator(person.getUid());
+			
+			form.setLocalGroups(null);
+			form.setMessage(null);
+//			form.setTemporaryFile(null);
+			form.setUpload(null);
+
+            form.setLoaded(true);
+           
+        
+		}
+        return form;
+	}
+
+
+	@Override
+	public void prepareImportInvitations(PortalControllerContext portalControllerContext,
+			MemberManagementOptions options, ImportForm form) throws ParseException, PortalException {
+		
+		String batchId = "importmembers_"+options.getWorkspaceId()+"_"+new Date().getTime();
+		
+    	// Temporary file
+        MultipartFile upload = form.getUpload();
+        
+        ImportObject dto = new ImportObject();
+        
+        File temporaryFile;
+		try {
+			temporaryFile = File.createTempFile(batchId, ".tmp");
+
+	        upload.transferTo(temporaryFile);
+
+	        dto.setTemporaryFile(temporaryFile);
+	        dto.setInitiator(form.getInitiator());
+	        dto.setLocalGroups(form.getLocalGroups());
+	        dto.setMessage(form.getMessage());
+	        dto.setRole(form.getRole());
+	        dto.setWorkspaceId(options.getWorkspaceId());
+
+			Document currentWorkspace = repository.getCurrentWorkspace(portalControllerContext);
+			dto.setCurrentWorkspace(currentWorkspace);
+	        
+		} catch (IOException e) {
+			throw new PortalException(e);
+		}
+		
+
+		ImportInvitationsBatch batch = new ImportInvitationsBatch(portalControllerContext.getPortletCtx(), dto);
+
+		batchService.addBatch(batch);
+		
+
+	    // Update model
+	    this.invalidateLoadedForms();
+	
+	    Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+	    
+	    // Notification
+	    String message = bundle.getString("MESSAGE_IMPORT_IN_PROGRESS");
+	    this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.INFO);
+		
+	}
+
 
 }

@@ -3,6 +3,8 @@ package org.osivia.services.workspace.portlet.repository;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
@@ -32,6 +34,8 @@ import net.sf.json.JSONObject;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class UpdateInvitationRequestsCommand implements INuxeoCommand {
 
+	private final static Log procLogger = LogFactory.getLog("procedures");
+	
     /** Forms service. */
     @Autowired
     private IFormsService formsService;
@@ -121,12 +125,14 @@ public class UpdateInvitationRequestsCommand implements INuxeoCommand {
         // Task document
         Document task = this.getTask(nuxeoSession, invitationRequest);
 
-        // Task variables
-        PropertyMap taskVariables = task.getProperties().getMap("nt:task_variables");
-        // Action identifier
-        String actionId = taskVariables.getString(action);
-
-        this.formsService.proceed(portalControllerContext, task, actionId, null);
+        if(task != null) {
+	        // Task variables
+	        PropertyMap taskVariables = task.getProperties().getMap("nt:task_variables");
+	        // Action identifier
+	        String actionId = taskVariables.getString(action);
+	
+	        this.formsService.proceed(portalControllerContext, task, actionId, null);
+        }
     }
 
 
@@ -167,6 +173,9 @@ public class UpdateInvitationRequestsCommand implements INuxeoCommand {
         if (documents.size() == 1) {
             task = documents.get(0);
         } else {
+        	
+        	procLogger.error("Found "+documents.size()+" task(s) when updating invitation of "+invitationRequest.getPerson().getUid());
+        	
             task = null;
         }
 

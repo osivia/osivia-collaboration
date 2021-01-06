@@ -1,0 +1,114 @@
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
+<%@ page contentType="text/html" isELIgnored="false"%>
+
+
+<portlet:actionURL name="launchImport" var="launchImportUrl">
+    <portlet:param name="tab" value="importCsv" />
+</portlet:actionURL>
+
+
+<c:set var="namespace"><portlet:namespace /></c:set>
+
+
+<div class="clearfix relative">
+
+
+    <div id="shadowbox-${namespace}" class="ajax-shadowbox">
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped active" role="progressbar">
+                <strong><op:translate key="AJAX_REFRESH" /></strong>
+            </div>
+        </div>
+    </div>
+
+    <form:form action="${launchImportUrl}" method="post" modelAttribute="import" role="form" enctype="multipart/form-data"> 
+        <fieldset>
+
+            
+            <div class="row">
+
+
+                <div class="col-sm-8 col-lg-9">
+                    <!-- Role -->
+    				<div class="form-group required ${status.error ? 'has-error' : ''}">
+    				
+    				    <form:label path="upload" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_FILE" /></form:label>
+				        <div>
+				            <div class="media-left">
+				                <label class="btn btn-default btn-file">
+				                    <i class="glyphicons glyphicons-folder-open"></i>
+				                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_BROWSE_ACTION"/></span>
+				                    <form:input type="file" path="upload" data-change-submit="${namespace}-file-upload-submit"/>
+				                </label>
+				            </div>
+				
+				            <div class="media-body">
+				                <p class="form-control-static text-muted">
+				                    <c:choose>
+				                        <c:when test="${not empty form.temporaryFileName}">${form.temporaryFileName}</c:when>
+				                    </c:choose>
+				                </p>
+				            </div>
+				
+				        </div>
+				        <form:errors path="upload" cssClass="help-block"/>
+				        <input id="${namespace}-file-upload-submit" type="submit" name="upload" class="hidden">
+
+
+                    </div>
+                </div>
+
+                
+                <div class="col-sm-4 col-lg-3">
+                    <!-- Role -->
+                    <div class="form-group">
+                        <form:label path="role" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_ROLE" /></form:label>
+                        <form:select path="role" cssClass="form-control">
+                            <c:forEach var="role" items="${options.roles}">
+                                <form:option value="${role}"><op:translate key="${role.key}" classLoader="${role.classLoader}"/></form:option>
+                            </c:forEach>
+                        </form:select>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <!-- Local groups -->
+            <div class="form-group">
+                <form:label path="localGroups" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_LOCAL_GROUPS" /></form:label>
+                <c:set var="noResults"><op:translate key="SELECT2_NO_RESULTS" /></c:set>
+                <form:select path="localGroups" cssClass="form-control select2 select2-default" data-no-results="${noResults}">
+                    <c:forEach var="group" items="${options.workspaceLocalGroups}">
+                        <form:option value="${group.cn}">${group.displayName}</form:option>
+                    </c:forEach>
+                </form:select>
+                <p class="help-block"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_LOCAL_GROUPS_HELP" /></p>
+            </div>
+        
+            <!-- Message -->
+            <div class="form-group">
+                <c:set var="placeholder"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_MESSAGE_PLACEHOLDER" /></c:set>
+                <form:label path="message" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_MESSAGE" /></form:label>
+                <form:textarea path="message" rows="3" cssClass="form-control" placeholder="${placeholder}" />
+            </div>
+            
+            
+            <!-- Buttons -->
+            <spring:bind path="*">
+                <div id="${namespace}-creation-buttons">
+                    <!-- Save -->
+                    <button type="submit" class="btn btn-primary">
+                        <span><op:translate key="${creation.warning ? 'WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATION_CONFIRM' : 'WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATION_SAVE'}" /></span>
+                    </button>
+
+
+                </div>
+            </spring:bind>
+        </fieldset>
+    </form:form>
+</div>
