@@ -40,7 +40,9 @@ public interface MemberManagementService {
     String INVITATIONS_HELP_LOCATION_PROPERTY = "workspace-member-management.invitations.help.location";
     /** Invitation requests help location property name. */
     String INVITATION_REQUESTS_HELP_LOCATION_PROPERTY = "workspace-member-management.requests.help.location";
-
+    /** Import CSV help location property name. */
+    String IMPORT_HELP_LOCATION_PROPERTY = "workspace-member-management.importcsv.help.location";
+    
     /** Select2 results page size. */
     int SELECT2_RESULTS_PAGE_SIZE = 6;
     /** Select2 max results. */
@@ -468,6 +470,16 @@ public interface MemberManagementService {
      */
 	void prepareImportInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options,
 			ImportForm form) throws ParseException, PortalException;
+
+
+	/**
+	 * Prepare help for csv import screen
+	 * 
+	 * @param portalControllerContext
+	 * @return
+	 * @throws PortletException 
+	 */
+	String getImportHelp(PortalControllerContext portalControllerContext) throws PortletException;
 
 
 }

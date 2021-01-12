@@ -151,4 +151,22 @@ public class MemberManagementImportController {
         binder.registerCustomEditor(CollabProfile.class, this.localGroupPropertyEditor);
     }
 
+    
+    /**
+     * Get help model attribute.
+     * 
+     * @param request portlet request
+     * @param response portlet response
+     * @return help
+     * @throws PortletException
+     */
+    @ModelAttribute("help")
+    public String getHelp(PortletRequest request, PortletResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
+
+        return this.service.getImportHelp(portalControllerContext);
+    }
+
+
 }

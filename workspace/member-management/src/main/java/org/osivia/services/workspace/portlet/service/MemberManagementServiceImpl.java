@@ -50,8 +50,8 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
-import org.osivia.services.workspace.batch.ImportInvitationsBatch;
-import org.osivia.services.workspace.batch.ImportObject;
+import org.osivia.services.workspace.portlet.batch.ImportInvitationsBatch;
+import org.osivia.services.workspace.portlet.batch.ImportObject;
 import org.osivia.services.workspace.portlet.model.AbstractAddToGroupForm;
 import org.osivia.services.workspace.portlet.model.AbstractChangeRoleForm;
 import org.osivia.services.workspace.portlet.model.AbstractMembersForm;
@@ -2456,7 +2456,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     	// Temporary file
         MultipartFile upload = form.getUpload();
         
-        ImportObject dto = new ImportObject();
+        ImportObject dto = applicationContext.getBean(ImportObject.class);
         
         File temporaryFile;
 		try {
@@ -2478,8 +2478,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 			throw new PortalException(e);
 		}
 		
-
-		ImportInvitationsBatch batch = new ImportInvitationsBatch(portalControllerContext.getPortletCtx(), dto);
+		ImportInvitationsBatch batch = applicationContext.getBean(ImportInvitationsBatch.class, portalControllerContext.getPortletCtx(), dto);
 
 		batchService.addBatch(batch);
 		
@@ -2493,6 +2492,13 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 	    String message = bundle.getString("MESSAGE_IMPORT_IN_PROGRESS");
 	    this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.INFO);
 		
+	}
+
+
+	@Override
+	public String getImportHelp(PortalControllerContext portalControllerContext) throws PortletException { 
+        return this.repository.getHelp(portalControllerContext, IMPORT_HELP_LOCATION_PROPERTY);
+
 	}
 
 

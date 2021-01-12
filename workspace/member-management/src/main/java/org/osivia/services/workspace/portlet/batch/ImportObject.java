@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.batch;
+package org.osivia.services.workspace.portlet.batch;
 
 import java.io.File;
 import java.util.List;

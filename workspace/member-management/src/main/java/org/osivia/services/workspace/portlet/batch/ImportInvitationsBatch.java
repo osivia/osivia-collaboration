@@ -1,4 +1,4 @@
-package org.osivia.services.workspace.batch;
+package org.osivia.services.workspace.portlet.batch;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -50,6 +50,9 @@ import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.repository.GetInvitationsCommand;
 import org.osivia.services.workspace.portlet.repository.MemberManagementRepository;
 import org.osivia.services.workspace.portlet.repository.SetProcedureInstanceAcl;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.sun.mail.smtp.SMTPTransport;
 
@@ -64,15 +67,34 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
  * @author Loïc Billon
  *
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ImportInvitationsBatch extends NuxeoBatch {
 	
 	/** Process only MAX_RECORDS on a single file */
-	private static final int MAX_RECORDS = 100;
+	public static final int MAX_RECORDS = 100;
 	
-	private final static Log logger = LogFactory.getLog("batch");
+	protected final static Log logger = LogFactory.getLog("batch");
 
 	/** POJO for the batch */
-	private ImportObject dto;
+	protected ImportObject dto;
+
+	protected WorkspaceService workspaceService;
+
+	/** current invitations in workspace */
+	protected List<String> invitations;
+
+	/** current request in workspace */
+	protected List<String> requests;
+
+	/** rejects file sended to the initiator */
+	protected File rejects;
+	
+	/** mail title */
+	protected String subject = "Import de comptes";
+	
+	private CSVPrinter rejectsPrinter;
+	
 	
 	private static PortletContext portletCtx;
 	
@@ -86,21 +108,10 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 
 	private PersonUpdateService personService;
 
-	private WorkspaceService workspaceService;
-
-	/** current invitations in workspace */
-	private List<String> invitations;
-
-	/** current request in workspace */
-	private List<String> requests;
-
-	private CSVPrinter rejectsPrinter;
-
-	/** rejects file sended to the initiator */
-	private File rejects;
 
 	/** white list pattern for mail adresses */
 	private String[] whiteList;
+
     
 	
 	@Override
@@ -366,7 +377,7 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 	}
 
 
-	private void populateInvitations(boolean checkRequests) {
+	protected void populateInvitations(boolean checkRequests) {
 		
 		NuxeoController nuxeoController = getNuxeoController();
 		// if person is currently invited, do nothing
@@ -397,13 +408,12 @@ public class ImportInvitationsBatch extends NuxeoBatch {
         }
 	}
 	
-	private void sendMailReport() throws PortalException {
+	protected void sendMailReport() throws PortalException {
         try {
 			// Sender email
 	        Person initiatorPerson = this.personService.getPerson(dto.getInitiator());
 	        String initiatorMail = initiatorPerson.getMail();
-	        
-	        // Mail session
+
 	        Session mailSession = Session.getInstance(System.getProperties(), null);
 	
 	        // Message
@@ -424,19 +434,46 @@ public class ImportInvitationsBatch extends NuxeoBatch {
             // To
             InternetAddress[] to = InternetAddress.parse(initiatorMail);
             message.setRecipients(Message.RecipientType.TO, to);
-
-			
-            // Subject
-            String subject = "Import de comptes";
+            
             message.setSubject(subject, CharEncoding.UTF_8);
             
             boolean attachment = false;
             StringBuilder body = new StringBuilder();
             body.append("<p><b>Rapport d'invitations envoyées pour l'espace ");
             body.append(dto.getCurrentWorkspace().getTitle());
+            
             body.append("</b></p><p> Invitations envoyées : ");
             body.append(dto.getCountinvitation());
             body.append("</p>");
+            
+            
+            CollabProfile profile = workspaceService.getEmptyProfile();
+            profile.setWorkspaceId(dto.getWorkspaceId());
+			List<CollabProfile> findByCriteria = workspaceService.findByCriteria(profile );
+			body.append("<p> Rôle et groupes affectés : <ul> ");
+			
+			for(CollabProfile collab : findByCriteria) {
+				
+				if(collab.getRole() == dto.getRole()) {
+					body.append("<li>"+collab.getDisplayName()+"</li>");
+				}
+				
+				if(dto.getLocalGroups() != null) {
+					for(CollabProfile group : dto.getLocalGroups()) {
+						if(group.getCn().equals(collab.getCn())) {
+							body.append("<li>"+collab.getDisplayName()+"</li>");
+						}
+					}
+				}
+			}
+			
+			body.append("</ul></p>");
+			
+			
+			if(StringUtils.isNotBlank(dto.getMessage())) {
+				body.append("<p>Message : "+dto.getMessage()+" </p>");
+			}
+						
             
             if(dto.getCountalreadymember() > 0) {
             	attachment = true;
@@ -499,7 +536,7 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 	 * @return
 	 * @throws IOException
 	 */
-	private CSVPrinter getRejectPrinter() throws IOException {
+	protected CSVPrinter getRejectPrinter() throws IOException {
 
 		if(rejectsPrinter == null) {
 			

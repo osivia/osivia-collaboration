@@ -43,7 +43,7 @@
 				                <label class="btn btn-default btn-file">
 				                    <i class="glyphicons glyphicons-folder-open"></i>
 				                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_BROWSE_ACTION"/></span>
-				                    <form:input type="file" path="upload" data-change-submit="${namespace}-file-upload-submit"/>
+				                    <form:input type="file" path="upload"/>
 				                </label>
 				            </div>
 				
