@@ -35,6 +35,7 @@ import org.osivia.services.workspace.edition.portlet.repository.command.CheckTit
 import org.osivia.services.workspace.edition.portlet.repository.command.CheckWebIdAvailabilityCommand;
 import org.osivia.services.workspace.edition.portlet.repository.command.DeleteWorkspaceCommand;
 import org.osivia.services.workspace.edition.portlet.repository.command.GetTemplatesCommand;
+import org.osivia.services.workspace.edition.portlet.repository.command.ReIndexCommand;
 import org.osivia.services.workspace.edition.portlet.repository.command.UpdatePropertiesCommand;
 import org.osivia.services.workspace.edition.portlet.repository.command.UpdateTasksCommand;
 import org.osivia.services.workspace.edition.portlet.repository.command.UpdateWorkspaceTypeCommand;
@@ -452,6 +453,16 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(UpdatePropertiesCommand.class, form);
         nuxeoController.executeNuxeoCommand(command);
+        
+        // If workspace name has been changed, reindex all documents to update ttc:spaceTitle
+        Document workspace = form.getDocument();
+        if(!workspace.getTitle().equals(form.getTitle()) && workspace.getType().equals("Workspace")) {
+        	
+            nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+            // Nuxeo command
+            INuxeoCommand reindexCmd = this.applicationContext.getBean(ReIndexCommand.class, form);
+            nuxeoController.executeNuxeoCommand(reindexCmd);
+        }
 
 
         // Reload vignette
