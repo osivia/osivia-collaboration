@@ -21,8 +21,14 @@
             <plugin>
                 <groupId>org.lesscss</groupId>
                 <artifactId>lesscss-maven-plugin</artifactId>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/css</outputDirectory>
+                    <includes>
+                        <include>**/*.less</include>
+                    </includes>
+                </configuration>
             </plugin>
-            
+
             <!-- YUI compressor -->
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
