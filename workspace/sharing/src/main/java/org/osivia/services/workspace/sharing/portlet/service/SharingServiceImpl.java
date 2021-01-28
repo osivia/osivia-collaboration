@@ -256,7 +256,7 @@ public class SharingServiceImpl implements SharingService {
             // Link permission
             SharingPermission permission = link.getPermission();
 
-            this.repository.updatePermissions(portalControllerContext, path, permission, null, null);
+            this.repository.updatePermissions(portalControllerContext, path, permission, null, null, null);
 
             // Notification
             String message = bundle.getString("SAVED_SHARING_LINK_PERMISSION_SUCCESS_MESSAGE");
@@ -275,7 +275,7 @@ public class SharingServiceImpl implements SharingService {
         // Document path
         String path = windowProperties.getPath();
 
-        this.repository.updatePermissions(portalControllerContext, path, null, user, false);
+        this.repository.updatePermissions(portalControllerContext, path, null, user, false, true);
 
         // Update model
         form.getUsers().put(user, false);
@@ -292,7 +292,7 @@ public class SharingServiceImpl implements SharingService {
         // Document path
         String path = windowProperties.getPath();
 
-        this.repository.updatePermissions(portalControllerContext, path, null, user, null);
+        this.repository.updatePermissions(portalControllerContext, path, null, user, true, false);
 
         // Update model
         form.getUsers().put(user, true);

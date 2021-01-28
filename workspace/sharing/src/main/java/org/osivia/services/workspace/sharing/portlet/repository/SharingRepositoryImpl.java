@@ -1,10 +1,11 @@
 package org.osivia.services.workspace.sharing.portlet.repository;
 
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import javax.portlet.PortletException;
-
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.liveedit.OnlyofficeLiveEditHelper;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
@@ -23,16 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
-import fr.toutatice.portail.cms.nuxeo.api.liveedit.OnlyofficeLiveEditHelper;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import javax.portlet.PortletException;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Sharing portlet repository implementation.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see SharingCommonRepositoryImpl
  * @see SharingRepository
@@ -40,15 +38,21 @@ import net.sf.json.JSONObject;
 @Repository
 public class SharingRepositoryImpl extends SharingCommonRepositoryImpl implements SharingRepository {
 
-    /** Application context. */
+    /**
+     * Application context.
+     */
     @Autowired
     private ApplicationContext applicationContext;
 
-    /** Portal URL factory. */
+    /**
+     * Portal URL factory.
+     */
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
 
-    /** Customization service. */
+    /**
+     * Customization service.
+     */
     @Autowired
     private ICustomizationService customizationService;
 
@@ -183,7 +187,7 @@ public class SharingRepositoryImpl extends SharingCommonRepositoryImpl implement
         // Get sharing permissions Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(GetSharingPermissionsCommand.class, path);
         Object result = nuxeoController.executeNuxeoCommand(command);
-        if ((result != null) && (result instanceof JSONArray)) {
+        if (result instanceof JSONArray) {
             JSONArray array = (JSONArray) result;
 
             for (int i = 0; i < array.size(); i++) {
@@ -229,8 +233,7 @@ public class SharingRepositoryImpl extends SharingCommonRepositoryImpl implement
      * {@inheritDoc}
      */
     @Override
-    public void updatePermissions(PortalControllerContext portalControllerContext, String path, SharingPermission permission, String user, Boolean add)
-            throws PortletException {
+    public void updatePermissions(PortalControllerContext portalControllerContext, String path, SharingPermission permission, String user, Boolean add, Boolean ban) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -243,7 +246,13 @@ public class SharingRepositoryImpl extends SharingCommonRepositoryImpl implement
         }
 
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(UpdateSharingPermissionsCommand.class, path, permissionId, user, add);
+        UpdateSharingPermissionsCommand command = this.applicationContext.getBean(UpdateSharingPermissionsCommand.class);
+        command.setPath(path);
+        command.setPermission(permissionId);
+        command.setUser(user);
+        command.setAdd(add);
+        command.setBan(ban);
+
         nuxeoController.executeNuxeoCommand(command);
     }
 

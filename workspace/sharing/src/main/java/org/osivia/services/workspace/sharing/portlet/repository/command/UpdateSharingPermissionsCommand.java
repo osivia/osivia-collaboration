@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.sharing.portlet.repository.command;
 
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
@@ -10,11 +11,9 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-
 /**
  * Update sharing permissions Nuxeo command.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see INuxeoCommand
  */
@@ -22,34 +21,39 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class UpdateSharingPermissionsCommand implements INuxeoCommand {
 
-    /** Operation identifier. */
+    /**
+     * Operation identifier.
+     */
     private static final String OPERATION_ID = "Document.UpdateSharingPermissions";
 
 
-    /** Document path. */
-    private final String path;
-    /** Sharing permission. */
-    private final String permission;
-    /** User. */
-    private final String user;
-    /** Add or remove permissions indicator. */
-    private final Boolean add;
+    /**
+     * Document path.
+     */
+    private String path;
+    /**
+     * Sharing permission.
+     */
+    private String permission;
+    /**
+     * User.
+     */
+    private String user;
+    /**
+     * Add or remove permissions indicator.
+     */
+    private Boolean add;
+    /**
+     * Ban or unban user indicator.
+     */
+    private Boolean ban;
 
 
     /**
      * Constructor.
-     * 
-     * @param path document path
-     * @param permission sharing permission
-     * @param user user
-     * @param add add or remove permissions indicator
      */
-    public UpdateSharingPermissionsCommand(String path, String permission, String user, Boolean add) {
+    public UpdateSharingPermissionsCommand() {
         super();
-        this.path = path;
-        this.permission = permission;
-        this.user = user;
-        this.add = add;
     }
 
 
@@ -74,6 +78,9 @@ public class UpdateSharingPermissionsCommand implements INuxeoCommand {
         if (this.add != null) {
             request.set("add", this.add);
         }
+        if (this.ban != null) {
+            request.set("ban", this.ban);
+        }
 
         return request.execute();
     }
@@ -87,4 +94,24 @@ public class UpdateSharingPermissionsCommand implements INuxeoCommand {
         return null;
     }
 
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setPermission(String permission) {
+        this.permission = permission;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public void setAdd(Boolean add) {
+        this.add = add;
+    }
+
+    public void setBan(Boolean ban) {
+        this.ban = ban;
+    }
 }
