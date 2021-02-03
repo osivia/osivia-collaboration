@@ -306,6 +306,11 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             List<String> acceptedTypes = type.getSubtypes();
             item.setAcceptedTypes(StringUtils.join(acceptedTypes, ","));
         }
+        
+        // special displaycontext
+        if("ContextualLink".equals(type.getName())) {
+        	item.setDisplayContext("contextualLink");
+        }
 
         return item;
     }
