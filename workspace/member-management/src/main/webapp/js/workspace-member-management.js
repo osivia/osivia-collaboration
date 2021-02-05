@@ -249,6 +249,22 @@ $JQry(function() {
 				$modal.find(".modal-body p").text(content);
 			});
 
+
+			// Full screen
+			$element.find("button[data-toggle=fullscreen]").click(function(event) {
+				var $button = $JQry(event.currentTarget);
+				var $toolbarContainer = $button.closest(".portal-table-toolbar-container");
+				var $parent = $toolbarContainer.parent();
+
+				if ($parent.hasClass("portal-table-fullscreen")) {
+					$button.removeClass("active");
+					$parent.removeClass("portal-table-fullscreen");
+				} else {
+					$button.addClass("active");
+					$parent.addClass("portal-table-fullscreen");
+				}
+			});
+
 			
 			$element.data("loaded", true);
 		}

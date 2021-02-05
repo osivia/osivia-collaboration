@@ -32,6 +32,12 @@
                 <span class="hidden-xs"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_PURGE" /></span>
             </a>
         </c:if>
+
+        <%--Full screen--%>
+        <button type="button" class="btn btn-default btn-sm hidden-xs" data-toggle="fullscreen">
+            <i class="glyphicons glyphicons-fullscreen"></i>
+            <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_FULL_SCREEN" /></span>
+        </button>
     </div>
     
     
