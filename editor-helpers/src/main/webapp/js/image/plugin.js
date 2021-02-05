@@ -78,6 +78,9 @@ function tinymceImageModalCallback(arguments) {
     var selectedElement = editor.selection.getNode();
     var image = selectedElement && selectedElement.nodeName === "IMG" ? selectedElement : null;
 
+    var $textarea = $JQry("#" + $JQry.escapeSelector(editor.id));
+    var editorUrl = $textarea.data("editor-url");
+
     var $modal = $JQry("#osivia-modal");
     var $form = $modal.find("form");
     var $done = $form.find("input[name=done]"), done = ($done.val() === "true");
@@ -93,16 +96,15 @@ function tinymceImageModalCallback(arguments) {
             "height": height,
             "width": width
         };
-        // if (height) {
-        //     attribs["height"] = height;
-        // }
-        // if (width) {
-        //     attribs["width"] = width;
-        // }
 
         editor.undoManager.transact(function() {
             if (image) {
                 if (url) {
+                    if (url.startsWith("/nuxeo")) {
+                        attribs["data-mce-src"] = url;
+                        attribs["src"] = editorUrl + "&editorId=image&editorResourceId=preview&src=" + url;
+                    }
+
                     editor.dom.setAttribs(image, attribs);
                     editor.selection.select(image);
                 } else {
