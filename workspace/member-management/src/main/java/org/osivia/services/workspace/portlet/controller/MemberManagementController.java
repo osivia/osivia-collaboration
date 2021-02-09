@@ -245,4 +245,26 @@ public class MemberManagementController {
         this.service.exportMembersCsv(portalControllerContext, members, response.getPortletOutputStream());
     }
 
+
+    /**
+     * Drop a workflow
+     * 
+     * @param request
+     * @param response
+     * @param invitationPath
+     * @param fromtab
+     * @throws PortletException
+     */
+    @ActionMapping("drop")
+    public void drop(ActionRequest request, ActionResponse response, @RequestParam("invitationPath") String invitationPath,
+    		@RequestParam("fromtab") String fromtab) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.dropInvitation(portalControllerContext, invitationPath);
+
+        // Copy render parameter
+        response.setRenderParameter("tab", fromtab);
+    }
+        
 }

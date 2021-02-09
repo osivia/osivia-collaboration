@@ -116,12 +116,12 @@
                                         </c:choose>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Title -->
                                 <div class="file-browser-thumbnail-title">
                                     <div class="text-overflow file-browser-draggable">
                                         <span><ttc:icon document="${item.document}" /></span>
-                                        <span><ttc:title document="${item.document}" /></span>
+                                        <span><ttc:title document="${item.document}" displayContext="${item.displayContext}" /></span>
                                     </div>
                                 </div>
                                 

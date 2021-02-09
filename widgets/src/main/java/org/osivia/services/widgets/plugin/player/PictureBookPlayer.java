@@ -102,6 +102,7 @@ public class PictureBookPlayer extends PluginModule implements INuxeoPlayerModul
                 Player properties = this.getNuxeoCustomizer().getCMSFileBrowser(documentContext);
                 Map<String, String> windowProperties = properties.getWindowProperties();
                 windowProperties.put(InternalConstants.PROP_WINDOW_TITLE, document.getTitle());
+                windowProperties.put(InternalConstants.PROP_WINDOW_TITLE_METADATA, String.valueOf(true)); 
                 windowProperties.put(InternalConstants.DEFAULT_VIEW_WINDOW_PROPERTY, FileBrowserView.THUMBNAILS.getName());
                 return properties;
             } else {

@@ -3,6 +3,8 @@ package org.osivia.services.workspace.portlet.repository;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
@@ -10,6 +12,7 @@ import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.directory.v2.model.CollabProfile;
+import org.osivia.portal.api.PortalException;
 import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -31,6 +34,10 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SetProcedureInstanceAcl implements INuxeoCommand {
 
+
+	
+	private final static Log procLogger = LogFactory.getLog("procedures");
+	
     /** Workspace identifier. */
     private final String workspaceId;
     /** Model identifier. */
@@ -124,14 +131,19 @@ public class SetProcedureInstanceAcl implements INuxeoCommand {
         // Nuxeo documents
         Documents documents = (Documents) request.execute();
 
+        procLogger.info("Get procedure with query "+filteredClause+ " return "+documents.size()+ "results");
+        
         // Nuxeo document
         Document document;
 
         if (documents.size() == 1) {
             document = documents.get(0);
-        } else {
+        } else if (documents.size() == 0) {
             throw new NuxeoException(NuxeoException.ERROR_NOTFOUND);
+        } else {
+        	throw new PortalException("Too many tasks for query");
         }
+        
 
         return document;
     }

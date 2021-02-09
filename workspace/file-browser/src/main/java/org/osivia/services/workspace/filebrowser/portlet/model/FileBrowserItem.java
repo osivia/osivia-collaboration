@@ -47,6 +47,8 @@ public class FileBrowserItem {
     /** Permissions. */
     private NuxeoPermissions permissions;
 
+    /** Display context of the item */
+    private String displayContext;
 
     /**
      * Constructor.
@@ -272,4 +274,21 @@ public class FileBrowserItem {
         this.permissions = permissions;
     }
 
+    /**
+     * 
+     * @return
+     */
+	public String getDisplayContext() {
+		return displayContext;
+	}
+
+	/**
+	 * 
+	 * @param displayContext
+	 */
+	public void setDisplayContext(String displayContext) {
+		this.displayContext = displayContext;
+	}
+
+    
 }
