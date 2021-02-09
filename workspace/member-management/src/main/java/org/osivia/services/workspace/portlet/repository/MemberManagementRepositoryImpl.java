@@ -862,13 +862,17 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 Document document = documentContext.getDocument();
 
                 // Transformation
-                help = nuxeoController.transformHTMLContent(StringUtils.trimToEmpty(document.getString("note:note")));
-            } catch (NuxeoException e) {
-                if (e.getErrorCode() == NuxeoException.ERROR_NOTFOUND) {
-                    help = null;
-                } else {
-                    throw e;
+                if("PortalPage".equals(document.getType())) {
+                	help = nuxeoController.transformHTMLContent(StringUtils.trimToEmpty(document.getString("webp:content")));
                 }
+                else {
+                	help = nuxeoController.transformHTMLContent(StringUtils.trimToEmpty(document.getString("note:note")));
+
+                }
+            } catch (NuxeoException e) {
+
+            	log.warn("help document not found at "+location);
+            	help = null;
             }
         }
 
