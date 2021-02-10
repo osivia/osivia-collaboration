@@ -32,6 +32,11 @@ public class ImportObject  {
      * Temporary file.
      */
     private File temporaryFile;
+    
+    /**
+     * Original file name
+     */
+    private String temporaryFileName;
 
     
     /**
@@ -80,6 +85,16 @@ public class ImportObject  {
 
 	public void setTemporaryFile(File temporaryFile) {
 		this.temporaryFile = temporaryFile;
+	}
+	
+	
+
+	public String getTemporaryFileName() {
+		return temporaryFileName;
+	}
+
+	public void setTemporaryFileName(String temporaryFileName) {
+		this.temporaryFileName = temporaryFileName;
 	}
 
 	public String getWorkspaceId() {

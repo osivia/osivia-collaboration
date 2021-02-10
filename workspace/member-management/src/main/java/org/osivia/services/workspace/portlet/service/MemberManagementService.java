@@ -459,6 +459,17 @@ public interface MemberManagementService {
 	 */
 	ImportForm getImportForm(PortalControllerContext portalControllerContext);
 
+	/**
+	 * 
+	 * @param portalControllerContext
+	 * @param options
+	 * @param form
+	 * @throws IOException 
+	 * @throws IllegalStateException 
+	 */
+	void upload(PortalControllerContext portalControllerContext, MemberManagementOptions options, ImportForm form) throws IllegalStateException, IOException;
+
+	
     /**
      * Prepare invitations import
      * 
@@ -480,6 +491,7 @@ public interface MemberManagementService {
 	 * @throws PortletException 
 	 */
 	String getImportHelp(PortalControllerContext portalControllerContext) throws PortletException;
+
 
 
 }

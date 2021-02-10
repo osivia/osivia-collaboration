@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.portlet.model;
 
+import java.io.File;
 import java.util.List;
 
 import org.osivia.directory.v2.model.CollabProfile;
@@ -32,14 +33,14 @@ public class ImportForm  {
      * Upload.
      */
     private MultipartFile upload;
-//    /**
-//     * Temporary file.
-//     */
-//    private File temporaryFile;
-//    /**
-//     * Temporary file name.
-//     */
-//    private String temporaryFileName;
+    /**
+     * Temporary file.
+     */
+    private File temporaryFile;
+    /**
+     * Temporary file name.
+     */
+    private String temporaryFileName;
     
 //    /**
 //     * Workspace identifier
@@ -85,23 +86,23 @@ public class ImportForm  {
 	public void setUpload(MultipartFile upload) {
 		this.upload = upload;
 	}
-//
-//	public File getTemporaryFile() {
-//		return temporaryFile;
-//	}
-//
-//	public void setTemporaryFile(File temporaryFile) {
-//		this.temporaryFile = temporaryFile;
-//	}
-//
-//	public String getTemporaryFileName() {
-//		return temporaryFileName;
-//	}
-//
-//	public void setTemporaryFileName(String temporaryFileName) {
-//		this.temporaryFileName = temporaryFileName;
-//	}
-//
+
+	public File getTemporaryFile() {
+		return temporaryFile;
+	}
+
+	public void setTemporaryFile(File temporaryFile) {
+		this.temporaryFile = temporaryFile;
+	}
+
+	public String getTemporaryFileName() {
+		return temporaryFileName;
+	}
+
+	public void setTemporaryFileName(String temporaryFileName) {
+		this.temporaryFileName = temporaryFileName;
+	}
+
 //	public String getWorkspaceId() {
 //		return workspaceId;
 //	}

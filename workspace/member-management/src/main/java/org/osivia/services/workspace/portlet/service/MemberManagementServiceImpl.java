@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 import javax.portlet.ActionRequest;
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletException;
@@ -2448,35 +2450,57 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
 
 	@Override
+	public void upload(PortalControllerContext portalControllerContext, MemberManagementOptions options,
+			ImportForm form) throws IllegalStateException, IOException {
+
+        // Delete previous temporary file
+        if (form.getTemporaryFile() != null) {
+            form.getTemporaryFile().delete();
+        }
+
+        // Upload
+        MultipartFile upload = form.getUpload();
+        File temporaryFile = File.createTempFile("importmembers_"+options.getWorkspaceId()+"_"+new Date().getTime(), ".tmp");
+        temporaryFile.deleteOnExit();
+        upload.transferTo(temporaryFile);
+        form.setTemporaryFile(temporaryFile);
+        form.setTemporaryFileName(upload.getOriginalFilename());
+
+		
+	}
+	
+	@Override
 	public void prepareImportInvitations(PortalControllerContext portalControllerContext,
 			MemberManagementOptions options, ImportForm form) throws ParseException, PortalException {
 		
-		String batchId = "importmembers_"+options.getWorkspaceId()+"_"+new Date().getTime();
+		//String batchId = "importmembers_"+options.getWorkspaceId()+"_"+new Date().getTime();
+//		String batchId = form.getTemporaryFile().getName();
 		
     	// Temporary file
-        MultipartFile upload = form.getUpload();
+//        MultipartFile upload = form.getUpload();
         
         ImportObject dto = applicationContext.getBean(ImportObject.class);
         
-        File temporaryFile;
-		try {
-			temporaryFile = File.createTempFile(batchId, ".tmp");
+//        File temporaryFile;
+//		try {
+//			temporaryFile = File.createTempFile(batchId, ".tmp");
+//
+//	        upload.transferTo(temporaryFile);
 
-	        upload.transferTo(temporaryFile);
-
-	        dto.setTemporaryFile(temporaryFile);
+	        dto.setTemporaryFile(form.getTemporaryFile());
 	        dto.setInitiator(form.getInitiator());
 	        dto.setLocalGroups(form.getLocalGroups());
 	        dto.setMessage(form.getMessage());
 	        dto.setRole(form.getRole());
 	        dto.setWorkspaceId(options.getWorkspaceId());
+	        dto.setTemporaryFileName(form.getTemporaryFileName());
 
 			Document currentWorkspace = repository.getCurrentWorkspace(portalControllerContext);
 			dto.setCurrentWorkspace(currentWorkspace);
 	        
-		} catch (IOException e) {
-			throw new PortalException(e);
-		}
+//		} catch (IOException e) {
+//			throw new PortalException(e);
+//		}
 		
 		ImportInvitationsBatch batch = applicationContext.getBean(ImportInvitationsBatch.class, portalControllerContext.getPortletCtx(), dto);
 
@@ -2500,6 +2524,9 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         return this.repository.getHelp(portalControllerContext, IMPORT_HELP_LOCATION_PROPERTY);
 
 	}
+
+
+
 
 
 }

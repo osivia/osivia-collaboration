@@ -442,6 +442,8 @@ public class ImportInvitationsBatch extends NuxeoBatch {
             body.append("<p><b>Rapport d'invitations envoyées pour l'espace ");
             body.append(dto.getCurrentWorkspace().getTitle());
             
+            body.append("<p>Fichier : "+dto.getTemporaryFileName()+" </p>");
+            
             body.append("</b></p><p> Invitations envoyées : ");
             body.append(dto.getCountinvitation());
             body.append("</p>");

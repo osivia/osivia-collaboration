@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.portlet.controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 
 import javax.portlet.ActionRequest;
@@ -108,6 +109,36 @@ public class MemberManagementImportController {
     }
     
 
+    
+    /**
+     * Import invitations.
+     *
+     * @param request action request
+     * @param response action response
+     * @param options options model attribute
+     * @param form invitations form model attribute
+     * @throws PortletException
+     * @throws PortalException 
+     * @throws ParseException 
+     * @throws IOException 
+     * @throws IllegalStateException 
+     */
+    @ActionMapping(name = "import", params = "upload")
+    public void upload(ActionRequest request, ActionResponse response, @ModelAttribute("options") MemberManagementOptions options,
+    		@Validated  @ModelAttribute("import") ImportForm form,  BindingResult result,
+            SessionStatus sessionStatus) throws PortletException, ParseException, PortalException, IllegalStateException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        if (!result.hasErrors()) {
+        	this.service.upload(portalControllerContext, options, form);
+        }
+        
+         response.setRenderParameter("tab", "importCsv");
+    	
+
+    }
+    
     /**
      * Import invitations.
      *
@@ -119,23 +150,23 @@ public class MemberManagementImportController {
      * @throws PortalException 
      * @throws ParseException 
      */
-    @ActionMapping("launchImport")
+    @ActionMapping(name = "import", params = "launchImport")
     public void launchImport(ActionRequest request, ActionResponse response, @ModelAttribute("options") MemberManagementOptions options,
     		@Validated  @ModelAttribute("import") ImportForm form,  BindingResult result,
             SessionStatus sessionStatus) throws PortletException, ParseException, PortalException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        if (!result.hasErrors()) {
+//        if (!result.hasErrors()) {
         	this.service.prepareImportInvitations(portalControllerContext, options, form);
 
             response.setRenderParameter("tab", "members");
 
             sessionStatus.setComplete();
-        }
-        else {
-            response.setRenderParameter("tab", "importCsv");
-    	}
+//        }
+//        else {
+//            response.setRenderParameter("tab", "importCsv");
+//    	}
 
     }
 
