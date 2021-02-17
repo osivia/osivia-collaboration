@@ -35,32 +35,34 @@
 
                 <div class="col-sm-8 col-lg-9">
                     <!-- Role -->
-    				<div class="form-group required ${status.error ? 'has-error' : ''}">
     				
-    				    <form:label path="upload" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_FILE" /></form:label>
-				        <div>
-				            <div class="media-left">
-				                <label class="btn btn-default btn-file">
-				                    <i class="glyphicons glyphicons-folder-open"></i>
-				                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_BROWSE_ACTION"/></span>
-				                    <form:input type="file" path="upload" data-change-submit="${namespace}-file-upload-submit"/>
-				                </label>
-				            </div>
-				
-				            <div class="media-body">
-				                <p class="form-control-static text-muted">
-				                    <c:choose>
-				                        <c:when test="${not empty import.temporaryFileName}">${import.temporaryFileName}</c:when>
-				                    </c:choose>
-				                </p>
-				            </div>
-				
-				        </div>
-				        <form:errors path="upload" cssClass="help-block"/>
-				        <input id="${namespace}-file-upload-submit" type="submit" name="upload" class="hidden">
+    				<spring:bind path="upload">
+	    				<div class="form-group required ${status.error ? 'has-error' : ''}">
+	    				    <form:label path="upload" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_FILE" /></form:label>
+					        <div>
+					            <div class="media-left">
+					                <label class="btn btn-default btn-file">
+					                    <i class="glyphicons glyphicons-folder-open"></i>
+					                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_BROWSE_ACTION"/></span>
+					                    <form:input type="file" path="upload" data-change-submit="${namespace}-file-upload-submit"/>
+					                </label>
+					            </div>
+					
+					            <div class="media-body">
+					                <p class="form-control-static text-muted">
+					                    <c:choose>
+					                        <c:when test="${not empty import.temporaryFileName}">${import.temporaryFileName}</c:when>
+					                    </c:choose>
+					                </p>
+					            </div>
+					
+					        </div>
+					        <form:errors path="upload" cssClass="help-block"/>
+					        <input id="${namespace}-file-upload-submit" type="submit" name="upload" class="hidden">
+					        
+	                    </div>
+					</spring:bind>
 
-
-                    </div>
                 </div>
 
                 

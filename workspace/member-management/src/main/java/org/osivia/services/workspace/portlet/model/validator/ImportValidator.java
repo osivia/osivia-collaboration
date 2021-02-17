@@ -42,23 +42,28 @@ public class ImportValidator implements Validator {
     public void validate(Object target, Errors errors) {
     	
     	ImportForm form = (ImportForm) target;
-    	if(form.getUpload().getSize() <= 0) {
-    		errors.rejectValue("upload", "INVALID_EMPTY_FILE", null);
-    	}
     	
-        // MIME type
-        MimeType mimeType;
-        try {
-            mimeType = new MimeType(form.getUpload().getContentType());
-            
-            if(!mimeType.getBaseType().equals("text/csv")) {
-        		errors.rejectValue("upload", "INVALID_TYPE_FILE", null);
-
-            }
-            
-        } catch (MimeTypeParseException e) {
-    		errors.rejectValue("upload", "INVALID_TYPE_FILE", null);
-        }
+    	if(form.getTemporaryFile() == null) { // check only upload if no temp file is set
+    	
+	    	if(form.getUpload().getSize() <= 0) {
+	    		errors.rejectValue("upload", "INVALID_EMPTY_FILE", null);
+	    	}
+	    	else {    	
+		        // MIME type
+		        MimeType mimeType;
+		        try {
+		            mimeType = new MimeType(form.getUpload().getContentType());
+		            
+		            if(!mimeType.getBaseType().equals("text/csv")) {
+		        		errors.rejectValue("upload", "INVALID_TYPE_FILE", null);
+		
+		            }
+		            
+		        } catch (MimeTypeParseException e) {
+		    		errors.rejectValue("upload", "INVALID_TYPE_FILE", null);
+		        }
+	    	}
+    	}
     	
     }
 

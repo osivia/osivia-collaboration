@@ -40,7 +40,6 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
  */
 @Controller
 @RequestMapping(path = "VIEW", params = "tab=importCsv")
-@SessionAttributes("import")
 public class MemberManagementImportController {
 
 
@@ -149,24 +148,23 @@ public class MemberManagementImportController {
      * @throws PortletException
      * @throws PortalException 
      * @throws ParseException 
+     * @throws IOException 
      */
     @ActionMapping(name = "import", params = "launchImport")
     public void launchImport(ActionRequest request, ActionResponse response, @ModelAttribute("options") MemberManagementOptions options,
     		@Validated  @ModelAttribute("import") ImportForm form,  BindingResult result,
-            SessionStatus sessionStatus) throws PortletException, ParseException, PortalException {
+            SessionStatus sessionStatus) throws PortletException, ParseException, PortalException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-//        if (!result.hasErrors()) {
+        if (!result.hasErrors()) {
         	this.service.prepareImportInvitations(portalControllerContext, options, form);
 
-            response.setRenderParameter("tab", "members");
-
             sessionStatus.setComplete();
-//        }
-//        else {
-//            response.setRenderParameter("tab", "importCsv");
-//    	}
+        }
+        
+        response.setRenderParameter("tab", "importCsv");
+    	
 
     }
 

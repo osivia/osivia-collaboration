@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,7 +31,9 @@ import javax.portlet.PortletURL;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -796,9 +799,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Form
         InvitationsForm form = this.applicationContext.getBean(InvitationsForm.class);
 
+        // Workspace identifier
+        String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
+        
         if (!form.isLoaded()) {
-            // Workspace identifier
-            String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
 
             // Member idenfiers
             Set<String> identifiers = this.getMembersForm(portalControllerContext).getIdentifiers();
@@ -828,6 +832,21 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             form.setLoaded(true);
         }
 
+        // is batch currently running ?
+        form.setBatchRunning(false);
+        List<ImportInvitationsBatch> batchInstances = batchService.getBatchInstances(ImportInvitationsBatch.class);
+        
+        int linesToProcess = 0;
+        
+        for(ImportInvitationsBatch inst : batchInstances ) {
+        	if(inst.getDto().getWorkspaceId().equals(workspaceId)) {
+        		form.setBatchRunning(true);
+        		linesToProcess += inst.getDto().getRecordNumber();
+        	}
+        }
+        form.setLinesToProcess(linesToProcess);
+        
+        
         return form;
     }
 
@@ -2425,7 +2444,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
 
 	@Override
-	public ImportForm getImportForm(PortalControllerContext portalControllerContext) {
+	public ImportForm getImportForm(PortalControllerContext portalControllerContext) throws PortletException {
 		
         // Form
 		ImportForm form = this.applicationContext.getBean(ImportForm.class);
@@ -2438,13 +2457,32 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 			
 			form.setLocalGroups(null);
 			form.setMessage(null);
-//			form.setTemporaryFile(null);
+			form.setTemporaryFile(null);
+			form.setTemporaryFileName(null);
 			form.setUpload(null);
 
             form.setLoaded(true);
            
-        
 		}
+		
+		
+        // is batch currently running ?
+
+        String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
+		
+        form.setBatchRunning(false);
+        List<ImportInvitationsBatch> batchInstances = batchService.getBatchInstances(ImportInvitationsBatch.class);
+        
+        int linesToProcess = 0;
+        
+        for(ImportInvitationsBatch inst : batchInstances ) {
+        	if(inst.getDto().getWorkspaceId().equals(workspaceId)) {
+        		form.setBatchRunning(true);
+        		linesToProcess += inst.getDto().getRecordNumber();
+        	}
+        }
+        form.setLinesToProcess(linesToProcess);
+		
         return form;
 	}
 
@@ -2471,50 +2509,40 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 	
 	@Override
 	public void prepareImportInvitations(PortalControllerContext portalControllerContext,
-			MemberManagementOptions options, ImportForm form) throws ParseException, PortalException {
-		
-		//String batchId = "importmembers_"+options.getWorkspaceId()+"_"+new Date().getTime();
-//		String batchId = form.getTemporaryFile().getName();
-		
-    	// Temporary file
-//        MultipartFile upload = form.getUpload();
-        
+			MemberManagementOptions options, ImportForm form) throws ParseException, PortalException, PortletException, IOException {
+
         ImportObject dto = applicationContext.getBean(ImportObject.class);
+
+        dto.setTemporaryFile(form.getTemporaryFile());
+        dto.setInitiator(form.getInitiator());
+        dto.setLocalGroups(form.getLocalGroups());
+        dto.setMessage(form.getMessage());
+        dto.setRole(form.getRole());
+        dto.setWorkspaceId(options.getWorkspaceId());
+        dto.setTemporaryFileName(form.getTemporaryFileName());
         
-//        File temporaryFile;
-//		try {
-//			temporaryFile = File.createTempFile(batchId, ".tmp");
-//
-//	        upload.transferTo(temporaryFile);
+        
+        CSVParser parser = CSVParser.parse(dto.getTemporaryFile(), StandardCharsets.UTF_8, CSVFormat.EXCEL);
+        int size = parser.getRecords().size();
+        dto.setRecordNumber( size);
+        
 
-	        dto.setTemporaryFile(form.getTemporaryFile());
-	        dto.setInitiator(form.getInitiator());
-	        dto.setLocalGroups(form.getLocalGroups());
-	        dto.setMessage(form.getMessage());
-	        dto.setRole(form.getRole());
-	        dto.setWorkspaceId(options.getWorkspaceId());
-	        dto.setTemporaryFileName(form.getTemporaryFileName());
-
-			Document currentWorkspace = repository.getCurrentWorkspace(portalControllerContext);
-			dto.setCurrentWorkspace(currentWorkspace);
+		Document currentWorkspace = repository.getCurrentWorkspace(portalControllerContext);
+		dto.setCurrentWorkspace(currentWorkspace);
 	        
-//		} catch (IOException e) {
-//			throw new PortalException(e);
-//		}
-		
 		ImportInvitationsBatch batch = applicationContext.getBean(ImportInvitationsBatch.class, portalControllerContext.getPortletCtx(), dto);
 
 		batchService.addBatch(batch);
-		
 
 	    // Update model
 	    this.invalidateLoadedForms();
+	    this.getImportForm(portalControllerContext);
 	
 	    Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 	    
 	    // Notification
 	    String message = bundle.getString("MESSAGE_IMPORT_IN_PROGRESS");
-	    this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.INFO);
+	    this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
 		
 	}
 

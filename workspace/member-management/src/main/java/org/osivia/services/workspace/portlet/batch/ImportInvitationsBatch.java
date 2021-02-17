@@ -325,6 +325,7 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 				}
 				
     	    	count++;
+    	    	dto.setRecordNumber(dto.getRecordNumber() -1);
 			}
 			
 			if(hasRejects) {
@@ -549,5 +550,11 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 		}
 		return rejectsPrinter;
 	}
+
+	public ImportObject getDto() {
+		return dto;
+	}
+	
+	
 
 }

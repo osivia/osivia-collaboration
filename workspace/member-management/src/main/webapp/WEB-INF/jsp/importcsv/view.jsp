@@ -11,6 +11,19 @@
     <!-- Tabs -->
     <%@ include file="../commons/tabs.jspf" %>
     
+            <c:if test="${import.batchRunning}">
+
+			   <div class="row">
+					<div class="col-sm-12">
+						<div class="alert alert-info" role="alert">
+			        			<op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_BATCH_RUNNING" args="${import.linesToProcess}"/>
+						</div>
+					</div>
+				
+				</div>
+        	</c:if> 
+	                    
+    
     <div class="panel panel-default">
         <div class="panel-body">
             <!-- Invitations creation -->

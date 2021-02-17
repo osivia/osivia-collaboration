@@ -53,6 +53,11 @@ public class ImportObject  {
     
 	private int count, countreject, countinvitation, countalreadymember, countwf;
 
+	/**
+	 * Number of records to process before the end of the file (for tracking)
+	 */
+	private int recordNumber;
+
 
 	public WorkspaceRole getRole() {
 		return role;
@@ -159,6 +164,16 @@ public class ImportObject  {
 
 	public void setCountwf(int countwf) {
 		this.countwf = countwf;
+	}
+	
+
+	public int getRecordNumber() {
+		return recordNumber;
+	}
+
+	public void setRecordNumber(int recordNumber) {
+		this.recordNumber = recordNumber;
+
 	}
 
 

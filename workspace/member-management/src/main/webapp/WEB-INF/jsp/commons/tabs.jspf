@@ -15,6 +15,10 @@
             <portlet:param name="view" value="${view}"/>
             <portlet:param name="redirection" value="invitations"/>
         </portlet:actionURL>
+        <portlet:actionURL name="redirectTab" var="importCsvUrl" copyCurrentRenderParameters="true">
+            <portlet:param name="view" value="${view}"/>
+            <portlet:param name="redirection" value="importCsv"/>
+        </portlet:actionURL>        
         <portlet:actionURL name="redirectTab" var="requestsUrl" copyCurrentRenderParameters="true">
             <portlet:param name="view" value="${view}"/>
             <portlet:param name="redirection" value="requests"/>
@@ -28,6 +32,9 @@
         <portlet:renderURL var="invitationsUrl">
             <portlet:param name="tab" value="invitations" />
         </portlet:renderURL>
+        <portlet:renderURL var="importCsvUrl">
+            <portlet:param name="tab" value="importCsv" />
+        </portlet:renderURL>        
         <portlet:renderURL var="requestsUrl">
             <portlet:param name="tab" value="requests" />
         </portlet:renderURL>
@@ -58,6 +65,11 @@
                 </a>
             </li>
             
+            <li role="presentation" class="${tab eq 'importCsv' ? 'active' : ''}">
+                <a href="${importCsvUrl}">
+                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_TAB_IMPORT_CSV" /></span>
+                </a>
+            </li>            
             
             <c:if test="${options.workspaceType.allowedInvitationRequests}">
                 <li role="presentation" class="${tab eq 'requests' ? 'active' : ''}">

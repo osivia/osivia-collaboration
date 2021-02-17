@@ -456,8 +456,9 @@ public interface MemberManagementService {
 	 * 
 	 * @param portalControllerContext
 	 * @return
+	 * @throws PortletException 
 	 */
-	ImportForm getImportForm(PortalControllerContext portalControllerContext);
+	ImportForm getImportForm(PortalControllerContext portalControllerContext) throws PortletException;
 
 	/**
 	 * 
@@ -478,9 +479,11 @@ public interface MemberManagementService {
      * @param invitationPath
      * @throws PortalException 
      * @throws ParseException 
+     * @throws PortletException 
+     * @throws IOException 
      */
 	void prepareImportInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options,
-			ImportForm form) throws ParseException, PortalException;
+			ImportForm form) throws ParseException, PortalException, PortletException, IOException;
 
 
 	/**

@@ -53,6 +53,16 @@ public class ImportForm  {
     private String initiator;
     
     private boolean loaded;
+
+    /**
+     * Message if a batch is running
+     */
+	private boolean batchRunning;
+
+	/**
+	 * Total lines remaining in the batch process
+	 */
+	private int linesToProcess;
     
 
 	public WorkspaceRole getRole() {
@@ -103,13 +113,6 @@ public class ImportForm  {
 		this.temporaryFileName = temporaryFileName;
 	}
 
-//	public String getWorkspaceId() {
-//		return workspaceId;
-//	}
-//
-//	public void setWorkspaceId(String workspaceId) {
-//		this.workspaceId = workspaceId;
-//	}
 
 	public String getInitiator() {
 		return initiator;
@@ -125,6 +128,27 @@ public class ImportForm  {
 
 	public void setLoaded(boolean loaded) {
 		this.loaded = loaded;
+	}
+
+	
+	
+	public boolean isBatchRunning() {
+		return batchRunning;
+	}
+
+	public void setBatchRunning(boolean batchRunning) {
+		this.batchRunning = batchRunning;
+		
+	}
+	
+
+	public int getLinesToProcess() {
+		return linesToProcess;
+	}
+
+	public void setLinesToProcess(int linesToProcess) {
+		this.linesToProcess = linesToProcess;
+		
 	}
     
 

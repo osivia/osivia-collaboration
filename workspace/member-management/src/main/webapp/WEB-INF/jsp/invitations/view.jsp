@@ -13,6 +13,20 @@
     
     <div class="panel panel-default">
         <div class="panel-body">
+        
+            <c:if test="${invitations.batchRunning}">
+
+			   <div class="row">
+					<div class="col-sm-12">
+						<div class="alert alert-info" role="alert">
+			        			<op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_BATCH_RUNNING" args="${invitations.linesToProcess}"/>
+						</div>
+					</div>
+				
+				</div>
+        	</c:if> 
+	                
+        
             <!-- Invitations creation -->
             <%@ include file="creation.jspf" %>
                 
