@@ -20,7 +20,7 @@
 <div class="portal-table-toolbar-container" data-url="${toolbarUrl}">
     <div>
         <!-- Export -->
-        <a class="btn btn-default btn-sm" href="${exportCsvUrl}">
+        <a class="btn btn-default btn-sm no-ajax-link" href="${exportCsvUrl}">
             <i class="glyphicons glyphicons-table"></i>
             <span class="hidden-xs"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_EXPORT" /></span>
         </a>
