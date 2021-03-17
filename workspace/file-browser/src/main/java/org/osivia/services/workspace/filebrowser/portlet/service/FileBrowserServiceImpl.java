@@ -444,7 +444,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
 
                     // Live edition
-                    Element liveEditionGroup = this.getToolbarLiveEditionGroup(portalControllerContext, documentDto, permissions, bundle);
+                    Element liveEditionGroup = this.getToolbarLiveEditionGroup(portalControllerContext, documentDto, permissions, bundle, form);
                     toolbar.add(liveEditionGroup);
 
 
@@ -485,11 +485,12 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * @param documentDto document DTO
      * @param permissions permissions
      * @param bundle internationalization bundle
+     * @param form 
      * @return DOM element
      * @throws PortletException
      */
-    private Element getToolbarLiveEditionGroup(PortalControllerContext portalControllerContext, DocumentDTO documentDto, NuxeoPermissions permissions,
-            Bundle bundle) throws PortletException {
+    protected Element getToolbarLiveEditionGroup(PortalControllerContext portalControllerContext, DocumentDTO documentDto, NuxeoPermissions permissions,
+            Bundle bundle, FileBrowserForm form) throws PortletException {
         // Portlet request
         PortletRequest portletRequest = portalControllerContext.getRequest();
 
@@ -509,7 +510,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             publicationInfos = null;
             drive = false;
         }
-
 
         // Live edition group
         Element liveEditionGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm hidden-xs");
