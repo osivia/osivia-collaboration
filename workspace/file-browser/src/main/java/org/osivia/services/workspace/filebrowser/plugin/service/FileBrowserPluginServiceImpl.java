@@ -50,7 +50,7 @@ public class FileBrowserPluginServiceImpl implements FileBrowserPluginService {
         super();
 
         // File browser types
-        this.fileBrowserTypes = Arrays.asList("Folder", "OrderedFolder");
+        this.fileBrowserTypes = Arrays.asList("Folder", "OrderedFolder","DocumentUrlContainer");
     }
 
 

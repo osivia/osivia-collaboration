@@ -121,7 +121,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     @Override
     public FileBrowserView getView(PortalControllerContext portalControllerContext, String viewId) throws PortletException {
         // View
-        FileBrowserView view;
+        FileBrowserView view = null;
 
         if (StringUtils.isEmpty(viewId)) {
             // Form
@@ -139,9 +139,20 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             if (userPreferences != null) {
                 // Saved view
                 String savedView = userPreferences.getFolderDisplayMode(webId);
-                view = FileBrowserView.fromId(savedView);
-            } else {
-                view = FileBrowserView.DEFAULT;
+                
+                if(savedView != null) {
+                	view = FileBrowserView.fromId(savedView);
+                }
+            }
+            
+            if(view == null) {
+                
+	            if(document.getType().equals("DocumentUrlContainer")){
+	            	view = FileBrowserView.THUMBNAILS;
+	            }
+	            else {
+	                view = FileBrowserView.DEFAULT;
+	            }
             }
 
         } else {
