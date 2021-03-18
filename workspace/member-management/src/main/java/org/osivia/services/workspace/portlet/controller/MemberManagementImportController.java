@@ -132,8 +132,13 @@ public class MemberManagementImportController {
         if (!result.hasErrors()) {
         	this.service.upload(portalControllerContext, options, form);
         }
+        else {
+        	// Empty file if upload is rejected
+        	form.setTemporaryFile(null);
+        	form.setTemporaryFileName(null);
+        }
         
-         response.setRenderParameter("tab", "importCsv");
+        response.setRenderParameter("tab", "importCsv");
     	
 
     }
@@ -162,6 +167,11 @@ public class MemberManagementImportController {
 
             sessionStatus.setComplete();
         }
+        else {
+        	// Empty file if upload is rejected
+        	form.setTemporaryFile(null);
+        	form.setTemporaryFileName(null);
+        }        
         
         response.setRenderParameter("tab", "importCsv");
     	

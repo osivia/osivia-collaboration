@@ -1,12 +1,16 @@
 package org.osivia.services.workspace.portlet.model.validator;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.osivia.services.workspace.portlet.model.ImportForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
@@ -18,7 +22,10 @@ import org.springframework.validation.Validator;
 @Component
 public class ImportValidator implements Validator {
 
-    /**
+    private static final int MAX_SIZE = 100;
+
+
+	/**
      * Constructor.
      */
     public ImportValidator() {
@@ -43,28 +50,53 @@ public class ImportValidator implements Validator {
     	
     	ImportForm form = (ImportForm) target;
     	
-    	if(form.getTemporaryFile() == null) { // check only upload if no temp file is set
     	
-	    	if(form.getUpload().getSize() <= 0) {
+    	if(form.getUpload().getSize() > 0) { // <= upload method
+    		checkFile(errors, form); // Check file integrity
+    	}
+    	else if(form.getTemporaryFile() == null) { // <= save method
+    	
+	    	if(form.getUpload().getSize() <= 0) { // Check if a file is missing
 	    		errors.rejectValue("upload", "INVALID_EMPTY_FILE", null);
 	    	}
-	    	else {    	
-		        // MIME type
-		        MimeType mimeType;
-		        try {
-		            mimeType = new MimeType(form.getUpload().getContentType());
-		            
-		            if(!mimeType.getBaseType().equals("text/csv")) {
-		        		errors.rejectValue("upload", "INVALID_TYPE_FILE", null);
-		
-		            }
-		            
-		        } catch (MimeTypeParseException e) {
-		    		errors.rejectValue("upload", "INVALID_TYPE_FILE", null);
-		        }
-	    	}
+
     	}
-    	
     }
+
+
+	private void checkFile(Errors errors, ImportForm form) {
+		// MIME type
+		MimeType mimeType;
+		try {
+		    mimeType = new MimeType(form.getUpload().getContentType());
+		    
+		    if(!mimeType.getBaseType().equals("text/csv")) {
+				errors.rejectValue("upload", "INVALID_TYPE_FILE", null);
+
+		    }
+		    else {
+		    	
+				CSVParser parser;
+				try {
+					parser = CSVParser.parse(form.getUpload().getInputStream(), StandardCharsets.UTF_8, CSVFormat.EXCEL);
+					int size = parser.getRecords().size();
+					if(size > MAX_SIZE) {
+						errors.rejectValue("upload", "INVALID_FILE_MAX_SIZE", null);
+
+					}
+					
+				} catch (IOException e) {
+					errors.rejectValue("upload", "INVALID_FILE_MAX_SIZE", null);
+
+				}
+		    	
+		    }
+		    
+		} catch (MimeTypeParseException e) {
+			errors.rejectValue("upload", "INVALID_TYPE_FILE", null);
+		}
+		
+
+	}
 
 }

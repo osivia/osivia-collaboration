@@ -31,9 +31,9 @@ public class InvitationsForm extends AbstractMembersForm<Invitation> {
 	private boolean batchRunning = false;
 	
 	/**
-	 * Total lines remaining in the batch process
+	 * Time estimated
 	 */
-	private int linesToProcess;
+	private int timeEstimated;
 
 
     /**
@@ -130,13 +130,14 @@ public class InvitationsForm extends AbstractMembersForm<Invitation> {
 
 	
 
-	public int getLinesToProcess() {
-		return linesToProcess;
+	public int getTimeEstimated() {
+		return timeEstimated;
 	}
 
 
-	public void setLinesToProcess(int linesToProcess) {
-		this.linesToProcess = linesToProcess;
+	public void setTimeEstimated(int timeEstimated) {
+		this.timeEstimated = timeEstimated;
+		
 	}
 
 

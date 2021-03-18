@@ -836,16 +836,17 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         form.setBatchRunning(false);
         List<ImportInvitationsBatch> batchInstances = batchService.getBatchInstances(ImportInvitationsBatch.class);
         
-        int linesToProcess = 0;
+        // time estimation, 2 mins + 1 min per 10 lines
+        
+        int estimated = 2;
         
         for(ImportInvitationsBatch inst : batchInstances ) {
         	if(inst.getDto().getWorkspaceId().equals(workspaceId)) {
         		form.setBatchRunning(true);
-        		linesToProcess += inst.getDto().getRecordNumber();
+        		estimated += (inst.getDto().getRecordNumber() / 10);
         	}
         }
-        form.setLinesToProcess(linesToProcess);
-        
+        form.setTimeEstimated(estimated);
         
         return form;
     }
@@ -2473,15 +2474,17 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         form.setBatchRunning(false);
         List<ImportInvitationsBatch> batchInstances = batchService.getBatchInstances(ImportInvitationsBatch.class);
         
-        int linesToProcess = 0;
+        // time estimation, 2 mins + 1 min per 10 lines
+        
+        int estimated = 2;
         
         for(ImportInvitationsBatch inst : batchInstances ) {
         	if(inst.getDto().getWorkspaceId().equals(workspaceId)) {
         		form.setBatchRunning(true);
-        		linesToProcess += inst.getDto().getRecordNumber();
+        		estimated += (inst.getDto().getRecordNumber() / 10);
         	}
         }
-        form.setLinesToProcess(linesToProcess);
+        form.setTimeEstimated(estimated);
 		
         return form;
 	}

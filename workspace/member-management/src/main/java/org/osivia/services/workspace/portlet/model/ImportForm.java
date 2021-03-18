@@ -60,9 +60,9 @@ public class ImportForm  {
 	private boolean batchRunning;
 
 	/**
-	 * Total lines remaining in the batch process
+	 * Time estimated
 	 */
-	private int linesToProcess;
+	private int timeEstimated;
     
 
 	public WorkspaceRole getRole() {
@@ -140,16 +140,15 @@ public class ImportForm  {
 		this.batchRunning = batchRunning;
 		
 	}
+
+	public int getTimeEstimated() {
+		return timeEstimated;
+	}
+
+	public void setTimeEstimated(int timeEstimated) {
+		this.timeEstimated = timeEstimated;
+	}
 	
 
-	public int getLinesToProcess() {
-		return linesToProcess;
-	}
-
-	public void setLinesToProcess(int linesToProcess) {
-		this.linesToProcess = linesToProcess;
-		
-	}
-    
 
 }

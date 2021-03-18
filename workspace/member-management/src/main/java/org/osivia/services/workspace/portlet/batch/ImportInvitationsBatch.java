@@ -71,9 +71,6 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ImportInvitationsBatch extends NuxeoBatch {
 	
-	/** Process only MAX_RECORDS on a single file */
-	public static final int MAX_RECORDS = 100;
-	
 	protected final static Log logger = LogFactory.getLog("batch");
 
 	/** POJO for the batch */
@@ -167,10 +164,7 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 			
 			boolean hasRejects = false;
 			for(CSVRecord record : parser) {
-				
-				if(count >= MAX_RECORDS) { // security for large csv files
-					break;
-				}
+
 				List<String> invitationsValidated = new ArrayList<String>();
 				
 				String uid = record.get(0); // skip blank lines

@@ -16,7 +16,7 @@
 			   <div class="row">
 					<div class="col-sm-12">
 						<div class="alert alert-info" role="alert">
-			        			<op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_BATCH_RUNNING" args="${import.linesToProcess}"/>
+			        			<op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATION_BATCH_RUNNING" args="${import.timeEstimated}"/>
 						</div>
 					</div>
 				
