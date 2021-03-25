@@ -1,11 +1,13 @@
 $JQry(function() {
-    var $window = $JQry(window);
-    var $radioButtons = $JQry(".editor-link input[type=radio][name=urlType]");
+    var $window = $JQry(window),
+    	$radioButtons = $JQry(".editor-link input[type=radio][name=urlType]");
 
     $radioButtons.change(function(event) {
         $radioButtons.each(function(index, element) {
-            var $input = $JQry(element);
-            var $collapse = $input.closest(".radio").find(".collapse");
+            var $element = $JQry(element),
+                $input = $element.closest("input"),
+                $radio = $input.closest(".radio"),
+                $collapse = $radio.find(".collapse");
 
             if ($input.is(":checked")) {
                 if (!$collapse.hasClass("in")) {
@@ -24,8 +26,7 @@ $JQry(function() {
         var $element = $JQry(element),
             url = $element.data("url"),
             options = {
-                theme: "bootstrap",
-                width: "resolve"
+                theme : "bootstrap"
             };
 
         options["ajax"] = {
@@ -185,8 +186,8 @@ $JQry(function() {
     $JQry(".editor-link select.select2[name=filterType]").each(function(index, element) {
         var $element = $JQry(element),
             options = {
-                theme: "bootstrap",
-                width: "resolve"
+                theme : "bootstrap",
+                width : "resolve"
             };
 
         $element.select2(options);

@@ -1,0 +1,72 @@
+//
+// Editor
+// --------------------------------------------------
+
+
+.editor-link {
+    .form-horizontal .has-feedback .form-control-feedback {
+        right: 0;
+    }
+    
+    .popover-content {
+        min-width: 260px;
+    }
+}
+
+
+.select2-container {
+    .document {
+        .vignette {
+            position: relative;
+            float: left;
+
+            margin-right: 5px;
+
+            img {
+                position: absolute;
+                display: block;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                max-height: 100%;
+                max-width: 100%;
+
+                margin: auto;
+            }
+        }
+
+        i {
+            margin-right: 5px;
+        }
+    }
+
+    .select2-selection {
+        @vignette-size: 20px;
+
+        .document {
+            .vignette {
+                height: @vignette-size;
+                width: @vignette-size;
+            }
+        }
+    }
+
+    .select2-results {
+        @vignette-size: 35px;
+
+        .document {
+            .vignette {
+                height: @vignette-size;
+                width: @vignette-size;
+            }
+
+            .title, .description {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+}
+

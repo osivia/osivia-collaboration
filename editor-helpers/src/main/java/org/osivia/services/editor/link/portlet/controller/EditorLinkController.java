@@ -48,26 +48,26 @@ import net.sf.json.JSONObject;
  * Editor link portlet controller.
  *
  * @author Cédric Krommenhoek
+ * @see CMSPortlet
+ * @see PortletConfigAware
+ * @see PortletContextAware
  */
 @Controller
 @RequestMapping("VIEW")
-public class EditorLinkController {
+@SessionAttributes("filterTypes")
+public class EditorLinkController extends CMSPortlet implements PortletConfigAware, PortletContextAware {
 
-    /**
-     * Portlet context.
-     */
-    @Autowired
+    /** Portlet config. */
+    private PortletConfig portletConfig;
+    /** Portlet context. */
     private PortletContext portletContext;
 
-    /**
-     * Portlet service.
-     */
+
+    /** Portlet service. */
     @Autowired
     private EditorLinkService service;
 
-    /**
-     * Editor link form validator.
-     */
+    /** Editor link form validator. */
     @Autowired
     private EditorLinkFormValidator validator;
 
@@ -77,6 +77,17 @@ public class EditorLinkController {
      */
     public EditorLinkController() {
         super();
+    }
+
+
+    /**
+     * Portlet initialization.
+     *
+     * @throws PortletException
+     */
+    @PostConstruct
+    public void postConstruct() throws PortletException {
+        super.init(this.portletConfig);
     }
 
 
@@ -96,18 +107,18 @@ public class EditorLinkController {
     /**
      * Submit action mapping.
      *
-     * @param request       action request
-     * @param response      action response
-     * @param form          form model attribute
-     * @param bindingResult binding result
+     * @param request  action request
+     * @param response action response
+     * @param form
+     * @throws PortletException
      */
     @ActionMapping("submit")
-    public void submit(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("form") EditorLinkForm form, BindingResult bindingResult) throws
+    public void submit(ActionRequest request, ActionResponse response, @ModelAttribute("form") @Validated EditorLinkForm form, BindingResult result) throws
             PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        if (!bindingResult.hasErrors()) {
+        if (!result.hasErrors()) {
             this.service.save(portalControllerContext, form);
         }
     }
@@ -119,6 +130,7 @@ public class EditorLinkController {
      * @param request  action request
      * @param response action response
      * @param form     editor link form
+     * @throws PortletException
      */
     @ActionMapping("unlink")
     public void unlink(ActionRequest request, ActionResponse response, @ModelAttribute("form") EditorLinkForm form) throws PortletException {
@@ -136,6 +148,8 @@ public class EditorLinkController {
      * @param response resource response
      * @param filter   search filter
      * @param page     search pagination page number
+     * @throws PortletException
+     * @throws IOException
      */
     @ResourceMapping("search")
     public void search(ResourceRequest request, ResourceResponse response, @RequestParam(value = "filter", required = false) String filter, @RequestParam
@@ -157,11 +171,35 @@ public class EditorLinkController {
 
 
     /**
+     * Get filters HTML content resource mapping.
+     * 
+     * @param request resource request
+     * @param response resource response
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ResourceMapping("filters")
+    public void getFilters(ResourceRequest request, ResourceResponse response) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        // Content type
+        response.setContentType("text/html");
+
+        // Request dispatcher
+        String path = this.service.resolveViewPath(portalControllerContext, "filters");
+        PortletRequestDispatcher dispatcher = this.portletContext.getRequestDispatcher(path);
+        dispatcher.include(request, response);
+    }
+
+
+    /**
      * Get editor link form model attribute.
      *
      * @param request  portlet request
      * @param response portlet response
      * @return form
+     * @throws PortletException
      */
     @ModelAttribute("form")
     public EditorLinkForm getForm(PortletRequest request, PortletResponse response) throws PortletException {
@@ -190,6 +228,7 @@ public class EditorLinkController {
      * @param request  portlet request
      * @param response portlet response
      * @return URL types
+     * @throws PortletException
      */
     @ModelAttribute("urlTypes")
     public List<UrlType> getUrlTypes(PortletRequest request, PortletResponse response) throws PortletException {
@@ -197,6 +236,42 @@ public class EditorLinkController {
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 
         return this.service.getUrlTypes(portalControllerContext);
+    }
+
+
+    /**
+     * Get filter types.
+     * 
+     * @param request portlet request
+     * @param response portlet response
+     * @return filter types
+     * @throws PortletException
+     * @throws IOException
+     */
+    @ModelAttribute("filterTypes")
+    public List<FilterType> getFilterTypes(PortletRequest request, PortletResponse response) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
+
+        return this.service.getFilterTypes(portalControllerContext);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setPortletConfig(PortletConfig portletConfig) {
+        this.portletConfig = portletConfig;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setPortletContext(PortletContext portletContext) {
+        this.portletContext = portletContext;
     }
 
 }

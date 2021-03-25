@@ -44,7 +44,7 @@ public class EditorLinkFormValidator implements Validator {
     public void validate(Object target, Errors errors) {
         EditorLinkForm form = (EditorLinkForm) target;
         if (UrlType.MANUAL.equals(form.getUrlType())) {
-        	ValidationUtils.rejectIfEmpty(errors, "manualUrl", "empty");
+        	ValidationUtils.rejectIfEmpty(errors, "manualUrl", "NotEmpty");
         	if (StringUtils.isNotBlank(form.getManualUrl())) {
         		try {
         			if (StringUtils.startsWith(form.getManualUrl(), "/")) {
@@ -56,11 +56,11 @@ public class EditorLinkFormValidator implements Validator {
         				new URL(form.getManualUrl());
         			}
     			} catch (MalformedURLException e) {
-    				errors.rejectValue("manualUrl", "malformed");
+    				errors.rejectValue("manualUrl", "Malformed");
     			}
         	}
         } else if (UrlType.DOCUMENT.equals(form.getUrlType())) {
-            ValidationUtils.rejectIfEmpty(errors, "documentWebId", "empty");
+            ValidationUtils.rejectIfEmpty(errors, "documentWebId", "NotEmpty");
         }
     }
 }
