@@ -1,49 +1,35 @@
 package org.osivia.services.forum.thread.portlet.repository;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
+import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.nuxeo.ecm.automation.client.model.Blob;
-import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.HasFile;
-import org.nuxeo.ecm.automation.client.model.PropertyList;
-import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.nuxeo.ecm.automation.client.model.*;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.forum.thread.portlet.model.ForumThreadForm;
-import org.osivia.services.forum.thread.portlet.model.ForumThreadObject;
-import org.osivia.services.forum.thread.portlet.model.ForumThreadOptions;
-import org.osivia.services.forum.thread.portlet.model.ForumThreadParser;
-import org.osivia.services.forum.thread.portlet.model.ForumThreadParserAction;
-import org.osivia.services.forum.thread.portlet.model.ForumThreadPosts;
-import org.osivia.services.forum.thread.portlet.repository.command.CreateForumThreadPostCommand;
-import org.osivia.services.forum.thread.portlet.repository.command.DeleteForumThreadPostCommand;
-import org.osivia.services.forum.thread.portlet.repository.command.GetForumThreadPostsCommand;
-import org.osivia.services.forum.thread.portlet.repository.command.ToggleForumThreadClosure;
-import org.osivia.services.forum.thread.portlet.repository.command.UpdateForumThreadPostCommand;
+import org.osivia.services.forum.thread.portlet.model.*;
+import org.osivia.services.forum.thread.portlet.repository.command.*;
 import org.osivia.services.forum.util.model.ForumFile;
 import org.osivia.services.forum.util.model.ForumFiles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
-import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
-import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Forum thread portlet repository implementation.
@@ -54,11 +40,21 @@ import net.sf.json.JSONObject;
 @Repository
 public class ForumThreadRepositoryImpl implements ForumThreadRepository {
 
-    /** Application context. */
+    /**
+     * Application context.
+     */
     @Autowired
     private ApplicationContext applicationContext;
 
-    /** Forum thread parser. */
+    /**
+     * Document DAO.
+     */
+    @Autowired
+    private DocumentDAO documentDao;
+
+    /**
+     * Forum thread parser.
+     */
     @Autowired
     private ForumThreadParser parser;
 
@@ -72,7 +68,7 @@ public class ForumThreadRepositoryImpl implements ForumThreadRepository {
 
 
     @Override
-    public void insertMenubarItems(PortalControllerContext portalControllerContext, Document document) throws PortletException {
+    public void insertMenubarItems(PortalControllerContext portalControllerContext, Document document) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCurrentDoc(document);
@@ -83,7 +79,7 @@ public class ForumThreadRepositoryImpl implements ForumThreadRepository {
 
 
     @Override
-    public boolean isClosed(PortalControllerContext portalControllerContext, Document thread) throws PortletException {
+    public boolean isClosed(PortalControllerContext portalControllerContext, Document thread) {
         return thread.getProperties().getBoolean(CLOSED_PROPERTY, false);
     }
 
@@ -124,7 +120,7 @@ public class ForumThreadRepositoryImpl implements ForumThreadRepository {
 
 
     @Override
-    public void deletePost(PortalControllerContext portalControllerContext, ForumThreadForm form, ForumThreadOptions options) throws PortletException {
+    public void deletePost(PortalControllerContext portalControllerContext, ForumThreadForm form, ForumThreadOptions options) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -181,7 +177,7 @@ public class ForumThreadRepositoryImpl implements ForumThreadRepository {
 
 
     @Override
-    public Document toggleThreadClosure(PortalControllerContext portalControllerContext, Document thread, boolean close) throws PortletException {
+    public Document toggleThreadClosure(PortalControllerContext portalControllerContext, Document thread, boolean close) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -221,6 +217,9 @@ public class ForumThreadRepositoryImpl implements ForumThreadRepository {
         ForumThreadObject reply = this.getThreadReply(nuxeoController);
         form.setReply(reply);
 
+        // Document
+        form.setDocument(this.documentDao.toDTO(document));
+
         // Commentable indicator
         boolean commentable = permissions.isCommentable();
         form.setCommentable(commentable);
@@ -228,7 +227,7 @@ public class ForumThreadRepositoryImpl implements ForumThreadRepository {
 
 
     @Override
-    public Document getThread(PortalControllerContext portalControllerContext) throws PortletException {
+    public Document getThread(PortalControllerContext portalControllerContext) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -241,7 +240,7 @@ public class ForumThreadRepositoryImpl implements ForumThreadRepository {
 
 
     @Override
-    public JSONArray getPosts(PortalControllerContext portalControllerContext, Document thread) throws PortletException, IOException {
+    public JSONArray getPosts(PortalControllerContext portalControllerContext, Document thread) throws IOException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -256,7 +255,9 @@ public class ForumThreadRepositoryImpl implements ForumThreadRepository {
         if (blob instanceof HasFile) {
             // Deleting the file
             HasFile hasFile = (HasFile) blob;
-            hasFile.getFile().delete();
+            if (!hasFile.getFile().delete()) {
+                hasFile.getFile().deleteOnExit();
+            }
         }
 
 
@@ -271,9 +272,8 @@ public class ForumThreadRepositoryImpl implements ForumThreadRepository {
      * @param nuxeoController Nuxeo controller
      * @param document        thread Nuxeo document
      * @return forum thread
-     * @throws PortletException
      */
-    private ForumThreadObject getThread(NuxeoController nuxeoController, Document document) throws PortletException {
+    private ForumThreadObject getThread(NuxeoController nuxeoController, Document document) {
         // Forum thread
         ForumThreadObject thread = this.applicationContext.getBean(ForumThreadObject.class);
 
@@ -339,8 +339,6 @@ public class ForumThreadRepositoryImpl implements ForumThreadRepository {
      * @param portalControllerContext portal controller context
      * @param document        thread Nuxeo document
      * @return forum thread posts
-     * @throws PortletException
-     * @throws IOException
      */
     private ForumThreadPosts getThreadPosts(PortalControllerContext portalControllerContext, Document document) throws PortletException, IOException {
         // Nuxeo controller
@@ -405,13 +403,13 @@ public class ForumThreadRepositoryImpl implements ForumThreadRepository {
 
         // Date
         JSONObject dateObject = object.getJSONObject("creationDate");
-        Long dateTime = dateObject.getLong("timeInMillis");
+        long dateTime = dateObject.getLong("timeInMillis");
         Date date = new Date(dateTime);
         post.setDate(date);
 
         // Modified date
         JSONObject modifiedObject = object.getJSONObject("modifiedDate");
-        Long modifiedTime = modifiedObject.getLong("timeInMillis");
+        long modifiedTime = modifiedObject.getLong("timeInMillis");
         if (Math.abs(modifiedTime - dateTime) > TimeUnit.MINUTES.toMillis(1)) {
             Date modified = new Date(modifiedTime);
             post.setModified(modified);
@@ -483,9 +481,8 @@ public class ForumThreadRepositoryImpl implements ForumThreadRepository {
      *
      * @param nuxeoController Nuxeo controller
      * @return forum thread reply
-     * @throws PortletException
      */
-    private ForumThreadObject getThreadReply(NuxeoController nuxeoController) throws PortletException {
+    private ForumThreadObject getThreadReply(NuxeoController nuxeoController) {
         // Portlet request
         PortletRequest request = nuxeoController.getRequest();
 

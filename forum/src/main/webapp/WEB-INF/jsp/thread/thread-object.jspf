@@ -3,13 +3,15 @@
 <%@ taglib uri="http://www.toutatice.fr/jsp/taglib/toutatice" prefix="ttc" %>
 
 
+<%--@elvariable id="form" type="org.osivia.services.forum.thread.portlet.model.ForumThreadForm"--%>
+<%--@elvariable id="threadObject" type="org.osivia.services.forum.thread.portlet.model.ForumThreadObject"--%>
 <div id="${threadObject.id}" class="panel panel-default form-group">
     <div class="panel-body">
         <div class="media">
             <div class="media-left hidden-xs">
                 <!-- Avatar -->
                 <div class="forum-thread-avatar">
-                    <span><ttc:user name="${threadObject.user}" linkable="false" hideDisplayName="true"></ttc:user></span>
+                    <span><ttc:user name="${threadObject.user}" linkable="false" hideDisplayName="true"/></span>
                 </div>
             </div>
 
@@ -17,7 +19,7 @@
                 <div class="clearfix">
                     <div class="pull-left">
                         <!-- Display name -->
-                        <strong class="user-display-name"><ttc:user name="${threadObject.user}" hideAvatar="true"></ttc:user></strong>
+                        <strong class="user-display-name"><ttc:user name="${threadObject.user}" hideAvatar="true"/></strong>
                         <!-- Date -->
                         <span class="text-muted">
                             <span>&ndash;</span>
@@ -57,7 +59,7 @@
                 </div>
 
                 <!-- Message -->
-                <div class="forum-thread-message"><ttc:transformContent content="${threadObject.message}"/></div>
+                <div class="forum-thread-message"><ttc:transformContent document="${form.document}" content="${threadObject.message}"/></div>
 
                 <!-- Modified date -->
                 <c:if test="${not empty threadObject.modified}">

@@ -1,5 +1,6 @@
 package org.osivia.services.forum.thread.portlet.model;
 
+import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import org.osivia.portal.api.portlet.Refreshable;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -15,14 +16,26 @@ import org.springframework.stereotype.Component;
 @Refreshable
 public class ForumThreadForm {
 
-    /** Forum thread. */
+    /**
+     * Forum thread.
+     */
     private ForumThreadObject thread;
-    /** Forum thread posts. */
+    /**
+     * Forum thread posts.
+     */
     private ForumThreadPosts posts;
-    /** Forum thread reply. */
+    /**
+     * Forum thread reply.
+     */
     private ForumThreadObject reply;
 
-    /** Commentable indicator. */
+    /**
+     * Document.
+     */
+    private DocumentDTO document;
+    /**
+     * Commentable indicator.
+     */
     private boolean commentable;
 
 
@@ -86,6 +99,14 @@ public class ForumThreadForm {
      */
     public void setReply(ForumThreadObject reply) {
         this.reply = reply;
+    }
+
+    public DocumentDTO getDocument() {
+        return document;
+    }
+
+    public void setDocument(DocumentDTO document) {
+        this.document = document;
     }
 
     /**
