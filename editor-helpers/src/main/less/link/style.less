@@ -1,0 +1,25 @@
+.editor-link {
+  @icon-size: 26px;
+
+
+  .media {
+    display: block;
+  }
+
+  .media-left, .media-right {
+    height: @icon-size;
+
+    > * {
+      display: block;
+      width: @icon-size;
+    }
+  }
+
+  a {
+    &.thumbnail {
+      &:hover, &:focus {
+        text-decoration: none;
+      }
+    }
+  }
+}

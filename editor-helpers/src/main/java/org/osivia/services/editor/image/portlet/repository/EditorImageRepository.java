@@ -3,12 +3,13 @@ package org.osivia.services.editor.image.portlet.repository;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.cms.CMSBinaryContent;
+import org.osivia.services.editor.common.model.SearchScope;
 import org.osivia.services.editor.common.repository.CommonRepository;
 import org.osivia.services.editor.image.portlet.model.AttachedImage;
-import org.osivia.services.editor.image.portlet.model.SearchScope;
 
 import javax.portlet.PortletException;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -21,10 +22,6 @@ import java.util.SortedSet;
 public interface EditorImageRepository extends CommonRepository {
 
     /**
-     * WebId document property.
-     */
-    String WEB_ID_PROPERTY = "ttc:webid";
-    /**
      * Attached images document property.
      */
     String ATTACHED_IMAGES_PROPERTY = "ttc:images";
@@ -33,10 +30,6 @@ public interface EditorImageRepository extends CommonRepository {
      * Attached image URL prefix.
      */
     String ATTACHED_IMAGE_URL_PREFIX = "/nuxeo/nxfile/default/attachedImages/";
-    /**
-     * Nuxeo document URL prefix.
-     */
-    String DOCUMENT_URL_PREFIX = "/nuxeo/web/";
     /**
      * Nuxeo document URL suffix.
      */
@@ -69,10 +62,11 @@ public interface EditorImageRepository extends CommonRepository {
      * Get attached image URL.
      *
      * @param portalControllerContext portal controller context
-     * @param attachedImage           attached image
+     * @param index                   attached image index
+     * @param fileName                attached image file name
      * @return URL
      */
-    String getAttachedImageUrl(PortalControllerContext portalControllerContext, AttachedImage attachedImage) throws PortletException;
+    String getAttachedImageUrl(PortalControllerContext portalControllerContext, int index, String fileName) throws PortletException, IOException;
 
 
     /**
@@ -86,15 +80,13 @@ public interface EditorImageRepository extends CommonRepository {
 
 
     /**
-     * Search image documents.
+     * Copy attached image.
      *
      * @param portalControllerContext portal controller context
-     * @param basePath                base path
-     * @param filter                  search filter
-     * @param scope                   search scope
-     * @return documents
+     * @param sourcePath              source document path
+     * @param targetPath              target document path
      */
-    List<Document> search(PortalControllerContext portalControllerContext, String basePath, String filter, SearchScope scope) throws PortletException;
+    void copyAttachedImage(PortalControllerContext portalControllerContext, String sourcePath, String targetPath) throws PortletException;
 
 
     /**
@@ -104,7 +96,7 @@ public interface EditorImageRepository extends CommonRepository {
      * @param path                    document path
      * @return URL
      */
-    String getImageDocumentUrl(PortalControllerContext portalControllerContext, String path) throws PortletException;
+    String getImageDocumentUrl(PortalControllerContext portalControllerContext, String path) throws PortletException, IOException;
 
 
     /**

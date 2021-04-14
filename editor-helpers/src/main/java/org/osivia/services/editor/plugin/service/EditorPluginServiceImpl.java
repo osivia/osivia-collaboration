@@ -1,8 +1,10 @@
 package org.osivia.services.editor.plugin.service;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.editor.EditorModule;
 import org.osivia.portal.api.editor.EditorModuleResource;
+import org.osivia.services.editor.common.repository.CommonRepository;
 import org.osivia.services.editor.common.service.CommonServiceImpl;
 import org.osivia.services.editor.plugin.model.editor.EditorHelper;
 import org.osivia.services.editor.plugin.model.editor.image.ImagePreviewEditorModuleResource;
@@ -38,6 +40,12 @@ public class EditorPluginServiceImpl extends CommonServiceImpl implements Editor
 
 
     @Override
+    protected CommonRepository getRepository() {
+        return null;
+    }
+
+
+    @Override
     public void customizeEditorModules(List<EditorModule> modules) {
         // Editor helpers
         EditorHelper[] helpers = EditorHelper.values();
@@ -65,4 +73,11 @@ public class EditorPluginServiceImpl extends CommonServiceImpl implements Editor
             }
         }
     }
+
+
+    @Override
+    public void selectDocument(PortalControllerContext portalControllerContext, String path) {
+        // Do nothing
+    }
+
 }

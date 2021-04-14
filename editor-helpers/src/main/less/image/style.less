@@ -1,7 +1,21 @@
 .editor-image {
   .thumbnail {
     img {
-      max-height: 100px;
+      height: 100px;
+      object-fit: contain;
+
+      ~ span {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        padding-top: 4px;
+        padding-left: 5px;
+        padding-right: 5px;
+
+        text-align: center;
+      }
     }
   }
 }

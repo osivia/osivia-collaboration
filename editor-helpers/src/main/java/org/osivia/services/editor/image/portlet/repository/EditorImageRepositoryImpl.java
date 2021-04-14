@@ -3,7 +3,6 @@ package org.osivia.services.editor.image.portlet.repository;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -11,16 +10,14 @@ import org.osivia.portal.core.cms.CMSBinaryContent;
 import org.osivia.portal.core.web.IWebIdService;
 import org.osivia.services.editor.common.repository.CommonRepositoryImpl;
 import org.osivia.services.editor.image.portlet.model.AttachedImage;
-import org.osivia.services.editor.image.portlet.model.SearchScope;
 import org.osivia.services.editor.image.portlet.repository.command.AddAttachedImageCommand;
+import org.osivia.services.editor.image.portlet.repository.command.CopyImageCommand;
 import org.osivia.services.editor.image.portlet.repository.command.DeleteAttachedImageCommand;
-import org.osivia.services.editor.image.portlet.repository.command.SearchImageDocumentsCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -93,14 +90,19 @@ public class EditorImageRepositoryImpl extends CommonRepositoryImpl implements E
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(AddAttachedImageCommand.class, path, temporaryFile, fileName, contentType);
+        AddAttachedImageCommand command = this.applicationContext.getBean(AddAttachedImageCommand.class);
+        command.setPath(path);
+        command.setTemporaryFile(temporaryFile);
+        command.setFileName(fileName);
+        command.setContentType(contentType);
+
         nuxeoController.executeNuxeoCommand(command);
     }
 
 
     @Override
-    public String getAttachedImageUrl(PortalControllerContext portalControllerContext, AttachedImage attachedImage) {
-        return ATTACHED_IMAGE_URL_PREFIX + ATTACHED_IMAGES_PROPERTY + "/" + attachedImage.getIndex() + "/file/" + attachedImage.getFileName();
+    public String getAttachedImageUrl(PortalControllerContext portalControllerContext, int index, String fileName) {
+        return ATTACHED_IMAGE_URL_PREFIX + ATTACHED_IMAGES_PROPERTY + "/" + index + "/file/" + fileName;
     }
 
 
@@ -116,15 +118,16 @@ public class EditorImageRepositoryImpl extends CommonRepositoryImpl implements E
 
 
     @Override
-    public List<Document> search(PortalControllerContext portalControllerContext, String basePath, String filter, SearchScope scope) {
+    public void copyAttachedImage(PortalControllerContext portalControllerContext, String sourcePath, String targetPath) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(SearchImageDocumentsCommand.class, basePath, filter, scope);
+        CopyImageCommand command = this.applicationContext.getBean(CopyImageCommand.class);
+        command.setSourcePath(sourcePath);
+        command.setTargetPath(targetPath);
 
-        Documents result = (Documents) nuxeoController.executeNuxeoCommand(command);
-
-        return result.list();
+        nuxeoController.executeNuxeoCommand(command);
     }
 
 

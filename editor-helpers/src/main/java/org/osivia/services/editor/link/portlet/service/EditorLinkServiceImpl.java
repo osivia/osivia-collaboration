@@ -1,44 +1,20 @@
 package org.osivia.services.editor.link.portlet.service;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
-import org.osivia.portal.api.cms.DocumentType;
-import org.osivia.portal.api.cms.FileMimeType;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.internationalization.Bundle;
-import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.services.editor.common.repository.CommonRepository;
 import org.osivia.services.editor.common.service.CommonServiceImpl;
 import org.osivia.services.editor.link.portlet.model.EditorLinkForm;
-import org.osivia.services.editor.link.portlet.model.FilterType;
-import org.osivia.services.editor.link.portlet.model.UrlType;
-import org.osivia.services.editor.link.portlet.model.comparator.FilterTypeComparator;
 import org.osivia.services.editor.link.portlet.repository.EditorLinkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
-import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import javax.portlet.PortletException;
 
 /**
  * Editor link portlet service implementation.
@@ -50,9 +26,7 @@ import net.sf.json.JSONObject;
 @Service
 public class EditorLinkServiceImpl extends CommonServiceImpl implements EditorLinkService {
 
-    /**
-     * Application context.
-     */
+    /** Application context. */
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -61,18 +35,6 @@ public class EditorLinkServiceImpl extends CommonServiceImpl implements EditorLi
      */
     @Autowired
     private EditorLinkRepository repository;
-
-    /**
-     * Filter type comparator.
-     */
-    @Autowired
-    private FilterTypeComparator filterTypeComparator;
-
-    /**
-     * Internationalization bundle factory.
-     */
-    @Autowired
-    private IBundleFactory bundleFactory;
 
 
     /**
@@ -83,200 +45,78 @@ public class EditorLinkServiceImpl extends CommonServiceImpl implements EditorLi
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void save(PortalControllerContext portalControllerContext, EditorLinkForm form) throws PortletException {
-        if (UrlType.MANUAL.equals(form.getUrlType())) {
-            form.setUrl(form.getManualUrl());
+    protected CommonRepository getRepository() {
+        return this.repository;
+    }
 
-            if (StringUtils.isBlank(form.getText())) {
-                form.setText(form.getManualUrl());
-            }
-        } else if (UrlType.DOCUMENT.equals(form.getUrlType())) {
-            String webId = form.getDocumentWebId();
 
-            String url = this.repository.getDocumentUrl(portalControllerContext, webId);
-            form.setUrl(url);
-
-            DocumentDTO document = this.repository.getDocumentDto(portalControllerContext, webId);
-            form.setDocument(document);
-
-            if (StringUtils.isBlank(form.getText())) {
-                form.setText(document.getTitle());
-            }
+    @Override
+    public void save(PortalControllerContext portalControllerContext, EditorLinkForm form) {
+        if (StringUtils.isBlank(form.getText())) {
+            form.setText(form.getUrl());
         }
 
         form.setDone(true);
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void unlink(PortalControllerContext portalControllerContext, EditorLinkForm form) throws PortletException {
+    public void unlink(PortalControllerContext portalControllerContext, EditorLinkForm form) {
         form.setUrl(StringUtils.EMPTY);
         form.setDone(true);
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public JSONObject searchDocuments(PortalControllerContext portalControllerContext, String filter, int page) throws PortletException {
-        // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();
-        // Window
-        PortalWindow window = WindowFactory.getWindow(request);
-        // Internationalization bundle
-        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
+    public EditorLinkForm getForm(PortalControllerContext portalControllerContext) {
+        // Form
+        EditorLinkForm form = this.applicationContext.getBean(EditorLinkForm.class);
 
-        // Base path
-        String basePath = window.getProperty(BASE_PATH_WINDOW_PROPERTY);
+        if (!form.isLoaded()) {
+            // Window
+            PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
 
-        // Documents
-        PaginableDocuments documents = this.repository.searchDocuments(portalControllerContext, basePath, filter, page - 1);
+            // URL
+            String url = window.getProperty(URL_WINDOW_PROPERTY);
+            form.setUrl(url);
 
+            // Text
+            String text = window.getProperty(TEXT_WINDOW_PROPERTY);
+            form.setText(text);
 
-        // Total results
-        int total = documents.getTotalSize();
-        // JSON objects
-        List<JSONObject> objects = new ArrayList<>(Math.min(EditorLinkRepository.SELECT2_RESULTS_PAGE_SIZE, total));
+            // Title
+            String title = window.getProperty(TITLE_WINDOW_PROPERTY);
+            form.setTitle(title);
 
-        for (Document document : documents) {
-            // Search result
-            JSONObject object = new JSONObject();
-            // Document properties
-            Map<String, String> properties = this.repository.getDocumentProperties(portalControllerContext, document);
+            // Only text indicator
+            boolean onlyText = BooleanUtils.toBoolean(window.getProperty(ONLY_TEXT_WINDOW_PROPERTY));
+            form.setDisplayText(onlyText);
 
-            for (Map.Entry<String, String> entry : properties.entrySet()) {
-                object.put(entry.getKey(), entry.getValue());
-            }
-
-            objects.add(object);
+            // Loaded indicator
+            form.setLoaded(true);
         }
 
-
-        // Results JSON object
-        JSONObject results = new JSONObject();
-
-        // Items JSON array
-        JSONArray items = new JSONArray();
-
-        // Message
-        if ((page == 1) && CollectionUtils.isNotEmpty(objects)) {
-            String message;
-            if (total == 0) {
-                message = bundle.getString("SELECT2_NO_RESULT");
-            } else if (total == 1) {
-                message = bundle.getString("SELECT2_ONE_RESULT");
-            } else {
-                message = bundle.getString("SELECT2_MULTIPLE_RESULTS", total);
-            }
-            JSONObject object = new JSONObject();
-            object.put("message", message);
-            items.add(object);
-        }
-
-        // Paginated results
-        for (JSONObject object : objects) {
-            items.add(object);
-        }
-
-        // Pagination informations
-        results.put("page", page);
-        results.put("pageSize", EditorLinkRepository.SELECT2_RESULTS_PAGE_SIZE);
-
-        results.put("items", items);
-        results.put("total", total);
-
-
-        return results;
+        return form;
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public EditorLinkForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
-        // Window
-        PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
+    public void selectDocument(PortalControllerContext portalControllerContext, String path) throws PortletException {
+        // Source document
+        Document source = this.repository.getDocument(portalControllerContext, path);
+        // Source webId
+        String webId = source.getString(EditorLinkRepository.WEB_ID_PROPERTY);
+
         // URL
-        String url = window.getProperty(URL_WINDOW_PROPERTY);
-        // Text
-        String text = window.getProperty(TEXT_WINDOW_PROPERTY);
-        // Title
-        String title = window.getProperty(TITLE_WINDOW_PROPERTY);
-        // Only text indicator
-        boolean onlyText = BooleanUtils.toBoolean(window.getProperty(ONLY_TEXT_WINDOW_PROPERTY));
+        String url = this.repository.getDocumentUrl(portalControllerContext, webId);
 
-        return this.repository.createForm(portalControllerContext, url, text, title, onlyText);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<UrlType> getUrlTypes(PortalControllerContext portalControllerContext) throws PortletException {
-        return Arrays.asList(UrlType.values());
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<FilterType> getFilterTypes(PortalControllerContext portalControllerContext) throws PortletException, IOException {
-        // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();
-        // Internationalization bundle
-        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
-
-        // Document types
-        Collection<DocumentType> documentTypes = this.repository.getDocumentTypes(portalControllerContext);
-        // File MIME types
-        Map<String, FileMimeType> fileMimeTypes = this.repository.getFileMimeTypes(portalControllerContext);
-
-        // Filter types
-        List<FilterType> filterTypes = new ArrayList<>(documentTypes.size() + fileMimeTypes.size());
-
-        // All types
-        FilterType all = this.applicationContext.getBean(FilterType.class);
-        all.setName(StringUtils.EMPTY);
-        all.setDisplayName(bundle.getString("FILTER_TYPE_ALL"));
-        all.setLevel(1);
-        filterTypes.add(all);
-
-        for (DocumentType documentType : documentTypes) {
-            if (!documentType.isFile() || StringUtils.equals("File", documentType.getName())) {
-                FilterType filterType = this.applicationContext.getBean(FilterType.class);
-                all.setName(documentType.getName());
-                all.setIcon(documentType.getIcon());
-                all.setDisplayName(bundle.getString("FILTER_TYPE_" + StringUtils.upperCase(documentType.getName())));
-                all.setLevel(1);
-                filterTypes.add(filterType);
-            }
+        // Form
+        EditorLinkForm form = this.getForm(portalControllerContext);
+        form.setUrl(url);
+        if (StringUtils.isBlank(form.getText())) {
+            form.setText(source.getTitle());
         }
-
-        for (FileMimeType fileDocumentType : fileMimeTypes.values()) {
-            FilterType filterType = this.applicationContext.getBean(FilterType.class);
-            all.setName(fileDocumentType.getMimeType().getBaseType());
-            all.setIcon(fileDocumentType.getIcon());
-            all.setDisplayName(fileDocumentType.getDescription());
-            all.setLevel(2);
-            filterTypes.add(filterType);
-        }
-
-
-        // Sort filter types
-        Collections.sort(filterTypes, filterTypeComparator);
-
-        return filterTypes;
     }
 
 }

@@ -88,7 +88,7 @@ public abstract class CommonConfiguration extends CMSPortlet implements PortletC
     @Bean(name = "messageSource")
     public ResourceBundleMessageSource getMessageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames(this.getSlug(), this.getSlug() + "-validation");
+        messageSource.setBasenames("common", this.getSlug(), this.getSlug() + "-validation");
         return messageSource;
     }
 

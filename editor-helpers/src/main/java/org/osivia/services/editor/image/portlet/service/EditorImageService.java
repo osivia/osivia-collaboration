@@ -100,7 +100,7 @@ public interface EditorImageService extends CommonService {
      * @param attachedForm            attached image form
      * @param index                   attached image index
      */
-    void selectAttachedImage(PortalControllerContext portalControllerContext, EditorImageSourceAttachedForm attachedForm, int index) throws PortletException;
+    void selectAttachedImage(PortalControllerContext portalControllerContext, EditorImageSourceAttachedForm attachedForm, int index) throws PortletException, IOException;
 
 
     /**
@@ -111,43 +111,6 @@ public interface EditorImageService extends CommonService {
      * @param index                   attached image index
      */
     void deleteAttachedImage(PortalControllerContext portalControllerContext, EditorImageSourceAttachedForm attachedForm, int index) throws PortletException;
-
-
-    /**
-     * Get image document form.
-     *
-     * @param portalControllerContext portal controller context
-     * @return image document form
-     */
-    EditorImageSourceDocumentForm getDocumentForm(PortalControllerContext portalControllerContext) throws PortletException;
-
-
-    /**
-     * Filter documents.
-     *
-     * @param portalControllerContext portal controller context
-     * @param documentForm            image document form
-     */
-    void filterDocuments(PortalControllerContext portalControllerContext, EditorImageSourceDocumentForm documentForm) throws PortletException;
-
-
-    /**
-     * Serve search results.
-     *
-     * @param portalControllerContext portal controller context
-     * @param filter                  search filter
-     * @param scope                   search scope
-     */
-    void serveSearchResults(PortalControllerContext portalControllerContext, String filter, String scope) throws PortletException, IOException;
-
-
-    /**
-     * Select image document.
-     *
-     * @param portalControllerContext portal controller context
-     * @param path                    document path
-     */
-    void selectDocument(PortalControllerContext portalControllerContext, String path) throws PortletException;
 
 
     /**

@@ -21,9 +21,10 @@
                     <portlet:param name="path" value="${document.path}"/>
                 </portlet:actionURL>
 
-                <div class="col-xs-6">
+                <div class="col-xs-6 col-sm-4">
                     <a href="${selectUrl}" class="thumbnail" title="${document.title}">
-                        <img src="${imageLink.url}" alt="${document.title}">
+                        <img src="${imageLink.url}" alt="">
+                        <span>${document.title}</span>
                     </a>
                 </div>
             </c:forEach>

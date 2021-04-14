@@ -1,18 +1,18 @@
 package org.osivia.services.editor.image.portlet.model.validation;
 
+import org.osivia.services.editor.common.model.validation.CommonValidator;
 import org.osivia.services.editor.image.portlet.model.EditorImageForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 
 /**
  * Editor image form validator.
+ *
  * @author Cédric Krommenhoek
- * @see Validator
+ * @see CommonValidator
  */
 @Component
-public class EditorImageFormValidator implements Validator {
+public class EditorImageFormValidator extends CommonValidator {
 
     /**
      * Constructor.
@@ -30,7 +30,9 @@ public class EditorImageFormValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "url", "empty");
+        EditorImageForm form = (EditorImageForm) target;
+
+        this.validateUrl(errors, "url", form.getUrl());
     }
 
 }

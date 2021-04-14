@@ -1,32 +1,33 @@
-package org.osivia.services.editor.image.portlet.controller;
+package org.osivia.services.editor.link.portlet.controller;
 
 import org.osivia.services.editor.common.controller.SourceDocumentController;
 import org.osivia.services.editor.common.service.CommonService;
-import org.osivia.services.editor.image.portlet.service.EditorImageService;
+import org.osivia.services.editor.link.portlet.service.EditorLinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * Editor document image source portlet controller.
+ * Editor document link source portlet controller.
  *
  * @author Cédric Krommenhoek
+ * @see SourceDocumentController
  */
 @Controller
 @RequestMapping(path = "VIEW", params = "view=document")
-public class EditorImageSourceDocumentController extends SourceDocumentController {
+public class EditorLinkSourceDocumentController extends SourceDocumentController {
 
     /**
      * Portlet service.
      */
     @Autowired
-    private EditorImageService service;
+    private EditorLinkService service;
 
 
     /**
      * Constructor.
      */
-    public EditorImageSourceDocumentController() {
+    public EditorLinkSourceDocumentController() {
         super();
     }
 

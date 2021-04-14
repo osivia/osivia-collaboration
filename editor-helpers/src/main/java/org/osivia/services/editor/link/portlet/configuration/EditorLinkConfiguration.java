@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
  * @see CommonConfiguration
  */
 @Configuration
-@ComponentScan(basePackages = "org.osivia.services.editor.link.portlet")
+@ComponentScan("org.osivia.services.editor.link.portlet")
 public class EditorLinkConfiguration extends CommonConfiguration {
 
     /**

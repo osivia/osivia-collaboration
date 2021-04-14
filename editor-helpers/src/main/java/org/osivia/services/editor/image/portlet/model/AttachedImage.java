@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 /**
  * Attached image java-bean.
+ *
+ * @author Cédric Krommenhoek
+ * @see Comparable
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)

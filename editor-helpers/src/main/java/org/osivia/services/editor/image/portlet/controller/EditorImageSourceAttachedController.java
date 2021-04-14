@@ -85,7 +85,7 @@ public class EditorImageSourceAttachedController {
      * @param attachedForm attached image form model attribute
      */
     @ActionMapping("select")
-    public void select(ActionRequest request, ActionResponse response, @RequestParam("index") String index, @ModelAttribute("attachedForm") EditorImageSourceAttachedForm attachedForm) throws PortletException {
+    public void select(ActionRequest request, ActionResponse response, @RequestParam("index") String index, @ModelAttribute("attachedForm") EditorImageSourceAttachedForm attachedForm) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 

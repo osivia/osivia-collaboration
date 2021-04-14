@@ -1,7 +1,5 @@
 package org.osivia.services.editor.image.portlet.service;
 
-import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
-import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -12,6 +10,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSBinaryContent;
+import org.osivia.services.editor.common.repository.CommonRepository;
 import org.osivia.services.editor.common.service.CommonServiceImpl;
 import org.osivia.services.editor.image.portlet.model.*;
 import org.osivia.services.editor.image.portlet.repository.EditorImageRepository;
@@ -19,9 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import javax.portlet.*;
+import javax.portlet.PortletException;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,12 +63,6 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
     @Autowired
     private EditorImageRepository repository;
 
-    /**
-     * Document DAO.
-     */
-    @Autowired
-    private DocumentDAO documentDao;
-
 
     /**
      * Constructor.
@@ -74,6 +72,12 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
 
         // Attached image URL pattern
         this.attachedImageUrlPattern = Pattern.compile(ATTACHED_IMAGE_URL_REGEX);
+    }
+
+
+    @Override
+    protected CommonRepository getRepository() {
+        return this.repository;
     }
 
 
@@ -134,7 +138,28 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
 
 
     @Override
-    public void save(PortalControllerContext portalControllerContext, EditorImageForm form) {
+    public void save(PortalControllerContext portalControllerContext, EditorImageForm form) throws PortletException {
+        // Window
+        PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
+
+        // Current document path
+        String path = window.getProperty(PATH_WINDOW_PROPERTY);
+
+        if (StringUtils.equals(form.getTemporaryUrl(), form.getUrl())) {
+            // Temporary attached image
+            TemporaryAttachedImage temporaryAttachedImage = form.getTemporaryAttachedImage();
+            if ((temporaryAttachedImage != null) && (temporaryAttachedImage.getFile() != null)) {
+                this.repository.addAttachedImage(portalControllerContext, path, temporaryAttachedImage.getFile(), temporaryAttachedImage.getFileName(), temporaryAttachedImage.getContentType());
+                this.deleteTemporaryFile(temporaryAttachedImage);
+            } else if (StringUtils.isNotEmpty(form.getTemporaryImagePath())) {
+                this.repository.copyAttachedImage(portalControllerContext, form.getTemporaryImagePath(), path);
+            }
+
+            form.setTemporaryAttachedImage(null);
+            form.setTemporaryImagePath(null);
+        }
+
+
         form.setDone(true);
     }
 
@@ -160,12 +185,6 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
 
     @Override
     public void addAttachedImage(PortalControllerContext portalControllerContext, EditorImageSourceAttachedForm attachedForm) throws PortletException, IOException {
-        // Window
-        PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
-
-        // Current document path
-        String path = window.getProperty(PATH_WINDOW_PROPERTY);
-
         // Attached image temporary file
         File temporaryFile = File.createTempFile("attached-image-", ".tmp");
         attachedForm.getUpload().transferTo(temporaryFile);
@@ -174,12 +193,16 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
         // Attached image content type
         String contentType = attachedForm.getUpload().getContentType();
 
-        this.repository.addAttachedImage(portalControllerContext, path, temporaryFile, fileName, contentType);
+        // Form
+        EditorImageForm form = this.getForm(portalControllerContext);
 
-        // Delete temporary file
-        if (!temporaryFile.delete()) {
-            temporaryFile.deleteOnExit();
-        }
+        // Temporary attached image
+        this.deleteTemporaryFile(form.getTemporaryAttachedImage());
+        TemporaryAttachedImage temporaryAttachedImage = this.applicationContext.getBean(TemporaryAttachedImage.class);
+        temporaryAttachedImage.setFile(temporaryFile);
+        temporaryAttachedImage.setFileName(fileName);
+        temporaryAttachedImage.setContentType(contentType);
+        form.setTemporaryAttachedImage(temporaryAttachedImage);
 
 
         // Attached image index
@@ -190,17 +213,15 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
             index = attachedForm.getAttachedImages().size();
         }
 
-
-        // Update attached images
-        SortedSet<AttachedImage> attachedImages = this.repository.getAttachedImages(portalControllerContext, path);
-        attachedForm.setAttachedImages(attachedImages);
-
-        this.selectAttachedImage(portalControllerContext, attachedForm, index);
+        // URL
+        String url = this.repository.getAttachedImageUrl(portalControllerContext, index, fileName);
+        form.setUrl(url);
+        form.setTemporaryUrl(url);
     }
 
 
     @Override
-    public void selectAttachedImage(PortalControllerContext portalControllerContext, EditorImageSourceAttachedForm attachedForm, int index) throws PortletException {
+    public void selectAttachedImage(PortalControllerContext portalControllerContext, EditorImageSourceAttachedForm attachedForm, int index) throws PortletException, IOException {
         // Form
         EditorImageForm form = this.getForm(portalControllerContext);
 
@@ -212,9 +233,22 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
         if (attachedImage == null) {
             url = null;
         } else {
-            url = this.repository.getAttachedImageUrl(portalControllerContext, attachedImage);
+            url = this.repository.getAttachedImageUrl(portalControllerContext, index, attachedImage.getFileName());
         }
         form.setUrl(url);
+        form.setTemporaryUrl(url);
+
+        // Delete temporary attached image
+        TemporaryAttachedImage temporaryAttachedImage = form.getTemporaryAttachedImage();
+        if (temporaryAttachedImage != null) {
+            if (temporaryAttachedImage.getFile() != null) {
+                if (!temporaryAttachedImage.getFile().delete()) {
+                    temporaryAttachedImage.getFile().deleteOnExit();
+                }
+            }
+
+            form.setTemporaryAttachedImage(null);
+        }
     }
 
 
@@ -265,92 +299,47 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
 
 
     @Override
-    public EditorImageSourceDocumentForm getDocumentForm(PortalControllerContext portalControllerContext) {
+    public void selectDocument(PortalControllerContext portalControllerContext, String path) throws PortletException, IOException {
+        // Source document
+        Document source = this.repository.getDocument(portalControllerContext, path);
+
+        // Attached form
+        EditorImageSourceAttachedForm attachedForm = this.getAttachedForm(portalControllerContext);
+
+        // Attached image index
+        int index;
+        if (CollectionUtils.isEmpty(attachedForm.getAttachedImages())) {
+            index = 0;
+        } else {
+            index = attachedForm.getAttachedImages().size();
+        }
+
         // Form
-        EditorImageSourceDocumentForm form = this.applicationContext.getBean(EditorImageSourceDocumentForm.class);
+        EditorImageForm form = this.getForm(portalControllerContext);
 
-        // Search scope
-        form.setScope(SearchScope.DEFAULT);
-        // Available search scopes
-        form.setAvailableScopes(Arrays.asList(SearchScope.values()));
+        // Temporary attached image
+        this.deleteTemporaryFile(form.getTemporaryAttachedImage());
+        form.setTemporaryAttachedImage(null);
+        form.setTemporaryImagePath(path);
 
-        return form;
-    }
-
-
-    @Override
-    public void filterDocuments(PortalControllerContext portalControllerContext, EditorImageSourceDocumentForm documentForm) {
-        // Do nothing
-    }
-
-
-    @Override
-    public void serveSearchResults(PortalControllerContext portalControllerContext, String filter, String scope) throws PortletException, IOException {
-        // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();
-        // Portlet response
-        PortletResponse response = portalControllerContext.getResponse();
-        // Portlet context
-        PortletContext portletContext = portalControllerContext.getPortletCtx();
-
-        // JSP path
-        String jspPath = this.resolveViewPath(portalControllerContext, "search-results");
-
-        // Search results
-        List<DocumentDTO> results = this.search(portalControllerContext, filter, SearchScope.fromId(scope));
-        request.setAttribute("results", results);
-
-        // Request dispatcher
-        PortletRequestDispatcher dispatcher = portletContext.getRequestDispatcher(jspPath);
-        dispatcher.include(request, response);
+        // URL
+        String url = this.repository.getAttachedImageUrl(portalControllerContext, index, source.getTitle());
+        form.setUrl(url);
+        form.setTemporaryUrl(url);
     }
 
 
     /**
-     * Search documents.
+     * Delete attached image temporary file.
      *
-     * @param portalControllerContext portal controller context
-     * @param filter                  search filter
-     * @param scope                   search scope
-     * @return documents
+     * @param temporaryAttachedImage temporary attached image
      */
-    private List<DocumentDTO> search(PortalControllerContext portalControllerContext, String filter, SearchScope scope) throws PortletException {
-        // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();
-        // Window
-        PortalWindow window = WindowFactory.getWindow(request);
-
-        // Base path
-        String basePath = window.getProperty(BASE_PATH_WINDOW_PROPERTY);
-
-        // Nuxeo documents
-        List<Document> nuxeoDocuments = this.repository.search(portalControllerContext, basePath, filter, scope);
-
-        // Documents
-        List<DocumentDTO> documents;
-        if (CollectionUtils.isEmpty(nuxeoDocuments)) {
-            documents = null;
-        } else {
-            documents = new ArrayList<>(nuxeoDocuments.size());
-
-            for (Document nuxeoDocument : nuxeoDocuments) {
-                DocumentDTO document = this.documentDao.toDTO(nuxeoDocument);
-                documents.add(document);
+    private void deleteTemporaryFile(TemporaryAttachedImage temporaryAttachedImage) {
+        if ((temporaryAttachedImage != null) && (temporaryAttachedImage.getFile() != null)) {
+            if (!temporaryAttachedImage.getFile().delete()) {
+                temporaryAttachedImage.getFile().deleteOnExit();
             }
         }
-
-        return documents;
-    }
-
-
-    @Override
-    public void selectDocument(PortalControllerContext portalControllerContext, String path) throws PortletException {
-        // Form
-        EditorImageForm form = this.getForm(portalControllerContext);
-
-        // URL
-        String url = this.repository.getImageDocumentUrl(portalControllerContext, path);
-        form.setUrl(url);
     }
 
 

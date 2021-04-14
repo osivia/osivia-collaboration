@@ -31,10 +31,19 @@ public class EditorImageForm {
      * Width.
      */
     private Integer width;
+
     /**
-     * Source type.
+     * Temporary attached image.
      */
-    private ImageSourceType sourceType;
+    private TemporaryAttachedImage temporaryAttachedImage;
+    /**
+     * Temporary image path.
+     */
+    private String temporaryImagePath;
+    /**
+     * Temporary image URL.
+     */
+    private String temporaryUrl;
 
     /**
      * Done indicator.
@@ -54,6 +63,7 @@ public class EditorImageForm {
      * Constructor.
      */
     public EditorImageForm() {
+        super();
     }
 
 
@@ -89,12 +99,28 @@ public class EditorImageForm {
         this.width = width;
     }
 
-    public ImageSourceType getSourceType() {
-        return sourceType;
+    public TemporaryAttachedImage getTemporaryAttachedImage() {
+        return temporaryAttachedImage;
     }
 
-    public void setSourceType(ImageSourceType sourceType) {
-        this.sourceType = sourceType;
+    public void setTemporaryAttachedImage(TemporaryAttachedImage temporaryAttachedImage) {
+        this.temporaryAttachedImage = temporaryAttachedImage;
+    }
+
+    public String getTemporaryImagePath() {
+        return temporaryImagePath;
+    }
+
+    public void setTemporaryImagePath(String temporaryImagePath) {
+        this.temporaryImagePath = temporaryImagePath;
+    }
+
+    public String getTemporaryUrl() {
+        return temporaryUrl;
+    }
+
+    public void setTemporaryUrl(String temporaryUrl) {
+        this.temporaryUrl = temporaryUrl;
     }
 
     public boolean isDone() {

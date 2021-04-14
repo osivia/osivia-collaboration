@@ -44,28 +44,16 @@
                 <c:otherwise>
                     <div class="row">
                         <c:forEach var="attachedImage" items="${attachedForm.attachedImages}" varStatus="status">
-                            <div class="col-xs-6">
-                                <div class="thumbnail">
-                                    <img src="${attachedImage.url}">
+                            <portlet:actionURL var="selectUrl" name="select" copyCurrentRenderParameters="true">
+                                <portlet:param name="index" value="${attachedImage.index}"/>
+                            </portlet:actionURL>
 
-                                    <div class="caption">
-                                        <h3 class="h5 text-center">${attachedImage.fileName}</h3>
-                                        <div class="text-center">
-                                            <%--Select--%>
-                                            <portlet:actionURL var="url" name="select" copyCurrentRenderParameters="true">
-                                                <portlet:param name="index" value="${attachedImage.index}"/>
-                                            </portlet:actionURL>
-                                            <a href="${url}" class="btn btn-primary btn-sm">
-                                                <span><op:translate key="SELECT"/></span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="col-xs-6 col-sm-4">
+                                <a href="${selectUrl}" class="thumbnail" title="${attachedImage.fileName}">
+                                    <img src="${attachedImage.url}" alt="">
+                                    <span>${attachedImage.fileName}</span>
+                                </a>
                             </div>
-
-                            <c:if test="${status.count % 2 eq 0}">
-                                <div class="clearfix"></div>
-                            </c:if>
                         </c:forEach>
                     </div>
                 </c:otherwise>

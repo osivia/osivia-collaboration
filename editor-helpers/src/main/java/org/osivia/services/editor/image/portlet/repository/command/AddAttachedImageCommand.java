@@ -27,36 +27,26 @@ public class AddAttachedImageCommand implements INuxeoCommand {
     /**
      * Document path.
      */
-    private final String path;
+    private String path;
     /**
      * Attached image temporary file.
      */
-    private final File temporaryFile;
+    private File temporaryFile;
     /**
      * Attached image file name.
      */
-    private final String fileName;
+    private String fileName;
     /**
      * Attached image content type.
      */
-    private final String contentType;
+    private String contentType;
 
 
     /**
      * Constructor.
-     *
-     * @param path          document path
-     * @param temporaryFile attached image temporary file
-     * @param fileName      attached image file name
-     * @param contentType   attached image content type
      */
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public AddAttachedImageCommand(String path, File temporaryFile, String fileName, String contentType) {
+    public AddAttachedImageCommand() {
         super();
-        this.path = path;
-        this.temporaryFile = temporaryFile;
-        this.fileName = fileName;
-        this.contentType = contentType;
     }
 
 
@@ -81,4 +71,20 @@ public class AddAttachedImageCommand implements INuxeoCommand {
         return null;
     }
 
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setTemporaryFile(File temporaryFile) {
+        this.temporaryFile = temporaryFile;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
 }

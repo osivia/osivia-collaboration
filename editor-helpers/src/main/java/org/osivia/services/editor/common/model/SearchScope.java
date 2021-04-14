@@ -1,4 +1,4 @@
-package org.osivia.services.editor.image.portlet.model;
+package org.osivia.services.editor.common.model;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -40,7 +40,7 @@ public enum SearchScope {
      */
     SearchScope() {
         this.id = StringUtils.lowerCase(this.name());
-        this.key = "EDITOR_IMAGE_SEARCH_SCOPE_" + StringUtils.upperCase(this.name());
+        this.key = "EDITOR_SEARCH_SCOPE_" + StringUtils.upperCase(this.name());
     }
 
 
