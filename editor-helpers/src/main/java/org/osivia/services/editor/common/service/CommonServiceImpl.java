@@ -3,7 +3,10 @@ package org.osivia.services.editor.common.service;
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
+import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
@@ -113,24 +116,32 @@ public abstract class CommonServiceImpl implements CommonService {
         // JSP path
         String jspPath = this.resolveViewPath(portalControllerContext, "search-results");
 
-        // Nuxeo documents
-        List<Document> nuxeoDocuments = this.getRepository().searchDocuments(portalControllerContext, basePath, filter, SearchScope.fromId(scope));
-
-        // Documents
-        List<DocumentDTO> documents;
-        if (CollectionUtils.isEmpty(nuxeoDocuments)) {
-            documents = null;
+        if (StringUtils.isBlank(filter)) {
+            // Empty filter
+            request.setAttribute("emptyFilter", true);
         } else {
-            documents = new ArrayList<>(nuxeoDocuments.size());
+            // Nuxeo documents
+            PaginableDocuments nuxeoDocuments = this.getRepository().searchDocuments(portalControllerContext, basePath, filter, SearchScope.fromId(scope));
 
-            for (Document nuxeoDocument : nuxeoDocuments) {
-                DocumentDTO document = this.documentDao.toDTO(nuxeoDocument);
-                documents.add(document);
+            // Documents
+            List<DocumentDTO> documents;
+            if (nuxeoDocuments.isEmpty()) {
+                documents = null;
+            } else {
+                documents = new ArrayList<>(nuxeoDocuments.size());
+
+                for (Document nuxeoDocument : nuxeoDocuments) {
+                    DocumentDTO document = this.documentDao.toDTO(nuxeoDocument);
+                    documents.add(document);
+                }
             }
+
+            // Search results
+            request.setAttribute("results", documents);
+            request.setAttribute("total", nuxeoDocuments.getTotalSize());
         }
 
-        // Search results
-        request.setAttribute("results", documents);
+
 
         // Request dispatcher
         PortletRequestDispatcher dispatcher = portletContext.getRequestDispatcher(jspPath);

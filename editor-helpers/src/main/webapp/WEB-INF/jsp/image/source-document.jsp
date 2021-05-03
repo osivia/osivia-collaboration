@@ -26,14 +26,6 @@
             <form:label path="filter" cssClass="control-label"><op:translate
                     key="EDITOR_IMAGE_DOCUMENT_FORM_FILTER_LABEL"/></form:label>
             <form:input path="filter" type="search" cssClass="form-control"/>
-            <c:forEach var="scope" items="${documentForm.availableScopes}">
-                <div class="radio">
-                    <label>
-                        <form:radiobutton path="scope" value="${scope}"/>
-                        <span><op:translate key="${scope.key}"/></span>
-                    </label>
-                </div>
-            </c:forEach>
         </div>
 
         <div class="form-group">

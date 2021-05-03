@@ -56,7 +56,7 @@ public abstract class SearchSourceDocumentCommand implements INuxeoCommand {
         OperationRequest operationRequest = nuxeoSession.newRequest(OPERATION_ID);
         operationRequest.set(Constants.HEADER_NX_SCHEMAS, "*");
         operationRequest.set("query", "SELECT * FROM Document WHERE " + filteredClause);
-        operationRequest.set("pageSize", 50);
+        operationRequest.set("pageSize", 20);
         operationRequest.set("currentPageIndex", 0);
 
         return operationRequest.execute();

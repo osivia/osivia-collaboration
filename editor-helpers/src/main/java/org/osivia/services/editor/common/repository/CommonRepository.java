@@ -1,6 +1,8 @@
 package org.osivia.services.editor.common.repository;
 
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
+import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.editor.common.model.SearchScope;
 
@@ -44,6 +46,6 @@ public interface CommonRepository {
      * @param scope                   search scope
      * @return documents
      */
-    List<Document> searchDocuments(PortalControllerContext portalControllerContext, String basePath, String filter, SearchScope scope);
+    PaginableDocuments searchDocuments(PortalControllerContext portalControllerContext, String basePath, String filter, SearchScope scope);
 
 }

@@ -49,6 +49,7 @@
         <div class="form-group">
             <form:label path="alt" cssClass="control-label"><op:translate key="EDITOR_IMAGE_FORM_ALT_LABEL"/></form:label>
             <form:input path="alt" cssClass="form-control"/>
+            <p class="help-block"><op:translate key="EDITOR_IMAGE_FORM_ALT_HELP"/></p>
         </div>
 
         <div class="row">

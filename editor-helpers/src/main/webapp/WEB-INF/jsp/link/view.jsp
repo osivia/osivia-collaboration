@@ -49,6 +49,7 @@
             <div class="form-group">
                 <form:label path="text" cssClass="control-label"><op:translate key="EDITOR_LINK_FORM_TEXT_LABEL" /></form:label>
                 <form:input path="text" cssClass="form-control" />
+                <p class="help-block"><op:translate key="EDITOR_LINK_FORM_TEXT_HELP"/></p>
             </div>
         </c:if>
 

@@ -1,14 +1,10 @@
 package org.osivia.services.editor.link.portlet.repository;
 
-import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.editor.common.repository.CommonRepository;
-import org.osivia.services.editor.link.portlet.model.EditorLinkForm;
 
 import javax.portlet.PortletException;
-import java.util.Map;
 
 /**
  * Editor link portlet repository interface.
@@ -26,5 +22,15 @@ public interface EditorLinkRepository extends CommonRepository {
      * @return URL
      */
     String getDocumentUrl(PortalControllerContext portalControllerContext, String webId) throws PortletException;
+
+
+    /**
+     * Get document from URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @param url                     URL
+     * @return document, or null if URL isn't a Nuxeo URL, or if the document is not found
+     */
+    Document getDocumentFromUrl(PortalControllerContext portalControllerContext, String url) throws PortletException;
 
 }

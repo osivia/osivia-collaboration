@@ -36,7 +36,7 @@ public class SearchDocumentsCommand extends SearchSourceDocumentCommand {
     @Override
     protected String getClause() {
         StringBuilder clause = new StringBuilder();
-        clause.append("ecm:primaryType NOT IN ('Domain', 'TemplateRoot', 'WorkspaceRoot', 'ProceduresContainer', 'ProceduresModelsContainer', 'ProcedureModel', 'ProceduresInstancesContainer', 'ProcedureInstance') ");
+        clause.append("ecm:primaryType IN ('Annonce', 'Audio', 'ContextualLink', 'DocumentUrlContainer', 'File', 'Folder', 'Forum', 'Note', 'Picture', 'PictureBook', 'Question', 'Thread', 'ToutaticePad', 'VEVENT', 'Video') ");
         if (StringUtils.isNotBlank(this.getFilter())) {
             clause.append("AND (dc:title ILIKE '").append(this.getFilter()).append("%' OR ecm:fulltext = '").append(this.getFilter()).append("') ");
         }

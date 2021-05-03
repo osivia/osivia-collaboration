@@ -4,6 +4,7 @@ import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
+import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.editor.common.model.SearchScope;
 import org.osivia.services.editor.common.repository.command.SearchSourceDocumentCommand;
@@ -50,7 +51,7 @@ public abstract class CommonRepositoryImpl implements CommonRepository {
 
 
     @Override
-    public List<Document> searchDocuments(PortalControllerContext portalControllerContext, String basePath, String filter, SearchScope scope) {
+    public PaginableDocuments searchDocuments(PortalControllerContext portalControllerContext, String basePath, String filter, SearchScope scope) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         // Nuxeo command
@@ -59,9 +60,7 @@ public abstract class CommonRepositoryImpl implements CommonRepository {
         command.setFilter(filter);
         command.setScope(scope);
 
-        Documents result = (Documents) nuxeoController.executeNuxeoCommand(command);
-
-        return result.list();
+        return (PaginableDocuments) nuxeoController.executeNuxeoCommand(command);
     }
 
 }

@@ -52,9 +52,20 @@ public class EditorLinkServiceImpl extends CommonServiceImpl implements EditorLi
 
 
     @Override
-    public void save(PortalControllerContext portalControllerContext, EditorLinkForm form) {
+    public void save(PortalControllerContext portalControllerContext, EditorLinkForm form) throws PortletException {
         if (StringUtils.isBlank(form.getText())) {
-            form.setText(form.getUrl());
+            // Try to find a document from URL
+            Document document = this.repository.getDocumentFromUrl(portalControllerContext, form.getUrl());
+
+            // Default text
+            String text;
+            if ((document == null) || StringUtils.isEmpty(document.getTitle())) {
+                text = form.getUrl();
+            } else {
+                text = document.getTitle();
+            }
+
+            form.setText(text);
         }
 
         form.setDone(true);
@@ -114,9 +125,6 @@ public class EditorLinkServiceImpl extends CommonServiceImpl implements EditorLi
         // Form
         EditorLinkForm form = this.getForm(portalControllerContext);
         form.setUrl(url);
-        if (StringUtils.isBlank(form.getText())) {
-            form.setText(source.getTitle());
-        }
     }
 
 }
