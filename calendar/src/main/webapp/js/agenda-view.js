@@ -172,165 +172,165 @@ function isDraggingEnded( last_attached_event, last_dragging_date)	{
 /**
  * Chargement du calendrier au chargement de la portlet
  */
+var initializedScheduler = false;
 $JQry(window).ready(function() {
-    var divScheduler = $JQry("div#scheduler_here");
-    var viewEventUrl = divScheduler.data("url-viewevent");
+    if (!initializedScheduler) {
+        var divScheduler = $JQry("div#scheduler_here");
 
-    if (!divScheduler.data("loaded")) {
-    // Variable ajoutée pour corriger un bug dans le composant dhtmlx scheduler
-    // En cliquant rapidement (moins de 500ms entre chaque clic) pour créer plusieurs événements, ceux-ci étaient créées mais non enregistrés en base
-    // L'objectif est de ne plus les créer, en les filtrant lors de l'appel à l'écouter onBeforeEventCreated
-    var last_attached_event;
-    var last_dragging_date;
+        // Variable ajoutée pour corriger un bug dans le composant dhtmlx scheduler
+        // En cliquant rapidement (moins de 500ms entre chaque clic) pour créer plusieurs événements, ceux-ci étaient créées mais non enregistrés en base
+        // L'objectif est de ne plus les créer, en les filtrant lors de l'appel à l'écouter onBeforeEventCreated
+        var last_attached_event;
+        var last_dragging_date;
 
-    if (divScheduler!= null && null != divScheduler.data("period"))
-    {
-        //printCell is in agenda-view-cell.js
-        //Important: do printCell before initScheduler
-        printCell();
+        if (divScheduler!= null && null != divScheduler.data("period")) {
+            //printCell is in agenda-view-cell.js
+            //Important: do printCell before initScheduler
+            printCell();
 
-        initScheduler(false);
+            initScheduler(false);
 
-        //To display or hide menu bar on the event's left when the user click on the event
-        scheduler.attachEvent("onClick", function(id, event){
-            if (isReadonly(id)) {
-                return false;
-            } else if (event.target.hasAttribute("onclick")) {
+            //To display or hide menu bar on the event's left when the user click on the event
+            scheduler.attachEvent("onClick", function(id, event){
+                if (isReadonly(id)) {
+                    return false;
+                } else if (event.target.hasAttribute("onclick")) {
+                    return false;
+                } else {
+                    var divScheduler = $JQry("div#scheduler_here");
+                    var isEditableUrl = divScheduler.data("url-eventeditable");
+                    var boolReturn = false;
+                    jQuery.ajax({
+                        url: isEditableUrl,
+                        data: {
+                            id: id
+                        },
+                        async: false,
+                        cache: false,
+                        dataType: "json",
+                        success : function(data, status, xhr) {
+                            if (data)
+                            {
+                                boolReturn = true;
+                            } else
+                            {
+                                boolReturn = false;
+                            }
+                        },
+                        error : function(data, status, xhr) {
+                            console.log( "Erreur lors de l'appel Ajax, status: "+status+ ", data: "+data);
+                        }
+                    });
+                    return boolReturn;
+                }
+            });
+
+            scheduler.attachEvent("onDblClick", function(id,ev){
+                var divScheduler = $JQry("div#scheduler_here");
+                var event = scheduler.getEvent(id);
+                if (event.doc_id != undefined)
+                {
+                    var viewEventUrl = divScheduler.data("url-viewevent");
+                    var options = {
+                        method : "post",
+                        postBody: addScrollParam("doc_id=" + event.doc_id,divScheduler.data("period"))
+                    };
+                    directAjaxCall(null, options, viewEventUrl, null, null);
+                    return false;
+                } else
+                {
+                    return true;
+                }
+            });
+
+            scheduler.attachEvent("onBeforeDrag", function(id) {
+                return !isReadonly(id);
+            });
+
+            scheduler.attachEvent("onDragEnd", function(){
+                last_attached_event = "onDragEnd";
+                last_dragging_date = new Date();
+            });
+
+            scheduler.attachEvent("onEventDeleted", function (id) {
+                last_attached_event = "onEventDeleted";
+            });
+
+            scheduler.attachEvent("onBeforeEventCreated", function (e){
+                //return !(last_attached_event == "onDragEnd");
+                return isDraggingEnded(last_attached_event, last_dragging_date);
+            });
+
+            scheduler.attachEvent("onEventAdded", function (id, ev) {
+                //console.log("onEventAdded, id="+id+" , ev="+ev.text);
+                var divSched = $JQry("div#scheduler_here");
+                if (divSched.data("period")!="month")
+                {
+                    saveEvent(ev);
+                }
+                last_attached_event = "onEventAdded";
+            });
+
+            scheduler.attachEvent("onEventChanged", function (id, ev) {
+                //console.log("onEventChanged, id="+id+" , ev="+ev.text);
+                saveEvent(ev);
+            });
+
+            scheduler.attachEvent("onEventSave", function (id, ev) {
+                last_attached_event = "onEventSave";
+                //console.log("onEventSave, id="+id+" , ev="+ev.text);
+                var divSched = $JQry("div#scheduler_here");
+                if (divSched.data("period")!="month")
+                {
+                    saveEvent(ev);
+                }
+                return true;
+            });
+
+            scheduler.attachEvent("onBeforeEventDelete", function (id,ev) {
+                //console.log("onBeforeEventDelete, id="+id+" , ev="+ev.text);
+                removeEvent(ev);
+                return true;
+            });
+
+            scheduler.attachEvent("onSchedulerResize", onSchedulerResize);
+
+
+            scheduler.ignore_week = isIgnoredDate;
+            scheduler.ignore_month = isIgnoredDate;
+
+            var fix_date = function(date) {  // 17:48:56 -> 17:30:00  et  17:05:41 -> 17:00:00
+                date = new Date(date);
+                if (date.getMinutes() > 30)
+                    date.setMinutes(30);
+                else
+                    date.setMinutes(0);
+                date.setSeconds(0);
+                return date;
+            };
+
+            var event_step = 60;
+            //Evenement created by single click
+            scheduler.attachEvent("onEmptyClick", function(date, native_event){
+                if (scheduler.config.readonly) {
+                    return false;
+                } else if (isDraggingEnded(last_attached_event, last_dragging_date)) {
+                    var fixed_date = fix_date(date);
+                    scheduler.addEventNow(fixed_date, scheduler.date.add(fixed_date, event_step, "minute"));
+                }
+            });
+
+            initializedScheduler = true;
+        }
+
+
+        function isReadonly(id) {
+            if (!id) {
                 return false;
             } else {
-                var divScheduler = $JQry("div#scheduler_here");
-                var isEditableUrl = divScheduler.data("url-eventeditable");
-                var boolReturn = false;
-                jQuery.ajax({
-                    url: isEditableUrl,
-                    data: {
-                        id: id
-                    },
-                    async: false,
-                    cache: false,
-                    dataType: "json",
-                    success : function(data, status, xhr) {
-                        if (data)
-                        {
-                            boolReturn = true;
-                        } else
-                        {
-                            boolReturn = false;
-                        }
-                    },
-                    error : function(data, status, xhr) {
-                        console.log( "Erreur lors de l'appel Ajax, status: "+status+ ", data: "+data);
-                    }
-                });
-                return boolReturn;
+                return scheduler.getEvent(id).readonly;
             }
-        });
-
-        scheduler.attachEvent("onDblClick", function(id,ev){
-            var divScheduler = $JQry("div#scheduler_here");
-            var event = scheduler.getEvent(id);
-            if (event.doc_id != undefined)
-            {
-                var viewEventUrl = divScheduler.data("url-viewevent");
-                var options = {
-                    method : "post",
-                    postBody: addScrollParam("doc_id=" + event.doc_id,divScheduler.data("period"))
-                };
-                directAjaxCall(null, options, viewEventUrl, null, null);
-                return false;
-            } else
-            {
-                return true;
-            }
-        });
-
-        scheduler.attachEvent("onBeforeDrag", function(id) {
-            return !isReadonly(id);
-        });
-
-        scheduler.attachEvent("onDragEnd", function(){
-            last_attached_event = "onDragEnd";
-            last_dragging_date = new Date();
-        });
-
-        scheduler.attachEvent("onEventDeleted", function (id) {
-            last_attached_event = "onEventDeleted";
-        });
-
-        scheduler.attachEvent("onBeforeEventCreated", function (e){
-            //return !(last_attached_event == "onDragEnd");
-            return isDraggingEnded(last_attached_event, last_dragging_date);
-        });
-
-        scheduler.attachEvent("onEventAdded", function (id, ev) {
-            //console.log("onEventAdded, id="+id+" , ev="+ev.text);
-            var divSched = $JQry("div#scheduler_here");
-            if (divSched.data("period")!="month")
-            {
-                saveEvent(ev);
-            }
-            last_attached_event = "onEventAdded";
-        });
-
-        scheduler.attachEvent("onEventChanged", function (id, ev) {
-            //console.log("onEventChanged, id="+id+" , ev="+ev.text);
-            saveEvent(ev);
-        });
-
-        scheduler.attachEvent("onEventSave", function (id, ev) {
-            last_attached_event = "onEventSave";
-            //console.log("onEventSave, id="+id+" , ev="+ev.text);
-            var divSched = $JQry("div#scheduler_here");
-            if (divSched.data("period")!="month")
-            {
-                saveEvent(ev);
-            }
-            return true;
-        });
-
-        scheduler.attachEvent("onBeforeEventDelete", function (id,ev) {
-            //console.log("onBeforeEventDelete, id="+id+" , ev="+ev.text);
-            removeEvent(ev);
-            return true;
-        });
-
-        scheduler.attachEvent("onSchedulerResize", onSchedulerResize);
-
-
-        scheduler.ignore_week = isIgnoredDate;
-        scheduler.ignore_month = isIgnoredDate;
-
-        var fix_date = function(date) {  // 17:48:56 -> 17:30:00  et  17:05:41 -> 17:00:00
-            date = new Date(date);
-            if (date.getMinutes() > 30)
-                date.setMinutes(30);
-            else
-                date.setMinutes(0);
-            date.setSeconds(0);
-            return date;
-        };
-
-        var event_step = 60;
-        //Evenement created by single click
-        scheduler.attachEvent("onEmptyClick", function(date, native_event){
-            if (scheduler.config.readonly) {
-                return false;
-            } else if (isDraggingEnded(last_attached_event, last_dragging_date)) {
-                var fixed_date = fix_date(date);
-                scheduler.addEventNow(fixed_date, scheduler.date.add(fixed_date, event_step, "minute"));
-            }
-        });
-        
-    }
-
-
-    function isReadonly(id){
-        if (!id) {
-            return false;
-        } else {
-            return scheduler.getEvent(id).readonly;
         }
-    }
     }
 });
 
