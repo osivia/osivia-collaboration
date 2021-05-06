@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
@@ -178,5 +179,15 @@ public class DeleteRepositoryImpl implements DeleteRepository {
             }
         }
     }
+    
+    
+    @Override
+    public UniversalID convertPathToID(PortalControllerContext portalControllerContext, String path) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        
+        return nuxeoController.getUniversalIDFromPath(path);
+    }
+    
 
 }

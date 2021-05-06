@@ -6,14 +6,19 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.portal.core.cms.spi.NuxeoRepository;
 import org.osivia.services.widgets.rename.portlet.model.RenameForm;
 import org.osivia.services.widgets.rename.portlet.repository.RenameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,8 +151,16 @@ public class RenameServiceImpl implements RenameService {
 
         // Redirection
         String redirectionPath = this.getRedirectionPath(portalControllerContext);
-        String url = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, redirectionPath, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null,
-                null);
+        
+
+        UniversalID redirectionID = this.repository.convertPathToID(portalControllerContext, redirectionPath);
+        String url;
+        try {
+            url = this.portalUrlFactory.getViewContentUrl(portalControllerContext, redirectionID);
+        } catch (PortalException e) {
+           throw new PortletException(e);
+        }
+        
         response.sendRedirect(url);
     }
 

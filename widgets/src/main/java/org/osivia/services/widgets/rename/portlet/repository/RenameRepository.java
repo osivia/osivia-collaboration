@@ -2,6 +2,7 @@ package org.osivia.services.widgets.rename.portlet.repository;
 
 import javax.portlet.PortletException;
 
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
@@ -33,5 +34,16 @@ public interface RenameRepository {
      * @throws PortletException
      */
     void rename(PortalControllerContext portalControllerContext, String path, String title) throws PortletException;
+
+
+    /**
+     * Convert path to ID.
+     *
+     * @param portalControllerContext the portal controller context
+     * @param path the path
+     * @return the universal ID
+     * @throws PortletException the portlet exception
+     */
+    UniversalID convertPathToID(PortalControllerContext portalControllerContext, String path) throws PortletException;
 
 }

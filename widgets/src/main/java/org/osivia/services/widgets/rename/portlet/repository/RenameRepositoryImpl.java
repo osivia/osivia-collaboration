@@ -2,6 +2,7 @@ package org.osivia.services.widgets.rename.portlet.repository;
 
 import javax.portlet.PortletException;
 
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.widgets.rename.portlet.repository.command.RenameCommand;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,16 @@ public class RenameRepositoryImpl implements RenameRepository {
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(RenameCommand.class, path, title);
         nuxeoController.executeNuxeoCommand(command);
+    }
+    
+    
+    
+    @Override
+    public UniversalID convertPathToID(PortalControllerContext portalControllerContext, String path) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        
+        return nuxeoController.getUniversalIDFromPath(path);
     }
 
 }

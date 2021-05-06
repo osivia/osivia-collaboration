@@ -8,6 +8,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -211,7 +213,13 @@ public class DeleteServiceImpl implements DeleteService {
 
         if (StringUtils.isNotEmpty(redirectionPath)) {
             // Redirection URL
-            String redirectionUrl = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, redirectionPath, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null, null);
+            UniversalID redirectionID = this.repository.convertPathToID(portalControllerContext, redirectionPath);
+            String redirectionUrl;
+            try {
+                redirectionUrl = this.portalUrlFactory.getViewContentUrl(portalControllerContext, redirectionID);
+            } catch (PortalException e) {
+               throw new PortletException(e);
+            }
             response.sendRedirect(redirectionUrl);
         }
     }

@@ -1,6 +1,7 @@
 package org.osivia.services.widgets.delete.portlet.repository;
 
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 
 import javax.portlet.PortletException;
@@ -61,5 +62,16 @@ public interface DeleteRepository {
      * @param identifiers             document identifiers
      */
     void delete(PortalControllerContext portalControllerContext, List<String> identifiers) throws PortletException;
+
+
+    /**
+     * Convert path to ID.
+     *
+     * @param portalControllerContext the portal controller context
+     * @param path the path
+     * @return the universal ID
+     * @throws PortletException the portlet exception
+     */
+    UniversalID convertPathToID(PortalControllerContext portalControllerContext, String path) throws PortletException;
 
 }
