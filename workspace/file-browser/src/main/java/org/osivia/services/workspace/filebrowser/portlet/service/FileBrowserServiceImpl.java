@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
 import org.jboss.portal.common.invocation.Scope;
-import org.jboss.portal.core.controller.ControllerContext;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.directory.v2.model.preferences.UserPreferences;
@@ -28,13 +27,13 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSBinaryContent;
 import org.osivia.portal.core.constants.InternalConstants;
-import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.services.workspace.filebrowser.portlet.configuration.FileBrowserConfiguration;
 import org.osivia.services.workspace.filebrowser.portlet.model.*;
 import org.osivia.services.workspace.filebrowser.portlet.model.comparator.FileBrowserItemComparator;
@@ -459,8 +458,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
     @Override
     public void sortItems(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserSortField field, boolean alt) throws PortletException {
-        // Controller context
-        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         // Window properties
         FileBrowserWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
@@ -477,10 +474,10 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             criteria.setAlt(alt);
 
             if (!listMode) {
-                controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, SORT_CRITERIA_ATTRIBUTE, criteria);
+                PortalObjectUtils.setPortalSessionAttribute(portalControllerContext, SORT_CRITERIA_ATTRIBUTE, criteria);
             }
         } else {
-            Object criteriaAttribute = controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, SORT_CRITERIA_ATTRIBUTE);
+            Object criteriaAttribute = PortalObjectUtils.getPortalSessionAttribute(portalControllerContext, SORT_CRITERIA_ATTRIBUTE);
 
             if (listMode || !(criteriaAttribute instanceof FileBrowserSortCriteria)) {
                 criteria = this.applicationContext.getBean(FileBrowserSortCriteria.class);

@@ -16,6 +16,7 @@
 
 
     <modules>
+<!--	
         <module>creation</module>
         <module>edition</module>
         <module>member-management</module>
@@ -26,9 +27,12 @@
         <module>sets</module>
         <module>sharing</module>
         <module>trash</module>
+-->		
         <module>file-browser</module>
 	    <!--  <module>purge</module> -->
-        <module>quota</module>			    
+<!--		
+        <module>quota</module>	
+-->		
     </modules>
 
 </project>

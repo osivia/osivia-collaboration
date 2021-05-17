@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.portal.api.cms.EcmDocument;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.Link;
 import org.osivia.portal.core.cms.*;
@@ -650,6 +651,15 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
 
         // Document
         return (Document) cmsItem.getNativeItem();
+    }
+    
+    
+    @Override
+    public UniversalID convertPathToID(PortalControllerContext portalControllerContext, String path) throws PortletException {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        
+        return nuxeoController.getUniversalIDFromPath(path);
     }
 
 }

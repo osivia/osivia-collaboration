@@ -40,9 +40,9 @@
         <module>versions</module>
 -->		
         <module>widgets</module>
-<!--		
+		
         <module>workspace</module>
-
+<!--
         <module>ear</module>
 -->		
     </modules>

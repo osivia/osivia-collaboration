@@ -4,6 +4,7 @@ import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.cms.CMSBinaryContent;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserWindowProperties;
@@ -178,5 +179,16 @@ public interface FileBrowserRepository {
      * @return Nuxeo documents
      */
     List<Document> getParentDocuments(PortalControllerContext portalControllerContext, String path) throws PortletException;
+
+
+    /**
+     * Convert path to ID.
+     *
+     * @param portalControllerContext the portal controller context
+     * @param path the path
+     * @return the universal ID
+     * @throws PortletException the portlet exception
+     */
+    UniversalID convertPathToID(PortalControllerContext portalControllerContext, String path) throws PortletException;
 
 }
