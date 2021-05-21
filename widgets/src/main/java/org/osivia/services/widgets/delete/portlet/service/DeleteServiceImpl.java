@@ -208,20 +208,8 @@ public class DeleteServiceImpl implements DeleteService {
         }
 
 
-        // Redirection path
-        String redirectionPath = form.getRedirectionPath();
-
-        if (StringUtils.isNotEmpty(redirectionPath)) {
-            // Redirection URL
-            UniversalID redirectionID = this.repository.convertPathToID(portalControllerContext, redirectionPath);
-            String redirectionUrl;
-            try {
-                redirectionUrl = this.portalUrlFactory.getViewContentUrl(portalControllerContext, redirectionID);
-            } catch (PortalException e) {
-               throw new PortletException(e);
-            }
-            response.sendRedirect(redirectionUrl);
-        }
+        String url= this.portalUrlFactory.getBackURL(portalControllerContext, false, true);
+        response.sendRedirect(url);
     }
 
 }

@@ -149,17 +149,10 @@ public class RenameServiceImpl implements RenameService {
         // Reload document to invalidate cache
         this.getCurrentDocument(portalControllerContext, true);
 
-        // Redirection
-        String redirectionPath = this.getRedirectionPath(portalControllerContext);
-        
+         
 
-        UniversalID redirectionID = this.repository.convertPathToID(portalControllerContext, redirectionPath);
-        String url;
-        try {
-            url = this.portalUrlFactory.getViewContentUrl(portalControllerContext, redirectionID);
-        } catch (PortalException e) {
-           throw new PortletException(e);
-        }
+        String url= this.portalUrlFactory.getBackURL(portalControllerContext, false, true);
+
         
         response.sendRedirect(url);
     }
