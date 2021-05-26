@@ -248,8 +248,7 @@ public class MoveServiceImpl implements MoveService {
         if (StringUtils.isEmpty(redirectionPath)) {
             url = windowProperties.getRedirectionUrl();
         } else {
-            url = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, redirectionPath, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null,
-                    null);
+            url = this.portalUrlFactory.getBackURL(portalControllerContext, false, true);
 
         }
         response.sendRedirect(url);

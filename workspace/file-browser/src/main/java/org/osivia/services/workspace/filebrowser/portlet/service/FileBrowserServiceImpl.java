@@ -753,7 +753,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                 target = null;
             }
 
-            item = DOM4JUtils.generateLinkElement(url, target, null, baseHtmlClasses + " no-ajax-link", null, icon);
+            item = DOM4JUtils.generateLinkElement(url, target, null, baseHtmlClasses , null, icon);
 
             // Title
             DOM4JUtils.addAttribute(item, "title", title);
@@ -1221,7 +1221,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
         // Portlet response
-        PortletResponse response = portalControllerContext.getResponse();
+        ActionResponse response = (ActionResponse) portalControllerContext.getResponse();
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
@@ -1241,15 +1241,15 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             }
             this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
         }
-
-        // Refresh navigation
-        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
-
-        // Update public render parameter for associated portlets refresh
-        if (response instanceof ActionResponse) {
-            ActionResponse actionResponse = (ActionResponse) response;
-            actionResponse.setRenderParameter("dnd-update", String.valueOf(System.currentTimeMillis()));
+        
+        // Redirection
+        String url = this.portalUrlFactory.getRefreshPageUrl(portalControllerContext);
+        try {
+            response.sendRedirect(url);
+        } catch (IOException e) {
+            throw new PortletException(e);
         }
+
     }
 
 

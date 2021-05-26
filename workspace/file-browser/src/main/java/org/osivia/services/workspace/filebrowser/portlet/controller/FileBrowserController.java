@@ -153,9 +153,7 @@ public class FileBrowserController {
 
         this.service.duplicate(portalControllerContext, form, path);
 
-        // Copy view render parameter
-        FileBrowserView view = this.service.getView(portalControllerContext, viewId);
-        response.setRenderParameter("view", view.getId());
+
     }
 
 
