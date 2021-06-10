@@ -387,13 +387,16 @@
                         <span><op:translate key="CANCEL" /></span>
                     </button>
                     
-                    <div class="pull-right">
-                        <!-- Delete -->
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#${namespace}-delete-modal">
-                            <i class="glyphicons glyphicons-bin"></i>
-                            <span><op:translate key="DELETE" /></span>
-                        </button>
-                    </div>
+                    <c:if test="${editionForm.deletable}">
+	                    <div class="pull-right">
+	                        <!-- Delete -->
+	                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#${namespace}-delete-modal">
+	                            <i class="glyphicons glyphicons-bin"></i>
+	                            <span><op:translate key="DELETE" /></span>
+	                        </button>
+	                    </div>
+                    </c:if>
+                    
                 </div>
             </div>
         </div>

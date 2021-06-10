@@ -56,7 +56,8 @@ public class WorkspaceEditionForm {
     private final boolean admin;
     /** Workspace root type indicator. */
     private final boolean root;
-
+    /** delete permission. */
+    private boolean deletable = true;
 
     /**
      * Constructor.
@@ -333,5 +334,19 @@ public class WorkspaceEditionForm {
     public boolean isRoot() {
         return root;
     }
+
+
+	public boolean isDeletable() {
+		return deletable;
+	}
+
+
+	public void setDeletable(boolean deletable) {
+		this.deletable = deletable;
+	}
+
+    
+    
+    
 
 }

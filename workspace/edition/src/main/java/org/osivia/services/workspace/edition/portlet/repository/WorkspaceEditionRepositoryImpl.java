@@ -405,7 +405,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
      * {@inheritDoc}
      */
     @Override
-    public boolean checkPermissions(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
+    public NuxeoPermissions checkPermissions(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         // Nuxeo document context
@@ -413,7 +413,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         // Permissions
         NuxeoPermissions permissions = documentContext.getPermissions();
 
-        return permissions.isManageable();
+        return permissions;
     }
 
 

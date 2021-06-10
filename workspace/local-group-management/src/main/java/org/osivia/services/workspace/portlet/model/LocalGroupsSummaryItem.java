@@ -15,6 +15,9 @@ public class LocalGroupsSummaryItem extends AbstractLocalGroup {
 
     /** Members count. */
     private int membersCount;
+    
+    /** Deletable */
+    private boolean deletable = true;
 
 
     /**
@@ -42,5 +45,17 @@ public class LocalGroupsSummaryItem extends AbstractLocalGroup {
     public void setMembersCount(int membersCount) {
         this.membersCount = membersCount;
     }
+
+
+	public boolean isDeletable() {
+		return deletable;
+	}
+
+
+	public void setDeletable(boolean deletable) {
+		this.deletable = deletable;
+	}
+    
+    
 
 }

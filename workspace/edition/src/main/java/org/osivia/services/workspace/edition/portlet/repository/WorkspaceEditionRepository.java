@@ -12,6 +12,7 @@ import org.osivia.services.workspace.edition.portlet.model.Image;
 import org.osivia.services.workspace.edition.portlet.model.Task;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 
+import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 
 /**
@@ -105,7 +106,7 @@ public interface WorkspaceEditionRepository {
      * @return true if current user has management permissions
      * @throws PortletException
      */
-    boolean checkPermissions(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
+    NuxeoPermissions checkPermissions(PortalControllerContext portalControllerContext, Document workspace) throws PortletException;
 
 
     /**

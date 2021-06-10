@@ -52,35 +52,35 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
 
     /** Workspace edition repository. */
     @Autowired
-    private WorkspaceEditionRepository repository;
+    protected WorkspaceEditionRepository repository;
 
     /** Tasks comparator. */
     @Autowired
-    private TasksComparator tasksComparator;
+    protected TasksComparator tasksComparator;
 
     /** Portal URL factory. */
     @Autowired
-    private IPortalUrlFactory portalUrlFactory;
+    protected IPortalUrlFactory portalUrlFactory;
 
     /** Bundle factory. */
     @Autowired
-    private IBundleFactory bundleFactory;
+    protected IBundleFactory bundleFactory;
 
     /** Notifications service. */
     @Autowired
-    private INotificationsService notificationsService;
+    protected INotificationsService notificationsService;
 
     /** Person service. */
     @Autowired
-    private PersonService personService;
+    protected PersonService personService;
 
     /** Role service. */
     @Autowired
-    private RoleService roleService;
+    protected RoleService roleService;
 
 
     /** Application context. */
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
 
 
     /**
@@ -160,6 +160,7 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         List<Task> otherTasks = this.repository.getOtherTasks(portalControllerContext, workspace);
         form.setOtherTasks(otherTasks);
 
+        
         return form;
     }
 
@@ -272,7 +273,7 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         }
 
 
-        if (this.repository.checkPermissions(portalControllerContext, workspace)) {
+        if (this.repository.checkPermissions(portalControllerContext, workspace).isManageable()) {
             // Update workspace type
             if (form.isRoot()) {
                 WorkspaceType workspaceType = this.retreiveFullWorkspaceType(form.getWorkspaceType(), form.isAllowedInvitationRequests());

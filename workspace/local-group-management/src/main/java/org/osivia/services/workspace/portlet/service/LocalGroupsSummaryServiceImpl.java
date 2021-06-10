@@ -159,13 +159,19 @@ public class LocalGroupsSummaryServiceImpl extends LocalGroupsServiceImpl implem
 
             // Local groups
             List<LocalGroupsSummaryItem> groups = summary.getGroups();
-
+            boolean allDeletable = true;
+            
             // Selection
             List<AbstractLocalGroup> selection = new ArrayList<>(indexes.size());
             for (String index : indexes) {
                 int i = NumberUtils.toInt(index, -1);
                 if ((i > -1) && (i < groups.size())) {
-                    AbstractLocalGroup group = groups.get(i);
+                	LocalGroupsSummaryItem group = groups.get(i);
+                	
+                	if(!group.isDeletable()) {
+                		allDeletable = false;
+                	}
+                	
                     selection.add(group);
                 }
             }
@@ -189,13 +195,15 @@ public class LocalGroupsSummaryServiceImpl extends LocalGroupsServiceImpl implem
                 Element addMembers = this.getAddMembersToolbarButton(portalControllerContext, identifiers, bundle);
                 toolbar.add(addMembers);
 
-                // Delete
-                Element delete = this.getDeleteToolbarButton(portalControllerContext, identifiers, bundle);
-                toolbar.add(delete);
-
-                // Delete confirmation modal
-                Element deleteConfirmationModal = this.getDeleteConfirmationModal(portalControllerContext, selection, identifiers, bundle);
-                container.add(deleteConfirmationModal);
+                if(allDeletable) {
+	                // Delete
+	                Element delete = this.getDeleteToolbarButton(portalControllerContext, identifiers, bundle);
+	                toolbar.add(delete);
+	
+	                // Delete confirmation modal
+	                Element deleteConfirmationModal = this.getDeleteConfirmationModal(portalControllerContext, selection, identifiers, bundle);
+	                container.add(deleteConfirmationModal);
+                }
             }
         }
 
