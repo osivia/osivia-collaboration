@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.filebrowser.portlet.service;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPermissions;
@@ -19,12 +20,16 @@ import org.osivia.directory.v2.model.preferences.UserPreferences;
 import org.osivia.directory.v2.service.preferences.UserPreferencesService;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.DocumentType;
+import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.portalobject.bridge.PortalObjectUtils;
@@ -33,6 +38,7 @@ import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSBinaryContent;
+import org.osivia.portal.core.cms.spi.NuxeoRepository;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.services.workspace.filebrowser.portlet.configuration.FileBrowserConfiguration;
 import org.osivia.services.workspace.filebrowser.portlet.model.*;
@@ -707,7 +713,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                     } else {
                         bulkDownloadUrl = null;
                     }
-                    this.addToolbarItem(toolbar, bulkDownloadUrl, "_blank", bundle.getString("FILE_BROWSER_TOOLBAR_DOWNLOAD"), "glyphicons glyphicons-basic-square-download");
+                    this.addToolbarItem(toolbar, bulkDownloadUrl, "_blank", bundle.getString("FILE_BROWSER_TOOLBAR_DOWNLOAD"), "glyphicons glyphicons-basic-square-download", true);
                 }
 
                 // Multiple selection
@@ -718,6 +724,21 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         return container;
     }
 
+    
+
+    /**
+     * Adds the toolbar item.
+     *
+     * @param toolbar the toolbar
+     * @param url the url
+     * @param target the target
+     * @param title the title
+     * @param icon the icon
+     */
+    protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon) {
+        this.addToolbarItem(toolbar, url, target, title,  icon, false);
+    }
+    
 
     /**
      * Add toolbar item.
@@ -728,9 +749,13 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * @param title   toolbar item title
      * @param icon    toolbar item icon
      */
-    protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon) {
+    protected void addToolbarItem(Element toolbar, String url, String target, String title, String icon, boolean noAjaxLink) {
         // Base HTML classes
         String baseHtmlClasses = "btn btn-primary btn-sm ml-1";
+        
+
+        if(noAjaxLink)
+            baseHtmlClasses += " no-ajax-link";
 
         // Item
         Element item;
@@ -753,6 +778,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                 target = null;
             }
 
+            
             item = DOM4JUtils.generateLinkElement(url, target, null, baseHtmlClasses , null, icon);
 
             // Title
@@ -1167,7 +1193,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         // Window properties
         Map<String, String> properties = new HashMap<>();
         if (form.isListMode()) {
-            properties.put("osivia.move.redirection-url", this.portalUrlFactory.getRefreshPageUrl(portalControllerContext));
+            properties.put("osivia.move.redirection-url", this.portalUrlFactory.getBackURL(portalControllerContext, false, false));
         } else {
             properties.put("osivia.move.path", form.getPath());
         }
@@ -1228,6 +1254,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         try {
             // Duplicate
             this.repository.duplicate(portalControllerContext, path, form.getPath());
+            
+            notifyUpdate(portalControllerContext, null, true);
 
             // Notification
             String message = bundle.getString("FILE_BROWSER_DUPLICATE_SUCCESS_MESSAGE");
@@ -1242,13 +1270,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
         }
         
-        // Redirection
-        String url = this.portalUrlFactory.getRefreshPageUrl(portalControllerContext);
-        try {
-            response.sendRedirect(url);
-        } catch (IOException e) {
-            throw new PortletException(e);
-        }
 
     }
 
@@ -1290,6 +1311,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         try {
             // Move
             this.repository.move(portalControllerContext, sourceIdentifiers, targetIdentifier);
+            notifyUpdate( portalControllerContext, null, true);
 
             // Notification
             String message = bundle.getString("FILE_BROWSER_MOVE_SUCCESS_MESSAGE");
@@ -1300,15 +1322,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.WARNING);
         }
 
-        // Refresh navigation
-        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
 
-        // Update public render parameter for associated portlets refresh
-        if (response instanceof ActionResponse) {
-            ActionResponse actionResponse = (ActionResponse) response;
-            actionResponse.setRenderParameter("dnd-update", String.valueOf(System.currentTimeMillis()));
-        }
-    }
+   }
 
 
     @Override
@@ -1325,6 +1340,9 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             try {
                 // Import
                 this.repository.importFiles(portalControllerContext, form.getPath(), upload);
+                
+                notifyUpdate(portalControllerContext, null, false);
+                
             } catch (NuxeoException e) {
                 String message = e.getUserMessage(portalControllerContext);
 
@@ -1335,8 +1353,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                 request.getPortletSession().setAttribute("uploadMsg", message);
             }
 
-            // Refresh navigation
-            request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
         }
     }
 
@@ -1360,14 +1376,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
-        // Refresh navigation
-        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
-
-        // Update public render parameter for associated portlets refresh
-        if (response instanceof ActionResponse) {
-            ActionResponse actionResponse = (ActionResponse) response;
-            actionResponse.setRenderParameter("dnd-update", String.valueOf(System.currentTimeMillis()));
-        }
 
 
         String message = (String) request.getPortletSession().getAttribute("uploadMsg");
@@ -1409,5 +1417,22 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
         return breadcrumb;
     }
+    
+    
+    
+    /**
+     * Update notification.
+     *
+     * @param cmsContext the cms context
+     * @param path the path
+     * @return the document
+     * @throws Exception the exception
+     */
+    private void notifyUpdate(PortalControllerContext portalControllerContext, String path, boolean update) throws PortletException {
+
+        new NuxeoController(portalControllerContext).notifyUpdate( path, update);
+
+    }
+    
 
 }

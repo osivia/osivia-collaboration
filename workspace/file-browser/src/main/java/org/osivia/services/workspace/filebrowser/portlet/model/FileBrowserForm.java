@@ -1,6 +1,8 @@
 package org.osivia.services.workspace.filebrowser.portlet.model;
 
 import org.osivia.portal.api.portlet.Refreshable;
+import org.osivia.portal.api.portlet.RequestLifeCycle;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
@@ -15,7 +17,7 @@ import java.util.List;
  */
 @Component
 @Scope(WebApplicationContext.SCOPE_SESSION)
-@Refreshable
+
 public class FileBrowserForm {
 
     /**

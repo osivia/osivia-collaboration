@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -237,6 +239,9 @@ public class MoveServiceImpl implements MoveService {
 
         // Move
         this.repository.move(portalControllerContext, windowProperties.getBasePath(), identifiers, form.getTargetPath());
+        
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.notifyUpdate( windowProperties.getBasePath(), true);
 
         // Notification
         String message = bundle.getString("MOVE_MESSAGE_SUCCESS");

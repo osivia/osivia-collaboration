@@ -80,7 +80,7 @@ public class GetFileBrowserDocumentsCommand implements INuxeoCommand {
      */
     @Override
     public String getId() {
-        return null;
+        return "GetFileBrowserDocumentsCommand";
     }
 
 }

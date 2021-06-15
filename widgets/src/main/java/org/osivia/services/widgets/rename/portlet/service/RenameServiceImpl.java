@@ -1,5 +1,6 @@
 package org.osivia.services.widgets.rename.portlet.service;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
@@ -7,8 +8,10 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
+import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -18,6 +21,8 @@ import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.portal.core.cms.CMSPublicationInfos;
+import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.spi.NuxeoRepository;
 import org.osivia.services.widgets.rename.portlet.model.RenameForm;
 import org.osivia.services.widgets.rename.portlet.repository.RenameRepository;
@@ -140,23 +145,40 @@ public class RenameServiceImpl implements RenameService {
         if (!StringUtils.equals(oldTitle, newTitle)) {
             // Rename
             this.repository.rename(portalControllerContext, document.getPath(), newTitle);
+            
+            
+            // Notify CMS Cache
+            notifyUpdate(portalControllerContext, document.getPath());
 
             // Notification
             String message = bundle.getString("RENAME_MESSAGE_SUCCESS");
             this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
         }
 
-        // Reload document to invalidate cache
-        this.getCurrentDocument(portalControllerContext, true);
+          
 
-         
-
-        String url= this.portalUrlFactory.getBackURL(portalControllerContext, false, true);
+        String url= this.portalUrlFactory.getBackURL(portalControllerContext, false, false);
 
         
         response.sendRedirect(url);
     }
 
+    
+    
+    /**
+     * Update notification.
+     *
+     * @param cmsContext the cms context
+     * @param path the path
+     * @return the document
+     * @throws Exception the exception
+     */
+    private void notifyUpdate(PortalControllerContext portalControllerContext, String path) throws PortletException {
+
+        new NuxeoController(portalControllerContext).notifyUpdate( path, false);
+
+    }
+    
 
     /**
      * Get current Nuxeo document.

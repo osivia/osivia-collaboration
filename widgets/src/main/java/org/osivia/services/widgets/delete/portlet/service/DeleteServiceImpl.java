@@ -1,5 +1,6 @@
 package org.osivia.services.widgets.delete.portlet.service;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
@@ -9,10 +10,14 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.exception.CMSException;
+import org.osivia.portal.api.cms.service.CMSSession;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -184,18 +189,35 @@ public class DeleteServiceImpl implements DeleteService {
         SortedSet<DeleteItem> items = form.getItems();
 
         if (CollectionUtils.isNotEmpty(items)) {
+            
+            Document firstDoc = null;
+            
             // Document identifiers
             List<String> identifiers = new ArrayList<>(items.size());
             for (DeleteItem item : items) {
                 DocumentDTO document = item.getDocument();
+                if( firstDoc == null)
+                    firstDoc = document.getDocument();
                 if (document != null) {
                     identifiers.add(document.getId());
                 }
             }
 
             try {
+                
+                // Get Space ID
+                CMSController ctrl = new CMSController(portalControllerContext);
+                UniversalID spaceID = null;
+                try {
+                    CMSSession session = Locator.getService(org.osivia.portal.api.cms.service.CMSService.class).getCMSSession(ctrl.getCMSContext());
+                    spaceID = session.getDocument(new UniversalID(NuxeoController.NUXEO_REPOSITORY_NAME, firstDoc.getProperties().getString("ttc:webid"))).getSpaceId();
+                } catch (Exception e) {
+                   throw new PortletException(e);
+                }
+               
                 // Delete
                 this.repository.delete(portalControllerContext, identifiers);
+                notifyUpdate(portalControllerContext,spaceID.getInternalID()); 
 
                 // Notification
                 String message = bundle.getString("DELETE_SUCCESS_MESSAGE");
@@ -212,4 +234,17 @@ public class DeleteServiceImpl implements DeleteService {
         response.sendRedirect(url);
     }
 
+    
+    /**
+     * Update notification.
+     *
+     * @param cmsContext the cms context
+     * @param path the path
+     * @return the document
+     * @throws Exception the exception
+     */
+    private void notifyUpdate(PortalControllerContext portalControllerContext, String spaceId) throws PortletException {
+        new NuxeoController(portalControllerContext).notifyUpdate( spaceId, false);
+    }
+    
 }

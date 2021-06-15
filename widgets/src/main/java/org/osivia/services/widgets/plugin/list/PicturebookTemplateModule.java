@@ -164,7 +164,7 @@ public class PicturebookTemplateModule extends PortletModule {
                         nuxeoController.executeNuxeoCommand(command);
 
                         // Refresh navigation
-                        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
+                        request.setAttribute(Constants.PORTLET_ATTR_REFRESH_PAGE, Constants.PORTLET_VALUE_ACTIVATE);
 
                         // Notification
                         notifications = new Notifications(NotificationsType.SUCCESS, FILE_UPLOAD_NOTIFICATIONS_DURATION);
