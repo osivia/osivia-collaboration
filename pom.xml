@@ -28,7 +28,9 @@
 <!--	
         <module>calendar</module>
         <module>contact</module>
+ -->
         <module>document-edition</module>
+<!--        
         <module>editor-helpers</module>
         <module>faq</module>
         <module>forum</module>

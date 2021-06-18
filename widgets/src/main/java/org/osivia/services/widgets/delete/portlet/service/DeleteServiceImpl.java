@@ -205,19 +205,15 @@ public class DeleteServiceImpl implements DeleteService {
 
             try {
                 
-                // Get Space ID
-                CMSController ctrl = new CMSController(portalControllerContext);
-                UniversalID spaceID = null;
-                try {
-                    CMSSession session = Locator.getService(org.osivia.portal.api.cms.service.CMSService.class).getCMSSession(ctrl.getCMSContext());
-                    spaceID = session.getDocument(new UniversalID(NuxeoController.NUXEO_REPOSITORY_NAME, firstDoc.getProperties().getString("ttc:webid"))).getSpaceId();
-                } catch (Exception e) {
-                   throw new PortletException(e);
-                }
+
+                NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+                String spacePath = nuxeoController.getSpacePath(firstDoc.getPath());
                
                 // Delete
                 this.repository.delete(portalControllerContext, identifiers);
-                notifyUpdate(portalControllerContext,spaceID.getInternalID()); 
+                
+                
+                nuxeoController.notifyUpdate(firstDoc.getPath(), spacePath, false);
 
                 // Notification
                 String message = bundle.getString("DELETE_SUCCESS_MESSAGE");
@@ -229,22 +225,25 @@ public class DeleteServiceImpl implements DeleteService {
             }
         }
 
+        
+        String url;
+        // Redirection
+        
+        
+        String redirectionPath = form.getRedirectionPath();
+        if (StringUtils.isNotEmpty(redirectionPath)) {
+            // Redirection URL
+            NuxeoController nuxeoController = new NuxeoController(portalControllerContext);            
+            UniversalID redirectId = nuxeoController.getUniversalIDFromPath(redirectionPath);
+            url = this.portalUrlFactory.getViewContentUrl(portalControllerContext, redirectId);
+          }
+        else    {
+            url= this.portalUrlFactory.getBackURL(portalControllerContext, false, true);
+        }
 
-        String url= this.portalUrlFactory.getBackURL(portalControllerContext, false, true);
         response.sendRedirect(url);
     }
 
-    
-    /**
-     * Update notification.
-     *
-     * @param cmsContext the cms context
-     * @param path the path
-     * @return the document
-     * @throws Exception the exception
-     */
-    private void notifyUpdate(PortalControllerContext portalControllerContext, String spaceId) throws PortletException {
-        new NuxeoController(portalControllerContext).notifyUpdate( spaceId, false);
-    }
+
     
 }

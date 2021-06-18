@@ -1,11 +1,13 @@
 package org.osivia.services.edition.portlet.service;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.cms.DocumentType;
+import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.editor.EditorService;
 import org.osivia.portal.api.internationalization.Bundle;
@@ -206,8 +208,14 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         DocumentEditionRepository<AbstractDocumentEditionForm> repository = this.getRepository(form.getName());
 
         try {
+            NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+            String spacePath = nuxeoController.getSpacePath(form.getPath());
+            
             // Save document
             repository.save(portalControllerContext, form);
+            
+            // Notify CMS change
+            nuxeoController.notifyUpdate( form.getPath(), spacePath, false);
         } catch (NuxeoException e) {
             // Nuxeo user messages (quota, virus) are displayed on current form
             String message = e.getUserMessage(portalControllerContext);
@@ -264,13 +272,21 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
             DocumentEditionWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
 
             // Redirection
+            NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+            
             String redirectionPath = StringUtils.defaultIfEmpty(windowProperties.getDocumentPath(), windowProperties.getParentDocumentPath());
-            String redirectionUrl = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, redirectionPath, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null, null);
+            UniversalID redirectId = nuxeoController.getUniversalIDFromPath(redirectionPath);
+             
+            String redirectionUrl = this.portalUrlFactory.getViewContentUrl(portalControllerContext, redirectId);
             actionResponse.sendRedirect(redirectionUrl);
         }
     }
 
 
+    
+
+    
+    
     /**
      * Get repository name.
      *

@@ -1252,10 +1252,15 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
         try {
+            
+            NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+            String spacePath = nuxeoController.getSpacePath();
+            
+            
             // Duplicate
             this.repository.duplicate(portalControllerContext, path, form.getPath());
             
-            notifyUpdate(portalControllerContext, null, true);
+            nuxeoController.notifyUpdate( null, spacePath, true);
 
             // Notification
             String message = bundle.getString("FILE_BROWSER_DUPLICATE_SUCCESS_MESSAGE");
@@ -1309,9 +1314,13 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
         try {
+            
+            NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+            String spacePath = nuxeoController.getSpacePath();
+            
             // Move
             this.repository.move(portalControllerContext, sourceIdentifiers, targetIdentifier);
-            notifyUpdate( portalControllerContext, null, true);
+            nuxeoController.notifyUpdate( null, spacePath, true);
 
             // Notification
             String message = bundle.getString("FILE_BROWSER_MOVE_SUCCESS_MESSAGE");
@@ -1338,10 +1347,14 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
         if (CollectionUtils.isNotEmpty(upload)) {
             try {
+                
+                NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+                String spacePath = nuxeoController.getSpacePath();
+                  
                 // Import
                 this.repository.importFiles(portalControllerContext, form.getPath(), upload);
                 
-                notifyUpdate(portalControllerContext, null, false);
+                nuxeoController.notifyUpdate( null, spacePath, true);
                 
             } catch (NuxeoException e) {
                 String message = e.getUserMessage(portalControllerContext);
@@ -1367,7 +1380,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
 
     @Override
-    public void endUpload(PortalControllerContext portalControllerContext) {
+    public void endUpload(PortalControllerContext portalControllerContext) throws PortletException  {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
         // Portlet response
@@ -1375,7 +1388,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
-
 
 
         String message = (String) request.getPortletSession().getAttribute("uploadMsg");
@@ -1419,20 +1431,6 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     }
     
     
-    
-    /**
-     * Update notification.
-     *
-     * @param cmsContext the cms context
-     * @param path the path
-     * @return the document
-     * @throws Exception the exception
-     */
-    private void notifyUpdate(PortalControllerContext portalControllerContext, String path, boolean update) throws PortletException {
 
-        new NuxeoController(portalControllerContext).notifyUpdate( path, update);
-
-    }
-    
 
 }

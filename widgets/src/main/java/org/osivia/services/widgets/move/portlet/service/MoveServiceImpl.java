@@ -236,12 +236,14 @@ public class MoveServiceImpl implements MoveService {
             redirectionPath = path;
         }
 
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        String spacePath = nuxeoController.getSpacePath(windowProperties.getBasePath());
 
         // Move
         this.repository.move(portalControllerContext, windowProperties.getBasePath(), identifiers, form.getTargetPath());
         
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-        nuxeoController.notifyUpdate( windowProperties.getBasePath(), true);
+
+        nuxeoController.notifyUpdate( spacePath,windowProperties.getBasePath(), true);
 
         // Notification
         String message = bundle.getString("MOVE_MESSAGE_SUCCESS");

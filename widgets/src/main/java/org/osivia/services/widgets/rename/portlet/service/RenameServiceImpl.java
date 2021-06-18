@@ -143,12 +143,16 @@ public class RenameServiceImpl implements RenameService {
         newTitle = newTitle + hiddenExtension;
 
         if (!StringUtils.equals(oldTitle, newTitle)) {
+            
+            NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+            String spacePath = nuxeoController.getSpacePath(document.getPath());
+ 
             // Rename
             this.repository.rename(portalControllerContext, document.getPath(), newTitle);
             
             
-            // Notify CMS Cache
-            notifyUpdate(portalControllerContext, document.getPath());
+            // Notify CMS change
+            nuxeoController.notifyUpdate(document.getPath(), spacePath, false);
 
             // Notification
             String message = bundle.getString("RENAME_MESSAGE_SUCCESS");
@@ -165,19 +169,7 @@ public class RenameServiceImpl implements RenameService {
 
     
     
-    /**
-     * Update notification.
-     *
-     * @param cmsContext the cms context
-     * @param path the path
-     * @return the document
-     * @throws Exception the exception
-     */
-    private void notifyUpdate(PortalControllerContext portalControllerContext, String path) throws PortletException {
 
-        new NuxeoController(portalControllerContext).notifyUpdate( path, false);
-
-    }
     
 
     /**
