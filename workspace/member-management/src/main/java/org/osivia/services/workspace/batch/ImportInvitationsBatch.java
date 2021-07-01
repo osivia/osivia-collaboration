@@ -31,7 +31,6 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang.CharEncoding;
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +38,6 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.directory.v2.model.CollabProfile;
-import org.osivia.directory.v2.model.ext.WorkspaceMember;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.directory.v2.service.PersonUpdateService;
 import org.osivia.directory.v2.service.WorkspaceService;
@@ -99,7 +97,7 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 	private File rejects;
 
 	/** white list pattern for mail adresses */
-	private String[] whiteList;
+//	private String[] whiteList;
     
 	
 	@Override
@@ -120,11 +118,8 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 		personService = DirServiceFactory.getService(PersonUpdateService.class);
 		
 		workspaceService = DirServiceFactory.getService(WorkspaceService.class);
-		
-		String whiteListStr = System.getProperty("osivia.invitations.whitelist");
-		if(StringUtils.isNotEmpty(whiteListStr)) {
-			whiteList = whiteListStr.split(",");
-		}
+	
+
 		
 	}
 
@@ -165,7 +160,7 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 				
 				// Duplicates
 				if(invitationsValidated.contains(uid)) {
-                	logger.debug(getBatchId()+" / "+count+"/"+uid+" : reject");
+                	logger.debug(getBatchId()+" / "+count+"/"+uid+" : doublon");
                 	
     				rejectsPrinter = getRejectPrinter();
     				rejectsPrinter.printRecord(uid, "Doublon ");
@@ -184,9 +179,8 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 		    		
 		    		
 		    		Matcher matcher = this.mailPattern.matcher(uid);
-	                if (!matcher.matches() || !isAllowedInList(uid)) {
-	                	
-	                	logger.debug(getBatchId()+" / "+count+"/"+uid+" : reject");
+		    		if (!matcher.matches()) {	
+	                	logger.debug(getBatchId()+" / "+count+"/"+uid+" : email invalide");
 	                	
 	    				rejectsPrinter = getRejectPrinter();
 	    				rejectsPrinter.printRecord(uid, "Entrée invalide / non autorisée ");
@@ -196,119 +190,80 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 	                }
 	                else {
 
-						// if person does not exist, init person
-	                	boolean unknownUser = false;
-		    			Person person = personService.getPerson(uid);
-		    			if(person == null) {
-		    				
-	        	    		person = personService.getEmptyPerson();
+						// if person is currently on a workflow, do nothing
 
-    	    	    		person.setUid(uid);
-    	    	    		person.setMail(uid);
-    	    	    		person.setSn(uid);
-    	    	    		person.setGivenName(uid);
-    	    	    		person.setCn(uid);
-    	    	    		person.setDisplayName(uid);
-    	    	    		personService.create(person);
-    	    	    		
-    	    	    		unknownUser = true;
-		    			}
-	                							
-						// if person is currently member, do nothing
-		    			WorkspaceMember member = workspaceService.getMember(dto.getWorkspaceId(), uid);
-		    			if(member == null) {
-
-							// if person is currently on a workflow, do nothing
-
-		    				if(!(invitations.contains(uid)) && !(requests.contains(uid))) {
+	    				if(!(invitations.contains(uid)) && !(requests.contains(uid))) {
 
 
-			                	logger.debug(getBatchId()+" / "+count+"/"+uid+" : send invitation");
-		    					
-								// otherwise, send invitation
-		                        // Variables
-		    					
-		    	                // Local group identifiers
-		    	                List<String> localGroupIds;
-		    	                if (CollectionUtils.isEmpty(dto.getLocalGroups())) {
-		    	                    localGroupIds = new ArrayList<>(0);
-		    	                } else {
-		    	                    localGroupIds = new ArrayList<>(dto.getLocalGroups().size());
-		    	                    for (CollabProfile localGroup : dto.getLocalGroups()) {
-		    	                        localGroupIds.add(localGroup.getCn());
-		    	                    }
-		    	                }
-		    	                
-		    					
-		                        Map<String, String> variables = new HashMap<>();
-		                        variables.put(MemberManagementRepository.WORKSPACE_PATH_PROPERTY, dto.getCurrentWorkspace().getPath());
-		                        variables.put(MemberManagementRepository.INITIATOR_PROPERTY, dto.getInitiator());
-		                        variables.put(MemberManagementRepository.WORKSPACE_IDENTIFIER_PROPERTY, dto.getWorkspaceId());
-		                        variables.put(MemberManagementRepository.WORKSPACE_TITLE_PROPERTY, dto.getCurrentWorkspace().getTitle());
-		                        variables.put(MemberManagementRepository.PERSON_UID_PROPERTY, uid);
-		                        variables.put(MemberManagementRepository.INVITATION_STATE_PROPERTY, InvitationState.SENT.name());
-		                        variables.put(MemberManagementRepository.ROLE_PROPERTY, dto.getRole().getId());
-		                        variables.put(MemberManagementRepository.INVITATION_LOCAL_GROUPS_PROPERTY, StringUtils.join(localGroupIds, "|"));
-		                        variables.put(MemberManagementRepository.INVITATION_MESSAGE_PROPERTY, dto.getMessage());
-		                        variables.put(MemberManagementRepository.NEW_USER_PROPERTY, String.valueOf(unknownUser));
+		                	logger.debug(getBatchId()+" / "+count+"/"+uid+" : envoi invitation");
+	    					
+							// otherwise, send invitation
+	                        // Variables
+	    					
+	    	                // Local group identifiers
+	    	                List<String> localGroupIds;
+	    	                if (CollectionUtils.isEmpty(dto.getLocalGroups())) {
+	    	                    localGroupIds = new ArrayList<>(0);
+	    	                } else {
+	    	                    localGroupIds = new ArrayList<>(dto.getLocalGroups().size());
+	    	                    for (CollabProfile localGroup : dto.getLocalGroups()) {
+	    	                        localGroupIds.add(localGroup.getCn());
+	    	                    }
+	    	                }
+	    	                
+	    					
+	                        Map<String, String> variables = new HashMap<>();
+	                        variables.put(MemberManagementRepository.WORKSPACE_PATH_PROPERTY, dto.getCurrentWorkspace().getPath());
+	                        variables.put(MemberManagementRepository.INITIATOR_PROPERTY, dto.getInitiator());
+	                        variables.put(MemberManagementRepository.WORKSPACE_IDENTIFIER_PROPERTY, dto.getWorkspaceId());
+	                        variables.put(MemberManagementRepository.WORKSPACE_TITLE_PROPERTY, dto.getCurrentWorkspace().getTitle());
+	                        variables.put(MemberManagementRepository.PERSON_UID_PROPERTY, uid);
+	                        variables.put(MemberManagementRepository.INVITATION_STATE_PROPERTY, InvitationState.SENT.name());
+	                        variables.put(MemberManagementRepository.ROLE_PROPERTY, dto.getRole().getId());
+	                        variables.put(MemberManagementRepository.INVITATION_LOCAL_GROUPS_PROPERTY, StringUtils.join(localGroupIds, "|"));
+	                        variables.put(MemberManagementRepository.INVITATION_MESSAGE_PROPERTY, dto.getMessage());
 
-		                        if (unknownUser) {
-		                            // Generated password
-		                            String password = RandomStringUtils.randomAlphanumeric(8);
-		                            variables.put(MemberManagementRepository.GENERATED_PASSWORD_PROPERTY, password);
+	                        // Start
+	                        startProcedure(MemberManagementRepository.INVITATION_MODEL_ID, variables);
 
-		                        }
-		                        
+	                        // Update ACL
+	                        // Workspace admin & owner groups
+	                        List<CollabProfile> groups = new ArrayList<>();
+	                        CollabProfile criteria = this.workspaceService.getEmptyProfile();
+	                        criteria.setWorkspaceId(dto.getWorkspaceId());
+	                        criteria.setRole(WorkspaceRole.ADMIN);
+	                        groups.addAll(this.workspaceService.findByCriteria(criteria));
+	                        criteria.setRole(WorkspaceRole.OWNER);
+	                        groups.addAll(this.workspaceService.findByCriteria(criteria));
 
-		                        // Start
-		                        startProcedure(MemberManagementRepository.INVITATION_MODEL_ID, variables);
+	                        // Update ACL
+	                        INuxeoCommand command =  new SetProcedureInstanceAcl(dto.getWorkspaceId(), false, uid, groups);
+	                        getNuxeoController().executeNuxeoCommand(command);
+	                        
+	                        invitationsValidated.add(uid);
+	                        
+	                        countinvitation++;
+	                        
+		                	logger.debug(getBatchId()+" / "+count+"/"+uid+" : invitation envoyée");
 
-		                        // Update ACL
-		                        // Workspace admin & owner groups
-		                        List<CollabProfile> groups = new ArrayList<>();
-		                        CollabProfile criteria = this.workspaceService.getEmptyProfile();
-		                        criteria.setWorkspaceId(dto.getWorkspaceId());
-		                        criteria.setRole(WorkspaceRole.ADMIN);
-		                        groups.addAll(this.workspaceService.findByCriteria(criteria));
-		                        criteria.setRole(WorkspaceRole.OWNER);
-		                        groups.addAll(this.workspaceService.findByCriteria(criteria));
+	    				}
+	    				else {
+	    					countwf++;
+		    				rejectsPrinter = getRejectPrinter();
+	    					
+	    					if(invitations.contains(uid)) {
+	    						logger.debug(getBatchId()+" / "+count+"/"+uid+" : déjà invité");
+			    				rejectsPrinter.printRecord(uid, "Déjà invité");
 
-		                        // Update ACL
-		                        INuxeoCommand command =  new SetProcedureInstanceAcl(dto.getWorkspaceId(), false, uid, groups);
-		                        getNuxeoController().executeNuxeoCommand(command);
-		                        
-		                        invitationsValidated.add(uid);
-		                        
-		                        countinvitation++;
-		                        
-			                	logger.debug(getBatchId()+" / "+count+"/"+uid+" : invitation sent");
-
-		    				}
-		    				else {
-		    					countwf++;
-			    				rejectsPrinter = getRejectPrinter();
-		    					
-		    					if(invitations.contains(uid)) {
-		    						logger.debug(getBatchId()+" / "+count+"/"+uid+" : already invited");
-				    				rejectsPrinter.printRecord(uid, "Déjà invité");
-
-		    					}
-		    					if(requests.contains(uid)) {
-		    						logger.debug(getBatchId()+" / "+count+"/"+uid+" : has already request to join");
-		    						rejectsPrinter.printRecord(uid, "Demande d'invitation en cours");
-		    					}
-		    					hasRejects = true;
-		    					
-		    				}
-		    				
-		    			}
-		    			else {
-		    				countalreadymember++;
-		                	logger.debug(getBatchId()+" / "+count+"/"+uid+" : already member");
-		                	rejectsPrinter = getRejectPrinter();
-    						rejectsPrinter.printRecord(uid, "Déjà membre");
-    						hasRejects = true;
-		    			}
+	    					}
+	    					if(requests.contains(uid)) {
+	    						logger.debug(getBatchId()+" / "+count+"/"+uid+" : demande d'invitation en cours");
+	    						rejectsPrinter.printRecord(uid, "Demande d'invitation en cours");
+	    					}
+	    					hasRejects = true;
+	    					
+	    				}
+	    				
 	                }
 				}
 				
@@ -345,23 +300,6 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 	        
 		}
 
-	}
-
-
-	private boolean isAllowedInList(String uid) {
-		boolean ret = true; // default : no white list, all allowed
-		
-		if(whiteList != null) {
-			ret = false; // if white list, deny
-			for(int i = 0; i < whiteList.length; i++) {
-				if(uid.contains(whiteList[i])) {
-					ret = true; // if pattern found, allox
-					break;
-				}
-			}
-		}
-		
-		return ret;
 	}
 
 

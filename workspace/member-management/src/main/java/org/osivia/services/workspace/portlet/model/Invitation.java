@@ -28,9 +28,6 @@ public class Invitation extends InvitationObject {
     /** Message. */
     private String message;
 
-    /** Unknown user indicator. */
-    private final boolean unknownUser;
-
 
     /**
      * Constructor.
@@ -39,7 +36,6 @@ public class Invitation extends InvitationObject {
      */
     public Invitation(Person person) {
         super(person);
-        this.unknownUser = false;
     }
 
     /**
@@ -49,7 +45,6 @@ public class Invitation extends InvitationObject {
      */
     public Invitation(String uid) {
         super(uid);
-        this.unknownUser = true;
     }
 
 
@@ -123,15 +118,6 @@ public class Invitation extends InvitationObject {
      */
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    /**
-     * Getter for unknownUser.
-     * 
-     * @return the unknownUser
-     */
-    public boolean isUnknownUser() {
-        return unknownUser;
     }
 
 }

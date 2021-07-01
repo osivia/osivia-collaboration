@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.naming.Name;
 import javax.portlet.PortletException;
@@ -520,7 +521,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             criteria.setDisplayName(tokenizedFilterSubStr);
         }
 
-        return this.personService.findByCriteria(criteria);
+        // Search only person connected
+        return this.personService.findByCriteria(criteria, true);
     }
 
 
@@ -606,13 +608,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
         for (Invitation pendingInvitation : form.getPendingInvitations()) {
             // User identifier
-            String uid;
-            if (pendingInvitation.isUnknownUser()) {
-                // Clean identifier in case of new user
-                uid = StringUtils.lowerCase(StringUtils.trim(pendingInvitation.getId()));
-            } else {
-                uid = pendingInvitation.getId();
-            }
+            String uid  = pendingInvitation.getId();
+
             // User display name
             String displayName;
             if (pendingInvitation.getPerson() == null) {
@@ -644,7 +641,6 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 }
                 
                 try {
-                    boolean unknownUser = pendingInvitation.isUnknownUser();
 
                     // Variables
                     Map<String, String> variables = new HashMap<>();
@@ -656,17 +652,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     variables.put(ROLE_PROPERTY, form.getRole().getId());
                     variables.put(INVITATION_LOCAL_GROUPS_PROPERTY, StringUtils.join(localGroupIds, "|"));
                     variables.put(INVITATION_MESSAGE_PROPERTY, form.getMessage());
-                    variables.put(NEW_USER_PROPERTY, String.valueOf(unknownUser));
                     variables.put(INITIATOR_PROPERTY, initiator);
 
-                    if (unknownUser) {
-                        // Generated password
-                        String password = RandomStringUtils.randomAlphanumeric(8);
-                        variables.put(GENERATED_PASSWORD_PROPERTY, password);
-
-                        // User creation
-                        this.createUser(portalControllerContext, uid, password);
-                    }
 
                     // Start
                     this.formsService.start(portalControllerContext, INVITATION_MODEL_ID, variables);

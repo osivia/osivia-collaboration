@@ -11,6 +11,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.MenubarModule;
+import org.osivia.services.workspace.plugin.forms.AcceptWorkspaceInvitationCurrentLoginFormFilter;
 import org.osivia.services.workspace.plugin.forms.AcceptWorkspaceInvitationFormFilter;
 import org.osivia.services.workspace.plugin.forms.DeclineWorkspaceInvitationFormFilter;
 import org.osivia.services.workspace.plugin.menubar.MemberManagementMenubarModule;
@@ -78,6 +79,7 @@ public class MemberManagementPlugin extends AbstractPluginPortlet {
         // Form filters
         Map<String, FormFilter> formFilters = this.getFormFilters(context);
         formFilters.put(AcceptWorkspaceInvitationFormFilter.IDENTIFIER, new AcceptWorkspaceInvitationFormFilter(portletContext));
+        formFilters.put(AcceptWorkspaceInvitationCurrentLoginFormFilter.IDENTIFIER, new AcceptWorkspaceInvitationCurrentLoginFormFilter(portletContext));
         formFilters.put(DeclineWorkspaceInvitationFormFilter.IDENTIFIER, new DeclineWorkspaceInvitationFormFilter());
 
         // List templates

@@ -580,7 +580,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
             // Avatar
             String avatarUrl;
-            if (object.getPerson().getAvatar() == null) {
+            if (object.getPerson() == null) {
+            	avatarUrl = null;
+            }
+            else if (object.getPerson().getAvatar() == null) {
                 avatarUrl = null;
             } else {
                 avatarUrl = object.getPerson().getAvatar().getUrl();
@@ -887,7 +890,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
                 // Already invited
                 boolean alreadyInvited = invitationIndentifiers.contains(person.getUid());
-
+                
                 // Existing request indicator
                 boolean existingRequest = !invitationOnly && requestIdentifiers.contains(person.getUid());
 
@@ -897,10 +900,22 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 objects.add(object);
                 total++;
             }
+            
+            // mail already invited
+            if(persons.isEmpty() && invitationIndentifiers.contains(part)) {
+            	
+                // Search result
+                JSONObject object = this.getExistingMailObject(part, bundle);
 
-            // Add person creation
-            if (this.enablePersonCreation() && !(tokenizer && !persons.isEmpty())) {
-                this.addPersonCreationSearchResult(persons, objects, part, bundle);
+                objects.add(object);
+                total++;
+            }
+            else {
+	
+	            // Add person creation
+	            if (this.enablePersonCreation() && !(tokenizer && !persons.isEmpty())) {
+	                this.addPersonCreationSearchResult(persons, objects, part, bundle);
+	            }
             }
         }
 
@@ -989,6 +1004,28 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         return object;
     }
 
+	/**
+	 * Get search result JSON Object.
+	 * 
+	 * @param person          person
+	 * @param alreadyMember   already member indicator
+	 * @param existingRequest existing request indicator
+	 * @param bundle          internationalization bundle
+	 * @return JSON object
+	 */
+	protected JSONObject getExistingMailObject(String mail, Bundle bundle) {
+		JSONObject object = new JSONObject();
+		object.put("id", mail);
+
+		String displayName = mail;
+
+		displayName += " " + bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ALREADY_INVITED");
+		object.put("disabled", true);
+
+		object.put("displayName", displayName);
+
+		return object;
+	}
 
     /**
      * Get enable person creation indicator (default = true).
@@ -1188,7 +1225,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     public void validateInvitationsCreationForm(Errors errors, InvitationsCreationForm form) {
         if (CollectionUtils.isNotEmpty(form.getPendingInvitations())) {
             for (Invitation invitation : form.getPendingInvitations()) {
-                if (invitation.isUnknownUser()) {
+//                if (invitation.isUnknownUser()) {
                     // Mail pattern matcher
                     Matcher matcher = this.mailPattern.matcher(StringUtils.trim(invitation.getId()));
 
@@ -1196,7 +1233,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                         Object[] errorArgs = new Object[]{invitation.getId()};
                         errors.rejectValue("pendingInvitations", "Invalid", errorArgs, null);
                     }
-                }
+//                }
             }
         }
     }
@@ -1214,9 +1251,9 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Pending invitation identifiers
         List<String> invitationIdentifiers = new ArrayList<>(creationForm.getPendingInvitations().size());
         for (Invitation invitation : creationForm.getPendingInvitations()) {
-            if (invitation.isUnknownUser()) {
+//            if (invitation.isUnknownUser()) {
                 invitationIdentifiers.add(invitation.getId());
-            }
+//            }
         }
 
         if (invitationIdentifiers.isEmpty() || creationForm.isWarning()) {
