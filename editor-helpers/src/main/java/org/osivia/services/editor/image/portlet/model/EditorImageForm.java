@@ -16,6 +16,10 @@ import java.util.List;
 public class EditorImageForm {
 
     /**
+     * Creation indicator.
+     */
+    private boolean creation;
+    /**
      * URL.
      */
     private String url;
@@ -66,6 +70,14 @@ public class EditorImageForm {
         super();
     }
 
+
+    public boolean isCreation() {
+        return creation;
+    }
+
+    public void setCreation(boolean creation) {
+        this.creation = creation;
+    }
 
     public String getUrl() {
         return url;

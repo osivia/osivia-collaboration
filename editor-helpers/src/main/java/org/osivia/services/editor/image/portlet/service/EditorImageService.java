@@ -5,7 +5,6 @@ import org.osivia.portal.api.editor.EditorService;
 import org.osivia.services.editor.common.service.CommonService;
 import org.osivia.services.editor.image.portlet.model.EditorImageForm;
 import org.osivia.services.editor.image.portlet.model.EditorImageSourceAttachedForm;
-import org.osivia.services.editor.image.portlet.model.EditorImageSourceDocumentForm;
 
 import javax.portlet.PortletException;
 import java.io.IOException;
@@ -23,6 +22,14 @@ public interface EditorImageService extends CommonService {
      */
     String PORTLET_INSTANCE = "osivia-services-editor-image-instance";
 
+    /**
+     * Creation indicator parameter.
+     */
+    String CREATION_PARAMETER = "creation";
+    /**
+     * Creation indicator window property.
+     */
+    String CREATION_WINDOW_PROPERTY = EditorService.WINDOW_PROPERTY_PREFIX + CREATION_PARAMETER;
     /**
      * Source URL parameter.
      */

@@ -14,7 +14,7 @@ public enum EditorHelper {
     /**
      * Image editor helper.
      */
-    IMAGE("image", EditorImageService.PORTLET_INSTANCE, EditorImageService.SRC_PARAMETER, EditorImageService.ALT_PARAMETER, EditorImageService.HEIGHT_PARAMETER, EditorImageService.WIDTH_PARAMETER),
+    IMAGE("image", EditorImageService.PORTLET_INSTANCE, EditorImageService.CREATION_PARAMETER, EditorImageService.SRC_PARAMETER, EditorImageService.ALT_PARAMETER, EditorImageService.HEIGHT_PARAMETER, EditorImageService.WIDTH_PARAMETER),
     /**
      * Link editor helper.
      */

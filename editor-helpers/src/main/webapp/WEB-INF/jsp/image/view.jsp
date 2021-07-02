@@ -31,16 +31,21 @@
                 <p>
                     <form:input path="url" cssClass="form-control" />
                 </p>
-                <c:if test="${not empty form.availableSourceTypes}">
-                    <div>
-                        <c:forEach var="type" items="${form.availableSourceTypes}">
-                            <button type="submit" name="source-${type.id}" class="btn btn-default btn-sm">
-                                <i class="${type.icon}"></i>
-                                <span><op:translate key="${type.key}"/></span>
-                            </button>
-                        </c:forEach>
-                    </div>
-                </c:if>
+                <c:choose>
+                    <c:when test="${form.creation}">
+                        <p class="help-block"><op:translate key="EDITOR_IMAGE_NO_ATTACHED_IN_CREATION_HELP"/></p>
+                    </c:when>
+                    <c:when test="${not empty form.availableSourceTypes}">
+                        <div>
+                            <c:forEach var="type" items="${form.availableSourceTypes}">
+                                <button type="submit" name="source-${type.id}" class="btn btn-default btn-sm">
+                                    <i class="${type.icon}"></i>
+                                    <span><op:translate key="${type.key}"/></span>
+                                </button>
+                            </c:forEach>
+                        </div>
+                    </c:when>
+                </c:choose>
                 <form:errors path="url" cssClass="help-block"/>
             </div>
         </spring:bind>

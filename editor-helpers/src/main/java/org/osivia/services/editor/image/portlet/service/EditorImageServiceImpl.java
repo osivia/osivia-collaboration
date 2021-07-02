@@ -3,6 +3,7 @@ package org.osivia.services.editor.image.portlet.service;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -90,14 +91,9 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
             // Window
             PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
 
-            // Current document path
-            String path = window.getProperty(PATH_WINDOW_PROPERTY);
-            // Document
-            Document document = this.repository.getDocument(portalControllerContext, path);
-
-            // Attachments indicator
-            boolean attachments = (document.getProperties().getList(EditorImageRepository.ATTACHED_IMAGES_PROPERTY) != null);
-
+            // Creation indicator
+            boolean creation = BooleanUtils.toBoolean(window.getProperty(CREATION_WINDOW_PROPERTY));
+            form.setCreation(creation);
 
             // Source URL
             String url = window.getProperty(SRC_WINDOW_PROPERTY);
@@ -122,11 +118,21 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
             form.setWidth(width);
 
             // Available image source types
-            List<ImageSourceType> availableSourceTypes = new ArrayList<>();
-            if (attachments) {
-                availableSourceTypes.add(ImageSourceType.ATTACHED);
+            boolean attachments;
+            if (creation) {
+                attachments = false;
+            } else {
+                Document document = this.repository.getDocument(portalControllerContext, window.getProperty(PATH_WINDOW_PROPERTY));
+                attachments = (document.getProperties().getList(EditorImageRepository.ATTACHED_IMAGES_PROPERTY) != null);
             }
-            availableSourceTypes.add(ImageSourceType.DOCUMENT);
+            List<ImageSourceType> availableSourceTypes;
+            if (attachments) {
+                availableSourceTypes = new ArrayList<>();
+                availableSourceTypes.add(ImageSourceType.ATTACHED);
+                availableSourceTypes.add(ImageSourceType.DOCUMENT);
+            } else {
+                availableSourceTypes = null;
+            }
             form.setAvailableSourceTypes(availableSourceTypes);
 
             // Loaded indicator
