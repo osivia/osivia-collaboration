@@ -5,6 +5,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.service.UpdateScope;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -243,7 +244,7 @@ public class MoveServiceImpl implements MoveService {
         this.repository.move(portalControllerContext, windowProperties.getBasePath(), identifiers, form.getTargetPath());
         
 
-        nuxeoController.notifyUpdate( spacePath,windowProperties.getBasePath(), true);
+        nuxeoController.notifyUpdate( spacePath,windowProperties.getBasePath(), UpdateScope.SCOPE_SPACE, true);
 
         // Notification
         String message = bundle.getString("MOVE_MESSAGE_SUCCESS");

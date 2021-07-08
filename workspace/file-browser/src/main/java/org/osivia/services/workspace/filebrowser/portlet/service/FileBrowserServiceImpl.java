@@ -24,6 +24,7 @@ import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.service.CMSSession;
+import org.osivia.portal.api.cms.service.UpdateScope;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
@@ -1260,7 +1261,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             // Duplicate
             this.repository.duplicate(portalControllerContext, path, form.getPath());
             
-            nuxeoController.notifyUpdate( null, spacePath, true);
+            nuxeoController.notifyUpdate( null, spacePath, UpdateScope.SCOPE_SPACE, true);
 
             // Notification
             String message = bundle.getString("FILE_BROWSER_DUPLICATE_SUCCESS_MESSAGE");
@@ -1320,7 +1321,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             
             // Move
             this.repository.move(portalControllerContext, sourceIdentifiers, targetIdentifier);
-            nuxeoController.notifyUpdate( null, spacePath, true);
+            nuxeoController.notifyUpdate( null, spacePath, UpdateScope.SCOPE_SPACE,true);
 
             // Notification
             String message = bundle.getString("FILE_BROWSER_MOVE_SUCCESS_MESSAGE");
@@ -1354,7 +1355,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                 // Import
                 this.repository.importFiles(portalControllerContext, form.getPath(), upload);
                 
-                nuxeoController.notifyUpdate( null, spacePath, true);
+                // Notify cms layer (Scope = space beacouse of quotas)
+                nuxeoController.notifyUpdate( null, spacePath, UpdateScope.SCOPE_SPACE, true);
                 
             } catch (NuxeoException e) {
                 String message = e.getUserMessage(portalControllerContext);

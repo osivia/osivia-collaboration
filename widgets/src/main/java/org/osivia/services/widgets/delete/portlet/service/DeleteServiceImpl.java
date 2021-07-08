@@ -14,6 +14,7 @@ import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.exception.CMSException;
 import org.osivia.portal.api.cms.service.CMSSession;
+import org.osivia.portal.api.cms.service.UpdateScope;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -213,7 +214,7 @@ public class DeleteServiceImpl implements DeleteService {
                 this.repository.delete(portalControllerContext, identifiers);
                 
                 
-                nuxeoController.notifyUpdate(firstDoc.getPath(), spacePath, false);
+                nuxeoController.notifyUpdate(firstDoc.getPath(), spacePath, UpdateScope.SCOPE_SPACE, false);
 
                 // Notification
                 String message = bundle.getString("DELETE_SUCCESS_MESSAGE");

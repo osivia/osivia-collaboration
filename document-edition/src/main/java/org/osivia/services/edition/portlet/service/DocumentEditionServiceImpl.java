@@ -8,6 +8,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.service.UpdateScope;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.editor.EditorService;
 import org.osivia.portal.api.internationalization.Bundle;
@@ -214,8 +215,9 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
             // Save document
             repository.save(portalControllerContext, form);
             
-            // Notify CMS change
-            nuxeoController.notifyUpdate( form.getPath(), spacePath, false);
+            // Notify CMS change 
+            // scope space due to quotas
+            nuxeoController.notifyUpdate( form.getPath(), spacePath, UpdateScope.SCOPE_SPACE, false);
         } catch (NuxeoException e) {
             // Nuxeo user messages (quota, virus) are displayed on current form
             String message = e.getUserMessage(portalControllerContext);

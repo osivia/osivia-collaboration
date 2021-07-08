@@ -12,6 +12,7 @@ import org.osivia.portal.api.cms.CMSController;
 import org.osivia.portal.api.cms.UniversalID;
 import org.osivia.portal.api.cms.service.CMSService;
 import org.osivia.portal.api.cms.service.CMSSession;
+import org.osivia.portal.api.cms.service.UpdateScope;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -152,7 +153,7 @@ public class RenameServiceImpl implements RenameService {
             
             
             // Notify CMS change
-            nuxeoController.notifyUpdate(document.getPath(), spacePath, false);
+            nuxeoController.notifyUpdate(document.getPath(), spacePath, UpdateScope.SCOPE_SPACE, false);
 
             // Notification
             String message = bundle.getString("RENAME_MESSAGE_SUCCESS");
