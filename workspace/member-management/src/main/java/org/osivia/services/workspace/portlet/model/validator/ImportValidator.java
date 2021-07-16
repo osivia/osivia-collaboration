@@ -3,11 +3,9 @@ package org.osivia.services.workspace.portlet.model.validator;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.lang.StringUtils;
 import org.osivia.services.workspace.portlet.model.ImportForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -65,36 +63,31 @@ public class ImportValidator implements Validator {
 
 
 	private void checkFile(Errors errors, ImportForm form) {
-		// MIME type
-		MimeType mimeType;
-		try {
-		    mimeType = new MimeType(form.getUpload().getContentType());
-		    
-		    if(!mimeType.getBaseType().equals("text/csv")) {
-				errors.rejectValue("upload", "INVALID_TYPE_FILE", null);
+    
+		
+		String originalFilename = form.getUpload().getOriginalFilename();
+		if(!StringUtils.endsWithIgnoreCase(originalFilename, ".csv")) {
+			errors.rejectValue("upload", "INVALID_TYPE_FILE", null);
 
-		    }
-		    else {
-		    	
-				CSVParser parser;
-				try {
-					parser = CSVParser.parse(form.getUpload().getInputStream(), StandardCharsets.UTF_8, CSVFormat.EXCEL);
-					int size = parser.getRecords().size();
-					if(size > MAX_SIZE) {
-						errors.rejectValue("upload", "INVALID_FILE_MAX_SIZE", null);
-
-					}
-					
-				} catch (IOException e) {
+	    }
+	    else {
+	    	
+			CSVParser parser;
+			try {
+				parser = CSVParser.parse(form.getUpload().getInputStream(), StandardCharsets.UTF_8, CSVFormat.EXCEL);
+				int size = parser.getRecords().size();
+				if(size > MAX_SIZE) {
 					errors.rejectValue("upload", "INVALID_FILE_MAX_SIZE", null);
 
 				}
-		    	
-		    }
-		    
-		} catch (MimeTypeParseException e) {
-			errors.rejectValue("upload", "INVALID_TYPE_FILE", null);
-		}
+				
+			} catch (IOException e) {
+				errors.rejectValue("upload", "INVALID_FILE_MAX_SIZE", null);
+
+			}
+	    	
+	    }
+
 		
 
 	}
