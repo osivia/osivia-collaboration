@@ -607,7 +607,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         List<Invitation> updatedInvitations = new ArrayList<>(form.getPendingInvitations().size());
 
         for (Invitation pendingInvitation : form.getPendingInvitations()) {
-            // User identifier
+        	
+            // User identified by his e-mail
             String uid  = pendingInvitation.getId();
 
             // User display name
@@ -616,6 +617,9 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                 displayName = uid;
             } else {
                 displayName = StringUtils.defaultIfBlank(pendingInvitation.getPerson().getDisplayName(), uid);
+                
+                // If a person is found, get is e-mail has a uid for the invitation  (may duffer from the ldap uid).
+                uid = pendingInvitation.getPerson().getMail();
             }
 
             if (existingInvitations.containsKey(uid)) {
