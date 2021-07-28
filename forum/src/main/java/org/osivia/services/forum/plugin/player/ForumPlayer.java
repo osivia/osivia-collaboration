@@ -89,6 +89,10 @@ public class ForumPlayer implements INuxeoPlayerModule {
         if (docCtx.getDoc() != null) {
             windowProperties.put(ViewList.CREATION_PARENT_PATH_WINDOW_PROPERTY, docCtx.getDoc().getPath());
         }
+        
+        // Forum can display only 2000 resultats max (one request)
+        windowProperties.put(ViewList.RESULTS_LIMIT_WINDOW_PROPERTY, "2000");
+        windowProperties.put(ViewList.MAXIMIZED_PAGINATION_WINDOW_PROPERTY, "2000");
 
         Player linkProps = new Player();
         linkProps.setWindowProperties(windowProperties);
