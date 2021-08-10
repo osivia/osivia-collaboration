@@ -5,8 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,8 +38,10 @@ import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserBulkDownloadZipFolder;
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.CopyDocumentCommand;
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.GetFileBrowserDocumentsCommand;
+import org.osivia.services.workspace.filebrowser.portlet.repository.command.GetFileBrowserSubFoldersContentCommand;
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.ImportFilesCommand;
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.MoveDocumentsCommand;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -317,11 +321,76 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setStreamingSupport(true);
 
-        // Binary contents
-        List<CMSBinaryContent> contents = new ArrayList<>(paths.size());
+         
+        FileBrowserBulkDownloadZipFolder rootfolder = new FileBrowserBulkDownloadZipFolder();
+        List<String> subfolders = new ArrayList<String>();
         for (String path : paths) {
-            CMSBinaryContent content = nuxeoController.fetchFileContent(path, "file:content");
-            contents.add(content);
+        	
+        	NuxeoDocumentContext documentContext = nuxeoController.getDocumentContext(path);
+        	
+        	if (documentContext.getDocumentType().isFolderish()) {
+        		 subfolders.add(path);
+        	} 
+        	else if (documentContext.getDocumentType().isFile()) {
+        		CMSBinaryContent content = nuxeoController.fetchFileContent(path, "file:content");
+        		Long contentFileSize = content.getFileSize();
+        		
+        		rootfolder.setFileSize(rootfolder.getFileSize() + contentFileSize);
+        		rootfolder.getFiles().put(content.getName(),  content);
+        	}
+        }
+        
+        if(subfolders.size() > 0) {
+        
+	        GetFileBrowserSubFoldersContentCommand command = applicationContext.getBean(GetFileBrowserSubFoldersContentCommand.class);
+	        command.setSubpaths(subfolders);
+	        Object result = nuxeoController.executeNuxeoCommand(command);
+	        
+	        // Documents
+	        List<Document> documents;
+	        if ((result != null) && (result instanceof Documents)) {
+	            Documents resultDocuments = (Documents) result;
+	            documents = resultDocuments.list();
+	        } else {
+	            documents = null;
+	        }
+	        
+	        Map<String, String> folderNames = new HashMap<>();
+	        
+	        for(Document document : documents) {
+	        	if(document.getFacets().list().contains("Folderish")) {
+	        		
+	        		// check parent folder if exists
+	        		String name = document.getTitle() + File.separator;
+	        		
+	        		String parentPath = StringUtils.substringBeforeLast(document.getPath(), "/");
+	        		String parentName = folderNames.get(parentPath);
+	        		if(parentName != null) {
+	        			name = parentName + name;
+	        		}
+	        		
+	        		folderNames.put(document.getPath(), name);
+	        		
+	        	}
+	        	else  {
+	        		CMSBinaryContent content = nuxeoController.fetchFileContent(document.getPath(), "file:content");
+	        		Long contentFileSize = content.getFileSize();
+	        		
+	        		rootfolder.setFileSize(rootfolder.getFileSize() + contentFileSize);
+	        		
+	        		String name = document.getTitle();
+	        		
+	        		String parentPath = StringUtils.substringBeforeLast(document.getPath(), "/");
+	        		String parentName = folderNames.get(parentPath);
+	        		if(parentName != null) {
+	        			name = parentName + name;
+	        		}
+	        		
+	        		
+	        		rootfolder.getFiles().put(name, content);
+	        	}
+
+	        }
         }
 
         // Zip file
@@ -340,7 +409,10 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         Set<String> zipFileNames = new HashSet<>();
 
         try {
-            for (CMSBinaryContent content : contents) {
+            for (Map.Entry<String, CMSBinaryContent> entry : rootfolder.getFiles().entrySet()) {
+            	
+            	CMSBinaryContent content = entry.getValue();
+            	
                 // File name ; must be unique
                 String fileName = content.getName();
                 while (zipFileNames.contains(fileName)) {
@@ -369,7 +441,7 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
                 zipFileNames.add(fileName);
 
                 // Zip entry
-                ZipEntry zipEntry = new ZipEntry(fileName);
+                ZipEntry zipEntry = new ZipEntry(entry.getKey());
                 zipEntry.setSize(content.getFileSize());
                 zipEntry.setCompressedSize(-1);
 

@@ -435,7 +435,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                         allEditable = false;
                     }
 
-                    allFile = allFile && (type != null) && type.isFile();
+                    allFile = allFile && (type != null) && (type.isFile() || type.isFolderish());
                 }
 
 
