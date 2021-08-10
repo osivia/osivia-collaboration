@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.filebrowser.portlet.repository.command;
 
+import java.text.Normalizer;
 import java.util.List;
 
 import org.nuxeo.ecm.automation.client.OperationRequest;
@@ -51,7 +52,13 @@ public class ImportFilesCommand implements INuxeoCommand {
         // Blobs
         Blobs blobs = new Blobs(this.upload.size());
         for (MultipartFile multipartFile : this.upload) {
-            Blob blob = new StreamBlob(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), multipartFile.getContentType());
+
+
+            String s = Normalizer.normalize(multipartFile.getOriginalFilename(), Normalizer.Form.NFD);
+
+            s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+
+            Blob blob = new StreamBlob(multipartFile.getInputStream(), s,  multipartFile.getContentType());
             blobs.add(blob);
         }
 
