@@ -39,10 +39,12 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserBulkDownloadZipFolder;
+import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserForm;
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.CopyDocumentCommand;
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.GetFileBrowserDocumentsCommand;
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.GetFileBrowserSubFoldersContentCommand;
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.ImportFilesCommand;
+import org.osivia.services.workspace.filebrowser.portlet.repository.command.ImportZipCommand;
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.MoveDocumentsCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -539,13 +541,34 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
      * {@inheritDoc}
      */
     @Override
-    public void importFiles(PortalControllerContext portalControllerContext, String path, List<MultipartFile> upload) throws PortletException, IOException {
+    public void importFiles(PortalControllerContext portalControllerContext, FileBrowserForm form, List<MultipartFile> upload) throws PortletException, IOException {
+    	    	
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-
-        // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(ImportFilesCommand.class, path, upload);
-        nuxeoController.executeNuxeoCommand(command);
+        List<MultipartFile> other;
+        if(form.isExtractArchives()) {
+	        other = new ArrayList<>();
+	        for(MultipartFile file : upload) {
+	        	
+	        	if(StringUtils.endsWithIgnoreCase(file.getOriginalFilename(),".zip")) {
+	                // Nuxeo command
+	                INuxeoCommand command = this.applicationContext.getBean(ImportZipCommand.class, form.getPath(), file);
+	                nuxeoController.executeNuxeoCommand(command);
+	        	}
+	        	else {
+	        		other.add(file);
+	        	}
+	        }
+        }
+        else {
+        	other = upload;
+        }
+        
+        if(other.size() > 0) {
+	        // Nuxeo command
+	        INuxeoCommand command = this.applicationContext.getBean(ImportFilesCommand.class, form.getPath(), other);
+	        nuxeoController.executeNuxeoCommand(command);
+        }
     }
 
 

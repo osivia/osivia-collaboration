@@ -33,7 +33,8 @@ public class FileBrowserForm {
     private String path;
     /** Initialized indicator. */
     private boolean initialized;
-
+    /** Extract archives indicator. */
+    private boolean extractArchives = true;
 
     /**
      * Constructor.
@@ -168,5 +169,15 @@ public class FileBrowserForm {
     public void setInitialized(boolean initialized) {
         this.initialized = initialized;
     }
+
+
+	public boolean isExtractArchives() {
+		return extractArchives;
+	}
+
+
+	public void setExtractArchives(boolean extractArchives) {
+		this.extractArchives = extractArchives;
+	}
 
 }

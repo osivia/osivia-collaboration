@@ -26,6 +26,9 @@
                 <button type="reset" class="btn btn-default cancel">
                     <span><op:translate key="FILE_BROWSER_UPLOAD_CANCEL"/></span>
                 </button>
+                
+                <form:checkbox path="extractArchives"/>
+                	<span><op:translate key="FILE_BROWSER_EXTRACT"/></span>
             </div>
             
             <!-- Global progress bar -->

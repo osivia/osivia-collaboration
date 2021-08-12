@@ -1183,7 +1183,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         if (CollectionUtils.isNotEmpty(upload)) {
             try {
                 // Import
-                this.repository.importFiles(portalControllerContext, form.getPath(), upload);
+                this.repository.importFiles(portalControllerContext, form, upload);
 
                 // Notification
                 //String message = bundle.getString("FILE_BROWSER_UPLOAD_SUCCESS_MESSAGE");

@@ -10,6 +10,7 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.user.UserPreferences;
 import org.osivia.portal.core.cms.CMSBinaryContent;
+import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserForm;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
@@ -166,12 +167,12 @@ public interface FileBrowserRepository {
      * Import files.
      * 
      * @param portalControllerContext portal controller context
-     * @param path document path
+     * @param form
      * @param upload upload multipart files
      * @throws PortletException
      * @throws IOException
      */
-    void importFiles(PortalControllerContext portalControllerContext, String path, List<MultipartFile> upload) throws PortletException, IOException;
+    void importFiles(PortalControllerContext portalControllerContext, FileBrowserForm form, List<MultipartFile> upload) throws PortletException, IOException;
 
 
     /**
