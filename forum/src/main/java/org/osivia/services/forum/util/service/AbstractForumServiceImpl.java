@@ -11,6 +11,7 @@ import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import java.io.File;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -93,7 +94,8 @@ public abstract class AbstractForumServiceImpl {
         file.setTemporaryFile(temporaryFile);
 
         // File name
-        file.setFileName(upload.getOriginalFilename());
+        String s = Normalizer.normalize(upload.getOriginalFilename(), Normalizer.Form.NFC);
+        file.setFileName(s);
 
         // Mime type
         MimeType mimeType;

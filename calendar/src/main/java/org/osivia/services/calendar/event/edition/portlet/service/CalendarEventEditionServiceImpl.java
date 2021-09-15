@@ -3,6 +3,7 @@ package org.osivia.services.calendar.event.edition.portlet.service;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -219,7 +220,8 @@ public class CalendarEventEditionServiceImpl extends CalendarServiceImpl impleme
             file.setTemporaryFile(temporaryFile);
 
             // Temporary file name
-            file.setTemporaryFileName(multipartFile.getOriginalFilename());
+            String s = Normalizer.normalize(multipartFile.getOriginalFilename(), Normalizer.Form.NFC);
+            file.setTemporaryFileName(s);
 
             // Temporary mime type
             MimeType mimeType;
