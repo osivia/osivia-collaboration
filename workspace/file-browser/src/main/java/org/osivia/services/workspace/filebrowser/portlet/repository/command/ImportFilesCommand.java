@@ -53,10 +53,7 @@ public class ImportFilesCommand implements INuxeoCommand {
         Blobs blobs = new Blobs(this.upload.size());
         for (MultipartFile multipartFile : this.upload) {
 
-
-            String s = Normalizer.normalize(multipartFile.getOriginalFilename(), Normalizer.Form.NFD);
-
-            s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+            String s = Normalizer.normalize(multipartFile.getOriginalFilename(), Normalizer.Form.NFC);
 
             Blob blob = new StreamBlob(multipartFile.getInputStream(), s,  multipartFile.getContentType());
             blobs.add(blob);

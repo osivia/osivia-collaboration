@@ -22,6 +22,7 @@ import javax.activation.MimeTypeParseException;
 import javax.portlet.PortletException;
 import java.io.File;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -180,8 +181,10 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
             } else {
                 contentType = form.getTemporaryFileMimeType().toString();
             }
+            
+            String s = Normalizer.normalize(form.getTemporaryFileName(), Normalizer.Form.NFC);
 
-            FileBlob blob = new FileBlob(file, form.getTemporaryFileName(), contentType);
+            FileBlob blob = new FileBlob(file, s, contentType);
             binaries.put(BINARY_PROPERTY, blob);
         }
     }

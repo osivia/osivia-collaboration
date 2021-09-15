@@ -48,9 +48,7 @@ public class ImportZipCommand implements INuxeoCommand {
     @Override
     public Object execute(Session nuxeoSession) throws Exception {
 
-        String s = Normalizer.normalize(upload.getOriginalFilename(), Normalizer.Form.NFD);
-
-        s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        String s = Normalizer.normalize(upload.getOriginalFilename(), Normalizer.Form.NFC);
 
         Blob blob = new StreamBlob(upload.getInputStream(), s,  upload.getContentType());
 
