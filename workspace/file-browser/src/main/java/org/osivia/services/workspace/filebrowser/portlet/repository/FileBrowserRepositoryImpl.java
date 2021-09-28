@@ -100,10 +100,10 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     private final Pattern zipFileNamePattern;
 
 
-	@Value("#{systemProperties['osivia.filebrowser.zip.sizelimit'] ?: null}")
+	@Value("#{systemProperties['osivia.filebrowser.zip.downloadsizelimit'] ?: null}")
 	private String zipSizeLimit;
 	
-	@Value("#{systemProperties['osivia.filebrowser.zip.weightlimit'] ?: null}")
+	@Value("#{systemProperties['osivia.filebrowser.zip.downloadweightlimit'] ?: null}")
 	private String zipWeightLimit;
 
     /**
