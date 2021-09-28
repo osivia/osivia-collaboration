@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,11 +17,15 @@ import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.io.output.CountingOutputStream;
@@ -31,6 +36,10 @@ import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.Link;
 import org.osivia.portal.api.user.UserPreferences;
 import org.osivia.portal.core.cms.CMSBinaryContent;
@@ -47,6 +56,7 @@ import org.osivia.services.workspace.filebrowser.portlet.repository.command.Impo
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.ImportZipCommand;
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.MoveDocumentsCommand;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
@@ -78,10 +88,23 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     @Autowired
     private ICMSServiceLocator cmsServiceLocator;
 
+    /** Notifications service. */
+    @Autowired
+    private INotificationsService notificationsService;
+    
+    /** Internationalization bundle factory. */
+    @Autowired
+    private IBundleFactory bundleFactory;
 
     /** Zip file name pattern. */
     private final Pattern zipFileNamePattern;
 
+
+	@Value("#{systemProperties['osivia.filebrowser.zip.sizelimit'] ?: null}")
+	private String zipSizeLimit;
+	
+	@Value("#{systemProperties['osivia.filebrowser.zip.weightlimit'] ?: null}")
+	private String zipWeightLimit;
 
     /**
      * Constructor.
@@ -319,6 +342,12 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
      */
     @Override
     public CMSBinaryContent getBinaryContent(PortalControllerContext portalControllerContext, List<String> paths) throws PortletException, IOException {
+    	
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
+    	
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setStreamingSupport(true);
@@ -337,9 +366,12 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         		CMSBinaryContent content = nuxeoController.fetchFileContent(path, "file:content");
         		Long contentFileSize = content.getFileSize();
         		
-        		rootfolder.setFileSize(rootfolder.getFileSize() + contentFileSize);
         		rootfolder.getFiles().put(content.getName(),  content);
+        		
+        		checkLimits(portalControllerContext, rootfolder, content.getFileSize());
         	}
+        	
+        	
         }
         
         if(subfolders.size() > 0) {
@@ -378,8 +410,6 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
 	        		CMSBinaryContent content = nuxeoController.fetchFileContent(document.getPath(), "file:content");
 	        		Long contentFileSize = content.getFileSize();
 	        		
-	        		rootfolder.setFileSize(rootfolder.getFileSize() + contentFileSize);
-	        		
 	        		String name = document.getTitle();
 	        		
 	        		String parentPath = StringUtils.substringBeforeLast(document.getPath(), "/");
@@ -388,8 +418,8 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
 	        			name = parentName + name;
 	        		}
 	        		
-	        		
 	        		rootfolder.getFiles().put(name, content);
+	        		checkLimits(portalControllerContext, rootfolder, content.getFileSize());
 	        	}
 
 	        }
@@ -548,9 +578,11 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         List<MultipartFile> other;
         if(form.isExtractArchives()) {
 	        other = new ArrayList<>();
+	        	        
 	        for(MultipartFile file : upload) {
 	        	
 	        	if(StringUtils.endsWithIgnoreCase(file.getOriginalFilename(),".zip")) {
+	        		
 	                // Nuxeo command
 	                INuxeoCommand command = this.applicationContext.getBean(ImportZipCommand.class, form.getPath(), file);
 	                nuxeoController.executeNuxeoCommand(command);
@@ -572,6 +604,7 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
 
 
+
     /**
      * {@inheritDoc}
      */
@@ -589,5 +622,52 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         nuxeoController.setCurrentDoc(document);
         nuxeoController.insertContentMenuBarItems();
     }
+    
+
+	private void checkLimits(PortalControllerContext portalControllerContext, FileBrowserBulkDownloadZipFolder rootfolder, long contentFileSize) throws IOException, PortletException {
+
+		rootfolder.setFileSize(rootfolder.getFileSize() + contentFileSize);
+		rootfolder.setNbEntries(rootfolder.getNbEntries() + 1);
+
+		int sizeLimit = 0;
+		long weightLimit = 0;
+		if (zipSizeLimit != null) {
+			sizeLimit = Integer.parseInt(zipSizeLimit);
+		}
+		if (zipWeightLimit != null) {
+			weightLimit = NumberUtils.toLong(zipWeightLimit) * FileUtils.ONE_MB;
+		}
+
+		if (sizeLimit > 0 && rootfolder.getNbEntries() > sizeLimit) {
+			
+			Bundle bundle = bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+			
+			String message = bundle.getString("FILE_BROWSER_DOWNLOAD_ZIP_ERROR_ENTRIES",
+					Integer.toString(rootfolder.getNbEntries()), Integer.toString(sizeLimit));
+
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
+            
+            
+			throw new PortletException(message);
+
+		}
+		if (weightLimit > 0 && rootfolder.getFileSize() > weightLimit) {
+
+			Bundle bundle = bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+			
+			long s = rootfolder.getFileSize() / FileUtils.ONE_MB;
+			long l = weightLimit / FileUtils.ONE_MB;
+
+			String message = bundle.getString("FILE_BROWSER_DOWNLOAD_ZIP_ERROR_WEIGHT", Long.toString(s),
+					Long.toString(l));
+
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
+
+            
+			throw new PortletException(message);
+
+		}
+
+	}
 
 }

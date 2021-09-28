@@ -34,7 +34,7 @@ public class FileBrowserForm {
     /** Initialized indicator. */
     private boolean initialized;
     /** Extract archives indicator. */
-    private boolean extractArchives = true;
+    private boolean extractArchives = false;
 
     /**
      * Constructor.

@@ -21,6 +21,7 @@ public class FileBrowserBulkDownloadZipFolder {
     private Map<String, CMSBinaryContent> files = new HashMap<String, CMSBinaryContent>();
         
     private long fileSize = 0;
+    private int nbEntries = 0;
 
 	public Map<String, CMSBinaryContent> getFiles() {
 		return files;
@@ -37,5 +38,15 @@ public class FileBrowserBulkDownloadZipFolder {
 	public void setFileSize(long fileSize) {
 		this.fileSize = fileSize;
 	}
+
+	public int getNbEntries() {
+		return nbEntries;
+	}
+
+	public void setNbEntries(int nbEntries) {
+		this.nbEntries = nbEntries;
+	}
+	
+	
     
 }

@@ -1,9 +1,12 @@
 package org.osivia.services.workspace.filebrowser.portlet.controller;
 
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.io.HTMLWriter;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserBulkDownloadContent;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserForm;
 import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserSort;
@@ -58,6 +62,9 @@ public class FileBrowserController {
     @Autowired
     private FileBrowserService service;
 
+    /** Portal URL factory. */
+    @Autowired
+    protected IPortalUrlFactory portalUrlFactory;
 
     /**
      * Constructor.
@@ -303,26 +310,47 @@ public class FileBrowserController {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         // Bulk download content
-        FileBrowserBulkDownloadContent content = this.service.getBulkDownload(portalControllerContext, Arrays.asList(StringUtils.split(paths, ",")));
+        try {
+	        FileBrowserBulkDownloadContent content = this.service.getBulkDownload(portalControllerContext, Arrays.asList(StringUtils.split(paths, ",")));
+	
+	        // Content type
+	        response.setContentType(content.getType());
+	        // Content disposition
+	        response.setProperty("Content-disposition", content.getDisposition());
+	        // Character encoding
+	        response.setCharacterEncoding(CharEncoding.UTF_8);
+	        // No cache
+	        response.getCacheControl().setExpirationTime(0);
+	        // Buffer size
+	        response.setBufferSize(4096);
+	
+	        // Input steam
+	        InputStream inputSteam = new FileInputStream(content.getFile());
+	        // Output stream
+	        OutputStream outputStream = response.getPortletOutputStream();
+	        // Copy
+	        IOUtils.copy(inputSteam, outputStream);
+	        outputStream.close();
+        }
+		catch (PortletException e) {
 
-        // Content type
-        response.setContentType(content.getType());
-        // Content disposition
-        response.setProperty("Content-disposition", content.getDisposition());
-        // Character encoding
-        response.setCharacterEncoding(CharEncoding.UTF_8);
-        // No cache
-        response.getCacheControl().setExpirationTime(0);
-        // Buffer size
-        response.setBufferSize(4096);
+			// Response.sendredirect is not working on ResourceResponse
+			// so the response is a JS calling the portal to perform a refresh command
+			
+			response.setContentType("text/html");
+			response.setCharacterEncoding(CharEncoding.UTF_8);
+			
+			OutputStream portletOutputStream = response.getPortletOutputStream();
 
-        // Input steam
-        InputStream inputSteam = new FileInputStream(content.getFile());
-        // Output stream
-        OutputStream outputStream = response.getPortletOutputStream();
-        // Copy
-        IOUtils.copy(inputSteam, outputStream);
-        outputStream.close();
+			// CMS path
+            String cmsPath = request.getParameter("osivia.cms.path");
+			String cmsUrl = portalUrlFactory.getCMSUrl(portalControllerContext, null, cmsPath, null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null, null);
+			
+			try (PrintWriter outWriter = new PrintWriter(
+					new BufferedWriter(new OutputStreamWriter(portletOutputStream, CharEncoding.UTF_8)))) {
+				outWriter.print("<html><body><script type=\"text/javascript\">document.location.href=\""+cmsUrl+"\"</script></body></html>");
+			}
+		}
     }
 
 

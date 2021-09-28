@@ -5,12 +5,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -22,6 +25,7 @@ import javax.portlet.PortletURL;
 import javax.portlet.ResourceURL;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
@@ -57,6 +61,7 @@ import org.osivia.services.workspace.filebrowser.portlet.model.FileBrowserView;
 import org.osivia.services.workspace.filebrowser.portlet.model.comparator.FileBrowserItemComparator;
 import org.osivia.services.workspace.filebrowser.portlet.repository.FileBrowserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -106,6 +111,12 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     @Autowired
     private DocumentDAO documentDao;
 
+
+	@Value("#{systemProperties['osivia.filebrowser.zip.uploadsizelimit'] ?: null}")
+	private String zipSizeLimit;
+	
+	@Value("#{systemProperties['osivia.filebrowser.zip.uploadweightlimit'] ?: null}")
+	private String zipWeightLimit;
 
     /**
      * Constructor.
@@ -462,6 +473,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                     // Single selection
                     Element singleSelectionGroup = this.getToolbarSingleSelectionGroup(portalControllerContext, form, view, documentDto, permissions, bundle);
                     toolbar.add(singleSelectionGroup);
+
                 } else {
                     // Bulk download
                     Element bulkDownload;
@@ -645,6 +657,16 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             String url = this.repository.getDownloadUrl(portalControllerContext, nuxeoDocument);
             download = DOM4JUtils.generateLinkElement(url, "_blank", null, "btn btn-default no-ajax-link", null, "glyphicons glyphicons-download-alt");
             DOM4JUtils.addAttribute(download, "title", title);
+        }else if ((documentDto.getType() != null) && documentDto.getType().isFolderish()) {
+			  String title = bundle.getString("FILE_BROWSER_TOOLBAR_DOWNLOAD");
+			  List<DocumentDTO> selection = new ArrayList<>();
+			  selection.add(documentDto);
+			  String url = this.getBulkDownloadUrl(portalControllerContext, selection);
+
+			  
+			  download = DOM4JUtils.generateLinkElement(url, "_blank", null, "btn btn-default no-ajax-link", null, "glyphicons glyphicons-download-alt");
+			  DOM4JUtils.addAttribute(download, "title", title);  
+        	
         } else {
             download = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-default disabled", null, "glyphicons glyphicons-download-alt");
         }
@@ -889,6 +911,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             resourceUrl.setParameter("paths", paths);
 
             url = resourceUrl.toString();
+            
         } else {
             url = "#";
         }
@@ -1182,12 +1205,21 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
         if (CollectionUtils.isNotEmpty(upload)) {
             try {
+            	
+            	if(form.isExtractArchives()) {
+            		checkLimits(request, bundle, form.getUpload());
+            	}
+            	
                 // Import
                 this.repository.importFiles(portalControllerContext, form, upload);
 
                 // Notification
                 //String message = bundle.getString("FILE_BROWSER_UPLOAD_SUCCESS_MESSAGE");
                 //this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+            } catch (PortletException e) {
+            	String message = e.getMessage();
+
+                request.getPortletSession().setAttribute("uploadMsg", message);
             } catch (NuxeoException e) {
                 // Notification
                 //String message = bundle.getString("FILE_BROWSER_UPLOAD_ERROR_MESSAGE");
@@ -1208,6 +1240,75 @@ public class FileBrowserServiceImpl implements FileBrowserService {
     }
 
 
+
+	private void checkLimits(PortletRequest request, Bundle bundle, List<MultipartFile> upload) throws IOException, PortletException {
+		
+		int sizeLimit = 0;
+		long weightLimit = 0;
+		if(zipSizeLimit != null) {
+			sizeLimit = Integer.parseInt(zipSizeLimit);
+		}
+		if(zipWeightLimit != null) {
+			weightLimit = NumberUtils.toLong(zipWeightLimit) * FileUtils.ONE_MB;
+		}
+		
+		// control total entries in files
+		int totalEntries = 0;
+		long totalWeight = 0;
+		for(MultipartFile file : upload) {
+			if(StringUtils.endsWithIgnoreCase(file.getOriginalFilename(),".zip")) {
+
+				File f = File.createTempFile("importer", null);
+				file.transferTo(f);
+				
+				totalWeight = totalWeight + f.length(); 
+				
+		        ZipFile zipFile = new ZipFile(f);
+		        totalEntries = totalEntries + zipFile.size();
+		        
+		        boolean nuxeoArchive = false;
+		        
+		        Enumeration<?> enu = zipFile.entries();
+	            while (enu.hasMoreElements()) {
+	                ZipEntry zipEntry = (ZipEntry) enu.nextElement();
+
+	                if (zipEntry.getName().equals(".nuxeo-archive")) {
+	                	nuxeoArchive = true;
+	                	break;
+	                }
+	            }
+		        
+		        zipFile.close();
+		        f.delete();
+		        
+		        if(nuxeoArchive) {
+		        	String message = bundle.getString("FILE_BROWSER_UPLOAD_ZIP_ERROR_NUXEO");
+		        	
+		        	throw new PortletException(message);
+
+		        }
+		        
+		        if (sizeLimit > 0 && totalEntries > sizeLimit) {
+		        	String message = bundle.getString("FILE_BROWSER_UPLOAD_ZIP_ERROR_ENTRIES", Integer.toString(totalEntries), Integer.toString(sizeLimit));
+		        	
+		        	throw new PortletException(message);
+
+		        }
+		        if (weightLimit > 0 && totalWeight > weightLimit) {
+		        	
+		        	long s = totalWeight / FileUtils.ONE_MB;
+		        	long l = weightLimit / FileUtils.ONE_MB;
+		        	
+		        	String message = bundle.getString("FILE_BROWSER_UPLOAD_ZIP_ERROR_WEIGHT", Long.toString(s), Long.toString(l));
+		        	
+		        	throw new PortletException(message);
+		        	
+		        }
+			}
+		}
+	}
+
+    
     /**
      * {@inheritDoc}
      */
