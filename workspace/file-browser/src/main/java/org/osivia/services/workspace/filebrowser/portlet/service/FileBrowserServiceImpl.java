@@ -1,7 +1,9 @@
 package org.osivia.services.workspace.filebrowser.portlet.service;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -26,6 +28,7 @@ import javax.portlet.ResourceURL;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
@@ -1258,10 +1261,11 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 		for(MultipartFile file : upload) {
 			if(StringUtils.endsWithIgnoreCase(file.getOriginalFilename(),".zip")) {
 
-				File f = File.createTempFile("importer", null);
-				file.transferTo(f);
+				File f = File.createTempFile("checkzip", null);
 				
-				totalWeight = totalWeight + f.length(); 
+				FileUtils.copyInputStreamToFile(file.getInputStream(), f);
+				
+				totalWeight = totalWeight + file.getSize(); 
 				
 		        ZipFile zipFile = new ZipFile(f);
 		        totalEntries = totalEntries + zipFile.size();
