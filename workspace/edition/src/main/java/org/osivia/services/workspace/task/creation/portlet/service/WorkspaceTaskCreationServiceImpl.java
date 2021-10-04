@@ -102,16 +102,19 @@ public class WorkspaceTaskCreationServiceImpl implements WorkspaceTaskCreationSe
      * {@inheritDoc}
      */
     @Override
-    public void save(PortalControllerContext portalControllerContext, TaskCreationForm form) throws PortletException {
+    public String save(PortalControllerContext portalControllerContext, TaskCreationForm form) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
         // Task creation
-        this.repository.create(portalControllerContext, form);
+        String path = this.repository.create(portalControllerContext, form);
 
         // Notification
         String message = bundle.getString("MESSAGE_WORKSPACE_TASK_CREATION_SUCCESS", form.getTitle());
         this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+
+        // Redirection URL
+        return this.portalUrlFactory.getCMSUrl(portalControllerContext, null, path, null, null, null, null, null, null, null);
     }
 
 

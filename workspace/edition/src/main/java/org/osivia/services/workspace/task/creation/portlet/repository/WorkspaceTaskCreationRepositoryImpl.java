@@ -1,13 +1,9 @@
 package org.osivia.services.workspace.task.creation.portlet.repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-
-import javax.portlet.PortletException;
-
+import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.cms.DocumentType;
@@ -25,28 +21,37 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import javax.portlet.PortletException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
 
 /**
  * Workspace task creation repository implementation.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see WorkspaceTaskCreationRepository
  */
 @Repository
 public class WorkspaceTaskCreationRepositoryImpl implements WorkspaceTaskCreationRepository, ApplicationContextAware {
 
-    /** Taskbar service. */
+    /**
+     * Taskbar service.
+     */
     @Autowired
     private ITaskbarService taskbarService;
 
-    /** Bundle factory. */
+    /**
+     * Bundle factory.
+     */
     @Autowired
     private IBundleFactory bundleFactory;
 
 
-    /** Application context. */
+    /**
+     * Application context.
+     */
     private ApplicationContext applicationContext;
 
 
@@ -108,7 +113,7 @@ public class WorkspaceTaskCreationRepositoryImpl implements WorkspaceTaskCreatio
 
     /**
      * Get workspace type.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return type
      */
@@ -127,7 +132,7 @@ public class WorkspaceTaskCreationRepositoryImpl implements WorkspaceTaskCreatio
      * {@inheritDoc}
      */
     @Override
-    public void create(PortalControllerContext portalControllerContext, TaskCreationForm form) throws PortletException {
+    public String create(PortalControllerContext portalControllerContext, TaskCreationForm form) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
@@ -148,7 +153,9 @@ public class WorkspaceTaskCreationRepositoryImpl implements WorkspaceTaskCreatio
 
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(WorkspaceTaskCreationCommand.class, path, form, items, bundle);
-        nuxeoController.executeNuxeoCommand(command);
+        Document document = (Document) nuxeoController.executeNuxeoCommand(command);
+
+        return document.getPath();
     }
 
 

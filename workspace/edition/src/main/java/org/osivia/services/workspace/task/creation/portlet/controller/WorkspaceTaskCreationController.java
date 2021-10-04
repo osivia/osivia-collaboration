@@ -85,8 +85,6 @@ public class WorkspaceTaskCreationController implements PortletContextAware {
      * @param response action response
      * @param form workspace task creation form model attribute
      * @param result binding result
-     * @throws PortletException
-     * @throws IOException
      */
     @ActionMapping("save")
     public void save(ActionRequest request, ActionResponse response, @ModelAttribute("taskCreationForm") @Validated TaskCreationForm form,
@@ -95,11 +93,10 @@ public class WorkspaceTaskCreationController implements PortletContextAware {
         PortalControllerContext portalControllerContext = new PortalControllerContext(portletContext, request, response);
 
         if (!result.hasErrors()) {
-            this.service.save(portalControllerContext, form);
+            String redirectionUrl = this.service.save(portalControllerContext, form);
 
             // Redirection
-            String url = this.service.getWorkspaceUrl(portalControllerContext);
-            response.sendRedirect(url);
+            response.sendRedirect(redirectionUrl);
         }
     }
 
@@ -110,7 +107,6 @@ public class WorkspaceTaskCreationController implements PortletContextAware {
      * @param request portlet request
      * @param response response
      * @return form
-     * @throws PortletException
      */
     @ModelAttribute("taskCreationForm")
     public TaskCreationForm getTaskCreationForm(PortletRequest request, PortletResponse response) throws PortletException {
@@ -138,7 +134,6 @@ public class WorkspaceTaskCreationController implements PortletContextAware {
      * @param request portlet request
      * @param response portlet response
      * @return types
-     * @throws PortletException
      */
     @ModelAttribute("types")
     public SortedMap<String, DocumentType> getTaskTypes(PortletRequest request, PortletResponse response) throws PortletException {
