@@ -311,8 +311,8 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
             }
 
             // Create
-            Document document = this.create(nuxeoController, parentPath, documentType, properties, binaries);
-            form.setPath(document.getPath());
+            this.create(nuxeoController, parentPath, documentType, properties, binaries);
+            form.setParentPath(parentPath);
         } else {
             // Update
             this.update(nuxeoController, form.getPath(), properties, binaries);

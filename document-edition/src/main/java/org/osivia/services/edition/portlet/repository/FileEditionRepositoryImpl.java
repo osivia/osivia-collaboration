@@ -13,6 +13,7 @@ import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties
 import org.osivia.services.edition.portlet.model.FileEditionForm;
 import org.osivia.services.edition.portlet.model.TemporaryFile;
 import org.osivia.services.edition.portlet.repository.command.ImportFileCommand;
+import org.osivia.services.edition.portlet.service.DocumentEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
@@ -61,6 +62,11 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
     @Autowired
     private ApplicationContext applicationContext;
 
+    /**
+     * Portlet service.
+     */
+    @Autowired
+    private DocumentEditionService service;
 
     /**
      * Constructor.
@@ -237,6 +243,12 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
                     super.save(portalControllerContext, singleFileForm);
                 }
+                
+                // Window properties
+                DocumentEditionWindowProperties windowProperties = this.service.getWindowProperties(portalControllerContext);
+                // Parent path
+                String parentPath = windowProperties.getParentDocumentPath();
+                form.setParentPath(parentPath);
             }
         } else {
             super.save(portalControllerContext, form);

@@ -210,14 +210,21 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
         try {
             NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-            String spacePath = nuxeoController.getSpacePath(form.getPath());
-            
+
             // Save document
             repository.save(portalControllerContext, form);
             
+            String path = form.getPath() ;
+            if( path == null)
+                path = form.getParentPath();
+            
+            String spacePath = nuxeoController.getSpacePath(path);
+            
+
+            
             // Notify CMS change 
             // scope space due to quotas
-            nuxeoController.notifyUpdate( form.getPath(), spacePath, UpdateScope.SCOPE_SPACE, false);
+            nuxeoController.notifyUpdate( path, spacePath, UpdateScope.SCOPE_SPACE, false);
         } catch (NuxeoException e) {
             // Nuxeo user messages (quota, virus) are displayed on current form
             String message = e.getUserMessage(portalControllerContext);

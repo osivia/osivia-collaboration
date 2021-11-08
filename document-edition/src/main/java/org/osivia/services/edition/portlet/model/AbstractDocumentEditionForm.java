@@ -22,6 +22,13 @@ public abstract class AbstractDocumentEditionForm {
      */
     private String path;
     /**
+     * Document parent path.
+     */
+    private String parentPath;
+    
+   
+
+    /**
      * Document creation indicator.
      */
     private boolean creation;
@@ -116,4 +123,13 @@ public abstract class AbstractDocumentEditionForm {
         this.description = description;
     }
 
+    public String getParentPath() {
+        return parentPath;
+    }
+
+    public void setParentPath(String parentPath) {
+        this.parentPath = parentPath;
+    }
+    
+    
 }
