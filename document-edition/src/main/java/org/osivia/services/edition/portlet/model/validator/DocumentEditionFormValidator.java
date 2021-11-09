@@ -42,9 +42,14 @@ public class DocumentEditionFormValidator implements Validator {
     public void validate(Object target, Errors errors) {
         // Form
         AbstractDocumentEditionForm form = (AbstractDocumentEditionForm) target;
-
+        
         // Repository
-        DocumentEditionRepository repository = this.service.getRepository(form.getName());
+        String name = form.getName();
+        if(form.getExtractArchive()) {
+        	name = "Zip";
+        }
+        
+        DocumentEditionRepository repository = this.service.getRepository(name);
 
         repository.validate(form, errors);
     }

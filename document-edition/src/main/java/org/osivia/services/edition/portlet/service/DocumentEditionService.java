@@ -29,7 +29,11 @@ public interface DocumentEditionService {
      * Document type window property.
      */
     String DOCUMENT_TYPE_WINDOW_PROPERTY = "osivia.document.edition.document-type";
-
+    
+    /**
+     * Document type window property.
+     */
+    String EXTRACT_ARCHIVE_WINDOW_PROPERTY = "osivia.document.edition.extract-archive";
 
     /**
      * Get window properties.

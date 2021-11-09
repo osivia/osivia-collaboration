@@ -13,6 +13,7 @@ import org.osivia.services.edition.portlet.model.FileEditionForm;
 import org.osivia.services.edition.portlet.repository.command.ImportFileCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see FileEditionForm
  */
 @Repository("File")
+@Primary
 public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepositoryImpl<FileEditionForm> {
 
     /**

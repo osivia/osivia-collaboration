@@ -4,10 +4,20 @@
 
 
 <div>
-    <%--Submit--%>
-    <button type="submit" name="save" class="btn btn-primary">
-        <span><op:translate key="DOCUMENT_EDITION_ACTION_${form.creation ? 'CREATE' : 'EDIT'}"/></span>
-    </button>
+	<c:choose>
+		<c:when test="${form.extractArchive}">
+		    <%--Submit--%>
+		    <button type="submit" name="save" class="btn btn-primary">
+		        <span><op:translate key="DOCUMENT_EXTRACT_ACTION"/></span>
+		    </button>			
+		</c:when>
+		<c:otherwise>
+			<%--Submit--%>
+		    <button type="submit" name="save" class="btn btn-primary">
+		        <span><op:translate key="DOCUMENT_EDITION_ACTION_${form.creation ? 'CREATE' : 'EDIT'}"/></span>
+		    </button>
+		</c:otherwise>
+	</c:choose>
 
     <%--Cancel--%>
     <button type="button" class="btn btn-default" data-dismiss="modal">

@@ -2,6 +2,7 @@ package org.osivia.services.edition.portlet.service;
 
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -83,6 +84,10 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         // Document type
         String documentType = window.getProperty(DOCUMENT_TYPE_WINDOW_PROPERTY);
         properties.setDocumentType(documentType);
+        
+        // Extract archives mode
+        String extractArchive = window.getProperty(EXTRACT_ARCHIVE_WINDOW_PROPERTY);
+        properties.setExtractArchive(BooleanUtils.toBoolean(extractArchive));
 
         return properties;
     }
@@ -116,7 +121,12 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         // Creation indicator
         boolean creation = StringUtils.isEmpty(path);
         form.setCreation(creation);
+        
+        form.setExtractArchive(windowProperties.getExtractArchive());
 
+        // for logging in validation phase
+        form.setRemoteUser(portalControllerContext.getRequest().getRemoteUser());
+        
         return form;
     }
 
@@ -141,7 +151,9 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
         // Title
         String title;
-        if (form.isCreation()) {
+        if(form.getExtractArchive()) {
+        	title = bundle.getString("DOCUMENT_EDITION_TITLE_IMPORT");
+        } else if (form.isCreation()) {
             title = bundle.getString("DOCUMENT_EDITION_TITLE_CREATE");
         } else {
             title = bundle.getString("DOCUMENT_EDITION_TITLE_EDIT");
@@ -181,9 +193,12 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
         // Repository
-        DocumentEditionRepository repository = this.getRepository(form.getName());
-
-
+        String name = form.getName();
+        if(form.getExtractArchive()) {
+        	name = "Zip";
+        }
+        	
+        DocumentEditionRepository repository = this.getRepository(name);
         // Save document
         repository.save(portalControllerContext, form);
 
@@ -245,6 +260,8 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
         if (StringUtils.isEmpty(windowProperties.getDocumentPath())) {
             name = windowProperties.getDocumentType();
+        } else if (windowProperties.getExtractArchive()) {
+        	name = "Zip";
         } else {
             String[] names = this.applicationContext.getBeanNamesForType(DocumentEditionRepository.class);
             if (ArrayUtils.isEmpty(names)) {

@@ -36,6 +36,14 @@ public abstract class AbstractDocumentEditionForm {
      * Description.
      */
     private String description;
+    
+    
+	private Boolean extractArchive;
+	
+	/**
+	 * Remote user (for logging in validation)
+	 */
+	private String remoteUser;
 
 
     /**
@@ -101,5 +109,25 @@ public abstract class AbstractDocumentEditionForm {
     public void setDescription(String description) {
         this.description = description;
     }
+    
+	public Boolean getExtractArchive() {
+		return extractArchive;
+	}
+
+	public void setExtractArchive(Boolean extractArchive) {
+		this.extractArchive = extractArchive;
+	}
+
+
+	public String getRemoteUser() {
+		return remoteUser;
+	}
+
+
+	public void setRemoteUser(String remoteUser) {
+		this.remoteUser = remoteUser;
+	}
+	
+	
 
 }

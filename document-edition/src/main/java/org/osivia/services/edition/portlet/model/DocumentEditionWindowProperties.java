@@ -28,6 +28,11 @@ public class DocumentEditionWindowProperties {
      */
     private String documentType;
 
+    /**
+     * Extract archive file instead of import it
+     */
+	private Boolean extractArchive;
+
 
     /**
      * Constructor.
@@ -60,5 +65,15 @@ public class DocumentEditionWindowProperties {
     public void setDocumentType(String documentType) {
         this.documentType = documentType;
     }
+
+	public Boolean getExtractArchive() {
+		return extractArchive;
+	}
+
+	public void setExtractArchive(Boolean extractArchive) {
+		this.extractArchive = extractArchive;
+	}
+    
+    
 
 }
