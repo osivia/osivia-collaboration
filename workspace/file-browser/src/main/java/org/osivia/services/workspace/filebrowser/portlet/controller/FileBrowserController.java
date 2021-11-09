@@ -159,12 +159,12 @@ public class FileBrowserController {
      * @throws PortletException
      */
     @ActionMapping("duplicate")
-    public void duplicate(ActionRequest request, ActionResponse response, @RequestParam("path") String path,
+    public void duplicate(ActionRequest request, ActionResponse response, @RequestParam("paths") String paths,
             @RequestParam(name = "view", required = false) String viewId, @ModelAttribute("form") FileBrowserForm form) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.duplicate(portalControllerContext, form, path);
+        this.service.duplicate(portalControllerContext, form, paths);
 
         // Copy view render parameter
         FileBrowserView view = this.service.getView(portalControllerContext, viewId);

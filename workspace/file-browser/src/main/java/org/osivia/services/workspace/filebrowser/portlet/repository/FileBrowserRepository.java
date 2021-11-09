@@ -123,11 +123,11 @@ public interface FileBrowserRepository {
      * Duplicate document.
      * 
      * @param portalControllerContext portal controller context
-     * @param sourcePath source document path
+     * @param sourcePaths source documents path
      * @param targetPath target document path
      * @throws PortletException
      */
-    void duplicate(PortalControllerContext portalControllerContext, String sourcePath, String targetPath) throws PortletException;
+    void duplicate(PortalControllerContext portalControllerContext, List<String> sourcePaths, String targetPath) throws PortletException;
 
 
     /**

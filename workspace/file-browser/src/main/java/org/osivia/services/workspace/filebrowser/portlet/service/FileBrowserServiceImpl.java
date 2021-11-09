@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
@@ -31,6 +32,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.lf5.LogLevel;
 import org.dom4j.Element;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -86,6 +90,9 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 @Service
 public class FileBrowserServiceImpl implements FileBrowserService {
 
+
+	private final static Log logger = LogFactory.getLog("org.osivia.collaboration");
+	
     /** Sort criteria attribute. */
     private static final String SORT_CRITERIA_ATTRIBUTE = "file-browser.criteria";
 
@@ -417,6 +424,8 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             if (indexes.size() == selectedItems.size()) {
                 // All editable indicator
                 boolean allEditable = true;
+                // All c indicator
+                boolean allCopyable = true;                
                 // All file indicator
                 boolean allFile = true;
 
@@ -427,7 +436,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                 List<DocumentDTO> selection = new ArrayList<>(selectedItems.size());
 
                 Iterator<FileBrowserItem> iterator = selectedItems.iterator();
-                while (iterator.hasNext() && (allEditable || allFile)) {
+                while (iterator.hasNext() && (allEditable || allFile || allCopyable)) {
                     // Selected file browser item
                     FileBrowserItem item = iterator.next();
                     // Document DTO
@@ -448,6 +457,16 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                     } else {
                         allEditable = false;
                     }
+                    
+                    // copy permission
+                    NuxeoPermissions permissions = item.getPermissions();
+                    if (permissions == null) {
+                        permissions = this.repository.getPermissions(portalControllerContext, documentDto.getDocument());
+                        item.setPermissions(permissions);
+                    }
+
+                    allCopyable = allCopyable && permissions.canBeCopied();
+                    
 
                     allFile = allFile && (type != null) && (type.isFile() || type.isFolderish());
                 }
@@ -494,7 +513,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
                 }
 
                 // Multiple selection
-                Element multipleSelectionGroup = this.getToolbarMultipleSelectionGroup(portalControllerContext, form, view, selection, allEditable, container,
+                Element multipleSelectionGroup = this.getToolbarMultipleSelectionGroup(portalControllerContext, form, view, selection, allEditable, allCopyable, container,
                         bundle);
                 toolbar.add(multipleSelectionGroup);
             }
@@ -675,17 +694,17 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         }
         group.add(download);
 
-        // Duplicate
-        Element duplicate;
-        if (permissions.canBeCopied()) {
-            String title = bundle.getString("FILE_BROWSER_TOOLBAR_DUPLICATE");
-            String url = this.getDuplicateUrl(portalControllerContext, path, view);
-            duplicate = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-default", null, "glyphicons glyphicons-duplicate");
-            DOM4JUtils.addAttribute(duplicate, "title", title);
-        } else {
-            duplicate = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-default disabled", null, "glyphicons glyphicons-duplicate");
-        }
-        group.add(duplicate);
+//        // Duplicate
+//        Element duplicate;
+//        if (permissions.canBeCopied()) {
+//            String title = bundle.getString("FILE_BROWSER_TOOLBAR_DUPLICATE");
+//            String url = this.getDuplicateUrl(portalControllerContext, path, view);
+//            duplicate = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-default", null, "glyphicons glyphicons-duplicate");
+//            DOM4JUtils.addAttribute(duplicate, "title", title);
+//        } else {
+//            duplicate = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-default disabled", null, "glyphicons glyphicons-duplicate");
+//        }
+//        group.add(duplicate);
 
         return group;
     }
@@ -705,7 +724,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * @throws PortletException
      */
     private Element getToolbarMultipleSelectionGroup(PortalControllerContext portalControllerContext, FileBrowserForm form, FileBrowserView view,
-            List<DocumentDTO> selection, boolean allEditable, Element container, Bundle bundle) throws PortletException {
+            List<DocumentDTO> selection, boolean allEditable, boolean allCopyable, Element container, Bundle bundle) throws PortletException {
         // Namespace
         String namespace = portalControllerContext.getResponse().getNamespace();
 
@@ -772,6 +791,18 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         }
         group.add(move);
 
+        // Duplicate
+        Element duplicate;
+        if (allCopyable && !unknownType) {
+            String title = bundle.getString("FILE_BROWSER_TOOLBAR_DUPLICATE");
+            String url = this.getDuplicateUrl(portalControllerContext, paths, view);
+            duplicate = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-default", null, "glyphicons glyphicons-duplicate");
+            DOM4JUtils.addAttribute(duplicate, "title", title);
+        } else {
+            duplicate = DOM4JUtils.generateLinkElement("#", null, null, "btn btn-default disabled", null, "glyphicons glyphicons-duplicate");
+        }
+        group.add(duplicate);
+        
 
         // Delete
         Element delete;
@@ -860,7 +891,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * @return URL
      * @throws PortletException
      */
-    private String getDuplicateUrl(PortalControllerContext portalControllerContext, String path, FileBrowserView view) throws PortletException {
+    private String getDuplicateUrl(PortalControllerContext portalControllerContext, List<String> paths, FileBrowserView view) throws PortletException {
         // Portlet response
         PortletResponse portletResponse = portalControllerContext.getResponse();
 
@@ -872,7 +903,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
             // Action URL
             PortletURL actionUrl = mimeResponse.createActionURL();
             actionUrl.setParameter(ActionRequest.ACTION_NAME, "duplicate");
-            actionUrl.setParameter("path", path);
+            actionUrl.setParameter("paths", StringUtils.join(paths, ","));
             actionUrl.setParameter("view", view.getId());
 
             url = actionUrl.toString();
@@ -1061,7 +1092,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
      * {@inheritDoc}
      */
     @Override
-    public void duplicate(PortalControllerContext portalControllerContext, FileBrowserForm form, String path) throws PortletException {
+    public void duplicate(PortalControllerContext portalControllerContext, FileBrowserForm form, String paths) throws PortletException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
         // Portlet response
@@ -1071,7 +1102,9 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
         try {
             // Duplicate
-            this.repository.duplicate(portalControllerContext, path, form.getPath());
+        	List<String> sourcePaths = Arrays.asList(paths.split(","));
+        	
+            this.repository.duplicate(portalControllerContext, sourcePaths, form.getPath());
 
             // Notification
             String message = bundle.getString("FILE_BROWSER_DUPLICATE_SUCCESS_MESSAGE");
@@ -1246,13 +1279,15 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 
 	private void checkLimits(PortletRequest request, Bundle bundle, List<MultipartFile> upload) throws IOException, PortletException {
 		
+		long startTime = new Date().getTime();
+		
 		int sizeLimit = 0;
 		long weightLimit = 0;
 		if(zipSizeLimit != null) {
-			sizeLimit = Integer.parseInt(zipSizeLimit);
+			sizeLimit = Integer.parseInt(zipSizeLimit.trim());
 		}
 		if(zipWeightLimit != null) {
-			weightLimit = NumberUtils.toLong(zipWeightLimit) * FileUtils.ONE_MB;
+			weightLimit = NumberUtils.toLong(zipWeightLimit.trim()) * FileUtils.ONE_MB;
 		}
 		
 		// control total entries in files
@@ -1285,14 +1320,25 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 		        zipFile.close();
 		        f.delete();
 		        
+
+		        
 		        if(nuxeoArchive) {
+		        	
+		        	logWarn("W01", request.getRemoteUser(), startTime, "Dépôt d'un fichier zip nuxeo archive");
+
 		        	String message = bundle.getString("FILE_BROWSER_UPLOAD_ZIP_ERROR_NUXEO");
 		        	
 		        	throw new PortletException(message);
 
 		        }
 		        
+	        	long s = totalWeight / FileUtils.ONE_MB;
+	        	long l = weightLimit / FileUtils.ONE_MB;
+		        
 		        if (sizeLimit > 0 && totalEntries > sizeLimit) {
+		        	
+		        	logWarn("W02", request.getRemoteUser(), startTime, "Dépôt d'un fichier zip contenant trop d'entrées. "+totalEntries+" éléments et "+s+"Mo (limites "+sizeLimit+" et "+l+"Mo)");
+		        	
 		        	String message = bundle.getString("FILE_BROWSER_UPLOAD_ZIP_ERROR_ENTRIES", Integer.toString(totalEntries), Integer.toString(sizeLimit));
 		        	
 		        	throw new PortletException(message);
@@ -1300,8 +1346,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 		        }
 		        if (weightLimit > 0 && totalWeight > weightLimit) {
 		        	
-		        	long s = totalWeight / FileUtils.ONE_MB;
-		        	long l = weightLimit / FileUtils.ONE_MB;
+		        	logWarn("W03", request.getRemoteUser(), startTime, "Dépôt d'un fichier zip trop volumineux. "+totalEntries+" éléments et "+s+"Mo (limites "+sizeLimit+" et "+l+"Mo)");
 		        	
 		        	String message = bundle.getString("FILE_BROWSER_UPLOAD_ZIP_ERROR_WEIGHT", Long.toString(s), Long.toString(l));
 		        	
@@ -1310,6 +1355,10 @@ public class FileBrowserServiceImpl implements FileBrowserService {
 		        }
 			}
 		}
+		
+    	long s = totalWeight / FileUtils.ONE_MB;
+    	long l = weightLimit / FileUtils.ONE_MB;
+		log("I02", request.getRemoteUser(), startTime, "Dépôt d'un fichier zip contenant "+totalEntries+" éléments et "+s+"Mo (limites "+sizeLimit+" et "+l+"Mo)");
 	}
 
     
@@ -1362,4 +1411,18 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         
     }
 
+    private void log(String code,  String owner, long startTime, String message)  {
+        
+        long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+		logger.info(code+" "+owner+ " FileBrowserService "+elapsedTime+" "+message);
+		
+    }
+    private void logWarn(String code,  String owner, long startTime, String message)  {
+        
+        long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+		logger.warn(code+" "+owner+ " FileBrowserService "+elapsedTime+" "+message);
+		
+    }
 }

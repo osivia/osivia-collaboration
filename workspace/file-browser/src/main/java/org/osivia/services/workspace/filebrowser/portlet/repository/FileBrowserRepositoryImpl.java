@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,8 +17,6 @@ import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import javax.portlet.PortletException;
@@ -31,6 +29,8 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.io.output.CountingOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.portal.api.PortalException;
@@ -55,6 +55,7 @@ import org.osivia.services.workspace.filebrowser.portlet.repository.command.GetF
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.ImportFilesCommand;
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.ImportZipCommand;
 import org.osivia.services.workspace.filebrowser.portlet.repository.command.MoveDocumentsCommand;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -74,7 +75,10 @@ import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoPublicationInfos;
  * @see FileBrowserRepository
  */
 @Repository
-public class FileBrowserRepositoryImpl implements FileBrowserRepository {
+public class FileBrowserRepositoryImpl implements FileBrowserRepository, InitializingBean {
+	
+
+	private final static Log logger = LogFactory.getLog("org.osivia.collaboration");	
 
     /** Zip file name RegEx. */
     private static final String ZIP_FILE_NAME_REGEX = "(.+) \\(([0-9]+)\\)";
@@ -106,6 +110,10 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
 	@Value("#{systemProperties['osivia.filebrowser.zip.downloadweightlimit'] ?: null}")
 	private String zipWeightLimit;
 
+	private int sizeLimit = 0;
+
+	private long weightLimit = 0;
+
     /**
      * Constructor.
      */
@@ -114,6 +122,7 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
 
         // Zip file name pattern
         this.zipFileNamePattern = Pattern.compile(ZIP_FILE_NAME_REGEX);
+        
     }
 
 
@@ -306,12 +315,12 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
      * {@inheritDoc}
      */
     @Override
-    public void duplicate(PortalControllerContext portalControllerContext, String sourcePath, String targetPath) throws PortletException {
+    public void duplicate(PortalControllerContext portalControllerContext, List<String> sourcePaths, String targetPath) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
         // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(CopyDocumentCommand.class, sourcePath, targetPath);
+        INuxeoCommand command = this.applicationContext.getBean(CopyDocumentCommand.class, sourcePaths, targetPath);
         nuxeoController.executeNuxeoCommand(command);
     }
 
@@ -343,6 +352,8 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     @Override
     public CMSBinaryContent getBinaryContent(PortalControllerContext portalControllerContext, List<String> paths) throws PortletException, IOException {
     	
+    	long startTime = new Date().getTime();
+    	
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
         // Internationalization bundle
@@ -368,11 +379,13 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         		
         		rootfolder.getFiles().put(content.getName(),  content);
         		
-        		checkLimits(portalControllerContext, rootfolder, content.getFileSize());
+        		checkLimits(portalControllerContext, rootfolder, content.getFileSize(), startTime);
         	}
         	
         	
         }
+        
+
         
         if(subfolders.size() > 0) {
         
@@ -419,7 +432,7 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
 	        		}
 	        		
 	        		rootfolder.getFiles().put(name, content);
-	        		checkLimits(portalControllerContext, rootfolder, content.getFileSize());
+	        		checkLimits(portalControllerContext, rootfolder, content.getFileSize(), startTime);
 	        	}
 
 	        }
@@ -549,6 +562,11 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
         zipBinaryContent.setMimeType("application/zip");
         zipBinaryContent.setFileSize(countingOutputStream.getByteCount());
 
+    	long s = rootfolder.getFileSize() / FileUtils.ONE_MB;
+    	long l = weightLimit / FileUtils.ONE_MB;
+		log("I03", request.getRemoteUser(), startTime, "Téléchargement d'un fichier zip contenant "+rootfolder.getNbEntries()+" éléments et "+s+"Mo (limites "+sizeLimit+" et "+l+"Mo)");
+
+        
         return zipBinaryContent;
     }
 
@@ -624,22 +642,19 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
     }
     
 
-	private void checkLimits(PortalControllerContext portalControllerContext, FileBrowserBulkDownloadZipFolder rootfolder, long contentFileSize) throws IOException, PortletException {
+	private void checkLimits(PortalControllerContext portalControllerContext, FileBrowserBulkDownloadZipFolder rootfolder, long contentFileSize,
+			long startTime) throws IOException, PortletException {
 
 		rootfolder.setFileSize(rootfolder.getFileSize() + contentFileSize);
 		rootfolder.setNbEntries(rootfolder.getNbEntries() + 1);
 
-		int sizeLimit = 0;
-		long weightLimit = 0;
-		if (zipSizeLimit != null) {
-			sizeLimit = Integer.parseInt(zipSizeLimit);
-		}
-		if (zipWeightLimit != null) {
-			weightLimit = NumberUtils.toLong(zipWeightLimit) * FileUtils.ONE_MB;
-		}
+    	long s = rootfolder.getFileSize() / FileUtils.ONE_MB;
+    	long l = weightLimit / FileUtils.ONE_MB;
 
 		if (sizeLimit > 0 && rootfolder.getNbEntries() > sizeLimit) {
 			
+			logWarn("W04", portalControllerContext.getRequest().getRemoteUser(), startTime, "Téléchargement d'un fichier zip contenant trop d'entrées. "+rootfolder.getNbEntries()+" éléments et "+s+"Mo (limites "+sizeLimit+" et "+l+"Mo)");
+
 			Bundle bundle = bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 			
 			String message = bundle.getString("FILE_BROWSER_DOWNLOAD_ZIP_ERROR_ENTRIES",
@@ -652,11 +667,11 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
 
 		}
 		if (weightLimit > 0 && rootfolder.getFileSize() > weightLimit) {
+			
+			logWarn("W05", portalControllerContext.getRequest().getRemoteUser(), startTime, "Téléchargement d'un fichier zip trop volumineux. "+rootfolder.getNbEntries()+" éléments et "+s+"Mo (limites "+sizeLimit+" et "+l+"Mo)");
+
 
 			Bundle bundle = bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-			
-			long s = rootfolder.getFileSize() / FileUtils.ONE_MB;
-			long l = weightLimit / FileUtils.ONE_MB;
 
 			String message = bundle.getString("FILE_BROWSER_DOWNLOAD_ZIP_ERROR_WEIGHT", Long.toString(s),
 					Long.toString(l));
@@ -669,5 +684,31 @@ public class FileBrowserRepositoryImpl implements FileBrowserRepository {
 		}
 
 	}
+	
+    private void log(String code,  String owner, long startTime, String message)  {
+        
+        long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+		logger.info(code+" "+owner+ " FileBrowserService "+elapsedTime+" "+message);
+		
+    }
+    private void logWarn(String code,  String owner, long startTime, String message)  {
+        
+        long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+		logger.warn(code+" "+owner+ " FileBrowserService "+elapsedTime+" "+message);
+		
+    }
 
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (zipSizeLimit != null) {
+			sizeLimit = Integer.parseInt(zipSizeLimit.trim());
+		}
+		if (zipWeightLimit != null) {
+			weightLimit = NumberUtils.toLong(zipWeightLimit.trim()) * FileUtils.ONE_MB;
+		}
+		
+	}
 }

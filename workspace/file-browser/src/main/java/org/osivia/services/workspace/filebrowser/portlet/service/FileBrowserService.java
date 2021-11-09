@@ -81,10 +81,10 @@ public interface FileBrowserService {
      * 
      * @param portalControllerContext portal controller context
      * @param form form
-     * @param path document path
+     * @param paths documents path
      * @throws PortletException
      */
-    void duplicate(PortalControllerContext portalControllerContext, FileBrowserForm form, String path) throws PortletException;
+    void duplicate(PortalControllerContext portalControllerContext, FileBrowserForm form, String paths) throws PortletException;
 
 
     /**

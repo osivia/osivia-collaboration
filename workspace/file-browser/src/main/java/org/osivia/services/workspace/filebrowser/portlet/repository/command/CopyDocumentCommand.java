@@ -1,8 +1,11 @@
 package org.osivia.services.workspace.filebrowser.portlet.repository.command;
 
+import java.util.List;
+
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.DocRef;
+import org.nuxeo.ecm.automation.client.model.DocRefs;
 import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -21,7 +24,7 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 public class CopyDocumentCommand implements INuxeoCommand {
 
     /** Source path. */
-    private final String sourcePath;
+    private final List<String> sourcePaths;
     /** Target path. */
     private final String targetPath;
 
@@ -32,9 +35,9 @@ public class CopyDocumentCommand implements INuxeoCommand {
      * @param sourcePath source path
      * @param targetPath target path
      */
-    public CopyDocumentCommand(String sourcePath, String targetPath) {
+    public CopyDocumentCommand(List<String> sourcePaths, String targetPath) {
         super();
-        this.sourcePath = sourcePath;
+        this.sourcePaths = sourcePaths;
         this.targetPath = targetPath;
     }
 
@@ -47,12 +50,14 @@ public class CopyDocumentCommand implements INuxeoCommand {
         // Document service
         DocumentService documentService = nuxeoSession.getAdapter(DocumentService.class);
 
-        // Source
-        DocRef source = new PathRef(this.sourcePath);
+        DocRefs sources = new DocRefs();
+        for(String path : sourcePaths) {
+        	sources.add(new PathRef(path));
+        }
         // Target
         DocRef target = new PathRef(this.targetPath);
 
-        return documentService.copy(source, target);
+        return documentService.copy(sources, target);
     }
 
 
