@@ -8,6 +8,7 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 
 import org.osivia.portal.api.customization.CustomizationContext;
+import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.player.IPlayerModule;
 import org.osivia.services.workspace.filebrowser.plugin.service.FileBrowserPluginService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +88,12 @@ public class FileBrowserPluginController extends AbstractPluginPortlet {
         @SuppressWarnings("rawtypes")
         List<IPlayerModule> players = this.getPlayers(customizationContext);
         this.service.customizePlayerModules(customizationContext, players);
+        
+        /// Menubar modules
+        List<MenubarModule> modules = getMenubarModules(customizationContext);
+
+        MenubarModule mbModule = new ZipCreationMenubarModule();
+        modules.add(mbModule);
     }
 
 }
