@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource.AuthenticationType;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -17,6 +16,8 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.directory.v2.model.CollabProfile;
+import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -84,11 +85,15 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
     @Autowired
     private IBundleFactory bundleFactory;
 
+    @Autowired
+    private WorkspaceService workspaceService;
 
     /** Application context. */
     private ApplicationContext applicationContext;
     /** Portlet context. */
     private PortletContext portletContext;
+    
+    
 
 
     /**
@@ -470,6 +475,10 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
             // Nuxeo command
             INuxeoCommand reindexCmd = this.applicationContext.getBean(ReIndexCommand.class, form);
             nuxeoController.executeNuxeoCommand(reindexCmd);
+            
+            String workspaceId = form.getDocument().getString("webc:url");
+            workspaceService.modifyTitle(workspaceId, form.getTitle());
+            
         }
 
         // Reload vignette
