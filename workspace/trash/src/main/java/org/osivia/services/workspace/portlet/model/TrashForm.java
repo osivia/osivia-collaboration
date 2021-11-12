@@ -1,5 +1,6 @@
 package org.osivia.services.workspace.portlet.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.osivia.portal.api.portlet.Refreshable;
@@ -15,8 +16,12 @@ import org.springframework.web.context.WebApplicationContext;
 @Component
 @Scope(WebApplicationContext.SCOPE_SESSION)
 @Refreshable
-public class TrashForm {
+public class TrashForm implements Serializable{
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     /** Trashed documents. */
     private List<TrashedDocument> trashedDocuments;
     /** Sort property. */

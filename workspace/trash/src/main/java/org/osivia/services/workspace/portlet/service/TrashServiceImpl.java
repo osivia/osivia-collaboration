@@ -1,14 +1,18 @@
 package org.osivia.services.workspace.portlet.service;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.cms.UniversalID;
+import org.osivia.portal.api.cms.service.UpdateScope;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
@@ -34,6 +38,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 import javax.portlet.*;
+
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -77,6 +83,12 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
     private ApplicationContext applicationContext;
 
 
+    /**
+     * The Constant HIDE_FIRST_LEVEL system property.
+     */
+    protected static final String HIDE_FIRST_LEVEL_SYSTEM_PROPERTY = "osivia.services.userWorkSpace.hideFirstLevel";
+    
+    
     /**
      * Constructor.
      */
@@ -137,6 +149,8 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
     public void emptyTrash(PortalControllerContext portalControllerContext, TrashForm form) throws PortletException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
+        // Action response
+        ActionResponse response = (ActionResponse) portalControllerContext.getResponse();            
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
@@ -145,6 +159,8 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
 
         // Update model
         this.updateModel(portalControllerContext, form, null, rejected, bundle, "TRASH_EMPTY_TRASH_MESSAGE_");
+        
+        notifyAndExit(portalControllerContext, response);
     }
 
 
@@ -155,6 +171,8 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
     public void restoreAll(PortalControllerContext portalControllerContext, TrashForm form) throws PortletException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
+        // Action response
+        ActionResponse response = (ActionResponse) portalControllerContext.getResponse();           
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
@@ -164,8 +182,7 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
         // Update model
         this.updateModel(portalControllerContext, form, null, rejected, bundle, "TRASH_RESTORE_ALL_MESSAGE_");
 
-        // Refresh navigation
-        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
+        notifyAndExit(portalControllerContext, response);
     }
 
 
@@ -176,6 +193,9 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
     public void delete(PortalControllerContext portalControllerContext, TrashForm form, String[] identifiers) throws PortletException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
+        // Action response
+        ActionResponse response = (ActionResponse) portalControllerContext.getResponse();        
+        
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
@@ -189,6 +209,8 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
 
         // Update model
         this.updateModel(portalControllerContext, form, selection, rejected, bundle, "TRASH_DELETE_SELECTION_MESSAGE_");
+        
+        notifyAndExit(portalControllerContext, response);
     }
 
 
@@ -199,6 +221,8 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
     public void restore(PortalControllerContext portalControllerContext, TrashForm form, String[] identifiers) throws PortletException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
+        // Action response
+        ActionResponse response = (ActionResponse) portalControllerContext.getResponse();        
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
@@ -213,8 +237,23 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
         // Update model
         this.updateModel(portalControllerContext, form, selection, rejected, bundle, "TRASH_RESTORE_SELECTION_MESSAGE_");
 
-        // Refresh navigation
-        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
+        notifyAndExit(portalControllerContext, response);
+    }
+
+
+    private void notifyAndExit(PortalControllerContext portalControllerContext, ActionResponse response) throws PortletException {
+        // Notify CMS change
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);        
+        String spacePath = nuxeoController.getSpacePath();
+        nuxeoController.notifyUpdate( null, spacePath, UpdateScope.SCOPE_SPACE, false);
+        
+        String url= this.portalUrlFactory.getBackURL(portalControllerContext, false, true);
+
+        try {
+            response.sendRedirect(url);
+        } catch (IOException e) {
+            throw new PortletException(e);
+        }
     }
 
 
@@ -314,15 +353,6 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
             this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.WARNING);
         }
 
-
-        // Refresh space data
-        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_SPACE_DATA, Constants.PORTLET_VALUE_ACTIVATE);
-
-        // Update public render parameter for associated portlets refresh
-        if (response instanceof ActionResponse) {
-            ActionResponse actionResponse = (ActionResponse) response;
-            actionResponse.setRenderParameter("dnd-update", String.valueOf(System.currentTimeMillis()));
-        }
 
         // Update model
         form.getTrashedDocuments().removeAll(selection);
@@ -588,7 +618,7 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
 
             url = actionUrl.toString();
         }
-        Element confirm = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-warning no-ajax-link", bundle.getString("CONFIRM"), null);
+        Element confirm = DOM4JUtils.generateLinkElement(url, null, null, "btn btn-warning", bundle.getString("CONFIRM"), null);
         modalFooter.add(confirm);
 
         return modal;
@@ -600,25 +630,45 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
      */
     @Override
     public Element getLocationBreadcrumb(PortalControllerContext portalControllerContext, String path) throws PortletException {
+        
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        
         // Parent documents
         List<ParentDocument> parents = this.repository.getLocationParents(portalControllerContext, path);
 
         // Breadcrumb container
         Element breadcrumb = DOM4JUtils.generateElement("ol", "breadcrumb m-0 p-0", StringUtils.EMPTY);
+        
+        boolean hideFirstLevel = false;
 
-        for (ParentDocument parent : parents) {
+        if (BooleanUtils.isTrue(BooleanUtils.toBooleanObject(System.getProperty(HIDE_FIRST_LEVEL_SYSTEM_PROPERTY)))) {
+            String userRootPath = nuxeoController.getUserWorkspacePath();
+            if (StringUtils.startsWith(path, userRootPath)) {
+                hideFirstLevel = true;
+            }
+        }
+        
+        
+        List<ParentDocument> parentsToScroll;
+        if( hideFirstLevel)
+            parentsToScroll = parents.subList(1, parents.size());
+        else
+            parentsToScroll = parents;
+
+        for (ParentDocument parent : parentsToScroll) {
             // Document
             DocumentDTO document = parent.getDocument();
 
             // Document URL
-            String url = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, document.getPath(), null, null, null, null, null, null, null);
+            String url = this.portalUrlFactory.getViewContentUrl(portalControllerContext, new UniversalID("nx", (String) document.getProperties().get("ttc:webid")));
 
             // Breadcrumb item
             Element item = DOM4JUtils.generateElement("li", "breadcrumb-item", null);
             breadcrumb.add(item);
 
             // Document link
-            Element link = DOM4JUtils.generateLinkElement(url, null, null, "no-ajax-link", document.getTitle());
+            Element link = DOM4JUtils.generateLinkElement(url, null, null, null, document.getTitle());
             item.add(link);
         }
 

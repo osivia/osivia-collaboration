@@ -1417,8 +1417,10 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         Element breadcrumb = DOM4JUtils.generateElement("ol", "breadcrumb m-0 p-0", StringUtils.EMPTY);
 
         for (Document document : documents) {
+            
             // Document URL
-            String url = this.portalUrlFactory.getCMSUrl(portalControllerContext, null, document.getPath(), null, null, null, null, null, null, null);
+            String url = this.portalUrlFactory.getViewContentUrl(portalControllerContext, new UniversalID("nx", (String) document.getProperties().get("ttc:webid")));
+
 
             // Breadcrumb item
             Element item = DOM4JUtils.generateElement("li", "breadcrumb-item", null);

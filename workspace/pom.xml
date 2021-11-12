@@ -26,8 +26,8 @@
         <module>participants</module>
         <module>sets</module>
         <module>sharing</module>
+-->	
         <module>trash</module>
--->		
         <module>file-browser</module>
 	    <!--  <module>purge</module> -->
 <!--		
