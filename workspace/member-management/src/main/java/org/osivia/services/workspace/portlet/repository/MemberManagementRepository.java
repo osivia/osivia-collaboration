@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -184,7 +185,7 @@ public interface MemberManagementRepository {
      * @return persons
      * @throws PortletException
      */
-    List<Person> searchPersons(PortalControllerContext portalControllerContext, String filter, boolean tokenizer) throws PortletException;
+    Documents searchPersons(PortalControllerContext portalControllerContext, String filter, boolean tokenizer) throws PortletException;
 
 
     /**

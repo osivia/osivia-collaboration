@@ -178,9 +178,7 @@ public class MemberManagementInvitationsController {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        if (result.hasErrors()) {
-            creationForm.setWarning(false);
-        } else {
+        if (!result.hasErrors()) {
             this.service.createInvitations(portalControllerContext, options, invitationsForm, creationForm);
         }
 

@@ -30,6 +30,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoServiceFactory;
 
 /**
@@ -193,6 +194,16 @@ public class MemberManagementConfiguration extends CMSPortlet {
     @Bean
     public IBatchService getBatchService() {
         return Locator.findMBean(IBatchService.class, IBatchService.MBEAN_NAME);
+    }
+
+    /**
+     * Get nuxeo service.
+     * 
+     * @return nuxeo service
+     */
+    @Bean
+    public INuxeoService getNuxeoService() {
+        return Locator.findMBean(INuxeoService.class, INuxeoService.MBEAN_NAME);
     }
 
 }

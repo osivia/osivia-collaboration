@@ -30,18 +30,6 @@
 
     <form:form action="${createUrl}" method="post" modelAttribute="creation" role="form">
         <fieldset>
-            <c:if test="${creation.warning}">
-                <div class="alert alert-warning">
-                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATE_PERSON_WARNING" /></span>
-                    <ul>
-                        <c:forEach var="invitation" items="${creation.pendingInvitations}">
-
-                        	<li>${invitation.id}</li>
-
-                        </c:forEach>
-                    </ul>
-                </div>
-            </c:if>
             
             <div class="row">
                 <div class="col-sm-8 col-lg-9">
@@ -52,7 +40,7 @@
                     <c:set var="searching"><op:translate key="SELECT2_SEARCHING" /></c:set>
                     <c:set var="loadingMore"><op:translate key="SELECT2_LOADING_MORE"/></c:set>
                     <spring:bind path="pendingInvitations">
-                        <div class="form-group ${status.error ? 'has-error' : (creation.warning ? 'has-warning' : '')}">
+                        <div class="form-group ${status.error ? 'has-error' : ''}">
                             <form:label path="pendingInvitations" cssClass="control-label"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_CREATE_INVITATIONS_ADD_PERSONS_LABEL" /></form:label>
                             <form:select path="pendingInvitations" cssClass="form-control select2 select2-invitation" data-placeholder="${placeholder}" data-url="${searchUrl}" data-input-too-short="${inputTooShort}" data-no-results="${noResults}" data-searching="${searching}" data-loading-more="${loadingMore}">
                                 <c:forEach var="invitation" items="${creation.pendingInvitations}">
@@ -108,10 +96,10 @@
             
             <!-- Buttons -->
             <spring:bind path="*">
-                <div id="${namespace}-creation-buttons" class="collapse ${(status.error or creation.warning) ? 'in' : ''}">
+                <div id="${namespace}-creation-buttons" class="collapse ${(status.error) ? 'in' : ''}">
                     <!-- Save -->
                     <button type="submit" class="btn btn-primary" data-ajax-shadowbox="#shadowbox-${namespace}">
-                        <span><op:translate key="${creation.warning ? 'WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATION_CONFIRM' : 'WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATION_SAVE'}" /></span>
+                        <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_INVITATIONS_CREATION_SAVE" /></span>
                     </button>
                     
                     <!-- Cancel -->

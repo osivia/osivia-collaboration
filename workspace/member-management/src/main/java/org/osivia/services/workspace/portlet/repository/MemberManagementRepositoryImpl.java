@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.naming.Name;
 import javax.portlet.PortletException;
@@ -16,7 +15,6 @@ import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -502,27 +500,12 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
      * {@inheritDoc}
      */
     @Override
-    public List<Person> searchPersons(PortalControllerContext portalControllerContext, String filter, boolean tokenizer) throws PortletException {
-        // Criteria
-        Person criteria = this.personService.getEmptyPerson();
-
-        if (tokenizer) {
-            criteria.setMail(filter);
-        } else {
-            String tokenizedFilter = filter + "*";
-            String tokenizedFilterSubStr = "*" + filter + "*";
-
-            criteria.setUid(tokenizedFilter);
-            criteria.setCn(tokenizedFilter);
-            criteria.setSn(tokenizedFilter);
-            criteria.setGivenName(tokenizedFilter);
-            criteria.setMail(tokenizedFilter);
-
-            criteria.setDisplayName(tokenizedFilterSubStr);
-        }
-
-        // Search only person connected
-        return this.personService.findByCriteria(criteria, true);
+    public Documents searchPersons(PortalControllerContext portalControllerContext, String filter, boolean tokenizer) throws PortletException {       
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        
+        INuxeoCommand command = this.applicationContext.getBean(SearchPersonsCommand.class, filter);
+        return (Documents) nuxeoController.executeNuxeoCommand(command);
     }
 
 

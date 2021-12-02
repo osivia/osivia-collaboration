@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.portal.api.Constants;
@@ -50,6 +51,8 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.urls.Link;
+import org.osivia.portal.core.cms.CMSException;
 import org.osivia.services.workspace.batch.ImportInvitationsBatch;
 import org.osivia.services.workspace.batch.ImportObject;
 import org.osivia.services.workspace.portlet.model.AbstractAddToGroupForm;
@@ -88,6 +91,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MultipartFile;
 
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCustomizer;
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -124,6 +129,11 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     /** Batch service. */
     @Autowired
     private IBatchService batchService;
+    
+    
+    /** Batch service. */
+    @Autowired
+    private INuxeoService nuxeoService;    
 
     /** Local group comparator. */
     @Autowired
@@ -883,16 +893,19 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         }
         for (String part : parts) {
             // Persons
-            List<Person> persons = this.repository.searchPersons(portalControllerContext, part, tokenizer);
-            for (Person person : persons) {
+            Documents persons = this.repository.searchPersons(portalControllerContext, part, tokenizer);
+            for (Document person : persons) {
+            	
+            	String uid = person.getString("ttc_userprofile:login");
+            	
                 // Already member indicator
-                boolean alreadyMember = memberIdentifiers.contains(person.getUid());
+                boolean alreadyMember = memberIdentifiers.contains(uid);
 
                 // Already invited
-                boolean alreadyInvited = invitationIndentifiers.contains(person.getUid());
+                boolean alreadyInvited = invitationIndentifiers.contains(uid);
                 
                 // Existing request indicator
-                boolean existingRequest = !invitationOnly && requestIdentifiers.contains(person.getUid());
+                boolean existingRequest = !invitationOnly && requestIdentifiers.contains(uid);
 
                 // Search result
                 JSONObject object = this.getSearchResult(person, alreadyMember, alreadyInvited, existingRequest, bundle);
@@ -964,24 +977,26 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * @param bundle internationalization bundle
      * @return JSON object
      */
-    protected JSONObject getSearchResult(Person person, boolean alreadyMember, boolean alreadyInvited, boolean existingRequest, Bundle bundle) {
+    protected JSONObject getSearchResult(Document person, boolean alreadyMember, boolean alreadyInvited, boolean existingRequest, Bundle bundle) {
         JSONObject object = new JSONObject();
-        object.put("id", person.getUid());
+        String uid = person.getString("ttc_userprofile:login");
+		object.put("id", uid);
 
         // Display name
-        String displayName;
+        String displayName = person.getString("dc:title");
         // Extra
         String extra;
 
-        if (StringUtils.isEmpty(person.getDisplayName())) {
-            displayName = person.getUid();
+        if (StringUtils.isEmpty(displayName)) {
+            displayName = uid;
             extra = null;
         } else {
-            displayName = person.getDisplayName();
 
-            extra = person.getUid();
-            if (StringUtils.isNotBlank(person.getMail()) && !StringUtils.equals(person.getUid(), person.getMail())) {
-                extra += " – " + person.getMail();
+            extra = uid;
+            String mail = person.getString("ttc_userprofile:mail");
+            
+            if (StringUtils.isNotBlank(mail) && !StringUtils.equals(uid, mail)) {
+                extra += " – " + mail;
             }
         }
 
@@ -999,7 +1014,16 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         object.put("displayName", displayName);
         object.put("extra", extra);
 
-        object.put("avatar", person.getAvatar().getUrl());
+        
+        INuxeoCustomizer cmsCustomizer = nuxeoService.getCMSCustomizer();
+
+        Link userAvatar = new Link("", false);
+        
+        if(uid != null) {
+        	userAvatar = cmsCustomizer.getUserAvatar(uid);
+        }
+
+        object.put("avatar", userAvatar.getUrl());
 
         return object;
     }
@@ -1047,15 +1071,16 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      * @param bundle internationalization bundle
      * @throws PortletException
      */
-    protected void addPersonCreationSearchResult(List<Person> persons, List<JSONObject> objects, String filter, Bundle bundle) throws PortletException {
+    protected void addPersonCreationSearchResult(Documents persons, List<JSONObject> objects, String filter, Bundle bundle) throws PortletException {
         // Mail pattern matcher
         Matcher matcher = this.mailPattern.matcher(filter);
 
         // Check if person mail already exists
         boolean exists = false;
         if (matcher.matches()) {
-            for (Person person : persons) {
-                if (filter.equalsIgnoreCase(person.getMail())) {
+            for (Document person : persons) {
+            	String mail = person.getString("ttc_userprofile:mail");
+                if (filter.equalsIgnoreCase(mail)) {
                     exists = true;
                     break;
                 }
@@ -1251,34 +1276,29 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // Pending invitation identifiers
         List<String> invitationIdentifiers = new ArrayList<>(creationForm.getPendingInvitations().size());
         for (Invitation invitation : creationForm.getPendingInvitations()) {
-//            if (invitation.isUnknownUser()) {
-                invitationIdentifiers.add(invitation.getId());
-//            }
+        	invitationIdentifiers.add(invitation.getId());
+
         }
 
-        if (invitationIdentifiers.isEmpty() || creationForm.isWarning()) {
-            // Create invitations
-            boolean created = this.repository.createInvitations(portalControllerContext, options.getWorkspaceId(), invitationsForm.getInvitations(),
-                    creationForm);
+        // Create invitations
+        boolean created = this.repository.createInvitations(portalControllerContext, options.getWorkspaceId(), invitationsForm.getInvitations(),
+                creationForm);
 
-            if (created) {
-                // Update model
-                options.setInvitationsCount(this.repository.getInvitationsCount(portalControllerContext, options.getWorkspaceId()));
-                invitationsForm.setLoaded(false);
-                creationForm.setLocalGroups(null);
-                creationForm.setMessage(null);
-                this.getInvitationsForm(portalControllerContext);
+        if (created) {
+            // Update model
+            options.setInvitationsCount(this.repository.getInvitationsCount(portalControllerContext, options.getWorkspaceId()));
+            invitationsForm.setLoaded(false);
+            creationForm.setLocalGroups(null);
+            creationForm.setMessage(null);
+            this.getInvitationsForm(portalControllerContext);
 
-                // Notification
-                String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_CREATION_SUCCESS");
-                this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
-            }
-
-            creationForm.getPendingInvitations().clear();
-            creationForm.setWarning(false);
-        } else {
-            creationForm.setWarning(true);
+            // Notification
+            String message = bundle.getString("MESSAGE_WORKSPACE_INVITATIONS_CREATION_SUCCESS");
+            this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
         }
+
+        creationForm.getPendingInvitations().clear();
+
     }
 
 

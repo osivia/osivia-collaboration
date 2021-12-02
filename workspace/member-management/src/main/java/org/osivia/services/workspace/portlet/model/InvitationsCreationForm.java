@@ -25,8 +25,6 @@ public class InvitationsCreationForm {
     private List<CollabProfile> localGroups;
     /** Message. */
     private String message;
-    /** Warning indicator. */
-    private boolean warning;
 
 
     /**
@@ -107,24 +105,6 @@ public class InvitationsCreationForm {
      */
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    /**
-     * Getter for warning.
-     * 
-     * @return the warning
-     */
-    public boolean isWarning() {
-        return warning;
-    }
-
-    /**
-     * Setter for warning.
-     * 
-     * @param warning the warning to set
-     */
-    public void setWarning(boolean warning) {
-        this.warning = warning;
     }
 
 }
