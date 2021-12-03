@@ -26,7 +26,8 @@
         </div>
     </div>
 
-    <form:form action="${importtUrl}" method="post" modelAttribute="import" role="form" enctype="multipart/form-data"> 
+    <%--@elvariable id="import" type="org.osivia.services.workspace.portlet.model.ImportForm"--%>
+    <form:form action="${importtUrl}" method="post" modelAttribute="import" role="form" enctype="multipart/form-data">
         <fieldset>
 
             
@@ -44,7 +45,8 @@
 					                <label class="btn btn-default btn-file">
 					                    <i class="glyphicons glyphicons-folder-open"></i>
 					                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_BROWSE_ACTION"/></span>
-					                    <form:input type="file" path="upload" data-change-submit="${namespace}-file-upload-submit"/>
+                                        <c:set var="fileSizeLimitExceededMessage"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED"/></c:set>
+					                    <form:input type="file" path="upload" data-max-size="${import.uploadMaxSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-file-upload-submit"/>
 					                </label>
 					            </div>
 					

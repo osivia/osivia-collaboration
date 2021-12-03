@@ -1,12 +1,9 @@
 package org.osivia.services.workspace.portlet.configuration;
 
-import javax.annotation.PostConstruct;
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletException;
-
-import org.apache.commons.io.FileUtils;
+import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
+import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoServiceFactory;
 import org.apache.commons.lang.CharEncoding;
-import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.directory.v2.service.PersonUpdateService;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.batch.IBatchService;
@@ -17,6 +14,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.services.workspace.portlet.service.MemberManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -28,9 +26,9 @@ import org.springframework.web.portlet.multipart.PortletMultipartResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
-import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
-import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoServiceFactory;
+import javax.annotation.PostConstruct;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletException;
 
 /**
  * Workspace member management configuration.
@@ -40,15 +38,17 @@ import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoServiceFactory;
  */
 @Configuration
 @ComponentScan(basePackages = "org.osivia.services.workspace.portlet")
-public class MemberManagementConfiguration extends CMSPortlet  {
+public class MemberManagementConfiguration extends CMSPortlet {
 
-    public static final Long MAX_UPLOAD_SIZE_PER_FILE = (1 * FileUtils.ONE_MB);
-
-	/** Application context. */
+    /**
+     * Application context.
+     */
     @Autowired
     private ApplicationContext applicationContext;
 
-    /** Portlet config. */
+    /**
+     * Portlet config.
+     */
     @Autowired
     private PortletConfig portletConfig;
 
@@ -63,16 +63,12 @@ public class MemberManagementConfiguration extends CMSPortlet  {
 
     /**
      * Post-construct.
-     *
-     * @throws PortletException
      */
     @PostConstruct
     public void postConstruct() throws PortletException {
         super.init(this.portletConfig);
         PortletAppUtils.registerApplication(portletConfig, applicationContext);
     }
-
-
 
 
     /**
@@ -106,7 +102,7 @@ public class MemberManagementConfiguration extends CMSPortlet  {
 
     /**
      * Get portal URL factory.
-     * 
+     *
      * @return portal URL factory
      */
     @Bean
@@ -122,7 +118,7 @@ public class MemberManagementConfiguration extends CMSPortlet  {
      */
     @Bean
     public PersonUpdateService getPersonService() {
-    	return DirServiceFactory.getService(PersonUpdateService.class);
+        return DirServiceFactory.getService(PersonUpdateService.class);
     }
 
 
@@ -133,13 +129,13 @@ public class MemberManagementConfiguration extends CMSPortlet  {
      */
     @Bean
     public WorkspaceService getWorkspaceService() {
-    	return DirServiceFactory.getService(WorkspaceService.class);
+        return DirServiceFactory.getService(WorkspaceService.class);
     }
 
 
     /**
      * Get forms service.
-     * 
+     *
      * @return forms service
      */
     @Bean
@@ -163,7 +159,7 @@ public class MemberManagementConfiguration extends CMSPortlet  {
 
     /**
      * Get notifications service.
-     * 
+     *
      * @return notification service
      */
     @Bean
@@ -181,14 +177,14 @@ public class MemberManagementConfiguration extends CMSPortlet  {
     public PortletMultipartResolver getMultipartResolver() {
         CommonsPortletMultipartResolver multipartResolver = new CommonsPortletMultipartResolver();
         multipartResolver.setDefaultEncoding(CharEncoding.UTF_8);
-        multipartResolver.setMaxUploadSizePerFile(MAX_UPLOAD_SIZE_PER_FILE);
+        multipartResolver.setMaxUploadSizePerFile(MemberManagementService.FILE_UPLOAD_MAX_SIZE);
         return multipartResolver;
     }
 
 
     /**
      * Get Batch service.
-     * 
+     *
      * @return batch service
      */
     @Bean

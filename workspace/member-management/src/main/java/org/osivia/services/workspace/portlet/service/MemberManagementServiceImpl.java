@@ -1,39 +1,12 @@
 package org.osivia.services.workspace.portlet.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
-import javax.portlet.ActionRequest;
-import javax.portlet.MimeResponse;
-import javax.portlet.PortletException;
-import javax.portlet.PortletResponse;
-import javax.portlet.PortletURL;
-
+import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -57,29 +30,7 @@ import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.services.workspace.portlet.batch.ImportInvitationsBatch;
 import org.osivia.services.workspace.portlet.batch.ImportObject;
-import org.osivia.services.workspace.portlet.model.AbstractAddToGroupForm;
-import org.osivia.services.workspace.portlet.model.AbstractChangeRoleForm;
-import org.osivia.services.workspace.portlet.model.AbstractMembersForm;
-import org.osivia.services.workspace.portlet.model.AddInvitationsToGroupForm;
-import org.osivia.services.workspace.portlet.model.AddMembersToGroupForm;
-import org.osivia.services.workspace.portlet.model.ChangeInvitationRequestsRoleForm;
-import org.osivia.services.workspace.portlet.model.ChangeInvitationsRoleForm;
-import org.osivia.services.workspace.portlet.model.ChangeMembersRoleForm;
-import org.osivia.services.workspace.portlet.model.ImportForm;
-import org.osivia.services.workspace.portlet.model.Invitation;
-import org.osivia.services.workspace.portlet.model.InvitationEditionForm;
-import org.osivia.services.workspace.portlet.model.InvitationObject;
-import org.osivia.services.workspace.portlet.model.InvitationRequest;
-import org.osivia.services.workspace.portlet.model.InvitationRequestsForm;
-import org.osivia.services.workspace.portlet.model.InvitationState;
-import org.osivia.services.workspace.portlet.model.InvitationsCreationForm;
-import org.osivia.services.workspace.portlet.model.InvitationsForm;
-import org.osivia.services.workspace.portlet.model.Member;
-import org.osivia.services.workspace.portlet.model.MemberManagementOptions;
-import org.osivia.services.workspace.portlet.model.MemberObject;
-import org.osivia.services.workspace.portlet.model.MembersForm;
-import org.osivia.services.workspace.portlet.model.MembersSort;
-import org.osivia.services.workspace.portlet.model.ResendInvitationsForm;
+import org.osivia.services.workspace.portlet.model.*;
 import org.osivia.services.workspace.portlet.model.comparator.InvitationObjectComparator;
 import org.osivia.services.workspace.portlet.model.comparator.LocalGroupComparator;
 import org.osivia.services.workspace.portlet.model.comparator.MemberObjectComparator;
@@ -93,9 +44,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MultipartFile;
 
-import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import javax.portlet.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Workspace member management service implementation.
@@ -107,39 +67,47 @@ import net.sf.json.JSONObject;
 @Service
 public class MemberManagementServiceImpl implements MemberManagementService, ApplicationContextAware {
 
-    /** Mail regex. */
+    /**
+     * Mail regex.
+     */
     private static final String MAIL_REGEX = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-
-
-    /** Application context. */
+    /**
+     * Mail pattern.
+     */
+    private final Pattern mailPattern;
+    /**
+     * Log.
+     */
+    private final Log log;
+    /**
+     * Application context.
+     */
     private ApplicationContext applicationContext;
-
-    /** Member management repository. */
+    /**
+     * Member management repository.
+     */
     @Autowired
     private MemberManagementRepository repository;
-
-    /** Bundle factory. */
+    /**
+     * Bundle factory.
+     */
     @Autowired
     private IBundleFactory bundleFactory;
-
-    /** Notifications service. */
+    /**
+     * Notifications service.
+     */
     @Autowired
     private INotificationsService notificationsService;
-    
-    /** Batch service. */
+    /**
+     * Batch service.
+     */
     @Autowired
     private IBatchService batchService;
-
-    /** Local group comparator. */
+    /**
+     * Local group comparator.
+     */
     @Autowired
     private LocalGroupComparator localGroupComparator;
-
-
-    /** Mail pattern. */
-    private final Pattern mailPattern;
-
-    /** Log. */
-    private final Log log;
 
 
     /**
@@ -189,7 +157,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
             // Local groups
             List<CollabProfile> localGroups = this.repository.getLocalGroups(portalControllerContext, workspaceId);
-            Collections.sort(localGroups, this.localGroupComparator);
+            localGroups.sort(this.localGroupComparator);
             options.setWorkspaceLocalGroups(localGroups);
         }
 
@@ -241,7 +209,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             MemberObjectComparator comparator = this.applicationContext.getBean(MemberObjectComparator.class, sort, alt);
 
             try {
-                Collections.sort(form.getMembers(), comparator);
+                form.getMembers().sort(comparator);
             } catch (IllegalArgumentException e) {
                 // #1718 - catch errors during sort
                 this.log.error("Impossible de trier les membres ", e);
@@ -341,9 +309,9 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                     // Selected member
                     Member member = iterator.next();
 
-                    allEditable &= member.isEditable();
+                    allEditable = member.isEditable();
                 }
-                
+
                 // Selected member identifiers
                 String[] identifiers = new String[selectedMembers.size()];
                 for (int i = 0; i < selectedMembers.size(); i++) {
@@ -365,7 +333,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 // Remove member
                 Element removeMember = this.getRemoveMemberToolbarButton(portalControllerContext, allEditable, bundle);
                 toolbar.add(removeMember);
-                
+
                 if (allEditable) {
                     // Remove member confirmation modal
                     Element removeMemberConfirmationModal = getRemoveMemberConfirmationModal(portalControllerContext, selectedMembers, identifiers, bundle);
@@ -380,16 +348,16 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get change role toolbar button DOM element.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param identifiers selected member identifiers
-     * @param allEditable all editable indicator
-     * @param tab tab
-     * @param bundle internationalization bundle
+     * @param identifiers             selected member identifiers
+     * @param allEditable             all editable indicator
+     * @param tab                     tab
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     protected Element getChangeRoleToolbarButton(PortalControllerContext portalControllerContext, String[] identifiers, boolean allEditable,
-            String tab, Bundle bundle) {
+                                                 String tab, Bundle bundle) {
         // Portlet response
         PortletResponse portletResponse = portalControllerContext.getResponse();
         // MIME response
@@ -431,11 +399,11 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get add to group toolbar button DOM element.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param identifiers selected member identifiers
-     * @param tab tab
-     * @param bundle internationalization bundle
+     * @param identifiers             selected member identifiers
+     * @param tab                     tab
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     protected Element getAddToGroupToolbarButton(PortalControllerContext portalControllerContext, String[] identifiers, String tab, Bundle bundle) {
@@ -481,16 +449,16 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get remove member toolbar button DOM element.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param allEditable all editable indicator
-     * @param bundle internationalization bundle
+     * @param allEditable             all editable indicator
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     protected Element getRemoveMemberToolbarButton(PortalControllerContext portalControllerContext, boolean allEditable, Bundle bundle) {
         // Portlet response
         PortletResponse response = portalControllerContext.getResponse();
-        
+
         // URL
         String url;
         // HTML classes
@@ -518,15 +486,15 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get remove member confirmation modal DOM element.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param selectedMembers selected members
-     * @param identifiers identifiers
-     * @param bundle internationalization bundle
+     * @param selectedMembers         selected members
+     * @param identifiers             identifiers
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     protected Element getRemoveMemberConfirmationModal(PortalControllerContext portalControllerContext, List<Member> selectedMembers, String[] identifiers,
-            Bundle bundle) {
+                                                       Bundle bundle) {
         // Portlet response
         PortletResponse portletResponse = portalControllerContext.getResponse();
         // MIME response
@@ -568,9 +536,9 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get selection modal body content DOM element.
-     * 
+     *
      * @param selection selection
-     * @param bundle internationalization bundle
+     * @param bundle    internationalization bundle
      * @return DOM element
      */
     protected Element getSelectionModalBodyContent(List<? extends MemberObject> selection, Bundle bundle) {
@@ -634,17 +602,17 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get confirmation modal DOM element.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param modalId modal identifier
-     * @param title modal title
-     * @param content modal body content DOM element
-     * @param confirm confirmation button DOM element
-     * @param bundle internationalization bundle
+     * @param modalId                 modal identifier
+     * @param title                   modal title
+     * @param content                 modal body content DOM element
+     * @param confirm                 confirmation button DOM element
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     protected Element getConfirmationModal(PortalControllerContext portalControllerContext, String modalId, String title, Element content, Element confirm,
-            Bundle bundle) {
+                                           Bundle bundle) {
         // Modal
         Element modal = DOM4JUtils.generateDivElement("modal fade");
         DOM4JUtils.addAttribute(modal, "id", modalId);
@@ -715,13 +683,13 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             CSVFormat format = CSVFormat.EXCEL;
 
             // Headers
-            List<String> headers = new ArrayList<String>();
+            List<String> headers = new ArrayList<>();
             headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER"));
             headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER_EXTRA"));
             headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_MEMBER_ACKNOWLEDGMENT_DATE"));
             headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ROLE"));
             headers.add(bundle.getString("WORKSPACE_MEMBER_MANAGEMENT_ID"));
-            format.withHeader(headers.toArray(new String[headers.size()]));
+            format.withHeader(headers.toArray(new String[0]));
 
             // CSV printer
             CSVPrinter printer = format.print(writer);
@@ -757,11 +725,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get selected members.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param identifiers selected member identifiers
+     * @param identifiers             selected member identifiers
      * @return selected members
-     * @throws PortletException
      */
     protected List<Member> getSelectedMembers(PortalControllerContext portalControllerContext, String[] identifiers) throws PortletException {
         // Members
@@ -777,7 +744,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             for (Member member : members) {
                 sortedMembers.put(member.getId(), member);
             }
-            
+
             selectedMembers = new ArrayList<>(identifiers.length);
             for (String identifier : identifiers) {
                 Member member = sortedMembers.get(identifier);
@@ -801,7 +768,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         // Workspace identifier
         String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
-        
+
         if (!form.isLoaded()) {
 
             // Member idenfiers
@@ -835,19 +802,19 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         // is batch currently running ?
         form.setBatchRunning(false);
         List<ImportInvitationsBatch> batchInstances = batchService.getBatchInstances(ImportInvitationsBatch.class);
-        
+
         // time estimation, 2 mins + 1 min per 10 lines
-        
+
         int estimated = 2;
-        
-        for(ImportInvitationsBatch inst : batchInstances ) {
-        	if(inst.getDto().getWorkspaceId().equals(workspaceId)) {
-        		form.setBatchRunning(true);
-        		estimated += (inst.getDto().getRecordNumber() / 10);
-        	}
+
+        for (ImportInvitationsBatch inst : batchInstances) {
+            if (inst.getDto().getWorkspaceId().equals(workspaceId)) {
+                form.setBatchRunning(true);
+                estimated += (inst.getDto().getRecordNumber() / 10);
+            }
         }
         form.setTimeEstimated(estimated);
-        
+
         return form;
     }
 
@@ -870,7 +837,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      */
     @Override
     public JSONObject searchPersons(PortalControllerContext portalControllerContext, MemberManagementOptions options, String filter, int page,
-            boolean tokenizer) throws PortletException {
+                                    boolean tokenizer) throws PortletException {
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
@@ -964,11 +931,11 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get search result JSON Object.
-     * 
-     * @param person person
-     * @param alreadyMember already member indicator
+     *
+     * @param person          person
+     * @param alreadyMember   already member indicator
      * @param existingRequest existing request indicator
-     * @param bundle internationalization bundle
+     * @param bundle          internationalization bundle
      * @return JSON object
      */
     protected JSONObject getSearchResult(Person person, boolean alreadyMember, boolean alreadyInvited, boolean existingRequest, Bundle bundle) {
@@ -1015,7 +982,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     /**
      * Get enable person creation indicator (default = true).
      * This method can be overrided for disable person creation.
-     * 
+     *
      * @return true if person creation is enabled
      */
     protected boolean enablePersonCreation() {
@@ -1025,12 +992,11 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Add person creation search result.
-     * 
+     *
      * @param persons filtered persons
      * @param objects JSON objects
-     * @param filter search filter
-     * @param bundle internationalization bundle
-     * @throws PortletException
+     * @param filter  search filter
+     * @param bundle  internationalization bundle
      */
     protected void addPersonCreationSearchResult(List<Person> persons, List<JSONObject> objects, String filter, Bundle bundle) throws PortletException {
         // Mail pattern matcher
@@ -1068,12 +1034,11 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get search results message.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param total search results total
-     * @param bundle internationalization bundle
+     * @param total                   search results total
+     * @param bundle                  internationalization bundle
      * @return message
-     * @throws PortletException
      */
     protected String getSearchResultsMessage(PortalControllerContext portalControllerContext, int total, Bundle bundle) throws PortletException {
         String message;
@@ -1098,7 +1063,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     @Override
     public void sortInvitations(PortalControllerContext portalControllerContext, InvitationsForm form, MembersSort sort, boolean alt) throws PortletException {
         InvitationObjectComparator comparator = this.applicationContext.getBean(InvitationObjectComparator.class, sort, alt);
-        Collections.sort(form.getInvitations(), comparator);
+        form.getInvitations().sort(comparator);
 
         // Update model
         form.setSort(sort);
@@ -1229,7 +1194,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      */
     @Override
     public void createInvitations(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationsForm invitationsForm,
-            InvitationsCreationForm creationForm) throws PortletException {
+                                  InvitationsCreationForm creationForm) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
@@ -1318,10 +1283,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                     // Selected invitation
                     Invitation invitation = iterator.next();
 
-                    // Editable indicator
-                    boolean editable = (invitation.getState() != null) && invitation.getState().isEditable();
-
-                    allEditable &= editable;
+                    allEditable = (invitation.getState() != null) && invitation.getState().isEditable();
                 }
 
                 // Selected invitation identifiers
@@ -1356,10 +1318,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 // Delete
                 Element delete = this.getDeleteInvitationsToolbarButton(portalControllerContext, allEditable, bundle);
                 toolbar.add(delete);
-                
+
                 // #2071 Admins can delete the workflow
-                Boolean administrator = Boolean.TRUE.equals(portalControllerContext.getRequest().getAttribute("osivia.isAdministrator"));
-                if(selectedInvitations.size() == 1 && administrator) {
+                boolean administrator = Boolean.TRUE.equals(portalControllerContext.getRequest().getAttribute("osivia.isAdministrator"));
+                if (selectedInvitations.size() == 1 && administrator) {
                     Invitation invitation = selectedInvitations.get(0);
 
                     Element drop = this.getDropInvitationToolbarButton(portalControllerContext, invitation, bundle, "invitations");
@@ -1381,10 +1343,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get manage invitation toolbar button DOM element.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param invitation invitation
-     * @param bundle internationalization bundle
+     * @param invitation              invitation
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     protected Element getManageInvitationToolbarButton(PortalControllerContext portalControllerContext, Invitation invitation, Bundle bundle) {
@@ -1397,7 +1359,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         } else {
             mimeResponse = null;
         }
-        
+
         // HTML classes
         String htmlClass = "btn btn-default btn-sm";
         // Text
@@ -1425,17 +1387,17 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         return DOM4JUtils.generateLinkElement(url, null, null, htmlClass, text, icon);
     }
 
-    
+
     /**
      * Get drop invitation toolbar button DOM element.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param invitation invitation
-     * @param bundle internationalization bundle
+     * @param invitation              invitation
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
-    protected Element getDropInvitationToolbarButton(PortalControllerContext portalControllerContext, InvitationObject invitation, 
-    		Bundle bundle, String tab) {
+    protected Element getDropInvitationToolbarButton(PortalControllerContext portalControllerContext, InvitationObject invitation,
+                                                     Bundle bundle, String tab) {
         // Portlet response
         PortletResponse portletResponse = portalControllerContext.getResponse();
         // MIME response
@@ -1445,7 +1407,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         } else {
             mimeResponse = null;
         }
-        
+
         // HTML classes
         String htmlClass = "btn btn-danger btn-sm";
         // Text
@@ -1478,15 +1440,15 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get resend invitations toolbar button DOM element.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param identifiers selected item identifiers
-     * @param allEditable all editable indicator
-     * @param bundle internationalization bundle
+     * @param identifiers             selected item identifiers
+     * @param allEditable             all editable indicator
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     protected Element getResendInvitationsToolbarButton(PortalControllerContext portalControllerContext, String[] identifiers, boolean allEditable,
-            Bundle bundle) {
+                                                        Bundle bundle) {
         // Portlet response
         PortletResponse portletResponse = portalControllerContext.getResponse();
         // MIME response
@@ -1528,10 +1490,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get delete invitations toolbar button DOM element.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param allEditable all editable indicator
-     * @param bundle internationalization bundle
+     * @param allEditable             all editable indicator
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     protected Element getDeleteInvitationsToolbarButton(PortalControllerContext portalControllerContext, boolean allEditable, Bundle bundle) {
@@ -1565,15 +1527,15 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get delete invitations confirmation modal DOM element.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param selectedInvitations selected invitation requests
-     * @param identifiers selected invitation request identifiers
-     * @param bundle internationalization bundle
+     * @param selectedInvitations     selected invitation requests
+     * @param identifiers             selected invitation request identifiers
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     protected Element getDeleteInvitationsConfirmationModal(PortalControllerContext portalControllerContext, List<Invitation> selectedInvitations,
-            String[] identifiers, Bundle bundle) {
+                                                            String[] identifiers, Bundle bundle) {
         // Portlet response
         PortletResponse portletResponse = portalControllerContext.getResponse();
         // MIME response
@@ -1620,7 +1582,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      */
     @Override
     public void acceptInvitationRequests(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationRequestsForm form,
-            String[] identifiers) throws PortletException {
+                                         String[] identifiers) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
@@ -1658,7 +1620,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      */
     @Override
     public void declineInvitationRequests(PortalControllerContext portalControllerContext, MemberManagementOptions options, InvitationRequestsForm form,
-            String[] identifiers) throws PortletException {
+                                          String[] identifiers) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
@@ -1771,10 +1733,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                     // Selected invitation request
                     InvitationRequest request = iterator.next();
 
-                    // Editable indicator
-                    boolean editable = (request.getState() != null) && request.getState().isEditable();
-                    
-                    allEditable &= editable;
+                    allEditable = (request.getState() != null) && request.getState().isEditable();
                 }
 
                 // Selected invitation request identifiers
@@ -1791,20 +1750,20 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                 // Accept
                 Element accept = this.getAcceptInvitationRequestToolbarButton(portalControllerContext, allEditable, bundle);
                 toolbar.add(accept);
-                
+
                 // Decline
                 Element decline = this.getDeclineInvitationRequestToolbarButton(portalControllerContext, allEditable, bundle);
                 toolbar.add(decline);
-                
+
                 // #2071 Admins can delete the workflow
-                Boolean administrator = Boolean.TRUE.equals(portalControllerContext.getRequest().getAttribute("osivia.isAdministrator"));
-                if(selectedRequests.size() == 1 && administrator) {
+                boolean administrator = Boolean.TRUE.equals(portalControllerContext.getRequest().getAttribute("osivia.isAdministrator"));
+                if (selectedRequests.size() == 1 && administrator) {
                     InvitationRequest request = selectedRequests.get(0);
 
                     Element drop = this.getDropInvitationToolbarButton(portalControllerContext, request, bundle, "requests");
                     toolbar.add(drop);
                 }
-                
+
 
                 if (allEditable) {
                     // Accept confirmation modal
@@ -1825,10 +1784,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get accept invitation request toolbar button DOM element.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param allEditable all editable indicator
-     * @param bundle internationalization bundle
+     * @param allEditable             all editable indicator
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     protected Element getAcceptInvitationRequestToolbarButton(PortalControllerContext portalControllerContext, boolean allEditable, Bundle bundle) {
@@ -1862,10 +1821,10 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get decline invitation request toolbar button DOM element.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param allEditable all editable indicator
-     * @param bundle internationalization bundle
+     * @param allEditable             all editable indicator
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     protected Element getDeclineInvitationRequestToolbarButton(PortalControllerContext portalControllerContext, boolean allEditable, Bundle bundle) {
@@ -1899,15 +1858,15 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get accept invitation request confirmation modal DOM element.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param selectedRequests selected invitation requests
-     * @param identifiers selected invitation request identifiers
-     * @param bundle internationalization bundle
+     * @param selectedRequests        selected invitation requests
+     * @param identifiers             selected invitation request identifiers
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     protected Element getAcceptInvitationRequestConfirmationModal(PortalControllerContext portalControllerContext, List<InvitationRequest> selectedRequests,
-            String[] identifiers, Bundle bundle) {
+                                                                  String[] identifiers, Bundle bundle) {
         // Portlet response
         PortletResponse portletResponse = portalControllerContext.getResponse();
         // MIME response
@@ -1951,15 +1910,15 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get decline invitation request confirmation modal DOM element.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param selectedRequests selected invitation requests
-     * @param identifiers selected invitation request identifiers
-     * @param bundle internationalization bundle
+     * @param selectedRequests        selected invitation requests
+     * @param identifiers             selected invitation request identifiers
+     * @param bundle                  internationalization bundle
      * @return DOM element
      */
     protected Element getDeclineInvitationRequestConfirmationModal(PortalControllerContext portalControllerContext, List<InvitationRequest> selectedRequests,
-            String[] identifiers, Bundle bundle) {
+                                                                   String[] identifiers, Bundle bundle) {
         // Portlet response
         PortletResponse portletResponse = portalControllerContext.getResponse();
         // MIME response
@@ -2008,7 +1967,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     public void sortInvitationRequests(PortalControllerContext portalControllerContext, InvitationRequestsForm form, MembersSort sort, boolean alt)
             throws PortletException {
         InvitationObjectComparator comparator = this.applicationContext.getBean(InvitationObjectComparator.class, sort, alt);
-        Collections.sort(form.getRequests(), comparator);
+        form.getRequests().sort(comparator);
 
         // Update model
         form.setSort(sort);
@@ -2112,7 +2071,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      */
     @Override
     public <M extends MemberObject, F extends AbstractChangeRoleForm<M>> F getChangeRoleForm(PortalControllerContext portalControllerContext,
-            String[] identifiers, Class<M> memberType, Class<F> formType) throws PortletException {
+                                                                                             String[] identifiers, Class<M> memberType, Class<F> formType) throws PortletException {
         // Selection
         List<M> selection = getSelection(portalControllerContext, identifiers, memberType);
 
@@ -2129,12 +2088,11 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
     /**
      * Get selection.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param identifiers selected item identifiers
-     * @param memberType member type
+     * @param identifiers             selected item identifiers
+     * @param memberType              member type
      * @return selection
-     * @throws PortletException
      */
     protected <M extends MemberObject> List<M> getSelection(PortalControllerContext portalControllerContext, String[] identifiers, Class<M> memberType)
             throws PortletException {
@@ -2206,7 +2164,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      */
     @Override
     public <M extends MemberObject, F extends AbstractChangeRoleForm<M>> void updateRole(PortalControllerContext portalControllerContext,
-            MemberManagementOptions options, F form) throws PortletException {
+                                                                                         MemberManagementOptions options, F form) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
@@ -2278,7 +2236,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      */
     @Override
     public <M extends MemberObject, F extends AbstractAddToGroupForm<M>> F getAddToGroupForm(PortalControllerContext portalControllerContext,
-            String[] identifiers, Class<M> memberType, Class<F> formType) throws PortletException {
+                                                                                             String[] identifiers, Class<M> memberType, Class<F> formType) throws PortletException {
         // Selection
         List<M> selection = getSelection(portalControllerContext, identifiers, memberType);
 
@@ -2298,7 +2256,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
      */
     @Override
     public <M extends MemberObject, F extends AbstractAddToGroupForm<M>> void addToGroup(PortalControllerContext portalControllerContext,
-            MemberManagementOptions options, F form) throws PortletException {
+                                                                                         MemberManagementOptions options, F form) throws PortletException {
         // Bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
 
@@ -2311,9 +2269,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         if (form instanceof AddMembersToGroupForm) {
             // Members
             List<MemberObject> members = new ArrayList<>(form.getMembers().size());
-            for (MemberObject member : form.getMembers()) {
-                members.add(member);
-            }
+            members.addAll(form.getMembers());
             for (CollabProfile localGroup : form.getLocalGroups()) {
                 this.repository.addToGroup(portalControllerContext, workspaceId, members, localGroup);
             }
@@ -2325,7 +2281,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
                     Invitation invitation = (Invitation) object;
                     if ((invitation.getState() != null) && invitation.getState().isEditable()) {
                         // Updated local groups
-                        Set<CollabProfile> updatedLocalGroups = new HashSet<CollabProfile>();
+                        Set<CollabProfile> updatedLocalGroups = new HashSet<>();
                         if (CollectionUtils.isNotEmpty(invitation.getLocalGroups())) {
                             updatedLocalGroups.addAll(invitation.getLocalGroups());
                         }
@@ -2412,7 +2368,7 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         InvitationRequestsForm requestsForm = this.applicationContext.getBean(InvitationRequestsForm.class);
         requestsForm.setLoaded(false);
-        
+
         ImportForm importForm = this.applicationContext.getBean(ImportForm.class);
         importForm.setLoaded(false);
     }
@@ -2428,71 +2384,72 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
     }
 
 
-	@Override
-	public void dropInvitation(PortalControllerContext portalControllerContext, String invitationPath) {
-		this.repository.dropInvitation(portalControllerContext, invitationPath);
-	    
-	    // Update model
-	    this.invalidateLoadedForms();
-	
-	    Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-	    
-	    // Notification
-	    String message = bundle.getString("MESSAGE_WORKSPACE_DROP_WF_SUCCESS");
-	    this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
-		
-	}
+    @Override
+    public void dropInvitation(PortalControllerContext portalControllerContext, String invitationPath) {
+        this.repository.dropInvitation(portalControllerContext, invitationPath);
+
+        // Update model
+        this.invalidateLoadedForms();
+
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Notification
+        String message = bundle.getString("MESSAGE_WORKSPACE_DROP_WF_SUCCESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+
+    }
 
 
-	@Override
-	public ImportForm getImportForm(PortalControllerContext portalControllerContext) throws PortletException {
-		
+    @Override
+    public ImportForm getImportForm(PortalControllerContext portalControllerContext) throws PortletException {
+
         // Form
-		ImportForm form = this.applicationContext.getBean(ImportForm.class);
-		
-		if (!form.isLoaded()) {
-			form.setRole(WorkspaceRole.READER);
-			
-			Person person = (Person) portalControllerContext.getRequest().getAttribute(Constants.ATTR_LOGGED_PERSON_2);
-			form.setInitiator(person.getUid());
-			
-			form.setLocalGroups(null);
-			form.setMessage(null);
-			form.setTemporaryFile(null);
-			form.setTemporaryFileName(null);
-			form.setUpload(null);
+        ImportForm form = this.applicationContext.getBean(ImportForm.class);
+
+        if (!form.isLoaded()) {
+            form.setRole(WorkspaceRole.READER);
+            form.setUploadMaxSize(FILE_UPLOAD_MAX_SIZE);
+
+            Person person = (Person) portalControllerContext.getRequest().getAttribute(Constants.ATTR_LOGGED_PERSON_2);
+            form.setInitiator(person.getUid());
+
+            form.setLocalGroups(null);
+            form.setMessage(null);
+            form.setTemporaryFile(null);
+            form.setTemporaryFileName(null);
+            form.setUpload(null);
 
             form.setLoaded(true);
-           
-		}
-		
-		
+
+        }
+
+
         // is batch currently running ?
 
         String workspaceId = this.repository.getCurrentWorkspaceId(portalControllerContext);
-		
+
         form.setBatchRunning(false);
         List<ImportInvitationsBatch> batchInstances = batchService.getBatchInstances(ImportInvitationsBatch.class);
-        
+
         // time estimation, 2 mins + 1 min per 10 lines
-        
+
         int estimated = 2;
-        
-        for(ImportInvitationsBatch inst : batchInstances ) {
-        	if(inst.getDto().getWorkspaceId().equals(workspaceId)) {
-        		form.setBatchRunning(true);
-        		estimated += (inst.getDto().getRecordNumber() / 10);
-        	}
+
+        for (ImportInvitationsBatch inst : batchInstances) {
+            if (inst.getDto().getWorkspaceId().equals(workspaceId)) {
+                form.setBatchRunning(true);
+                estimated += (inst.getDto().getRecordNumber() / 10);
+            }
         }
         form.setTimeEstimated(estimated);
-		
+
         return form;
-	}
+    }
 
 
-	@Override
-	public void upload(PortalControllerContext portalControllerContext, MemberManagementOptions options,
-			ImportForm form) throws IllegalStateException, IOException {
+    @Override
+    public void upload(PortalControllerContext portalControllerContext, MemberManagementOptions options,
+                       ImportForm form) throws IllegalStateException, IOException {
 
         // Delete previous temporary file
         if (form.getTemporaryFile() != null) {
@@ -2501,18 +2458,18 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
 
         // Upload
         MultipartFile upload = form.getUpload();
-        File temporaryFile = File.createTempFile("importmembers_"+options.getWorkspaceId()+"_"+new Date().getTime(), ".tmp");
+        File temporaryFile = File.createTempFile("importmembers_" + options.getWorkspaceId() + "_" + new Date().getTime(), ".tmp");
         temporaryFile.deleteOnExit();
         upload.transferTo(temporaryFile);
         form.setTemporaryFile(temporaryFile);
         form.setTemporaryFileName(upload.getOriginalFilename());
 
-		
-	}
-	
-	@Override
-	public void prepareImportInvitations(PortalControllerContext portalControllerContext,
-			MemberManagementOptions options, ImportForm form) throws ParseException, PortalException, PortletException, IOException {
+
+    }
+
+    @Override
+    public void prepareImportInvitations(PortalControllerContext portalControllerContext,
+                                         MemberManagementOptions options, ImportForm form) throws ParseException, PortalException, PortletException, IOException {
 
         ImportObject dto = applicationContext.getBean(ImportObject.class);
 
@@ -2523,41 +2480,38 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
         dto.setRole(form.getRole());
         dto.setWorkspaceId(options.getWorkspaceId());
         dto.setTemporaryFileName(form.getTemporaryFileName());
-        
-        
+
+
         CSVParser parser = CSVParser.parse(dto.getTemporaryFile(), StandardCharsets.UTF_8, CSVFormat.EXCEL);
         int size = parser.getRecords().size();
-        dto.setRecordNumber( size);
-        
-
-		Document currentWorkspace = repository.getCurrentWorkspace(portalControllerContext);
-		dto.setCurrentWorkspace(currentWorkspace);
-	        
-		ImportInvitationsBatch batch = applicationContext.getBean(ImportInvitationsBatch.class, portalControllerContext.getPortletCtx(), dto);
-
-		batchService.addBatch(batch);
-
-	    // Update model
-	    this.invalidateLoadedForms();
-	    this.getImportForm(portalControllerContext);
-	
-	    Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
-	    
-	    // Notification
-	    String message = bundle.getString("MESSAGE_IMPORT_IN_PROGRESS");
-	    this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
-		
-	}
+        dto.setRecordNumber(size);
 
 
-	@Override
-	public String getImportHelp(PortalControllerContext portalControllerContext) throws PortletException { 
+        Document currentWorkspace = repository.getCurrentWorkspace(portalControllerContext);
+        dto.setCurrentWorkspace(currentWorkspace);
+
+        ImportInvitationsBatch batch = applicationContext.getBean(ImportInvitationsBatch.class, portalControllerContext.getPortletCtx(), dto);
+
+        batchService.addBatch(batch);
+
+        // Update model
+        this.invalidateLoadedForms();
+        this.getImportForm(portalControllerContext);
+
+        Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
+
+        // Notification
+        String message = bundle.getString("MESSAGE_IMPORT_IN_PROGRESS");
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+
+    }
+
+
+    @Override
+    public String getImportHelp(PortalControllerContext portalControllerContext) throws PortletException {
         return this.repository.getHelp(portalControllerContext, IMPORT_HELP_LOCATION_PROPERTY);
 
-	}
-
-
-
+    }
 
 
 }
