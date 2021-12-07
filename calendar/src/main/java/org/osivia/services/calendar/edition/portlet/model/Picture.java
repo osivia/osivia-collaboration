@@ -8,16 +8,24 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Picture java-bean.
- * 
+ *
  * @author Cédric Krommenhoek
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Picture extends AbstractTemporaryFile {
 
-    /** Original URL. */
+    /**
+     * Original URL.
+     */
     private String url;
-    /** Picture uploaded multipart file. */
+    /**
+     * File max size.
+     */
+    private long maxSize;
+    /**
+     * Picture uploaded multipart file.
+     */
     private MultipartFile upload;
 
 
@@ -31,7 +39,7 @@ public class Picture extends AbstractTemporaryFile {
 
     /**
      * Getter for url.
-     * 
+     *
      * @return the url
      */
     public String getUrl() {
@@ -40,16 +48,24 @@ public class Picture extends AbstractTemporaryFile {
 
     /**
      * Setter for url.
-     * 
+     *
      * @param url the url to set
      */
     public void setUrl(String url) {
         this.url = url;
     }
 
+    public long getMaxSize() {
+        return maxSize;
+    }
+
+    public void setMaxSize(long maxSize) {
+        this.maxSize = maxSize;
+    }
+
     /**
      * Getter for upload.
-     * 
+     *
      * @return the upload
      */
     public MultipartFile getUpload() {
@@ -58,7 +74,7 @@ public class Picture extends AbstractTemporaryFile {
 
     /**
      * Setter for upload.
-     * 
+     *
      * @param upload the upload to set
      */
     public void setUpload(MultipartFile upload) {

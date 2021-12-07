@@ -136,6 +136,7 @@ public class CalendarEditionServiceImpl extends CalendarServiceImpl implements C
 
         // Vignette
         Picture vignette = this.repository.getVignette(portalControllerContext, document);
+        vignette.setMaxSize(FILE_UPLOAD_MAX_SIZE);
         form.setVignette(vignette);
 
         // Color

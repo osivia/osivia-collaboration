@@ -13,6 +13,7 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.services.calendar.edition.portlet.service.CalendarEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -115,7 +116,7 @@ public class CalendarEditionConfiguration extends CMSPortlet implements PortletC
     public PortletMultipartResolver getMultipartResolver() {
         CommonsPortletMultipartResolver multipartResolver = new CommonsPortletMultipartResolver();
         multipartResolver.setDefaultEncoding(CharEncoding.UTF_8);
-        multipartResolver.setMaxUploadSizePerFile(2 * FileUtils.ONE_MB);
+        multipartResolver.setMaxUploadSizePerFile(CalendarEditionService.FILE_UPLOAD_MAX_SIZE);
         return multipartResolver;
     }
 

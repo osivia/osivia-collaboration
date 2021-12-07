@@ -1,25 +1,30 @@
 package org.osivia.services.calendar.edition.portlet.service;
 
-import java.io.IOException;
-
-import javax.portlet.PortletException;
-
+import org.apache.commons.io.FileUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
 import org.osivia.services.calendar.common.service.CalendarService;
 import org.osivia.services.calendar.edition.portlet.model.CalendarEditionForm;
 
+import javax.portlet.PortletException;
+import java.io.IOException;
+
 /**
  * Calendar edition portlet service interface.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see CalendarService
  */
 public interface CalendarEditionService extends CalendarService {
 
     /**
+     * File upload max size.
+     */
+    long FILE_UPLOAD_MAX_SIZE = 2L * FileUtils.ONE_MB;
+
+    /**
      * Get calendar form.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return form
      * @throws PortletException
@@ -29,9 +34,9 @@ public interface CalendarEditionService extends CalendarService {
 
     /**
      * Upload vignette.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param form calendar form
+     * @param form                    calendar form
      * @throws PortletException
      * @throws IOException
      */
@@ -40,9 +45,9 @@ public interface CalendarEditionService extends CalendarService {
 
     /**
      * Delete vignette.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param form calendar form
+     * @param form                    calendar form
      * @throws PortletException
      * @throws IOException
      */
@@ -51,10 +56,10 @@ public interface CalendarEditionService extends CalendarService {
 
     /**
      * Save.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param options calendar edition options
-     * @param form calendar form
+     * @param options                 calendar edition options
+     * @param form                    calendar form
      * @throws PortletException
      * @throws IOException
      */
@@ -63,7 +68,7 @@ public interface CalendarEditionService extends CalendarService {
 
     /**
      * Cancel.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @throws PortletException
      * @throws IOException
@@ -73,9 +78,9 @@ public interface CalendarEditionService extends CalendarService {
 
     /**
      * Add synchronization source.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param form calendar form
+     * @param form                    calendar form
      * @throws PortletException
      */
     void addSynchronizationSource(PortalControllerContext portalControllerContext, CalendarEditionForm form) throws PortletException;
@@ -83,9 +88,9 @@ public interface CalendarEditionService extends CalendarService {
 
     /**
      * Edit synchronization source.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param form calendar form
+     * @param form                    calendar form
      * @throws PortletException
      */
     void editSynchronizationSource(PortalControllerContext portalControllerContext, CalendarEditionForm form) throws PortletException;
@@ -93,10 +98,10 @@ public interface CalendarEditionService extends CalendarService {
 
     /**
      * Remove synchronization source.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param form calendar form
-     * @param sourceId removed synchronization source identifier
+     * @param form                    calendar form
+     * @param sourceId                removed synchronization source identifier
      * @throws PortletException
      */
     void removeSynchronizationSource(PortalControllerContext portalControllerContext, CalendarEditionForm form, String sourceId) throws PortletException;
@@ -104,9 +109,9 @@ public interface CalendarEditionService extends CalendarService {
 
     /**
      * Vignette preview.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param form calendar form
+     * @param form                    calendar form
      * @throws PortletException
      * @throws IOException
      */
@@ -115,10 +120,10 @@ public interface CalendarEditionService extends CalendarService {
 
     /**
      * Synchronization source edition URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param form calendar form
-     * @param sourceId synchronization source identifier, null in case of creation
+     * @param form                    calendar form
+     * @param sourceId                synchronization source identifier, null in case of creation
      * @throws PortletException
      * @throws IOException
      */
