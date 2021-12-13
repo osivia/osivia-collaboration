@@ -55,11 +55,11 @@
 
             <div>
                 <!-- Upload -->
-                <c:set var="maxSize"><ttc:fileSize size="${form.vignette.maxSize}"/></c:set>
-                <c:set var="fileSizeLimitExceededMessage"><op:translate key="CALENDAR_VIGNETTE_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
                 <label class="btn btn-sm btn-default btn-file">
                     <i class="halflings halflings-folder-open"></i>
                     <span><op:translate key="CALENDAR_VIGNETTE_UPLOAD" /></span>
+                    <c:set var="maxSize"><ttc:fileSize size="${form.vignette.maxSize}" escapeHtml="false"/></c:set>
+                    <c:set var="fileSizeLimitExceededMessage"><op:translate key="CALENDAR_VIGNETTE_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
                     <form:input type="file" path="vignette.upload" data-max-size="${form.vignette.maxSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-vignette-submit" />
                 </label>
                 <input id="${namespace}-vignette-submit" type="submit" name="upload-vignette" class="hidden">

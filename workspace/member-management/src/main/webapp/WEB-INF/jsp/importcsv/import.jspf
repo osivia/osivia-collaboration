@@ -3,6 +3,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+<%@ taglib prefix="ttc" uri="http://www.toutatice.fr/jsp/taglib/toutatice" %>
 
 <%@ page contentType="text/html" isELIgnored="false"%>
 
@@ -45,7 +46,8 @@
 					                <label class="btn btn-default btn-file">
 					                    <i class="glyphicons glyphicons-folder-open"></i>
 					                    <span><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_BROWSE_ACTION"/></span>
-                                        <c:set var="fileSizeLimitExceededMessage"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED"/></c:set>
+                                        <c:set var="maxSize"><ttc:fileSize size="${import.uploadMaxSize}" escapeHtml="false"/></c:set>
+                                        <c:set var="fileSizeLimitExceededMessage"><op:translate key="WORKSPACE_MEMBER_MANAGEMENT_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
 					                    <form:input type="file" path="upload" data-max-size="${import.uploadMaxSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-file-upload-submit"/>
 					                </label>
 					            </div>

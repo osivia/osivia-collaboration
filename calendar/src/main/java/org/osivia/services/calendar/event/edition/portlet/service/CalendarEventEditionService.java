@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import javax.portlet.PortletException;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.calendar.common.model.CalendarCommonEventForm;
 import org.osivia.services.calendar.common.model.CalendarEditionOptions;
@@ -20,6 +22,11 @@ public interface CalendarEventEditionService extends CalendarService {
 
     /** Portlet instance. */
     String PORTLET_INSTANCE = "osivia-services-calendar-event-edition-instance";
+
+    /**
+     * File upload max size.
+     */
+    long FILE_UPLOAD_MAX_SIZE = NumberUtils.toLong(System.getProperty("osivia.agenda.max.upload.size"), 10L * FileUtils.ONE_MB);
 
     /** Date format pattern. */
 	String DATE_FORMAT_PATTERN = "dd/MM/yyyy";

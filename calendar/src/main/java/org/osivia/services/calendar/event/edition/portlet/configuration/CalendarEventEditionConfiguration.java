@@ -1,38 +1,32 @@
 package org.osivia.services.calendar.event.edition.portlet.configuration;
 
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
-import javax.portlet.PortletException;
-
-import org.apache.commons.io.FileUtils;
+import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import org.apache.commons.lang.CharEncoding;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.services.calendar.event.edition.portlet.service.CalendarEventEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.portlet.context.PortletConfigAware;
-import org.springframework.web.portlet.context.PortletContextAware;
 import org.springframework.web.portlet.multipart.CommonsPortletMultipartResolver;
 import org.springframework.web.portlet.multipart.PortletMultipartResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
-import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
-import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletException;
 
 /**
  * Calendar event edition portlet configuration.
@@ -44,19 +38,15 @@ import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 @ComponentScan(basePackages = {"org.osivia.services.calendar.common", "org.osivia.services.calendar.event.edition.portlet"})
 public class CalendarEventEditionConfiguration extends CMSPortlet implements PortletConfigAware {
 
-	public static final String MAX_UPLOAD_SIZE_PER_FILE_MO = "10";
-
-	/** Max upload size per file. */
-	private static final Long MAX_UPLOAD_SIZE_PER_FILE = NumberUtils
-			.toLong(System.getProperty("osivia.agenda.max.upload.size"), new Long(MAX_UPLOAD_SIZE_PER_FILE_MO)) * FileUtils.ONE_MB;
-	
-    /** Application context. */
+    /**
+     * Log.
+     */
+    private final Log log;
+    /**
+     * Application context.
+     */
     @Autowired
     private ApplicationContext applicationContext;
-
-
-    /** Log. */
-    private final Log log;
 
 
     /**
@@ -75,13 +65,11 @@ public class CalendarEventEditionConfiguration extends CMSPortlet implements Por
     public void setPortletConfig(PortletConfig portletConfig) {
         try {
             super.init(portletConfig);
-            PortletAppUtils.registerApplication(portletConfig, applicationContext);            
+            PortletAppUtils.registerApplication(portletConfig, applicationContext);
         } catch (PortletException e) {
             this.log.error(e);
         }
     }
-
-
 
 
     /**
@@ -122,7 +110,7 @@ public class CalendarEventEditionConfiguration extends CMSPortlet implements Por
     public PortletMultipartResolver getMultipartResolver() {
         CommonsPortletMultipartResolver multipartResolver = new CommonsPortletMultipartResolver();
         multipartResolver.setDefaultEncoding(CharEncoding.UTF_8);
-        multipartResolver.setMaxUploadSizePerFile(MAX_UPLOAD_SIZE_PER_FILE);
+        multipartResolver.setMaxUploadSizePerFile(CalendarEventEditionService.FILE_UPLOAD_MAX_SIZE);
         return multipartResolver;
     }
 
@@ -153,14 +141,14 @@ public class CalendarEventEditionConfiguration extends CMSPortlet implements Por
 
     /**
      * Get notifications service.
-     * 
+     *
      * @return notification service
      */
     @Bean
     public INotificationsService getNotificationService() {
         return Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
     }
-    
+
 
     /**
      * Get Nuxeo service.
@@ -175,7 +163,7 @@ public class CalendarEventEditionConfiguration extends CMSPortlet implements Por
 
     /**
      * Get document DAO.
-     * 
+     *
      * @return document DAO
      */
     @Bean

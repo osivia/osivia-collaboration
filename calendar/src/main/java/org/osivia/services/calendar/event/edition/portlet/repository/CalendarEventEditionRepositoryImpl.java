@@ -190,8 +190,9 @@ public class CalendarEventEditionRepositoryImpl extends CalendarRepositoryImpl i
     public Attachments getAttachments(PortalControllerContext portalControllerContext, Document document) throws PortletException {
         // Attachments
         Attachments attachments = this.applicationContext.getBean(Attachments.class);
-        if (document != null && document.getProperties() != null)
-        {
+        attachments.setMaxSize(CalendarEventEditionService.FILE_UPLOAD_MAX_SIZE);
+
+        if (document != null && document.getProperties() != null) {
 	        PropertyList propertyList = document.getProperties().getList(ATTACHMENTS_PROPERTY);
 	        if ((propertyList != null) && !propertyList.isEmpty()) {
 	            List<Attachment> files = attachments.getFiles();
