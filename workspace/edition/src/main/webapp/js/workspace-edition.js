@@ -45,17 +45,7 @@ $JQry(function() {
 		}
 	});
 	$JQry(".workspace-edition-sortable").disableSelection();
-	
-	
-	// Auto upload visual for preview generation
-	$JQry(".workspace-edition input[type=file][name='visual.upload']").change(function(event) {
-		var $target = $JQry(event.target),
-			$formGroup = $target.closest(".form-group"),
-			$submit = $formGroup.find("input[type=submit][name='upload-visual']");
-		
-		$submit.click();
-	});
-	
+
 	
 	// Auto submit when checkbox is checked
 	$JQry(".workspace-edition input[type=checkbox][name='editorial.displayed']").change(function(event) {

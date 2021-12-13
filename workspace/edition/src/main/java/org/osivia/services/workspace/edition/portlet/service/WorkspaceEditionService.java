@@ -1,13 +1,13 @@
 package org.osivia.services.workspace.edition.portlet.service;
 
-import java.io.IOException;
-
-import javax.portlet.PortletException;
-
+import org.apache.commons.io.FileUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
+
+import javax.portlet.PortletException;
+import java.io.IOException;
 
 /**
  * Workspace edition service interface.
@@ -16,8 +16,15 @@ import org.springframework.validation.Errors;
  */
 public interface WorkspaceEditionService {
 
-    /** Workspace editorial task identifier. */
+    /**
+     * Workspace editorial task identifier.
+     */
     String WORKSPACE_EDITORIAL_TASK_ID = "WORKSPACE_EDITORIAL";
+
+    /**
+     * File upload max size.
+     */
+    long FILE_UPLOAD_MAX_SIZE = 2L * FileUtils.ONE_MB;
 
 
     /**
@@ -34,7 +41,7 @@ public interface WorkspaceEditionService {
      * Sort tasks.
      *
      * @param portalControllerContext portal controller context
-     * @param form workspace edition form
+     * @param form                    workspace edition form
      * @throws PortletException
      */
     void sort(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
@@ -42,9 +49,9 @@ public interface WorkspaceEditionService {
 
     /**
      * Upload visual.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param form workspace edition form
+     * @param form                    workspace edition form
      * @throws PortletException
      * @throws IOException
      */
@@ -53,9 +60,9 @@ public interface WorkspaceEditionService {
 
     /**
      * Delete visual.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param form workspace edition form
+     * @param form                    workspace edition form
      * @throws PortletException
      */
     void deleteVisual(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
@@ -63,10 +70,10 @@ public interface WorkspaceEditionService {
 
     /**
      * Create editorial.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param form workspace edition form
-     * @param result binding result
+     * @param form                    workspace edition form
+     * @param result                  binding result
      * @throws PortletException
      */
     void createEditorial(PortalControllerContext portalControllerContext, WorkspaceEditionForm form, BindingResult result) throws PortletException;
@@ -76,26 +83,26 @@ public interface WorkspaceEditionService {
      * Save edition.
      *
      * @param portalControllerContext portal controller context
-     * @param form workspace edition form
+     * @param form                    workspace edition form
      * @throws PortletException
      */
     void save(PortalControllerContext portalControllerContext, WorkspaceEditionForm form) throws PortletException;
 
-    
+
     /**
      * Validate workspace edition form.
-     * 
+     *
      * @param errors errors
-     * @param form workspace edition form
+     * @param form   workspace edition form
      */
     void validate(Errors errors, WorkspaceEditionForm form);
-    
+
 
     /**
      * Delete workspace and return redirection URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param form workspace edition form
+     * @param form                    workspace edition form
      * @return URL
      * @throws PortletException
      */
@@ -104,10 +111,10 @@ public interface WorkspaceEditionService {
 
     /**
      * Hide task.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param form workspace edition form
-     * @param index task index
+     * @param form                    workspace edition form
+     * @param index                   task index
      * @throws PortletException
      */
     void hide(PortalControllerContext portalControllerContext, WorkspaceEditionForm form, int index) throws PortletException;
@@ -115,10 +122,10 @@ public interface WorkspaceEditionService {
 
     /**
      * Show task.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param form workspace edition form
-     * @param index task index
+     * @param form                    workspace edition form
+     * @param index                   task index
      * @throws PortletException
      */
     void show(PortalControllerContext portalControllerContext, WorkspaceEditionForm form, int index) throws PortletException;
@@ -128,7 +135,7 @@ public interface WorkspaceEditionService {
      * Get workspace URL.
      *
      * @param portalControllerContext portal controller context
-     * @param form workspace edition form
+     * @param form                    workspace edition form
      * @return URL
      * @throws PortletException
      */

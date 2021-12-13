@@ -20,6 +20,7 @@
 <c:set var="namespace"><portlet:namespace /></c:set>
 
 
+<%--@elvariable id="editionForm" type="org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm"--%>
 <c:choose>
     <c:when test="${editionForm.document.type eq 'Room'}"><c:set var="fragment"><op:translate key="WORKSPACE_EDITION_ROOM_FRAGMENT" /></c:set></c:when>
     <c:otherwise><c:set var="fragment"><op:translate key="WORKSPACE_EDITION_WORKSPACE_FRAGMENT" /></c:set></c:otherwise>
@@ -194,9 +195,11 @@
                             <label class="btn btn-sm btn-default btn-file">
                                 <i class="halflings halflings-folder-open"></i>
                                 <span><op:translate key="WORKSPACE_IMAGE_UPLOAD" /></span>
-                                <form:input type="file" path="visual.upload" />
+                                <c:set var="maxSize"><ttc:fileSize size="${editionForm.visual.maxSize}" escapeHtml="false"/></c:set>
+                                <c:set var="fileSizeLimitExceededMessage"><op:translate key="WORKSPACE_IMAGE_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
+                                <form:input path="visual.upload" type="file" data-max-size="${editionForm.visual.maxSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-upload-visual"/>
                             </label>
-                            <input type="submit" name="upload-visual" class="hidden">
+                            <input id="${namespace}-upload-visual" type="submit" name="upload-visual" class="hidden">
                             
                             <!-- Delete -->
                             <button type="submit" name="delete-visual" class="btn btn-sm btn-default">

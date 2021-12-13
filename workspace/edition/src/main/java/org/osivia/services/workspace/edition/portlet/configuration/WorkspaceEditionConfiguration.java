@@ -1,6 +1,6 @@
 package org.osivia.services.workspace.edition.portlet.configuration;
 
-import org.apache.commons.io.FileUtils;
+import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import org.apache.commons.lang.CharEncoding;
 import org.osivia.directory.v2.service.RoleService;
 import org.osivia.directory.v2.service.WorkspaceService;
@@ -12,6 +12,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.services.workspace.edition.portlet.service.WorkspaceEditionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +21,6 @@ import org.springframework.web.portlet.multipart.CommonsPortletMultipartResolver
 import org.springframework.web.portlet.multipart.PortletMultipartResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
-
-import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 
 /**
  * Workspace edition configuration.
@@ -71,14 +70,14 @@ public class WorkspaceEditionConfiguration {
 
     /**
      * Get multipart resolver.
-     * 
+     *
      * @return multipart resolver
      */
     @Bean(name = "portletMultipartResolver")
     public PortletMultipartResolver getMultipartResolver() {
         CommonsPortletMultipartResolver multipartResolver = new CommonsPortletMultipartResolver();
         multipartResolver.setDefaultEncoding(CharEncoding.UTF_8);
-        multipartResolver.setMaxUploadSizePerFile(2 * FileUtils.ONE_MB);
+        multipartResolver.setMaxUploadSizePerFile(WorkspaceEditionService.FILE_UPLOAD_MAX_SIZE);
         return multipartResolver;
     }
 
@@ -107,7 +106,7 @@ public class WorkspaceEditionConfiguration {
 
     /**
      * Get workspace service.
-     * 
+     *
      * @return workspace service
      */
     @Bean
@@ -118,7 +117,7 @@ public class WorkspaceEditionConfiguration {
 
     /**
      * Get document DAO.
-     * 
+     *
      * @return document DAO
      */
     @Bean
@@ -142,7 +141,7 @@ public class WorkspaceEditionConfiguration {
 
     /**
      * Get notifications service.
-     * 
+     *
      * @return notification service
      */
     @Bean
@@ -153,7 +152,7 @@ public class WorkspaceEditionConfiguration {
 
     /**
      * Get person service.
-     * 
+     *
      * @return person service
      */
     @Bean
@@ -164,7 +163,7 @@ public class WorkspaceEditionConfiguration {
 
     /**
      * Get role service.
-     * 
+     *
      * @return role service
      */
     @Bean

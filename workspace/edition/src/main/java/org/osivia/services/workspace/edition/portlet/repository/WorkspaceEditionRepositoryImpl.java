@@ -1,54 +1,5 @@
 package org.osivia.services.workspace.edition.portlet.repository;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.portlet.PortletContext;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.Documents;
-import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.osivia.directory.v2.model.CollabProfile;
-import org.osivia.directory.v2.service.WorkspaceService;
-import org.osivia.portal.api.PortalException;
-import org.osivia.portal.api.cache.services.CacheInfo;
-import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.internationalization.Bundle;
-import org.osivia.portal.api.internationalization.IBundleFactory;
-import org.osivia.portal.api.taskbar.ITaskbarService;
-import org.osivia.portal.api.taskbar.TaskbarItem;
-import org.osivia.portal.api.taskbar.TaskbarItemType;
-import org.osivia.portal.api.taskbar.TaskbarItems;
-import org.osivia.portal.api.taskbar.TaskbarTask;
-import org.osivia.services.workspace.edition.portlet.model.Editorial;
-import org.osivia.services.workspace.edition.portlet.model.Image;
-import org.osivia.services.workspace.edition.portlet.model.Task;
-import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
-import org.osivia.services.workspace.edition.portlet.repository.command.CheckTitleAvailabilityCommand;
-import org.osivia.services.workspace.edition.portlet.repository.command.CheckWebIdAvailabilityCommand;
-import org.osivia.services.workspace.edition.portlet.repository.command.DeleteWorkspaceCommand;
-import org.osivia.services.workspace.edition.portlet.repository.command.GetTemplatesCommand;
-import org.osivia.services.workspace.edition.portlet.repository.command.HiddenWorkspaceCommand;
-import org.osivia.services.workspace.edition.portlet.repository.command.ReIndexCommand;
-import org.osivia.services.workspace.edition.portlet.repository.command.UpdatePropertiesCommand;
-import org.osivia.services.workspace.edition.portlet.repository.command.UpdateTasksCommand;
-import org.osivia.services.workspace.edition.portlet.repository.command.UpdateWorkspaceTypeCommand;
-import org.osivia.services.workspace.edition.portlet.service.WorkspaceEditionService;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Repository;
-import org.springframework.web.portlet.context.PortletContextAware;
-
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
@@ -58,6 +9,36 @@ import fr.toutatice.portail.cms.nuxeo.api.domain.DocumentDTO;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
 import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.directory.v2.service.WorkspaceService;
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cache.services.CacheInfo;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.taskbar.*;
+import org.osivia.services.workspace.edition.portlet.model.Editorial;
+import org.osivia.services.workspace.edition.portlet.model.Image;
+import org.osivia.services.workspace.edition.portlet.model.Task;
+import org.osivia.services.workspace.edition.portlet.model.WorkspaceEditionForm;
+import org.osivia.services.workspace.edition.portlet.repository.command.*;
+import org.osivia.services.workspace.edition.portlet.service.WorkspaceEditionService;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Repository;
+import org.springframework.web.portlet.context.PortletContextAware;
+
+import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import java.util.*;
 
 /**
  * Workspace edition repository implementation.
@@ -69,31 +50,41 @@ import fr.toutatice.portail.cms.nuxeo.api.workspace.WorkspaceType;
 @Repository
 public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepository, ApplicationContextAware, PortletContextAware {
 
-    /** Current workspace attribute name. */
+    /**
+     * Current workspace attribute name.
+     */
     private static final String CURRENT_WORKSPACE_ATTRIBUTE = "osivia.workspace.edition.currentWorkspace";
 
 
-    /** Taskbar service. */
+    /**
+     * Taskbar service.
+     */
     @Autowired
     private ITaskbarService taskbarService;
 
-    /** Document DAO. */
+    /**
+     * Document DAO.
+     */
     @Autowired
     private DocumentDAO documentDao;
 
-    /** Bundle factory. */
+    /**
+     * Bundle factory.
+     */
     @Autowired
     private IBundleFactory bundleFactory;
 
     @Autowired
     private WorkspaceService workspaceService;
 
-    /** Application context. */
+    /**
+     * Application context.
+     */
     private ApplicationContext applicationContext;
-    /** Portlet context. */
+    /**
+     * Portlet context.
+     */
     private PortletContext portletContext;
-    
-    
 
 
     /**
@@ -111,10 +102,10 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
     public Document getWorkspace(PortalControllerContext portalControllerContext) throws PortletException {
         // Portlet request
         PortletRequest request = portalControllerContext.getRequest();
-        
+
         // Workspace Nuxeo document
         Document workspace = (Document) request.getAttribute(CURRENT_WORKSPACE_ATTRIBUTE);
-        
+
         if (workspace == null) {
             // Nuxeo controller
             NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
@@ -187,10 +178,10 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
     public Image getVisual(PortalControllerContext portalControllerContext, Document workspace) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-        
+
         // Visual properties
         PropertyMap properties = workspace.getProperties().getMap("ttcn:picture");
-        
+
         // Visual URL
         String url;
         if ((properties == null) || StringUtils.isEmpty(properties.getString("data"))) {
@@ -202,6 +193,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         // Visual
         Image visual = this.applicationContext.getBean(Image.class);
         visual.setUrl(url);
+        visual.setMaxSize(WorkspaceEditionService.FILE_UPLOAD_MAX_SIZE);
 
         return visual;
     }
@@ -466,19 +458,19 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(UpdatePropertiesCommand.class, form);
         nuxeoController.executeNuxeoCommand(command);
-        
+
         // If workspace name has been changed, reindex all documents to update ttc:spaceTitle
         Document workspace = form.getDocument();
-        if(!workspace.getTitle().equals(form.getTitle()) && workspace.getType().equals("Workspace")) {
-        	
+        if (!workspace.getTitle().equals(form.getTitle()) && workspace.getType().equals("Workspace")) {
+
             nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
             // Nuxeo command
             INuxeoCommand reindexCmd = this.applicationContext.getBean(ReIndexCommand.class, form);
             nuxeoController.executeNuxeoCommand(reindexCmd);
-            
+
             String workspaceId = form.getDocument().getString("webc:url");
             workspaceService.modifyTitle(workspaceId, form.getTitle());
-            
+
         }
 
         // Reload vignette
@@ -506,7 +498,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         Editorial editorial = form.getEditorial();
         // Editorial document DTO
         DocumentDTO document = editorial.getDocument();
-        
+
         if (document != null) {
             if (BooleanUtils.xor(new boolean[]{editorial.isDisplayed(), editorial.isInitialDisplayed()})) {
                 // Task
@@ -586,15 +578,15 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
-        
+
         // Workspace identifier
         Document workspace = form.getDocument();
-        
+
         // Nuxeo command
         INuxeoCommand hiddenCommand = this.applicationContext.getBean(HiddenWorkspaceCommand.class, workspace.getPath());
         nuxeoController.executeNuxeoCommand(hiddenCommand);
-        
-        
+
+
         nuxeoController.setAsynchronousCommand(true);
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(DeleteWorkspaceCommand.class, workspace.getPath());
@@ -604,9 +596,9 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
 
     /**
      * Get editorial task.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param document editorial document DTO, may be null
+     * @param document                editorial document DTO, may be null
      * @return task
      * @throws PortletException
      */
@@ -632,7 +624,7 @@ public class WorkspaceEditionRepositoryImpl implements WorkspaceEditionRepositor
             if (document != null) {
                 task.setPath(document.getPath());
             }
-            
+
             // Display name
             String displayName = bundle.getString(item.getKey(), item.getCustomizedClassLoader());
             task.setDisplayName(displayName);
