@@ -1,5 +1,7 @@
 package org.osivia.services.edition.portlet.service;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
@@ -19,21 +21,24 @@ public interface DocumentEditionService {
      * Document path window property.
      */
     String DOCUMENT_PATH_WINDOW_PROPERTY = "osivia.document.edition.path";
-
     /**
      * Parent document path window property.
      */
     String PARENT_DOCUMENT_PATH_WINDOW_PROPERTY = "osivia.document.edition.parent-path";
-
     /**
      * Document type window property.
      */
     String DOCUMENT_TYPE_WINDOW_PROPERTY = "osivia.document.edition.document-type";
-    
     /**
      * Document type window property.
      */
     String EXTRACT_ARCHIVE_WINDOW_PROPERTY = "osivia.document.edition.extract-archive";
+
+    /**
+     * Max upload size.
+     */
+    long MAX_UPLOAD_SIZE = NumberUtils.toLong(System.getProperty("osivia.filebrowser.max.upload.size"), 500L) * FileUtils.ONE_MB;
+
 
     /**
      * Get window properties.

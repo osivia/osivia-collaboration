@@ -1,10 +1,7 @@
 package org.osivia.services.edition.portlet.controller;
 
-import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.edition.portlet.configuration.DocumentEditionConfiguration;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
-import org.osivia.services.edition.portlet.model.FileEditionForm;
 import org.osivia.services.edition.portlet.model.validator.DocumentEditionFormValidator;
 import org.osivia.services.edition.portlet.service.DocumentEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
@@ -178,17 +170,13 @@ public class DocumentEditionController {
         binder.addValidators(this.validator);
         binder.setDisallowedFields("name", "creation", "path", "originalTitle");
     }
-    
-	@ExceptionHandler(MultipartException.class)
-	String handleFileException(Throwable ex, RenderRequest request, RenderResponse response)
-			throws PortletException, IOException {
 
-		String uploadMaxSize = StringUtils.defaultIfBlank(System.getProperty("osivia.filebrowser.max.upload.size"), 
-				DocumentEditionConfiguration.MAX_UPLOAD_SIZE_PER_FILE_MO);
-		
-		request.setAttribute("uploadMaxSize", uploadMaxSize.toString());
-		
-		return "upload-error";
 
-	}
+    @ExceptionHandler(MultipartException.class)
+    String handleFileException(Throwable ex, RenderRequest request, RenderResponse response) {
+        request.setAttribute("uploadMaxSize", DocumentEditionService.MAX_UPLOAD_SIZE);
+
+        return "upload-error";
+    }
+
 }

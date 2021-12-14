@@ -2,6 +2,8 @@ package org.osivia.services.edition.portlet.repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -11,6 +13,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
 import org.osivia.services.edition.portlet.model.FileEditionForm;
 import org.osivia.services.edition.portlet.repository.command.ImportFileCommand;
+import org.osivia.services.edition.portlet.service.DocumentEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
@@ -45,7 +48,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
     /**
      * File binary name Nuxeo document property.
      */
-    private static final String BINARY_NAME_PROPERTY = "file:filename";;
+    private static final String BINARY_NAME_PROPERTY = "file:filename";
 
 
     /**
@@ -77,7 +80,10 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
     @Override
     public FileEditionForm getForm(PortalControllerContext portalControllerContext, DocumentEditionWindowProperties windowProperties) throws PortletException, IOException {
-        return super.getForm(portalControllerContext, windowProperties, FileEditionForm.class);
+        FileEditionForm form = super.getForm(portalControllerContext, windowProperties, FileEditionForm.class);
+        form.setMaxSize(DocumentEditionService.MAX_UPLOAD_SIZE);
+
+        return form;
     }
 
 
@@ -126,8 +132,8 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
     @Override
     public void upload(PortalControllerContext portalControllerContext, FileEditionForm form) throws IOException {
         // Delete previous temporary file
-        if (form.getTemporaryFile() != null) {
-            form.getTemporaryFile().delete();
+        if (form.getTemporaryFile() != null && !form.getTemporaryFile().delete()) {
+            form.getTemporaryFile().deleteOnExit();
         }
 
         // Upload
@@ -157,8 +163,8 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
     @Override
     public void restore(PortalControllerContext portalControllerContext, FileEditionForm form) {
         // Delete previous temporary file
-        if (form.getTemporaryFile() != null) {
-            form.getTemporaryFile().delete();
+        if (form.getTemporaryFile() != null && !form.getTemporaryFile().delete()) {
+            form.getTemporaryFile().deleteOnExit();
         }
 
 
@@ -172,8 +178,8 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
     @Override
     protected void customizeProperties(PortalControllerContext portalControllerContext, FileEditionForm form, PropertyMap properties, Map<String, Blob> binaries) {
 
-        	
-    	if (form.getTemporaryFile() != null) {
+
+        if (form.getTemporaryFile() != null) {
             // File
             File file = form.getTemporaryFile();
             // File content type
@@ -183,7 +189,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
             } else {
                 contentType = form.getTemporaryFileMimeType().toString();
             }
-            
+
             String s = Normalizer.normalize(form.getTemporaryFileName(), Normalizer.Form.NFC);
 
             FileBlob blob = new FileBlob(file, s, contentType);

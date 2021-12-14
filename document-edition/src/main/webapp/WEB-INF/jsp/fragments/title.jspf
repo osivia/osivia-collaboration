@@ -8,7 +8,7 @@
 
 <spring:bind path="title">
     <div class="form-group required ${status.error ? 'has-error has-feedback' : ''}">
-        <form:label path="title"><op:translate key="DOCUMENT_EDITION_FORM_TITLE_LABEL"/></form:label>
+        <form:label path="title" cssClass="control-label"><op:translate key="DOCUMENT_EDITION_FORM_TITLE_LABEL"/></form:label>
         <form:input path="title" cssClass="form-control" placeholder="${placeholder}"/>
         <c:if test="${status.error}">
             <span class="form-control-feedback">

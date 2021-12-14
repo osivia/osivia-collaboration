@@ -22,7 +22,14 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
      * Required primary type.
      */
     private String requiredPrimaryType;
-
+    /**
+     * Original file name.
+     */
+    private String originalFileName;
+    /**
+     * Upload max size.
+     */
+    private long maxSize;
     /**
      * Upload.
      */
@@ -35,12 +42,6 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
      * Temporary file name.
      */
     private String temporaryFileName;
-    
-    /**
-     * Original file name.
-     */
-    private String originalFileName;
-    
     /**
      * Temporary file MIME type.
      */
@@ -61,6 +62,22 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
 
     public void setRequiredPrimaryType(String requiredPrimaryType) {
         this.requiredPrimaryType = requiredPrimaryType;
+    }
+
+    public String getOriginalFileName() {
+        return originalFileName;
+    }
+
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
+    }
+
+    public long getMaxSize() {
+        return maxSize;
+    }
+
+    public void setMaxSize(long maxSize) {
+        this.maxSize = maxSize;
     }
 
     public MultipartFile getUpload() {
@@ -94,17 +111,4 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
     public void setTemporaryFileMimeType(MimeType temporaryFileMimeType) {
         this.temporaryFileMimeType = temporaryFileMimeType;
     }
-
-
-	public String getOriginalFileName() {
-		return originalFileName;
-	}
-
-
-	public void setOriginalFileName(String originalFileName) {
-		this.originalFileName = originalFileName;
-	}
-
-    
-    
 }

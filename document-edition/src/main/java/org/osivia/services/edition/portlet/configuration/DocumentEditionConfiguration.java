@@ -1,9 +1,7 @@
 package org.osivia.services.edition.portlet.configuration;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
-import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -11,6 +9,7 @@ import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.services.edition.portlet.repository.FileEditionRepositoryImpl;
+import org.osivia.services.edition.portlet.service.DocumentEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -36,14 +35,6 @@ import javax.portlet.PortletException;
 @Configuration
 @ComponentScan(basePackages = "org.osivia.services.edition.portlet")
 public class DocumentEditionConfiguration extends CMSPortlet implements PortletConfigAware {
-
-	
-    public static final String MAX_UPLOAD_SIZE_PER_FILE_MO = "500";
-
-    /** Max upload size per file. */
-    private static final Long MAX_UPLOAD_SIZE_PER_FILE = NumberUtils.toLong(System.getProperty("osivia.filebrowser.max.upload.size"), 
-    		new Long(MAX_UPLOAD_SIZE_PER_FILE_MO)) * FileUtils.ONE_MB;
-
 
     /**
      * Application context.
@@ -111,7 +102,7 @@ public class DocumentEditionConfiguration extends CMSPortlet implements PortletC
     public PortletMultipartResolver getMultipartResolver() {
         CommonsPortletMultipartResolver multipartResolver = new CommonsPortletMultipartResolver();
         multipartResolver.setDefaultEncoding(CharEncoding.UTF_8);
-        multipartResolver.setMaxUploadSizePerFile(MAX_UPLOAD_SIZE_PER_FILE);
+        multipartResolver.setMaxUploadSize(DocumentEditionService.MAX_UPLOAD_SIZE);
         return multipartResolver;
     }
 

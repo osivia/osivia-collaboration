@@ -19,7 +19,7 @@
     <%--Content--%>
     <c:set var="placeholder"><op:translate key="DOCUMENT_EDITION_FORM_NOTE_CONTENT_PLACEHOLDER"/></c:set>
     <div class="form-group">
-        <form:label path="content"><op:translate key="DOCUMENT_EDITION_FORM_NOTE_CONTENT_LABEL"/></form:label>
+        <form:label path="content" cssClass="control-label"><op:translate key="DOCUMENT_EDITION_FORM_NOTE_CONTENT_LABEL"/></form:label>
         <form:textarea path="content" cssClass="form-control tinymce tinymce-simple" placeholder="${placeholder}"/>
     </div>
 

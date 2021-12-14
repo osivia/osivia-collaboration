@@ -3,20 +3,24 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="op" uri="http://www.osivia.org/jsp/taglib/osivia-portal" %>
+<%@ taglib prefix="ttc" uri="http://www.toutatice.fr/jsp/taglib/toutatice" %>
 
 
 <c:set var="namespace"><portlet:namespace/></c:set>
 
 
+<%--@elvariable id="form" type="org.osivia.services.edition.portlet.model.FileEditionForm"--%>
 <spring:bind path="upload">
     <div class="form-group required ${status.error ? 'has-error' : ''}">
-        <form:label path="upload"><op:translate key="DOCUMENT_EDITION_FORM_FILE_LABEL"/></form:label>
+        <form:label path="upload" cssClass="control-label"><op:translate key="DOCUMENT_EDITION_FORM_FILE_LABEL"/></form:label>
         <div>
             <div class="media-left">
                 <label class="btn btn-default btn-file">
                     <i class="glyphicons glyphicons-folder-open"></i>
                     <span><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_ACTION"/></span>
-                    <form:input type="file" path="upload" data-change-submit="${namespace}-file-upload-submit"/>
+                    <c:set var="maxSize"><ttc:fileSize size="${form.maxSize}" escapeHtml="false"/></c:set>
+                    <c:set var="fileSizeLimitExceededMessage"><op:translate key="DOCUMENT_EDITION_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
+                    <form:input path="upload" type="file" data-max-size="${form.maxSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-file-upload-submit"/>
                 </label>
             </div>
 
