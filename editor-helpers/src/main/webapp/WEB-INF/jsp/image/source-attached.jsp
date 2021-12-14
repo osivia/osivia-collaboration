@@ -3,6 +3,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="op" uri="http://www.osivia.org/jsp/taglib/osivia-portal" %>
+<%@ taglib prefix="ttc" uri="http://www.toutatice.fr/jsp/taglib/toutatice" %>
 
 <%@ page isELIgnored="false" %>
 
@@ -26,9 +27,10 @@
         <%--Add--%>
         <spring:bind path="upload">
             <div class="form-group ${status.error ? 'has-error' : ''}">
-                <form:label path="upload" cssClass="control-label"><op:translate
-                        key="EDITOR_IMAGE_ATTACHED_UPLOAD_LABEL"/></form:label>
-                <form:input path="upload" type="file" data-change-submit="${namespace}-upload"/>
+                <form:label path="upload" cssClass="control-label"><op:translate key="EDITOR_IMAGE_ATTACHED_UPLOAD_LABEL"/></form:label>
+                <c:set var="maxSize"><ttc:fileSize size="${attachedForm.maxUploadSize}" escapeHtml="false"/></c:set>
+                <c:set var="fileSizeLimitExceededMessage"><op:translate key="EDITOR_IMAGE_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
+                <form:input path="upload" type="file" data-max-size="${attachedForm.maxUploadSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-upload"/>
                 <form:errors path="upload" cssClass="help-block"/>
             </div>
         </spring:bind>
@@ -58,7 +60,6 @@
                     </div>
                 </c:otherwise>
             </c:choose>
-
         </div>
 
         <%--Buttons--%>

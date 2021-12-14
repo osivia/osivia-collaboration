@@ -180,6 +180,7 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
 
         // Attached image form
         EditorImageSourceAttachedForm attachedForm = this.applicationContext.getBean(EditorImageSourceAttachedForm.class);
+        attachedForm.setMaxUploadSize(MAX_UPLOAD_SIZE);
 
         // Attached images
         SortedSet<AttachedImage> attachedImages = this.repository.getAttachedImages(portalControllerContext, path);

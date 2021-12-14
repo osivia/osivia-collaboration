@@ -1,5 +1,6 @@
 package org.osivia.services.editor.image.portlet.service;
 
+import org.apache.commons.io.FileUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.editor.EditorService;
 import org.osivia.services.editor.common.service.CommonService;
@@ -62,6 +63,11 @@ public interface EditorImageService extends CommonService {
      * Width window property.
      */
     String WIDTH_WINDOW_PROPERTY = EditorService.WINDOW_PROPERTY_PREFIX + WIDTH_PARAMETER;
+
+    /**
+     * Max upload size.
+     */
+    long MAX_UPLOAD_SIZE = 100L * FileUtils.ONE_MB;
 
 
     /**

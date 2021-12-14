@@ -17,6 +17,10 @@ import java.util.SortedSet;
 public class EditorImageSourceAttachedForm {
 
     /**
+     * Upload max size.
+     */
+    private long maxUploadSize;
+    /**
      * Upload multipart file.
      */
     private MultipartFile upload;
@@ -33,6 +37,14 @@ public class EditorImageSourceAttachedForm {
         super();
     }
 
+
+    public long getMaxUploadSize() {
+        return maxUploadSize;
+    }
+
+    public void setMaxUploadSize(long maxUploadSize) {
+        this.maxUploadSize = maxUploadSize;
+    }
 
     public MultipartFile getUpload() {
         return upload;

@@ -1,8 +1,8 @@
 package org.osivia.services.editor.image.portlet.configuration;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.osivia.services.editor.common.configuration.CommonConfiguration;
+import org.osivia.services.editor.image.portlet.service.EditorImageService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +42,7 @@ public class EditorImageConfiguration extends CommonConfiguration {
     public PortletMultipartResolver getMultipartResolver() {
         CommonsPortletMultipartResolver multipartResolver = new CommonsPortletMultipartResolver();
         multipartResolver.setDefaultEncoding(CharEncoding.UTF_8);
-        multipartResolver.setMaxUploadSizePerFile(100 * FileUtils.ONE_MB);
+        multipartResolver.setMaxUploadSize(EditorImageService.MAX_UPLOAD_SIZE);
         return multipartResolver;
     }
 
