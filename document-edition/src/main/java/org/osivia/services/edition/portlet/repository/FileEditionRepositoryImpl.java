@@ -86,7 +86,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
         // Required primary type
         String requiredPrimaryType = this.requiredPrimaryTypes.get(document.getType());
         form.setRequiredPrimaryType(requiredPrimaryType);
-        form.setOriginalFileName(document.getProperties().getString(BINARY_NAME_PROPERTY));
+        form.setOriginalFileName(document.getProperties().getString(getBinaryNameProperty()));
     }
 
 
@@ -187,7 +187,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
             String s = Normalizer.normalize(form.getTemporaryFileName(), Normalizer.Form.NFC);
 
             FileBlob blob = new FileBlob(file, s, contentType);
-            binaries.put(BINARY_PROPERTY, blob);
+            binaries.put(getBinaryProperty(), blob);
         }
     }
 
@@ -195,7 +195,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
     @Override
     protected Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, Blob> binaries) throws PortletException {
         // File binary
-        Blob binary = binaries.get(BINARY_PROPERTY);
+        Blob binary = binaries.get(getBinaryProperty());
 
         Document document;
 
@@ -210,5 +210,12 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
         return document;
     }
+    
+    protected String getBinaryProperty() {
+    	return BINARY_PROPERTY;
+    }
 
+    protected String getBinaryNameProperty() {
+    	return BINARY_NAME_PROPERTY;
+    }
 }

@@ -340,7 +340,7 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         }
         
         // special displaycontext
-        if("ContextualLink".equals(type.getName())) {
+        if((type != null) && "ContextualLink".equals(type.getName())) {
         	item.setDisplayContext("contextualLink");
         }
 
