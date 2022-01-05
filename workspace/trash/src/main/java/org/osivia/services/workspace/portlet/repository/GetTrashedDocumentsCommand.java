@@ -1,8 +1,13 @@
 package org.osivia.services.workspace.portlet.repository;
 
+import java.util.List;
+
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
+import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -53,8 +58,22 @@ public class GetTrashedDocumentsCommand implements INuxeoCommand {
         OperationRequest request = nuxeoSession.newRequest("Document.QueryES");
         request.set(Constants.HEADER_NX_SCHEMAS, "dublincore, common");
         request.set("query", query.toString());
+        request.set("currentPageIndex", "0");
+        request.set("pageSize", "1000");
 
-        return request.execute();
+        PaginableDocuments documents = (PaginableDocuments) request.execute();
+        List<Document> all = documents.list();
+        
+        if (documents.getPageCount() > 1) {
+        	for(int i = 1; i < documents.getPageCount(); i++) {
+        		request.set("currentPageIndex", i);
+        		
+        		PaginableDocuments nextPage = (PaginableDocuments) request.execute();
+        		all.addAll(nextPage.list());
+        	}
+        }
+        
+        return all;
     }
 
 

@@ -79,14 +79,14 @@ public class TrashRepositoryImpl implements TrashRepository, ApplicationContextA
 
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(GetTrashedDocumentsCommand.class, basePath);
-        Documents documents = (Documents) nuxeoController.executeNuxeoCommand(command);
+        List<Document> documents = (List<Document>) nuxeoController.executeNuxeoCommand(command);
 
         // Trashed documents
         List<TrashedDocument> trashedDocuments = new ArrayList<>(documents.size());
         // Previous path
         String previousPath = null;
         
-        for (Document document : documents.list()) {
+        for (Document document : documents) {
             // Path
             String path = document.getPath();
 
