@@ -83,26 +83,6 @@ $JQry(function() {
     
     
     if (!$form.data("loaded")) {
-        // Auto upload vignette for preview generation
-        $JQry(".forum-edition input[type=file][name='vignette.upload']").change(function (event) {
-            var $target = $JQry(event.target),
-                $formGroup = $target.closest(".form-group"),
-                $submit = $formGroup.find("input[type=submit][name='upload-vignette']");
-
-            $submit.click();
-        });
-
-
-        // Auto upload attachment
-        $JQry(".forum-edition input[type=file][name='attachments.upload']").change(function (event) {
-            var $target = $JQry(event.target),
-                $formGroup = $target.closest(".form-group"),
-                $submit = $formGroup.find("input[type=submit][name='upload-attachment']");
-
-            $submit.click();
-        });
-
-
         // Delete attachment
         $JQry(".forum-edition button[name='delete-attachment']").click(function (event) {
             var $target = $JQry(event.target),

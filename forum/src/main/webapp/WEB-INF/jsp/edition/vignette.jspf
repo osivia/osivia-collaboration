@@ -3,7 +3,10 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+<%@ taglib prefix="ttc" uri="http://www.toutatice.fr/jsp/taglib/toutatice" %>
 
+
+<c:set var="namespace"><portlet:namespace/></c:set>
 
 <jsp:useBean id="currentDate" class="java.util.Date"/>
 
@@ -14,34 +17,35 @@
 <c:set var="imageErrorMessage"><op:translate key="FORUM_IMAGE_ERROR_MESSAGE"/></c:set>
 
 
+<%--@elvariable id="form" type="org.osivia.services.forum.edition.portlet.model.ForumEditionForm"--%>
 <spring:bind path="vignette.upload">
     <div class="form-group ${status.error ? 'has-error' : ''}">
         <form:label path="vignette.upload" cssClass="col-sm-3 col-lg-6 control-label"><op:translate key="FORUM_VIGNETTE"/></form:label>
         <div class="col-sm-9 col-lg-6">
             <c:choose>
                 <c:when test="${form.vignette.deleted}">
-                    <!-- Deleted vignette -->
+                    <%-- Deleted vignette --%>
                     <p class="form-control-static text-muted">
                         <span><op:translate key="FORUM_DELETED_VIGNETTE"/></span>
                     </p>
                 </c:when>
 
                 <c:when test="${not empty form.vignette.temporaryFile}">
-                    <!-- Preview -->
+                    <%-- Preview --%>
                     <p class="form-control-static">
                         <img src="${vignettePreviewUrl}" alt="" class="img-responsive vignette" data-error-message="${imageErrorMessage}">
                     </p>
                 </c:when>
 
                 <c:when test="${empty form.vignette.url}">
-                    <!-- No vignette -->
+                    <%-- No vignette --%>
                     <p class="form-control-static text-muted">
                         <span><op:translate key="FORUM_NO_VIGNETTE"/></span>
                     </p>
                 </c:when>
 
                 <c:otherwise>
-                    <!-- Vignette -->
+                    <%-- Vignette --%>
                     <p class="form-control-static">
                         <img src="${form.vignette.url}" alt="" class="img-responsive vignette">
                     </p>
@@ -51,18 +55,19 @@
             <form:errors path="vignette.upload" cssClass="help-block"/>
 
             <div>
-                <!-- Upload -->
+                <%-- Upload --%>
                 <label class="btn btn-sm btn-default btn-file">
                     <i class="halflings halflings-folder-open"></i>
                     <span><op:translate key="FORUM_VIGNETTE_UPLOAD"/></span>
-                    <form:input type="file" path="vignette.upload"/>
+                    <c:set var="maxSize"><ttc:fileSize size="${form.vignette.maxUploadSize}" escapeHtml="false"/></c:set>
+                    <c:set var="fileSizeLimitExceededMessage"><op:translate key="FORUM_VIGNETTE_UPLOAD_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
+                    <form:input path="vignette.upload" type="file" data-max-size="${form.vignette.maxUploadSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-upload-vignette"/>
                 </label>
-                <input type="submit" name="upload-vignette" class="hidden">
+                <input id="${namespace}-upload-vignette" type="submit" name="upload-vignette" class="hidden">
 
-                <!-- Delete -->
+                <%-- Delete --%>
                 <c:set var="title"><op:translate key="FORUM_VIGNETTE_DELETE"/></c:set>
-                <button type="submit" name="delete-vignette" title="${title}" class="btn btn-sm btn-default" data-toggle="tooltip"
-                        data-placement="bottom" ${empty form.vignette.url and empty form.vignette.temporaryFile ? 'disabled' : ''}>
+                <button type="submit" name="delete-vignette" title="${title}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" ${empty form.vignette.url and empty form.vignette.temporaryFile ? 'disabled' : ''}>
                     <i class="halflings halflings-trash"></i>
                     <span class="sr-only">${title}</span>
                 </button>

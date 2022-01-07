@@ -16,9 +16,17 @@ import org.springframework.web.multipart.MultipartFile;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Vignette extends ForumFile {
 
-    /** Uploaded multipart file. */
+    /**
+     * Max upload size.
+     */
+    private long maxUploadSize;
+    /**
+     * Uploaded multipart file.
+     */
     private MultipartFile upload;
-    /** Deleted indicator. */
+    /**
+     * Deleted indicator.
+     */
     private boolean deleted;
 
 
@@ -29,40 +37,28 @@ public class Vignette extends ForumFile {
         super();
     }
 
-    /**
-     * Getter for upload.
-     *
-     * @return the upload
-     */
+
+    public long getMaxUploadSize() {
+        return maxUploadSize;
+    }
+
+    public void setMaxUploadSize(long maxUploadSize) {
+        this.maxUploadSize = maxUploadSize;
+    }
+
     public MultipartFile getUpload() {
         return upload;
     }
 
-    /**
-     * Setter for upload.
-     *
-     * @param upload the upload to set
-     */
     public void setUpload(MultipartFile upload) {
         this.upload = upload;
     }
 
-    /**
-     * Getter for deleted.
-     *
-     * @return the deleted
-     */
     public boolean isDeleted() {
         return deleted;
     }
 
-    /**
-     * Setter for deleted.
-     *
-     * @param deleted the deleted to set
-     */
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
-
 }

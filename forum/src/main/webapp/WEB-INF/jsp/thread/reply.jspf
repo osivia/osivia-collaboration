@@ -4,6 +4,7 @@
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
+<%--@elvariable id="form" type="org.osivia.services.forum.thread.portlet.model.ForumThreadForm"--%>
 <c:if test="${form.commentable and empty form.posts.editedPost}">
     <fieldset>
         <legend><op:translate key="FORUM_THREAD_REPLY_LEGEND"/></legend>
@@ -17,14 +18,14 @@
                     <div class="media-left hidden-xs">
                         <!-- Avatar -->
                         <div class="forum-thread-avatar">
-                            <span><ttc:user name="${form.reply.user}" hideDisplayName="true"></ttc:user></span>
+                            <span><ttc:user name="${form.reply.user}" hideDisplayName="true"/></span>
                         </div>
                     </div>
 
                     <div class="media-body">
                         <div>
                             <!-- Display name -->
-                            <strong><ttc:user name="${form.reply.user}" hideAvatar="true"></ttc:user></strong>
+                            <strong><ttc:user name="${form.reply.user}" hideAvatar="true"/></strong>
                         </div>
 
                         <!-- Message -->
@@ -66,7 +67,9 @@
                     <label class="btn btn-default btn-file">
                         <i class="glyphicons glyphicons-plus"></i>
                         <span><op:translate key="FORUM_THREAD_ATTACHMENT_UPLOAD"/></span>
-                        <input type="file" name="reply.attachments.upload" data-submit="#${namespace}-reply-attachment-upload" multiple>
+                        <c:set var="maxSize"><ttc:fileSize size="${form.reply.attachments.maxUploadSize}" escapeHtml="false"/></c:set>
+                        <c:set var="fileSizeLimitExceededMessage"><op:translate key="FORUM_THREAD_ATTACHMENT_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
+                        <form:input path="reply.attachments.upload" type="file" data-max-size="${form.reply.attachments.maxUploadSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-reply-attachment-upload"/>
                     </label>
                     <input id="${namespace}-reply-attachment-upload" type="submit" name="reply-upload-attachment" class="hidden">
                 </li>

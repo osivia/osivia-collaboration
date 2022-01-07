@@ -1,5 +1,6 @@
 package org.osivia.services.forum.util.model;
 
+import org.osivia.services.forum.thread.portlet.service.ForumThreadService;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,13 +20,26 @@ import java.util.SortedSet;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ForumFiles implements Cloneable {
 
-    /** Files. */
+    /**
+     * Max upload size.
+     */
+    private final long maxUploadSize;
+
+    /**
+     * Files.
+     */
     private List<ForumFile> files;
-    /** Uploaded multipart files. */
+    /**
+     * Uploaded multipart files.
+     */
     private List<MultipartFile> upload;
-    /** Deleted attachment index. */
+    /**
+     * Deleted attachment index.
+     */
     private Integer deletedIndex;
-    /** Deleted blob indexes. */
+    /**
+     * Deleted blob indexes.
+     */
     private SortedSet<Integer> deletedBlobIndexes;
 
 
@@ -34,6 +48,7 @@ public class ForumFiles implements Cloneable {
      */
     public ForumFiles() {
         super();
+        this.maxUploadSize = ForumThreadService.MAX_UPLOAD_SIZE;
     }
 
 
@@ -42,6 +57,11 @@ public class ForumFiles implements Cloneable {
         ForumFiles clone = new ForumFiles();
         clone.files = new ArrayList<>(this.files);
         return clone;
+    }
+
+
+    public long getMaxUploadSize() {
+        return maxUploadSize;
     }
 
 

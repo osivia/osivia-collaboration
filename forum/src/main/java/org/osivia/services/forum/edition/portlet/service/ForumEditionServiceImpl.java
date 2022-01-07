@@ -1,19 +1,7 @@
 package org.osivia.services.forum.edition.portlet.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.portlet.ActionResponse;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.portlet.ResourceResponse;
-
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCustomizer;
+import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
@@ -38,8 +26,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoCustomizer;
-import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.ResourceResponse;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Forum edition service implementation.
@@ -51,27 +45,39 @@ import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
 @Service
 public class ForumEditionServiceImpl extends AbstractForumServiceImpl implements ForumEditionService {
 
-    /** Vignette temporary file prefix. */
+    /**
+     * Vignette temporary file prefix.
+     */
     private static final String VIGNETTE_TEMPORARY_FILE_PREFIX = "vignette-";
 
 
-    /** Application context. */
+    /**
+     * Application context.
+     */
     @Autowired
     private ApplicationContext applicationContext;
 
-    /** Portlet repository. */
+    /**
+     * Portlet repository.
+     */
     @Autowired
     private ForumEditionRepository repository;
 
-    /** Portal URL factory. */
+    /**
+     * Portal URL factory.
+     */
     @Autowired
     private IPortalUrlFactory portalUrlFactory;
 
-    /** Internationalization bundle factory. */
+    /**
+     * Internationalization bundle factory.
+     */
     @Autowired
     private IBundleFactory bundleFactory;
 
-    /** Nuxeo service. */
+    /**
+     * Nuxeo service.
+     */
     @Autowired
     private INuxeoService nuxeoService;
 
@@ -222,6 +228,7 @@ public class ForumEditionServiceImpl extends AbstractForumServiceImpl implements
 
         // Vignette
         Vignette vignette = this.applicationContext.getBean(Vignette.class);
+        vignette.setMaxUploadSize(MAX_UPLOAD_SIZE);
         form.setVignette(vignette);
 
         // Attachments

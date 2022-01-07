@@ -1,21 +1,6 @@
 package org.osivia.services.forum.edition.portlet.controller;
 
-import java.io.IOException;
-
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.PortletContext;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
-
-import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.forum.edition.portlet.configuration.ForumEditionConfiguration;
 import org.osivia.services.forum.edition.portlet.model.ForumEditionForm;
 import org.osivia.services.forum.edition.portlet.model.ForumEditionOptions;
 import org.osivia.services.forum.edition.portlet.model.validator.ForumEditionFormValidator;
@@ -26,15 +11,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
+
+import javax.portlet.*;
+import java.io.IOException;
 
 /**
  * Forum edition portlet controller.
@@ -47,15 +31,21 @@ import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 @SessionAttributes({"form", "options"})
 public class ForumEditionController extends AbstractForumController {
 
-    /** Portlet context. */
+    /**
+     * Portlet context.
+     */
     @Autowired
     private PortletContext portletContext;
 
-    /** Portlet service. */
+    /**
+     * Portlet service.
+     */
     @Autowired
     private ForumEditionService service;
 
-    /** Forum edition form validator. */
+    /**
+     * Forum edition form validator.
+     */
     @Autowired
     private ForumEditionFormValidator formValidator;
 
@@ -269,28 +259,20 @@ public class ForumEditionController extends AbstractForumController {
 
         return this.service.getOptions(portalControllerContext);
     }
-    
+
     /**
      * Manage upload errors
-     * 
+     *
      * @param ex
      * @param request
      * @param response
      * @return
-     * @throws PortletException
-     * @throws IOException
      */
-	@ExceptionHandler(MultipartException.class)
-	String handleFileException(Throwable ex, RenderRequest request, RenderResponse response)
-			throws PortletException, IOException {
-		
-		String uploadMaxSize = StringUtils.defaultIfBlank(System.getProperty("osivia.forum.max.upload.size"), 
-				ForumEditionConfiguration.MAX_UPLOAD_SIZE_PER_FILE_MO);
-		
-		request.setAttribute("uploadMaxSize", uploadMaxSize.toString());
-		
-		return "upload-error";
+    @ExceptionHandler(MultipartException.class)
+    String handleFileException(Throwable ex, RenderRequest request, RenderResponse response) throws PortletException, IOException {
+        request.setAttribute("uploadMaxSize", ForumEditionService.MAX_UPLOAD_SIZE);
 
-	}    
+        return "upload-error";
+    }
 
 }

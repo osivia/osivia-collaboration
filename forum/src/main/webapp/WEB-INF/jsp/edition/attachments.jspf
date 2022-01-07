@@ -4,6 +4,7 @@
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
+<%--@elvariable id="form" type="org.osivia.services.forum.edition.portlet.model.ForumEditionForm"--%>
 <div class="form-group">
     <form:label path="attachments.upload" cssClass="col-sm-3 col-lg-2 control-label"><op:translate key="FORUM_ATTACHMENTS"/></form:label>
     <div class="col-sm-9 col-lg-10">
@@ -33,8 +34,10 @@
         <label class="btn btn-default btn-file">
             <i class="glyphicons glyphicons-plus"></i>
             <span><op:translate key="FORUM_ATTACHMENT_UPLOAD"/></span>
-            <input type="file" name="attachments.upload" multiple>
+            <c:set var="maxSize"><ttc:fileSize size="${form.attachments.maxUploadSize}" escapeHtml="false"/></c:set>
+            <c:set var="fileSizeLimitExceededMessage"><op:translate key="FORUM_ATTACHMENT_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
+            <form:input path="attachments.upload" type="file" data-max-size="${form.attachments.maxUploadSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-upload-attachment"/>
         </label>
-        <input type="submit" name="upload-attachment" class="hidden">
+        <input id="${namespace}-upload-attachment" type="submit" name="upload-attachment" class="hidden">
     </div>
 </div>

@@ -17,6 +17,7 @@ import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.forum.thread.portlet.model.*;
 import org.osivia.services.forum.thread.portlet.repository.command.*;
+import org.osivia.services.forum.thread.portlet.service.ForumThreadService;
 import org.osivia.services.forum.util.model.ForumFile;
 import org.osivia.services.forum.util.model.ForumFiles;
 import org.springframework.beans.factory.annotation.Autowired;

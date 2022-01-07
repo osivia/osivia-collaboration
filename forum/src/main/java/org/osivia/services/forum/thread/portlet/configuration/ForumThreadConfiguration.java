@@ -1,15 +1,14 @@
 package org.osivia.services.forum.thread.portlet.configuration;
 
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
-import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
+import org.osivia.services.forum.thread.portlet.service.ForumThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -24,11 +23,6 @@ import org.springframework.web.servlet.view.JstlView;
 @Configuration
 @ComponentScan(basePackages = {"org.osivia.services.forum.thread.portlet", "org.osivia.services.forum.util"})
 public class ForumThreadConfiguration {
-
-
-    /** Max upload size per file. */
-	public static final String MAX_UPLOAD_SIZE_PER_FILE_MO = "10";
-    private static final Long MAX_UPLOAD_SIZE_PER_FILE = NumberUtils.toLong(System.getProperty("osivia.forum.max.upload.size"), new Long(MAX_UPLOAD_SIZE_PER_FILE_MO)) * FileUtils.ONE_MB;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -80,7 +74,7 @@ public class ForumThreadConfiguration {
     public PortletMultipartResolver getMultipartResolver() {
         CommonsPortletMultipartResolver multipartResolver = new CommonsPortletMultipartResolver();
         multipartResolver.setDefaultEncoding(CharEncoding.UTF_8);
-        multipartResolver.setMaxUploadSizePerFile(MAX_UPLOAD_SIZE_PER_FILE);
+        multipartResolver.setMaxUploadSize(ForumThreadService.MAX_UPLOAD_SIZE);
         return multipartResolver;
     }
 

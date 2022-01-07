@@ -1,5 +1,7 @@
 package org.osivia.services.forum.thread.portlet.service;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.forum.thread.portlet.model.*;
 
@@ -12,6 +14,12 @@ import java.io.IOException;
  * @author Cédric Krommenhoek
  */
 public interface ForumThreadService {
+
+    /**
+     * Max upload size.
+     */
+    long MAX_UPLOAD_SIZE = NumberUtils.toLong(System.getProperty("osivia.forum.max.upload.size"), 10L) * FileUtils.ONE_MB;
+
 
     /**
      * Get view path.
