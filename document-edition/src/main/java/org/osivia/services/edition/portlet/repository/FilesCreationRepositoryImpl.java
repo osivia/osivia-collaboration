@@ -1,0 +1,169 @@
+package org.osivia.services.edition.portlet.repository;
+
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.FileBlob;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.edition.portlet.model.FilesCreationForm;
+import org.osivia.services.edition.portlet.repository.command.ImportFilesCommand;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Repository;
+import org.springframework.validation.Errors;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
+import javax.portlet.PortletException;
+import java.io.File;
+import java.io.IOException;
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Repository
+public class FilesCreationRepositoryImpl extends AbstractDocumentEditionRepositoryImpl<FilesCreationForm> {
+
+    /**
+     * Accepted document types.
+     */
+    private final Set<String> acceptedDocumentTypes;
+
+
+    /**
+     * Application context.
+     */
+    @Autowired
+    private ApplicationContext applicationContext;
+
+
+    /**
+     * Constructor.
+     */
+    public FilesCreationRepositoryImpl() {
+        super();
+
+        // Accepted document types
+        this.acceptedDocumentTypes = Stream.of("File", "Picture", "Audio", "Video").collect(Collectors.toSet());
+    }
+
+
+    @Override
+    public Class<FilesCreationForm> getParameterizedType() {
+        return FilesCreationForm.class;
+    }
+
+
+    @Override
+    public boolean matches(String documentType, boolean creation) {
+        return creation && this.acceptedDocumentTypes.contains(documentType);
+    }
+
+
+    @Override
+    public String getViewPath(PortalControllerContext portalControllerContext) {
+        return "files";
+    }
+
+
+    @Override
+    protected void customizeValidation(FilesCreationForm form, Errors errors) {
+        if (CollectionUtils.isEmpty(form.getTemporaryFiles())) {
+            // Binary file is mandatory
+            errors.rejectValue("upload", "NotEmpty");
+        }
+    }
+
+
+    @Override
+    protected void customizeUpload(PortalControllerContext portalControllerContext, FilesCreationForm form) throws IOException {
+        if (CollectionUtils.isNotEmpty(form.getUpload())) {
+            // Temporary files
+            List<FilesCreationForm.TemporaryFile> temporaryFiles = form.getTemporaryFiles();
+            if (CollectionUtils.isEmpty(temporaryFiles)) {
+                temporaryFiles = new ArrayList<>(form.getUpload().size());
+                form.setTemporaryFiles(temporaryFiles);
+            }
+
+            for (MultipartFile upload : form.getUpload()) {
+                // Upload file
+                File file = File.createTempFile("document-creation-files-", ".tmp");
+                file.deleteOnExit();
+                upload.transferTo(file);
+
+                // MIME type
+                MimeType mimeType;
+                try {
+                    mimeType = new MimeType(upload.getContentType());
+                } catch (MimeTypeParseException e) {
+                    mimeType = null;
+                }
+
+                // Temporary file
+                FilesCreationForm.TemporaryFile temporaryFile = this.applicationContext.getBean(FilesCreationForm.TemporaryFile.class);
+                temporaryFile.setFile(file);
+                temporaryFile.setFileName(upload.getOriginalFilename());
+                temporaryFile.setFileMimeType(mimeType);
+
+                temporaryFiles.add(temporaryFile);
+            }
+        }
+    }
+
+
+    @Override
+    protected void customizeProperties(PortalControllerContext portalControllerContext, FilesCreationForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
+        if (CollectionUtils.isNotEmpty(form.getTemporaryFiles())) {
+            List<Blob> blobs = new ArrayList<>();
+
+            for (FilesCreationForm.TemporaryFile temporaryFile : form.getTemporaryFiles()) {
+                // File name
+                String name = Normalizer.normalize(temporaryFile.getFileName(), Normalizer.Form.NFC);
+
+                // File content type
+                String contentType;
+                if (temporaryFile.getFileMimeType() == null) {
+                    contentType = null;
+                } else {
+                    contentType = temporaryFile.getFileMimeType().toString();
+                }
+
+                FileBlob blob = new FileBlob(temporaryFile.getFile(), name, contentType);
+                blobs.add(blob);
+            }
+
+            binaries.put(StringUtils.EMPTY, blobs);
+        }
+    }
+
+
+    @Override
+    protected Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException {
+        // File binaries
+        List<Blob> blobs = binaries.get(StringUtils.EMPTY);
+        if (CollectionUtils.isEmpty(blobs)) {
+            throw new PortletException("Empty files");
+        }
+
+        // Nuxeo command
+        ImportFilesCommand command = this.applicationContext.getBean(ImportFilesCommand.class);
+        command.setParentPath(parentPath);
+        command.setBinaries(blobs);
+
+        Document document = (Document) nuxeoController.executeNuxeoCommand(command);
+        if (blobs.size() > 1) {
+            document = null; // Command result not relevant
+        }
+
+        return document;
+    }
+
+}

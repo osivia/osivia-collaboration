@@ -16,16 +16,17 @@ import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties
 import org.osivia.services.edition.portlet.repository.command.CheckTitleAvailabilityCommand;
 import org.osivia.services.edition.portlet.repository.command.CreateDocumentCommand;
 import org.osivia.services.edition.portlet.repository.command.UpdateDocumentCommand;
-import org.osivia.services.edition.portlet.service.DocumentEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
+import org.springframework.web.portlet.context.PortletContextAware;
 
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,9 +34,10 @@ import java.util.Map;
  *
  * @param <T> document edition form type
  * @author Cédric Krommenhoek
+ * @see PortletContextAware
  * @see DocumentEditionRepository
  */
-public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDocumentEditionForm> implements DocumentEditionRepository<T> {
+public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDocumentEditionForm> implements PortletContextAware, DocumentEditionRepository<T> {
 
     /**
      * Title Nuxeo document property.
@@ -48,20 +50,15 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
 
 
     /**
+     * Portlet context.
+     */
+    private PortletContext portletContext;
+
+    /**
      * Application context.
      */
     @Autowired
     private ApplicationContext applicationContext;
-    /**
-     * Portlet context.
-     */
-    @Autowired
-    private PortletContext portletContext;
-    /**
-     * Portlet service.
-     */
-    @Autowired
-    private DocumentEditionService service;
 
 
     /**
@@ -69,6 +66,18 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
      */
     protected AbstractDocumentEditionRepositoryImpl() {
         super();
+    }
+
+
+    @Override
+    public void setPortletContext(PortletContext portletContext) {
+        this.portletContext = portletContext;
+    }
+
+
+    @Override
+    public boolean matches(String documentType, boolean creation) {
+        return false;
     }
 
 
@@ -81,15 +90,9 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
     }
 
 
-    /**
-     * Get document edition form.
-     *
-     * @param portalControllerContext portal controller context
-     * @param windowProperties        window properties
-     * @param type                    edition form type
-     * @return form
-     */
-    protected T getForm(PortalControllerContext portalControllerContext, DocumentEditionWindowProperties windowProperties, Class<? extends T> type) throws PortletException, IOException {
+    @Override
+    public T getForm(PortalControllerContext portalControllerContext, DocumentEditionWindowProperties windowProperties) throws PortletException, IOException {
+        Class<T> type = this.getParameterizedType();
         T form = this.applicationContext.getBean(type);
 
         if (StringUtils.isNotEmpty(windowProperties.getDocumentPath())) {
@@ -127,8 +130,32 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
     }
 
 
+    /**
+     * Cast form.
+     *
+     * @param form generic form
+     * @return casted form
+     */
+    private T castForm(AbstractDocumentEditionForm form) {
+        Class<T> type = this.getParameterizedType();
+
+        return type.cast(form);
+    }
+
+
     @Override
-    public void validate(T form, Errors errors) {
+    public void validate(AbstractDocumentEditionForm form, Errors errors) {
+        this.customizeValidation(this.castForm(form), errors);
+    }
+
+
+    /**
+     * Customize validation.
+     *
+     * @param form   document edition form
+     * @param errors validation errors
+     */
+    protected void customizeValidation(T form, Errors errors) {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "title", "NotEmpty");
 
         if (form.isCreation() || !StringUtils.equalsIgnoreCase(form.getOriginalTitle(), form.getTitle())) {
@@ -141,6 +168,12 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
     }
 
 
+    /**
+     * Check title availability.
+     *
+     * @param form document edition form
+     * @return true if title is available
+     */
     private boolean checkTitleAvailability(T form) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(this.portletContext);
@@ -171,19 +204,35 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
 
 
     @Override
-    public void upload(PortalControllerContext portalControllerContext, T form) throws PortletException, IOException {
+    public void upload(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
+        this.customizeUpload(portalControllerContext, this.castForm(form));
+    }
+
+
+    /**
+     * Customize upload.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     */
+    protected void customizeUpload(PortalControllerContext portalControllerContext, T form) throws PortletException, IOException {
         // Do nothing
     }
 
 
     @Override
-    public void restore(PortalControllerContext portalControllerContext, T form) throws PortletException, IOException {
+    public void restore(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
+        this.customizeRestore(portalControllerContext, this.castForm(form));
+    }
+
+
+    protected void customizeRestore(PortalControllerContext portalControllerContext, T form) throws PortletException, IOException {
         // Do nothing
     }
 
 
     @Override
-    public void save(PortalControllerContext portalControllerContext, T form) throws PortletException, IOException {
+    public void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -195,14 +244,14 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
         properties.set(DESCRIPTION_PROPERTY, StringUtils.trimToNull(form.getDescription()));
 
         // Binaries
-        Map<String, Blob> binaries = new HashMap<>();
+        Map<String, List<Blob>> binaries = new HashMap<>();
 
         // Customization
-        this.customizeProperties(portalControllerContext, form, properties, binaries);
+        this.customizeProperties(portalControllerContext, this.castForm(form), properties, binaries);
 
         if (form.isCreation()) {
             // Window properties
-            DocumentEditionWindowProperties windowProperties = this.service.getWindowProperties(portalControllerContext);
+            DocumentEditionWindowProperties windowProperties = form.getWindowProperties();
 
             // Parent path
             String parentPath = windowProperties.getParentDocumentPath();
@@ -218,8 +267,8 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
 
             // Create
             Document document = this.create(nuxeoController, parentPath, documentType, properties, binaries);
-            if(document != null) {
-            	form.setPath(document.getPath());
+            if (document != null) {
+                form.setPath(document.getPath());
             }
         } else {
             // Update
@@ -236,7 +285,7 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
      * @param properties              document properties
      * @param binaries                document updated binaries
      */
-    protected void customizeProperties(PortalControllerContext portalControllerContext, T form, PropertyMap properties, Map<String, Blob> binaries) throws PortletException, IOException {
+    protected void customizeProperties(PortalControllerContext portalControllerContext, T form, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
         // Do nothing
     }
 
@@ -251,8 +300,12 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
      * @param binaries        document updated binaries
      * @return created document
      */
-    protected Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, Blob> binaries) throws PortletException, IOException {
-        INuxeoCommand command = this.applicationContext.getBean(CreateDocumentCommand.class, parentPath, type, properties, binaries);
+    protected Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
+        CreateDocumentCommand command = this.applicationContext.getBean(CreateDocumentCommand.class);
+        command.setParentPath(parentPath);
+        command.setType(type);
+        command.setProperties(properties);
+        command.setBinaries(binaries);
 
         return (Document) nuxeoController.executeNuxeoCommand(command);
     }
@@ -265,12 +318,14 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
      * @param path            document path
      * @param properties      document properties
      * @param binaries        document updated binaries
-     * @return updated document
      */
-    protected Document update(NuxeoController nuxeoController, String path, PropertyMap properties, Map<String, Blob> binaries) throws PortletException, IOException {
-        INuxeoCommand command = this.applicationContext.getBean(UpdateDocumentCommand.class, path, properties, binaries);
+    protected void update(NuxeoController nuxeoController, String path, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
+        UpdateDocumentCommand command = this.applicationContext.getBean(UpdateDocumentCommand.class);
+        command.setPath(path);
+        command.setProperties(properties);
+        command.setBinaries(binaries);
 
-        return (Document) nuxeoController.executeNuxeoCommand(command);
+        nuxeoController.executeNuxeoCommand(command);
     }
 
 }

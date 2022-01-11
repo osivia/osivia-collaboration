@@ -1,12 +1,15 @@
 package org.osivia.services.edition.portlet.repository.command;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.automation.client.model.Blobs;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,23 +23,18 @@ public abstract class AbstractDocumentCommand implements INuxeoCommand {
     /**
      * Document properties.
      */
-    private final PropertyMap properties;
+    private PropertyMap properties;
     /**
      * Document binaries.
      */
-    private final Map<String, Blob> binaries;
+    private Map<String, List<Blob>> binaries;
 
 
     /**
      * Constructor.
-     *
-     * @param properties document properties
-     * @param binaries   document binaries
      */
-    public AbstractDocumentCommand(PropertyMap properties, Map<String, Blob> binaries) {
+    public AbstractDocumentCommand() {
         super();
-        this.properties = properties;
-        this.binaries = binaries;
     }
 
 
@@ -54,14 +52,16 @@ public abstract class AbstractDocumentCommand implements INuxeoCommand {
      */
     void updateBinaries(DocumentService documentService, DocRef document) throws Exception {
         if (MapUtils.isNotEmpty(this.binaries)) {
-            for (Map.Entry<String, Blob> entry : this.binaries.entrySet()) {
+            for (Map.Entry<String, List<Blob>> entry : this.binaries.entrySet()) {
                 String xpath = entry.getKey();
-                Blob blob = entry.getValue();
+                List<Blob> blobs = entry.getValue();
 
-                if (blob == null) {
+                if (CollectionUtils.isEmpty(blobs)) {
                     documentService.removeBlob(document, xpath);
+                } else if (blobs.size() == 1) {
+                    documentService.setBlob(document, blobs.get(0), xpath);
                 } else {
-                    documentService.setBlob(document, blob, xpath);
+                    documentService.setBlobs(document, new Blobs(blobs), xpath);
                 }
             }
         }
@@ -72,4 +72,15 @@ public abstract class AbstractDocumentCommand implements INuxeoCommand {
         return properties;
     }
 
+    public void setProperties(PropertyMap properties) {
+        this.properties = properties;
+    }
+
+    public Map<String, List<Blob>> getBinaries() {
+        return binaries;
+    }
+
+    public void setBinaries(Map<String, List<Blob>> binaries) {
+        this.binaries = binaries;
+    }
 }

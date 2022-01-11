@@ -1,0 +1,47 @@
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="op" uri="http://www.osivia.org/jsp/taglib/osivia-portal" %>
+<%@ taglib prefix="ttc" uri="http://www.toutatice.fr/jsp/taglib/toutatice" %>
+
+
+<c:set var="namespace"><portlet:namespace/></c:set>
+
+
+<spring:bind path="upload">
+    <div class="form-group required ${status.error ? 'has-error' : ''}">
+        <form:label path="upload" cssClass="control-label"><op:translate key="DOCUMENT_EDITION_FORM_FILES_LABEL"/></form:label>
+        <div>
+            <div class="media-left">
+                <label class="btn btn-default btn-file">
+                    <i class="glyphicons glyphicons-folder-open"></i>
+                    <span><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_ACTION"/></span>
+                    <c:set var="maxSize"><ttc:fileSize size="${form.maxSize}" escapeHtml="false"/></c:set>
+                    <c:set var="fileSizeLimitExceededMessage"><op:translate key="DOCUMENT_EDITION_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
+                    <input id="upload" type="file" name="upload" multiple="" data-max-size="${form.maxSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-files-upload-submit">
+                </label>
+            </div>
+
+            <div class="media-body">
+                <c:choose>
+                    <c:when test="${empty form.temporaryFiles}">
+                        <p class="form-control-static text-muted">
+                            <span><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_TEXT"/></span>
+                        </p>
+                    </c:when>
+                    <c:otherwise>
+                        <ul class="list-inline form-control-static text-muted">
+                            <c:forEach var="temporaryFile" items="${form.temporaryFiles}">
+                                <li>${temporaryFile.fileName}</li>
+                            </c:forEach>
+                        </ul>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
+        <p class="help-block"><op:translate key="DOCUMENT_EDITION_FORM_FILES_HELP"/></p>
+        <form:errors path="upload" cssClass="help-block"/>
+        <input id="${namespace}-files-upload-submit" type="submit" name="upload" class="hidden">
+    </div>
+</spring:bind>

@@ -1,7 +1,6 @@
 package org.osivia.services.edition.portlet.model.validator;
 
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
-import org.osivia.services.edition.portlet.repository.DocumentEditionRepository;
 import org.osivia.services.edition.portlet.service.DocumentEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,16 +41,8 @@ public class DocumentEditionFormValidator implements Validator {
     public void validate(Object target, Errors errors) {
         // Form
         AbstractDocumentEditionForm form = (AbstractDocumentEditionForm) target;
-        
-        // Repository
-        String name = form.getName();
-        if(form.getExtractArchive()) {
-        	name = "Zip";
-        }
-        
-        DocumentEditionRepository repository = this.service.getRepository(name);
 
-        repository.validate(form, errors);
+        this.service.validate(form, errors);
     }
 
 }

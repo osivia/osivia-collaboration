@@ -10,6 +10,7 @@
 <portlet:actionURL name="submit" var="url"/>
 
 
+<%--@elvariable id="form" type="org.osivia.services.edition.portlet.model.FolderEditionForm"--%>
 <form:form action="${url}" method="post" modelAttribute="form">
     <%--Title--%>
     <%@include file="fragments/title.jspf"%>
