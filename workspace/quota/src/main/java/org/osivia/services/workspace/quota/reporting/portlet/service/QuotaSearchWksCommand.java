@@ -38,7 +38,7 @@ public class QuotaSearchWksCommand implements INuxeoCommand {
         request.set("currentPageIndex", "0");
         request.set("query", "SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain/workspaces' AND ecm:primaryType = 'Workspace' "+
         		"AND (qtc:lastDateCheck < TIMESTAMP '"+ts+"' OR qtc:lastDateCheck IS NULL) "+
-        		"AND ecm:isVersion = 0 AND ecm:currentLifecycleState <> 'deleted' " );
+        		"AND ecm:isVersion = 0 AND ecm:currentLifeCycleState <> 'deleted' " );
         
         return request.execute();
 	}
