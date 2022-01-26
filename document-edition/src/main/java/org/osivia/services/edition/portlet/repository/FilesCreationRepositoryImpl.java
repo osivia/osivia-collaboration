@@ -2,7 +2,9 @@ package org.osivia.services.edition.portlet.repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
@@ -19,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.text.Normalizer;
@@ -76,9 +79,33 @@ public class FilesCreationRepositoryImpl extends AbstractDocumentEditionReposito
 
     @Override
     protected void customizeValidation(FilesCreationForm form, Errors errors) {
+        // Required primary MIME-type
+        String requiredPrimaryType;
+        switch (form.getWindowProperties().getDocumentType()) {
+            case "Audio":
+                requiredPrimaryType = "audio";
+                break;
+            case "Picture":
+                requiredPrimaryType = "image";
+                break;
+            case "Video":
+                requiredPrimaryType = "video";
+                break;
+            default:
+                requiredPrimaryType = null;
+        }
+
         if (CollectionUtils.isEmpty(form.getTemporaryFiles())) {
             // Binary file is mandatory
             errors.rejectValue("upload", "NotEmpty");
+        } else if (StringUtils.isNotEmpty(requiredPrimaryType)) {
+            for (FilesCreationForm.TemporaryFile temporaryFile : form.getTemporaryFiles()) {
+                MimeType mimeType = temporaryFile.getFileMimeType();
+                if ((mimeType == null) || !StringUtils.equals(requiredPrimaryType, mimeType.getPrimaryType())) {
+                    // Invalid picture type
+                    errors.rejectValue("upload", "InvalidFileType", new Object[]{temporaryFile.getFileName()}, null);
+                }
+            }
         }
     }
 
@@ -114,6 +141,33 @@ public class FilesCreationRepositoryImpl extends AbstractDocumentEditionReposito
                 temporaryFile.setFileMimeType(mimeType);
 
                 temporaryFiles.add(temporaryFile);
+            }
+        }
+    }
+
+
+    @Override
+    protected void customizeRestore(PortalControllerContext portalControllerContext, FilesCreationForm form) {
+        if (CollectionUtils.isNotEmpty(form.getTemporaryFiles())) {
+            // Portlet request
+            PortletRequest request = portalControllerContext.getRequest();
+
+            int index = NumberUtils.toInt(request.getParameter("restore"), -1);
+            if (index < 0) {
+                // Delete all temporary files
+                for (FilesCreationForm.TemporaryFile temporaryFile : form.getTemporaryFiles()) {
+                    FileUtils.deleteQuietly(temporaryFile.getFile());
+                }
+
+                // Update model
+                form.getTemporaryFiles().clear();
+            } else if (index < form.getTemporaryFiles().size()) {
+                // Delete selected temporary file
+                FilesCreationForm.TemporaryFile temporaryFile = form.getTemporaryFiles().get(index);
+                FileUtils.deleteQuietly(temporaryFile.getFile());
+
+                // Update model
+                form.getTemporaryFiles().remove(index);
             }
         }
     }

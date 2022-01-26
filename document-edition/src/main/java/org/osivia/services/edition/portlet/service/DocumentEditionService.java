@@ -31,7 +31,11 @@ public interface DocumentEditionService {
      */
     String DOCUMENT_TYPE_WINDOW_PROPERTY = "osivia.document.edition.document-type";
     /**
-     * Document type window property.
+     * Required primary MIME-type window property.
+     */
+    String REQUIRED_PRIMARY_MIME_TYPE_WINDOW_PROPERTY = "osivia.document.edition.required-primary-mime-type";
+    /**
+     * Extract archive indicator window property.
      */
     String EXTRACT_ARCHIVE_WINDOW_PROPERTY = "osivia.document.edition.extract-archive";
 

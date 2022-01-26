@@ -32,8 +32,19 @@
                     </c:when>
                     <c:otherwise>
                         <ul class="list-inline form-control-static text-muted">
-                            <c:forEach var="temporaryFile" items="${form.temporaryFiles}">
-                                <li>${temporaryFile.fileName}</li>
+                            <c:set var="title"><op:translate key="DELETE"/></c:set>
+                            <c:forEach var="temporaryFile" items="${form.temporaryFiles}" varStatus="status">
+                                <li>
+                                    <span class="btn-group btn-group-xs">
+                                        <a href="#" class="btn btn-default disabled">
+                                            <span>${temporaryFile.fileName}</span>
+                                        </a>
+                                        <button type="submit" name="restore" value="${status.index}" class="btn btn-default" title="${title}">
+                                            <i class="glyphicons glyphicons-remove"></i>
+                                            <span class="sr-only">${title}</span>
+                                        </button>
+                                    </span>
+                                </li>
                             </c:forEach>
                         </ul>
                     </c:otherwise>
