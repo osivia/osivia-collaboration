@@ -26,9 +26,9 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 public class ImportFilesCommand implements INuxeoCommand {
 
     /** Current path. */
-    private final String path;
+    protected String path;
     /** Upload multipart files. */
-    private final List<MultipartFile> upload;
+    protected List<MultipartFile> upload;
 
 
     /**
