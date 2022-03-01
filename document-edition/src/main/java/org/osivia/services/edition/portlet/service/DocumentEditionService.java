@@ -33,6 +33,10 @@ public interface DocumentEditionService {
      * Document type window property.
      */
     String EXTRACT_ARCHIVE_WINDOW_PROPERTY = "osivia.document.edition.extract-archive";
+    /**
+     * Fullscreen indicator window property.
+     */
+    String FULLSCREEN_WINDOW_PROPERTY = "osivia.document.edition.fullscreen";
 
     /**
      * Max upload size.
@@ -109,5 +113,14 @@ public interface DocumentEditionService {
      * @param portalControllerContext portal controller context
      */
     void cancel(PortalControllerContext portalControllerContext) throws PortletException, IOException;
+
+
+    /**
+     * Serve editor.
+     *
+     * @param portalControllerContext portal controller context
+     * @param editorId                editor identifier
+     */
+    void serveEditor(PortalControllerContext portalControllerContext, String editorId) throws PortletException, IOException;
 
 }

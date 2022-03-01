@@ -2,6 +2,7 @@ package org.osivia.services.edition.portlet.configuration;
 
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import org.apache.commons.lang.CharEncoding;
+import org.osivia.portal.api.editor.EditorService;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -149,6 +150,17 @@ public class DocumentEditionConfiguration extends CMSPortlet implements PortletC
     @Bean
     public INotificationsService getNotificationsService() {
         return Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
+    }
+
+
+    /**
+     * Get editor service.
+     *
+     * @return editor service
+     */
+    @Bean
+    public EditorService getEditorService() {
+        return Locator.findMBean(EditorService.class, EditorService.MBEAN_NAME);
     }
 
 }

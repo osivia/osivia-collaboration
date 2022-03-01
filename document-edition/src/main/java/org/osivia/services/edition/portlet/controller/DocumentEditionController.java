@@ -14,6 +14,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 import javax.portlet.*;
 import java.io.IOException;
@@ -141,6 +142,22 @@ public class DocumentEditionController {
         sessionStatus.setComplete();
 
         this.service.cancel(portalControllerContext);
+    }
+
+
+    /**
+     * Editor resource mapping.
+     *
+     * @param request  resource request
+     * @param response resource response
+     * @param editorId editor identifier request parameter
+     */
+    @ResourceMapping("editor")
+    public void editor(ResourceRequest request, ResourceResponse response, @RequestParam("editorId") String editorId) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.serveEditor(portalControllerContext, editorId);
     }
 
 

@@ -8,6 +8,8 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
 import org.osivia.services.edition.portlet.model.NoteEditionForm;
 import org.springframework.stereotype.Repository;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 
 import javax.portlet.PortletException;
 import java.io.IOException;
@@ -42,6 +44,14 @@ public class NoteEditionRepositoryImpl extends AbstractDocumentEditionRepository
         // Content
         String content = document.getString("note:note");
         form.setContent(content);
+    }
+
+
+    @Override
+    public void validate(NoteEditionForm form, Errors errors) {
+        super.validate(form, errors);
+
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "content", "NotEmpty");
     }
 
 

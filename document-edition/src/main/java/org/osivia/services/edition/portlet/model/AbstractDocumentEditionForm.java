@@ -23,6 +23,10 @@ public abstract class AbstractDocumentEditionForm {
      * Document creation indicator.
      */
     private boolean creation;
+    /**
+     * Fullscreen indicator.
+     */
+    private boolean fullscreen;
 
     /**
      * Title.
@@ -36,14 +40,14 @@ public abstract class AbstractDocumentEditionForm {
      * Description.
      */
     private String description;
-    
-    
-	private Boolean extractArchive;
-	
-	/**
-	 * Remote user (for logging in validation)
-	 */
-	private String remoteUser;
+
+
+    private Boolean extractArchive;
+
+    /**
+     * Remote user (for logging in validation)
+     */
+    private String remoteUser;
 
 
     /**
@@ -86,6 +90,14 @@ public abstract class AbstractDocumentEditionForm {
         this.creation = creation;
     }
 
+    public boolean isFullscreen() {
+        return fullscreen;
+    }
+
+    public void setFullscreen(boolean fullscreen) {
+        this.fullscreen = fullscreen;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -109,25 +121,20 @@ public abstract class AbstractDocumentEditionForm {
     public void setDescription(String description) {
         this.description = description;
     }
-    
-	public Boolean getExtractArchive() {
-		return extractArchive;
-	}
 
-	public void setExtractArchive(Boolean extractArchive) {
-		this.extractArchive = extractArchive;
-	}
+    public Boolean getExtractArchive() {
+        return extractArchive;
+    }
 
+    public void setExtractArchive(Boolean extractArchive) {
+        this.extractArchive = extractArchive;
+    }
 
-	public String getRemoteUser() {
-		return remoteUser;
-	}
+    public String getRemoteUser() {
+        return remoteUser;
+    }
 
-
-	public void setRemoteUser(String remoteUser) {
-		this.remoteUser = remoteUser;
-	}
-	
-	
-
+    public void setRemoteUser(String remoteUser) {
+        this.remoteUser = remoteUser;
+    }
 }

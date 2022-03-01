@@ -6,6 +6,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.editor.EditorService;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
@@ -56,6 +57,12 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
     @Autowired
     private INotificationsService notificationsService;
 
+    /**
+     * Editor service.
+     */
+    @Autowired
+    private EditorService editorService;
+
 
     /**
      * Constructor.
@@ -84,7 +91,7 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         // Document type
         String documentType = window.getProperty(DOCUMENT_TYPE_WINDOW_PROPERTY);
         properties.setDocumentType(documentType);
-        
+
         // Extract archives mode
         String extractArchive = window.getProperty(EXTRACT_ARCHIVE_WINDOW_PROPERTY);
         properties.setExtractArchive(BooleanUtils.toBoolean(extractArchive));
@@ -121,12 +128,12 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         // Creation indicator
         boolean creation = StringUtils.isEmpty(path);
         form.setCreation(creation);
-        
+
         form.setExtractArchive(windowProperties.getExtractArchive());
 
         // for logging in validation phase
         form.setRemoteUser(portalControllerContext.getRequest().getRemoteUser());
-        
+
         return form;
     }
 
@@ -151,8 +158,8 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
         // Title
         String title;
-        if(form.getExtractArchive()) {
-        	title = bundle.getString("DOCUMENT_EDITION_TITLE_IMPORT");
+        if (form.getExtractArchive()) {
+            title = bundle.getString("DOCUMENT_EDITION_TITLE_IMPORT");
         } else if (form.isCreation()) {
             title = bundle.getString("DOCUMENT_EDITION_TITLE_CREATE");
         } else {
@@ -194,10 +201,10 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
         // Repository
         String name = form.getName();
-        if(form.getExtractArchive()) {
-        	name = "Zip";
+        if (form.getExtractArchive()) {
+            name = "Zip";
         }
-        	
+
         DocumentEditionRepository repository = this.getRepository(name);
         // Save document
         repository.save(portalControllerContext, form);
@@ -261,7 +268,7 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         if (StringUtils.isEmpty(windowProperties.getDocumentPath())) {
             name = windowProperties.getDocumentType();
         } else if (windowProperties.getExtractArchive()) {
-        	name = "Zip";
+            name = "Zip";
         } else {
             String[] names = this.applicationContext.getBeanNamesForType(DocumentEditionRepository.class);
             if (ArrayUtils.isEmpty(names)) {
@@ -283,6 +290,12 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         }
 
         return name;
+    }
+
+
+    @Override
+    public void serveEditor(PortalControllerContext portalControllerContext, String editorId) throws PortletException, IOException {
+        this.editorService.serveResource(portalControllerContext, editorId);
     }
 
 }

@@ -3,24 +3,34 @@
 <%@ taglib prefix="op" uri="http://www.osivia.org/jsp/taglib/osivia-portal" %>
 
 
+<%--@elvariable id="form" type="org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm"--%>
 <div>
-	<c:choose>
-		<c:when test="${form.extractArchive}">
-		    <%--Submit--%>
-		    <button type="submit" name="save" class="btn btn-primary">
-		        <span><op:translate key="DOCUMENT_EXTRACT_ACTION"/></span>
-		    </button>			
-		</c:when>
-		<c:otherwise>
-			<%--Submit--%>
-		    <button type="submit" name="save" class="btn btn-primary">
-		        <span><op:translate key="DOCUMENT_EDITION_ACTION_${form.creation ? 'CREATE' : 'EDIT'}"/></span>
-		    </button>
-		</c:otherwise>
-	</c:choose>
+    <c:choose>
+        <c:when test="${form.extractArchive}">
+            <%--Submit--%>
+            <button type="submit" name="save" class="btn btn-primary">
+                <span><op:translate key="DOCUMENT_EXTRACT_ACTION"/></span>
+            </button>
+        </c:when>
+        <c:otherwise>
+            <%--Submit--%>
+            <button type="submit" name="save" class="btn btn-primary">
+                <span><op:translate key="DOCUMENT_EDITION_ACTION_${form.creation ? 'CREATE' : 'EDIT'}"/></span>
+            </button>
+        </c:otherwise>
+    </c:choose>
 
     <%--Cancel--%>
-    <button type="button" class="btn btn-default" data-dismiss="modal">
-        <span><op:translate key="DOCUMENT_EDITION_ACTION_CANCEL"/></span>
-    </button>
+    <c:choose>
+        <c:when test="${form.fullscreen}">
+            <button type="submit" name="cancel" class="btn btn-default">
+                <span><op:translate key="DOCUMENT_EDITION_ACTION_CANCEL"/></span>
+            </button>
+        </c:when>
+        <c:otherwise>
+            <button type="button" class="btn btn-default" data-dismiss="modal">
+                <span><op:translate key="DOCUMENT_EDITION_ACTION_CANCEL"/></span>
+            </button>
+        </c:otherwise>
+    </c:choose>
 </div>
