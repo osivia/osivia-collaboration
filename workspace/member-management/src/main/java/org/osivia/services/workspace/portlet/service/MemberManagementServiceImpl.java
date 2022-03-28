@@ -892,6 +892,9 @@ public class MemberManagementServiceImpl implements MemberManagementService, App
             parts = StringUtils.split(filter, ",;");
         }
         for (String part : parts) {
+        	
+        	part = StringUtils.trim(part);
+        	
             // Persons
             Documents persons = this.repository.searchPersons(portalControllerContext, part, tokenizer);
             for (Document person : persons) {
