@@ -32,6 +32,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Files creation portlet repository implementation.
+ *
+ * @author Cédric Krommenhoek
+ * @see AbstractDocumentEditionRepositoryImpl
+ * @see FilesCreationForm
+ */
 @Repository
 public class FilesCreationRepositoryImpl extends AbstractDocumentEditionRepositoryImpl<FilesCreationForm> {
 

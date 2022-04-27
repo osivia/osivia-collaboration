@@ -97,7 +97,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
 
     @Override
-    protected void customizeForm(PortalControllerContext portalControllerContext, Document document, FileEditionForm form) {
+    protected void customizeForm(PortalControllerContext portalControllerContext, Document document, FileEditionForm form) throws PortletException, IOException {
         // Required primary type
         String requiredPrimaryType = this.requiredPrimaryTypes.get(document.getType());
         form.setRequiredPrimaryType(requiredPrimaryType);
@@ -185,7 +185,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
 
     @Override
-    protected void customizeProperties(PortalControllerContext portalControllerContext, FileEditionForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
+    protected void customizeProperties(PortalControllerContext portalControllerContext, FileEditionForm form, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
         if (form.getTemporaryFile() != null) {
             // File
             File file = form.getTemporaryFile();
