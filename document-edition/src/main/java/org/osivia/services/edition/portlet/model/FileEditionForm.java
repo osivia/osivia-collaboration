@@ -27,10 +27,6 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
      */
     private String originalFileName;
     /**
-     * Upload max size.
-     */
-    private long maxSize;
-    /**
      * Upload.
      */
     private MultipartFile upload;
@@ -70,14 +66,6 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
 
     public void setOriginalFileName(String originalFileName) {
         this.originalFileName = originalFileName;
-    }
-
-    public long getMaxSize() {
-        return maxSize;
-    }
-
-    public void setMaxSize(long maxSize) {
-        this.maxSize = maxSize;
     }
 
     public MultipartFile getUpload() {

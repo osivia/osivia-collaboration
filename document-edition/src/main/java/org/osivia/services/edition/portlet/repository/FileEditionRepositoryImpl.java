@@ -2,8 +2,6 @@ package org.osivia.services.edition.portlet.repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -13,7 +11,6 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
 import org.osivia.services.edition.portlet.model.FileEditionForm;
 import org.osivia.services.edition.portlet.repository.command.ImportFileCommand;
-import org.osivia.services.edition.portlet.service.DocumentEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
@@ -80,10 +77,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
     @Override
     public FileEditionForm getForm(PortalControllerContext portalControllerContext, DocumentEditionWindowProperties windowProperties) throws PortletException, IOException {
-        FileEditionForm form = super.getForm(portalControllerContext, windowProperties, FileEditionForm.class);
-        form.setMaxSize(DocumentEditionService.MAX_UPLOAD_SIZE);
-
-        return form;
+        return super.getForm(portalControllerContext, windowProperties, FileEditionForm.class);
     }
 
 

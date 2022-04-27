@@ -11,7 +11,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
@@ -186,14 +185,6 @@ public class DocumentEditionController {
     public void editionFormInitBinder(WebDataBinder binder) {
         binder.addValidators(this.validator);
         binder.setDisallowedFields("name", "creation", "path", "originalTitle");
-    }
-
-
-    @ExceptionHandler(MultipartException.class)
-    String handleFileException(Throwable ex, RenderRequest request, RenderResponse response) {
-        request.setAttribute("uploadMaxSize", DocumentEditionService.MAX_UPLOAD_SIZE);
-
-        return "upload-error";
     }
 
 }

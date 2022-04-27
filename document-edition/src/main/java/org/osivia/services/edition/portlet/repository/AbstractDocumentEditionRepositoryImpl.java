@@ -8,11 +8,14 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
+import org.osivia.services.edition.portlet.model.Attachments;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
+import org.osivia.services.edition.portlet.model.ExistingFile;
 import org.osivia.services.edition.portlet.repository.command.CheckTitleAvailabilityCommand;
 import org.osivia.services.edition.portlet.repository.command.CreateDocumentCommand;
 import org.osivia.services.edition.portlet.repository.command.UpdateDocumentCommand;
@@ -22,10 +25,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,6 +52,10 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
      * Description Nuxeo document property.
      */
     protected static final String DESCRIPTION_PROPERTY = "dc:description";
+    /**
+     * Attachements Nuxeo document property.
+     */
+    protected static final String ATTACHMENTS_PROPERTY = "files:files";
 
 
     /**
@@ -92,7 +103,11 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
     protected T getForm(PortalControllerContext portalControllerContext, DocumentEditionWindowProperties windowProperties, Class<? extends T> type) throws PortletException, IOException {
         T form = this.applicationContext.getBean(type);
 
-        if (StringUtils.isNotEmpty(windowProperties.getDocumentPath())) {
+        if (StringUtils.isEmpty(windowProperties.getDocumentPath())) {
+            // Attachments
+            Attachments attachments = this.applicationContext.getBean(Attachments.class);
+            form.setAttachments(attachments);
+        } else {
             // Document context
             NuxeoDocumentContext documentContext = this.getDocumentContext(portalControllerContext, windowProperties.getDocumentPath());
             // Document
@@ -107,11 +122,58 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
             String description = document.getString(DESCRIPTION_PROPERTY);
             form.setDescription(description);
 
+            // Attachments
+            Attachments attachments = this.loadExistingAttachments(document);
+            form.setAttachments(attachments);
+
             // Customization
             this.customizeForm(portalControllerContext, document, form);
         }
 
         return form;
+    }
+
+
+    /**
+     * Load existing attachements.
+     *
+     * @param document document
+     * @return attachments
+     */
+    private Attachments loadExistingAttachments(Document document) {
+        // Existing files
+        List<ExistingFile> existingFiles;
+        PropertyList attachmentsList = document.getProperties().getList(ATTACHMENTS_PROPERTY);
+        if ((attachmentsList == null) || attachmentsList.isEmpty()) {
+            existingFiles = null;
+        } else {
+            existingFiles = new ArrayList<>(attachmentsList.size());
+            for (int i = 0; i < attachmentsList.size(); i++) {
+                PropertyMap attachmentMap = attachmentsList.getMap(i);
+                PropertyMap attachmentFileMap = attachmentMap.getMap("file");
+                String fileName = attachmentFileMap.getString("name");
+                MimeType mimeType;
+                try {
+                    mimeType = new MimeType(attachmentFileMap.getString("mime-type"));
+                } catch (MimeTypeParseException e) {
+                    mimeType = null;
+                }
+
+                // Existing file
+                ExistingFile file = this.applicationContext.getBean(ExistingFile.class);
+                file.setIndex(i);
+                file.setFileName(fileName);
+                file.setMimeType(mimeType);
+
+                existingFiles.add(file);
+            }
+        }
+
+        // Attachments
+        Attachments attachments = this.applicationContext.getBean(Attachments.class);
+        attachments.setExistingFiles(existingFiles);
+
+        return attachments;
     }
 
 

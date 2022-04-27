@@ -1,11 +1,19 @@
 package org.osivia.services.edition.portlet.model;
 
+import org.osivia.services.edition.portlet.service.DocumentEditionService;
+
 /**
  * Document edition form abstract super-class.
  *
  * @author Cédric Krommenhoek
  */
 public abstract class AbstractDocumentEditionForm {
+
+    /**
+     * Upload max size.
+     */
+    private final long uploadMaxSize;
+
 
     /**
      * Window properties.
@@ -40,6 +48,10 @@ public abstract class AbstractDocumentEditionForm {
      * Description.
      */
     private String description;
+    /**
+     * Attachments.
+     */
+    private Attachments attachments;
 
 
     private Boolean extractArchive;
@@ -55,8 +67,13 @@ public abstract class AbstractDocumentEditionForm {
      */
     protected AbstractDocumentEditionForm() {
         super();
+        this.uploadMaxSize = DocumentEditionService.MAX_UPLOAD_SIZE;
     }
 
+
+    public long getUploadMaxSize() {
+        return uploadMaxSize;
+    }
 
     public DocumentEditionWindowProperties getWindowProperties() {
         return windowProperties;
@@ -120,6 +137,14 @@ public abstract class AbstractDocumentEditionForm {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Attachments getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(Attachments attachments) {
+        this.attachments = attachments;
     }
 
     public Boolean getExtractArchive() {
