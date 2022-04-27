@@ -1,0 +1,35 @@
+<c:set var="namespace"><portlet:namespace/></c:set>
+
+
+<%--@elvariable id="form" type="org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm"--%>
+<div class="form-group">
+    <form:label path="attachments.upload" cssClass="control-label"><op:translate key="DOCUMENT_EDITION_FORM_ATTACHMENTS_LABEL"/></form:label>
+    <c:if test="${not empty form.attachments.existingFiles}">
+        <ul class="list-inline form-control-static text-muted">
+            <c:set var="title"><op:translate key="DELETE"/></c:set>
+            <c:forEach var="existingFile" items="${form.attachments.existingFiles}">
+                <li>
+                    <span class="btn-group btn-group-xs">
+                        <a href="#" class="btn btn-default disabled">
+                            <span>${existingFile.fileName}</span>
+                        </a>
+                        <button type="submit" name="restore" value="${existingFile.index}" class="btn btn-default" title="${title}">
+                            <i class="glyphicons glyphicons-remove"></i>
+                            <span class="sr-only">${title}</span>
+                        </button>
+                    </span>
+                </li>
+            </c:forEach>
+        </ul>
+    </c:if>
+    <div>
+        <label class="btn btn-default btn-file">
+            <i class="glyphicons glyphicons-folder-open"></i>
+            <span><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_ACTION"/></span>
+            <c:set var="maxSize"><ttc:fileSize size="${form.uploadMaxSize}" escapeHtml="false"/></c:set>
+            <c:set var="fileSizeLimitExceededMessage"><op:translate key="DOCUMENT_EDITION_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
+            <input id="upload" type="file" name="attachments.upload" multiple="" data-max-size="${form.uploadMaxSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-attachments-upload-submit">
+        </label>
+    </div>
+    <input id="${namespace}-attachments-upload-submit" type="submit" name="upload" class="hidden">
+</div>

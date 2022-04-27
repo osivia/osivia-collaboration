@@ -23,9 +23,10 @@
     <%--Cancel--%>
     <c:choose>
         <c:when test="${form.fullscreen}">
-            <button type="submit" name="cancel" class="btn btn-default">
+            <portlet:actionURL name="cancel" var="cancelUrl"/>
+            <a href="${cancelUrl}" class="btn btn-default">
                 <span><op:translate key="DOCUMENT_EDITION_ACTION_CANCEL"/></span>
-            </button>
+            </a>
         </c:when>
         <c:otherwise>
             <button type="button" class="btn btn-default" data-dismiss="modal">

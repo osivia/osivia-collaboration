@@ -9,7 +9,6 @@ import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.FileEditionForm;
-import org.osivia.services.edition.portlet.repository.command.ImportFileCommand;
 import org.osivia.services.edition.portlet.repository.command.ImportFilesCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -102,7 +101,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
         // Required primary type
         String requiredPrimaryType = this.requiredPrimaryTypes.get(document.getType());
         form.setRequiredPrimaryType(requiredPrimaryType);
-        form.setOriginalFileName(document.getProperties().getString(getBinaryNameProperty()));
+        form.setOriginalFileName(document.getProperties().getString(BINARY_NAME_PROPERTY));
     }
 
 
@@ -222,11 +221,4 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
         return (Document) nuxeoController.executeNuxeoCommand(command);
     }
 
-    protected String getBinaryProperty() {
-    	return BINARY_PROPERTY;
-    }
-
-    protected String getBinaryNameProperty() {
-    	return BINARY_NAME_PROPERTY;
-    }
 }

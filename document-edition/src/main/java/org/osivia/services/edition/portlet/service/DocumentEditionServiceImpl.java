@@ -131,7 +131,7 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         boolean creation = StringUtils.isEmpty(path);
         form.setCreation(creation);
 
-        form.setExtractArchive(windowProperties.getExtractArchive());
+        form.setExtractArchive(windowProperties.isExtractArchive());
 
         // for logging in validation phase
         form.setRemoteUser(portalControllerContext.getRequest().getRemoteUser());

@@ -45,6 +45,9 @@ public class NoteEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
     @Override
     protected void customizeForm(PortalControllerContext portalControllerContext, Document document, NoteEditionForm form) {
+        // Fullscreen indicator
+        form.setFullscreen(true);
+
         // Content
         String content = document.getString("note:note");
         form.setContent(content);
@@ -52,8 +55,8 @@ public class NoteEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
 
     @Override
-    public void validate(NoteEditionForm form, Errors errors) {
-        super.validate(form, errors);
+    protected void customizeValidation(NoteEditionForm form, Errors errors) {
+        super.customizeValidation(form, errors);
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "content", "NotEmpty");
     }
