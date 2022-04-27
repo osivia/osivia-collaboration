@@ -5,14 +5,12 @@ import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
 import org.osivia.services.edition.portlet.model.NoteEditionForm;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
-import javax.portlet.PortletException;
-import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,7 +20,7 @@ import java.util.Map;
  * @see AbstractDocumentEditionRepositoryImpl
  * @see NoteEditionForm
  */
-@Repository("Note")
+@Repository
 public class NoteEditionRepositoryImpl extends AbstractDocumentEditionRepositoryImpl<NoteEditionForm> {
 
     /**
@@ -34,8 +32,14 @@ public class NoteEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
 
     @Override
-    public NoteEditionForm getForm(PortalControllerContext portalControllerContext, DocumentEditionWindowProperties windowProperties) throws PortletException, IOException {
-        return super.getForm(portalControllerContext, windowProperties, NoteEditionForm.class);
+    public Class<NoteEditionForm> getParameterizedType() {
+        return NoteEditionForm.class;
+    }
+
+
+    @Override
+    public boolean matches(String documentType, boolean creation) {
+        return "Note".equals(documentType);
     }
 
 
@@ -62,7 +66,7 @@ public class NoteEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
 
     @Override
-    protected void customizeProperties(PortalControllerContext portalControllerContext, NoteEditionForm form, PropertyMap properties, Map<String, Blob> binaries) {
+    protected void customizeProperties(PortalControllerContext portalControllerContext, NoteEditionForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
         // Content
         properties.set("note:note", StringUtils.trimToNull(form.getContent()));
     }

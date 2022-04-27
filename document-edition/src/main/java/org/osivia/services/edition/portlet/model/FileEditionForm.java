@@ -1,5 +1,6 @@
 package org.osivia.services.edition.portlet.model;
 
+import org.osivia.services.edition.portlet.service.DocumentEditionService;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,11 @@ import java.io.File;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class FileEditionForm extends AbstractDocumentEditionForm {
+
+    /**
+     * Upload max size.
+     */
+    private final long maxSize;
 
     /**
      * Required primary type.
@@ -49,8 +55,13 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
      */
     public FileEditionForm() {
         super();
+        this.maxSize = DocumentEditionService.MAX_UPLOAD_SIZE;
     }
 
+
+    public long getMaxSize() {
+        return maxSize;
+    }
 
     public String getRequiredPrimaryType() {
         return requiredPrimaryType;

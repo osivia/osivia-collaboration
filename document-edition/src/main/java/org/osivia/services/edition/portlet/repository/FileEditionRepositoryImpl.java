@@ -1,19 +1,18 @@
 package org.osivia.services.edition.portlet.repository;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
 import org.osivia.services.edition.portlet.model.FileEditionForm;
 import org.osivia.services.edition.portlet.repository.command.ImportFileCommand;
+import org.osivia.services.edition.portlet.repository.command.ImportFilesCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,8 +23,13 @@ import javax.portlet.PortletException;
 import java.io.File;
 import java.io.IOException;
 import java.text.Normalizer;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * File edition portlet repository implementation.
@@ -34,8 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see AbstractDocumentEditionRepositoryImpl
  * @see FileEditionForm
  */
-@Repository("File")
-@Primary
+@Repository
 public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepositoryImpl<FileEditionForm> {
 
     /**
@@ -48,6 +51,10 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
     private static final String BINARY_NAME_PROPERTY = "file:filename";
 
 
+    /**
+     * Accepted document types.
+     */
+    private final Set<String> acceptedDocumentTypes;
     /**
      * Required primary types.
      */
@@ -67,6 +74,9 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
     public FileEditionRepositoryImpl() {
         super();
 
+        // Accepted document types
+        this.acceptedDocumentTypes = Stream.of("File", "Picture", "Audio", "Video").collect(Collectors.toSet());
+
         // Required primary types
         this.requiredPrimaryTypes = new ConcurrentHashMap<>();
         this.requiredPrimaryTypes.put("Picture", "image");
@@ -76,8 +86,14 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
 
     @Override
-    public FileEditionForm getForm(PortalControllerContext portalControllerContext, DocumentEditionWindowProperties windowProperties) throws PortletException, IOException {
-        return super.getForm(portalControllerContext, windowProperties, FileEditionForm.class);
+    public Class<FileEditionForm> getParameterizedType() {
+        return FileEditionForm.class;
+    }
+
+
+    @Override
+    public boolean matches(String documentType, boolean creation) {
+        return !creation && this.acceptedDocumentTypes.contains(documentType);
     }
 
 
@@ -97,8 +113,8 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
 
     @Override
-    public void validate(FileEditionForm form, Errors errors) {
-        super.validate(form, errors);
+    public void customizeValidation(FileEditionForm form, Errors errors) {
+        super.customizeValidation(form, errors);
 
         if (form.isCreation()) {
             // Creation
@@ -123,8 +139,9 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
         }
     }
 
+
     @Override
-    public void upload(PortalControllerContext portalControllerContext, FileEditionForm form) throws IOException {
+    public void customizeUpload(PortalControllerContext portalControllerContext, FileEditionForm form) throws IOException {
         // Delete previous temporary file
         if (form.getTemporaryFile() != null && !form.getTemporaryFile().delete()) {
             form.getTemporaryFile().deleteOnExit();
@@ -155,12 +172,11 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
 
     @Override
-    public void restore(PortalControllerContext portalControllerContext, FileEditionForm form) {
+    public void customizeRestore(PortalControllerContext portalControllerContext, FileEditionForm form) {
         // Delete previous temporary file
         if (form.getTemporaryFile() != null && !form.getTemporaryFile().delete()) {
             form.getTemporaryFile().deleteOnExit();
         }
-
 
         // Update model
         form.setTemporaryFile(null);
@@ -170,9 +186,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
 
     @Override
-    protected void customizeProperties(PortalControllerContext portalControllerContext, FileEditionForm form, PropertyMap properties, Map<String, Blob> binaries) {
-
-
+    protected void customizeProperties(PortalControllerContext portalControllerContext, FileEditionForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
         if (form.getTemporaryFile() != null) {
             // File
             File file = form.getTemporaryFile();
@@ -187,30 +201,27 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
             String s = Normalizer.normalize(form.getTemporaryFileName(), Normalizer.Form.NFC);
 
             FileBlob blob = new FileBlob(file, s, contentType);
-            binaries.put(getBinaryProperty(), blob);
+            binaries.put(BINARY_PROPERTY, Collections.singletonList(blob));
         }
     }
 
 
     @Override
-    protected Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, Blob> binaries) throws PortletException {
-        // File binary
-        Blob binary = binaries.get(getBinaryProperty());
-
-        Document document;
-
-        if (binary == null) {
+    protected Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException {
+        // File binaries
+        List<Blob> blobs = binaries.get(BINARY_PROPERTY);
+        if (CollectionUtils.isEmpty(blobs)) {
             throw new PortletException("Empty file");
-        } else {
-            // Nuxeo command
-            INuxeoCommand command = this.applicationContext.getBean(ImportFileCommand.class, parentPath, binary);
-
-            document = (Document) nuxeoController.executeNuxeoCommand(command);
         }
 
-        return document;
+        // Nuxeo command
+        ImportFilesCommand command = this.applicationContext.getBean(ImportFilesCommand.class);
+        command.setParentPath(parentPath);
+        command.setBinaries(blobs);
+
+        return (Document) nuxeoController.executeNuxeoCommand(command);
     }
-    
+
     protected String getBinaryProperty() {
     	return BINARY_PROPERTY;
     }

@@ -6,6 +6,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
 import org.osivia.services.edition.portlet.repository.DocumentEditionRepository;
+import org.springframework.validation.Errors;
 
 import javax.portlet.PortletException;
 import java.io.IOException;
@@ -30,7 +31,11 @@ public interface DocumentEditionService {
      */
     String DOCUMENT_TYPE_WINDOW_PROPERTY = "osivia.document.edition.document-type";
     /**
-     * Document type window property.
+     * Required primary MIME-type window property.
+     */
+    String REQUIRED_PRIMARY_MIME_TYPE_WINDOW_PROPERTY = "osivia.document.edition.required-primary-mime-type";
+    /**
+     * Extract archive indicator window property.
      */
     String EXTRACT_ARCHIVE_WINDOW_PROPERTY = "osivia.document.edition.extract-archive";
     /**
@@ -68,7 +73,7 @@ public interface DocumentEditionService {
      * @param name repository name
      * @return repository
      */
-    DocumentEditionRepository getRepository(String name);
+    DocumentEditionRepository<?> getRepository(String name);
 
 
     /**
@@ -96,6 +101,15 @@ public interface DocumentEditionService {
      * @param form                    document edition form
      */
     void restore(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+
+
+    /**
+     * Validate document edition form.
+     *
+     * @param form   document edition form
+     * @param errors errors
+     */
+    void validate(AbstractDocumentEditionForm form, Errors errors);
 
 
     /**

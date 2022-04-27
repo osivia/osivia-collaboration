@@ -18,6 +18,24 @@ import java.io.IOException;
 public interface DocumentEditionRepository<T extends AbstractDocumentEditionForm> {
 
     /**
+     * Get repository parameterized type.
+     *
+     * @return type
+     */
+    Class<T> getParameterizedType();
+
+
+    /**
+     * Check if current repository matches.
+     *
+     * @param documentType document type
+     * @param creation     document creation indicator
+     * @return true if current repository matches
+     */
+    boolean matches(String documentType, boolean creation);
+
+
+    /**
      * Get document context.
      *
      * @param portalControllerContext portal controller context
@@ -42,7 +60,6 @@ public interface DocumentEditionRepository<T extends AbstractDocumentEditionForm
      *
      * @param portalControllerContext portal controller context
      * @return view path
-     * @throws PortletException
      */
     String getViewPath(PortalControllerContext portalControllerContext) throws PortletException;
 
@@ -51,9 +68,9 @@ public interface DocumentEditionRepository<T extends AbstractDocumentEditionForm
      * Validate document edition form.
      *
      * @param form   document edition form
-     * @param errors errors
+     * @param errors validation errors
      */
-    void validate(T form, Errors errors);
+    void validate(AbstractDocumentEditionForm form, Errors errors);
 
 
     /**
@@ -62,7 +79,7 @@ public interface DocumentEditionRepository<T extends AbstractDocumentEditionForm
      * @param portalControllerContext portal controller context
      * @param form                    document edition form
      */
-    void upload(PortalControllerContext portalControllerContext, T form) throws PortletException, IOException;
+    void upload(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
 
 
     /**
@@ -71,7 +88,7 @@ public interface DocumentEditionRepository<T extends AbstractDocumentEditionForm
      * @param portalControllerContext portal controller context
      * @param form                    document edition form
      */
-    void restore(PortalControllerContext portalControllerContext, T form) throws PortletException, IOException;
+    void restore(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
 
 
     /**
@@ -80,6 +97,6 @@ public interface DocumentEditionRepository<T extends AbstractDocumentEditionForm
      * @param portalControllerContext portal controller context
      * @param form                    document edition form
      */
-    void save(PortalControllerContext portalControllerContext, T form) throws PortletException, IOException;
+    void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
 
 }

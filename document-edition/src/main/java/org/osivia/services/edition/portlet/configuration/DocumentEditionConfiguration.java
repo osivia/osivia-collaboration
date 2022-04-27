@@ -109,17 +109,6 @@ public class DocumentEditionConfiguration extends CMSPortlet implements PortletC
 
 
     /**
-     * Get mirrored file edition repository.
-     *
-     * @return file edition repository
-     */
-    @Bean(name = {"Picture", "Audio", "Video"})
-    public FileEditionRepositoryImpl getMirroredFileEditionRepository(FileEditionRepositoryImpl repository) {
-        return repository;
-    }
-
-
-    /**
      * Get portal URL factory.
      *
      * @return portal URL factory

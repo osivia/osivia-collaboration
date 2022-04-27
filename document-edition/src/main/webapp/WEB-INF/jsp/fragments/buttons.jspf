@@ -6,7 +6,7 @@
 <%--@elvariable id="form" type="org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm"--%>
 <div>
     <c:choose>
-        <c:when test="${form.extractArchive}">
+        <c:when test="${form.windowProperties.extractArchive}">
             <%--Submit--%>
             <button type="submit" name="save" class="btn btn-primary">
                 <span><op:translate key="DOCUMENT_EXTRACT_ACTION"/></span>
