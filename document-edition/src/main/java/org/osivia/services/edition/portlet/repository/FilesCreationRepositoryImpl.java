@@ -11,6 +11,7 @@ import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.FilesCreationForm;
+import org.osivia.services.edition.portlet.model.UploadTemporaryFile;
 import org.osivia.services.edition.portlet.repository.command.ImportFilesCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -106,8 +107,8 @@ public class FilesCreationRepositoryImpl extends AbstractDocumentEditionReposito
             // Binary file is mandatory
             errors.rejectValue("upload", "NotEmpty");
         } else if (StringUtils.isNotEmpty(requiredPrimaryType)) {
-            for (FilesCreationForm.TemporaryFile temporaryFile : form.getTemporaryFiles()) {
-                MimeType mimeType = temporaryFile.getFileMimeType();
+            for (UploadTemporaryFile temporaryFile : form.getTemporaryFiles()) {
+                MimeType mimeType = temporaryFile.getMimeType();
                 if ((mimeType == null) || !StringUtils.equals(requiredPrimaryType, mimeType.getPrimaryType())) {
                     // Invalid picture type
                     errors.rejectValue("upload", "InvalidFileType", new Object[]{temporaryFile.getFileName()}, null);
@@ -121,32 +122,14 @@ public class FilesCreationRepositoryImpl extends AbstractDocumentEditionReposito
     protected void customizeUpload(PortalControllerContext portalControllerContext, FilesCreationForm form) throws IOException {
         if (CollectionUtils.isNotEmpty(form.getUpload())) {
             // Temporary files
-            List<FilesCreationForm.TemporaryFile> temporaryFiles = form.getTemporaryFiles();
+            List<UploadTemporaryFile> temporaryFiles = form.getTemporaryFiles();
             if (CollectionUtils.isEmpty(temporaryFiles)) {
                 temporaryFiles = new ArrayList<>(form.getUpload().size());
                 form.setTemporaryFiles(temporaryFiles);
             }
 
             for (MultipartFile upload : form.getUpload()) {
-                // Upload file
-                File file = File.createTempFile("document-creation-files-", ".tmp");
-                file.deleteOnExit();
-                upload.transferTo(file);
-
-                // MIME type
-                MimeType mimeType;
-                try {
-                    mimeType = new MimeType(upload.getContentType());
-                } catch (MimeTypeParseException e) {
-                    mimeType = null;
-                }
-
-                // Temporary file
-                FilesCreationForm.TemporaryFile temporaryFile = this.applicationContext.getBean(FilesCreationForm.TemporaryFile.class);
-                temporaryFile.setFile(file);
-                temporaryFile.setFileName(upload.getOriginalFilename());
-                temporaryFile.setFileMimeType(mimeType);
-
+                UploadTemporaryFile temporaryFile = this.createTemporaryFile(upload);
                 temporaryFiles.add(temporaryFile);
             }
         }
@@ -162,7 +145,7 @@ public class FilesCreationRepositoryImpl extends AbstractDocumentEditionReposito
             int index = NumberUtils.toInt(request.getParameter("restore"), -1);
             if (index < 0) {
                 // Delete all temporary files
-                for (FilesCreationForm.TemporaryFile temporaryFile : form.getTemporaryFiles()) {
+                for (UploadTemporaryFile temporaryFile : form.getTemporaryFiles()) {
                     FileUtils.deleteQuietly(temporaryFile.getFile());
                 }
 
@@ -170,7 +153,7 @@ public class FilesCreationRepositoryImpl extends AbstractDocumentEditionReposito
                 form.getTemporaryFiles().clear();
             } else if (index < form.getTemporaryFiles().size()) {
                 // Delete selected temporary file
-                FilesCreationForm.TemporaryFile temporaryFile = form.getTemporaryFiles().get(index);
+                UploadTemporaryFile temporaryFile = form.getTemporaryFiles().get(index);
                 FileUtils.deleteQuietly(temporaryFile.getFile());
 
                 // Update model
@@ -185,16 +168,16 @@ public class FilesCreationRepositoryImpl extends AbstractDocumentEditionReposito
         if (CollectionUtils.isNotEmpty(form.getTemporaryFiles())) {
             List<Blob> blobs = new ArrayList<>();
 
-            for (FilesCreationForm.TemporaryFile temporaryFile : form.getTemporaryFiles()) {
+            for (UploadTemporaryFile temporaryFile : form.getTemporaryFiles()) {
                 // File name
                 String name = Normalizer.normalize(temporaryFile.getFileName(), Normalizer.Form.NFC);
 
                 // File content type
                 String contentType;
-                if (temporaryFile.getFileMimeType() == null) {
+                if (temporaryFile.getMimeType() == null) {
                     contentType = null;
                 } else {
-                    contentType = temporaryFile.getFileMimeType().toString();
+                    contentType = temporaryFile.getMimeType().toString();
                 }
 
                 FileBlob blob = new FileBlob(temporaryFile.getFile(), name, contentType);

@@ -45,15 +45,17 @@ public abstract class AbstractDocumentEditionForm {
      */
     private String originalTitle;
     /**
-     * Description.
-     */
-    private String description;
-    /**
      * Attachments.
      */
     private Attachments attachments;
+    /**
+     * Metadata.
+     */
+    private DocumentEditionMetadata metadata;
 
-
+    /**
+     * Extract archive indicator.
+     */
     private Boolean extractArchive;
 
     /**
@@ -131,20 +133,20 @@ public abstract class AbstractDocumentEditionForm {
         this.originalTitle = originalTitle;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public Attachments getAttachments() {
         return attachments;
     }
 
     public void setAttachments(Attachments attachments) {
         this.attachments = attachments;
+    }
+
+    public DocumentEditionMetadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(DocumentEditionMetadata metadata) {
+        this.metadata = metadata;
     }
 
     public Boolean getExtractArchive() {

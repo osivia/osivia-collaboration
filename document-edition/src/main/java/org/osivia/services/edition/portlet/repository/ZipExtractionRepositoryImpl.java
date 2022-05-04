@@ -75,12 +75,12 @@ public class ZipExtractionRepositoryImpl extends FileEditionRepositoryImpl {
 
     @Override
     public void customizeValidation(FileEditionForm form, Errors errors) {
-        if (form.getTemporaryFile() == null) {
+        if ((form.getTemporaryFile() == null) || (form.getTemporaryFile().getFile() == null)) {
             // Binary file is mandatory
             errors.rejectValue("upload", "NotEmpty");
         } else {
             // Check primary type
-            String originalFilename = form.getTemporaryFileName();
+            String originalFilename = form.getTemporaryFile().getFileName();
             if (!StringUtils.endsWithIgnoreCase(originalFilename, ".zip")) {
                 errors.rejectValue("upload", "InvalidFileType", null);
 
@@ -90,7 +90,6 @@ public class ZipExtractionRepositoryImpl extends FileEditionRepositoryImpl {
                 } catch (IOException e) {
                     errors.rejectValue("upload", "InvalidFileType", null);
                 }
-
             }
         }
     }
@@ -114,7 +113,6 @@ public class ZipExtractionRepositoryImpl extends FileEditionRepositoryImpl {
 
 
     private void checkLimits(FileEditionForm form, Errors errors) throws IOException {
-
         long startTime = new Date().getTime();
 
         int sizeLimit = 0;
@@ -130,7 +128,7 @@ public class ZipExtractionRepositoryImpl extends FileEditionRepositoryImpl {
         int totalEntries = 0;
 
 
-        File f = form.getTemporaryFile();
+        File f = form.getTemporaryFile().getFile();
         long totalWeight = f.length();
 
 

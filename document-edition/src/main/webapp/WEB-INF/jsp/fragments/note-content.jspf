@@ -2,6 +2,7 @@
 
 <c:set var="placeholder"><op:translate key="DOCUMENT_EDITION_FORM_NOTE_CONTENT_PLACEHOLDER"/></c:set>
 
+
 <spring:bind path="content">
     <div class="form-group required ${status.error ? 'has-error' : ''}">
         <form:label path="content" cssClass="control-label"><op:translate key="DOCUMENT_EDITION_FORM_NOTE_CONTENT_LABEL"/></form:label>

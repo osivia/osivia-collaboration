@@ -1,0 +1,9 @@
+<fieldset>
+    <legend><op:translate key="DOCUMENT_EDITION_FORM_METADATA_LEGEND"/></legend>
+
+    <%--Description--%>
+    <%@ include file="metadata/description.jspf" %>
+
+    <%--Vignette--%>
+    <%@ include file="metadata/vignette.jspf" %>
+</fieldset>

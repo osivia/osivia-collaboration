@@ -12,10 +12,7 @@ import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
-import org.osivia.services.edition.portlet.model.Attachments;
-import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
-import org.osivia.services.edition.portlet.model.ExistingFile;
+import org.osivia.services.edition.portlet.model.*;
 import org.osivia.services.edition.portlet.repository.command.CheckTitleAvailabilityCommand;
 import org.osivia.services.edition.portlet.repository.command.CreateDocumentCommand;
 import org.osivia.services.edition.portlet.repository.command.UpdateDocumentCommand;
@@ -23,12 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.context.PortletContextAware;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,10 +49,6 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
      */
     protected static final String TITLE_PROPERTY = "dc:title";
     /**
-     * Description Nuxeo document property.
-     */
-    protected static final String DESCRIPTION_PROPERTY = "dc:description";
-    /**
      * Attachements Nuxeo document property.
      */
     protected static final String ATTACHMENTS_PROPERTY = "files:files";
@@ -69,6 +64,12 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
      */
     @Autowired
     private ApplicationContext applicationContext;
+
+    /**
+     * Document metadata edition repository.
+     */
+    @Autowired
+    private DocumentEditionMetadataRepository metadataRepository;
 
 
     /**
@@ -120,13 +121,13 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
             form.setTitle(title);
             form.setOriginalTitle(title);
 
-            // Description
-            String description = document.getString(DESCRIPTION_PROPERTY);
-            form.setDescription(description);
-
             // Attachments
             Attachments attachments = this.loadExistingAttachments(document);
             form.setAttachments(attachments);
+
+            // Metadata
+            DocumentEditionMetadata metadata = this.metadataRepository.getMetadata(portalControllerContext, document);
+            form.setMetadata(metadata);
 
             // Customization
             this.customizeForm(portalControllerContext, document, form);
@@ -281,6 +282,29 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
     }
 
 
+    protected UploadTemporaryFile createTemporaryFile(MultipartFile upload) throws IOException {
+        File file = File.createTempFile("uploaded-file-", ".tmp");
+        file.deleteOnExit();
+        upload.transferTo(file);
+
+        // MIME type
+        MimeType mimeType;
+        try {
+            mimeType = new MimeType(upload.getContentType());
+        } catch (MimeTypeParseException e) {
+            mimeType = null;
+        }
+
+        // Temporary file
+        UploadTemporaryFile temporaryFile = this.applicationContext.getBean(UploadTemporaryFile.class);
+        temporaryFile.setFile(file);
+        temporaryFile.setFileName(upload.getOriginalFilename());
+        temporaryFile.setMimeType(mimeType);
+        
+        return temporaryFile;
+    }
+
+
     @Override
     public void restore(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
         this.customizeRestore(portalControllerContext, this.castForm(form));
@@ -301,11 +325,12 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
         PropertyMap properties = new PropertyMap();
         // Title
         properties.set(TITLE_PROPERTY, form.getTitle());
-        // Description
-        properties.set(DESCRIPTION_PROPERTY, StringUtils.trimToNull(form.getDescription()));
 
         // Binaries
         Map<String, List<Blob>> binaries = new HashMap<>();
+
+        // Metadata
+        this.metadataRepository.customizeProperties(form.getMetadata(), properties);
 
         // Customization
         this.customizeProperties(portalControllerContext, this.castForm(form), properties, binaries);

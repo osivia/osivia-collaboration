@@ -1,0 +1,37 @@
+<c:set var="namespace"><portlet:namespace/></c:set>
+
+
+<div class="form-group">
+    <form:label path="upload" cssClass="control-label"><op:translate key="DOCUMENT_EDITION_FORM_FILE_LABEL"/></form:label>
+    <div>
+        <div class="media-left">
+            <label class="btn btn-default btn-file">
+                <i class="glyphicons glyphicons-folder-open"></i>
+                <span><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_ACTION"/></span>
+                <c:set var="maxSize"><ttc:fileSize size="${form.maxSize}" escapeHtml="false"/></c:set>
+                <c:set var="fileSizeLimitExceededMessage"><op:translate key="DOCUMENT_EDITION_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
+                <form:input path="upload" type="file" data-max-size="${form.maxSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-file-upload-submit"/>
+            </label>
+        </div>
+
+        <div class="media-body">
+            <p class="form-control-static text-muted">
+                <c:choose>
+                    <c:when test="${not empty form.temporaryFileName}">${form.temporaryFileName}</c:when>
+                    <c:when test="${form.creation}"><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_TEXT"/></c:when>
+                    <c:when test="${not empty form.originalFileName}">${form.originalFileName}</c:when>
+                </c:choose>
+            </p>
+        </div>
+
+        <c:if test="${not empty form.temporaryFileName and not form.creation}">
+            <div class="media-right">
+                <button type="submit" name="restore" class="btn btn-link">
+                    <span><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_RESTORE"/></span>
+                </button>
+            </div>
+        </c:if>
+    </div>
+    <form:errors path="upload" cssClass="help-block"/>
+    <input id="${namespace}-file-upload-submit" type="submit" name="upload" class="hidden">
+</div>
