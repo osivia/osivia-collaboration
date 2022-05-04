@@ -1,18 +1,12 @@
 package org.osivia.services.edition.portlet.repository.command;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import org.apache.commons.collections.MapUtils;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
-import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.PathRef;
-import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 /**
  * Create document Nuxeo command.
@@ -27,25 +21,18 @@ public class CreateDocumentCommand extends AbstractDocumentCommand {
     /**
      * Parent document path.
      */
-    private final String parentPath;
+    private String parentPath;
     /**
      * Document type.
      */
-    private final String type;
+    private String type;
 
 
     /**
      * Constructor.
-     *
-     * @param parentPath parent document path
-     * @param type       document type
-     * @param properties document properties
-     * @param binaries   document binaries
      */
-    public CreateDocumentCommand(String parentPath, String type, PropertyMap properties, Map<String, Blob> binaries) {
-        super(properties, binaries);
-        this.parentPath = parentPath;
-        this.type = type;
+    public CreateDocumentCommand() {
+        super();
     }
 
 
@@ -66,4 +53,12 @@ public class CreateDocumentCommand extends AbstractDocumentCommand {
         return document;
     }
 
+
+    public void setParentPath(String parentPath) {
+        this.parentPath = parentPath;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

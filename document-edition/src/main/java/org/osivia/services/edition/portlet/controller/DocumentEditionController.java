@@ -9,11 +9,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.context.PortletContextAware;
 
 import javax.portlet.*;
 import java.io.IOException;
@@ -26,12 +29,11 @@ import java.io.IOException;
 @Controller
 @RequestMapping("VIEW")
 @SessionAttributes("form")
-public class DocumentEditionController {
+public class DocumentEditionController implements PortletContextAware {
 
     /**
      * Portlet context.
      */
-    @Autowired
     private PortletContext portletContext;
 
     /**
@@ -39,7 +41,6 @@ public class DocumentEditionController {
      */
     @Autowired
     private DocumentEditionService service;
-
 
     /**
      * Document edition form validator.
@@ -53,6 +54,12 @@ public class DocumentEditionController {
      */
     public DocumentEditionController() {
         super();
+    }
+
+
+    @Override
+    public void setPortletContext(PortletContext portletContext) {
+        this.portletContext = portletContext;
     }
 
 
@@ -169,14 +176,6 @@ public class DocumentEditionController {
     public void editionFormInitBinder(WebDataBinder binder) {
         binder.addValidators(this.validator);
         binder.setDisallowedFields("name", "creation", "path", "originalTitle");
-    }
-
-
-    @ExceptionHandler(MultipartException.class)
-    String handleFileException(Throwable ex, RenderRequest request, RenderResponse response) {
-        request.setAttribute("uploadMaxSize", DocumentEditionService.MAX_UPLOAD_SIZE);
-
-        return "upload-error";
     }
 
 }

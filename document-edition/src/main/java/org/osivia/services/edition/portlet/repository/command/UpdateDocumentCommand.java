@@ -1,18 +1,12 @@
 package org.osivia.services.edition.portlet.repository.command;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
-import org.apache.commons.collections.MapUtils;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
-import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.PathRef;
-import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 /**
  * Update document Nuxeo command.
@@ -27,19 +21,14 @@ public class UpdateDocumentCommand extends AbstractDocumentCommand {
     /**
      * Document path.
      */
-    private final String path;
+    private String path;
 
 
     /**
      * Constructor.
-     *
-     * @param path       document path
-     * @param properties document properties
-     * @param binaries   document binaries
      */
-    public UpdateDocumentCommand(String path, PropertyMap properties, Map<String, Blob> binaries) {
-        super(properties, binaries);
-        this.path = path;
+    public UpdateDocumentCommand() {
+        super();
     }
 
 
@@ -60,4 +49,8 @@ public class UpdateDocumentCommand extends AbstractDocumentCommand {
         return document;
     }
 
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 }

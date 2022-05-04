@@ -29,9 +29,9 @@ public class DocumentEditionWindowProperties {
     private String documentType;
 
     /**
-     * Extract archive file instead of import it
+     * Extract archive file instead of import it.
      */
-	private Boolean extractArchive;
+    private boolean extractArchive;
 
 
     /**
@@ -66,14 +66,11 @@ public class DocumentEditionWindowProperties {
         this.documentType = documentType;
     }
 
-	public Boolean getExtractArchive() {
-		return extractArchive;
-	}
+    public boolean isExtractArchive() {
+        return extractArchive;
+    }
 
-	public void setExtractArchive(Boolean extractArchive) {
-		this.extractArchive = extractArchive;
-	}
-    
-    
-
+    public void setExtractArchive(boolean extractArchive) {
+        this.extractArchive = extractArchive;
+    }
 }

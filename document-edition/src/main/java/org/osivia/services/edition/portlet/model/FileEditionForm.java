@@ -1,5 +1,6 @@
 package org.osivia.services.edition.portlet.model;
 
+import org.osivia.services.edition.portlet.service.DocumentEditionService;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,11 @@ import java.io.File;
 public class FileEditionForm extends AbstractDocumentEditionForm {
 
     /**
+     * Upload max size.
+     */
+    private final long maxSize;
+
+    /**
      * Required primary type.
      */
     private String requiredPrimaryType;
@@ -26,10 +32,6 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
      * Original file name.
      */
     private String originalFileName;
-    /**
-     * Upload max size.
-     */
-    private long maxSize;
     /**
      * Upload.
      */
@@ -53,8 +55,13 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
      */
     public FileEditionForm() {
         super();
+        this.maxSize = DocumentEditionService.MAX_UPLOAD_SIZE;
     }
 
+
+    public long getMaxSize() {
+        return maxSize;
+    }
 
     public String getRequiredPrimaryType() {
         return requiredPrimaryType;
@@ -70,14 +77,6 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
 
     public void setOriginalFileName(String originalFileName) {
         this.originalFileName = originalFileName;
-    }
-
-    public long getMaxSize() {
-        return maxSize;
-    }
-
-    public void setMaxSize(long maxSize) {
-        this.maxSize = maxSize;
     }
 
     public MultipartFile getUpload() {
