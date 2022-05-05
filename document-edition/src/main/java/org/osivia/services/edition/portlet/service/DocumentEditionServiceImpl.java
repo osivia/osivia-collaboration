@@ -1,6 +1,7 @@
 package org.osivia.services.edition.portlet.service;
 
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -18,12 +19,15 @@ import org.osivia.services.edition.portlet.repository.DocumentEditionRepository;
 import org.osivia.services.edition.portlet.repository.ZipExtractionRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import javax.portlet.*;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Document edition portlet service implementation.
@@ -296,7 +300,20 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
                 creation = false;
             }
 
-            repositoryName = this.applicationContext.getBeansOfType(DocumentEditionRepository.class).entrySet().stream().filter(item -> item.getValue().matches(documentType, creation)).map(Map.Entry::getKey).findFirst().orElse(null);
+
+            Map<String, DocumentEditionRepository<?>> repositories = this.applicationContext.getBeansOfType(DocumentEditionRepository.class).entrySet().stream().filter(item -> item.getValue().matches(documentType, creation)).collect(Collectors.toMap(Map.Entry::getKey, item -> (DocumentEditionRepository<?>) item.getValue()));
+            if (MapUtils.isEmpty(repositories)) {
+                repositoryName = null;
+            } else if (repositories.size() == 1) {
+                repositoryName = repositories.keySet().iterator().next();
+            } else {
+                List<String> primaryRepositoryNames = repositories.entrySet().stream().filter(item -> item.getValue().getClass().isAnnotationPresent(Primary.class)).map(Map.Entry::getKey).collect(Collectors.toList());
+                if (primaryRepositoryNames.size() == 1) {
+                    repositoryName = primaryRepositoryNames.get(0);
+                } else {
+                    repositoryName = null;
+                }
+            }
         }
 
         return repositoryName;

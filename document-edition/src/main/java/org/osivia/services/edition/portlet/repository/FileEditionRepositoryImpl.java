@@ -1,15 +1,14 @@
 package org.osivia.services.edition.portlet.repository;
 
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.edition.portlet.model.ExistingFile;
 import org.osivia.services.edition.portlet.model.FileEditionForm;
-import org.osivia.services.edition.portlet.repository.command.ImportFilesCommand;
+import org.osivia.services.edition.portlet.model.UploadTemporaryFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
@@ -17,8 +16,6 @@ import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
-import javax.portlet.PortletException;
 import java.io.File;
 import java.io.IOException;
 import java.text.Normalizer;
@@ -98,10 +95,14 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
     @Override
     protected void customizeForm(PortalControllerContext portalControllerContext, Document document, FileEditionForm form) {
+        // Existing file
+        ExistingFile existingFile = this.applicationContext.getBean(ExistingFile.class);
+        existingFile.setFileName(document.getProperties().getString(BINARY_NAME_PROPERTY));
+        form.setExistingFile(existingFile);
+
         // Required primary type
         String requiredPrimaryType = this.requiredPrimaryTypes.get(document.getType());
         form.setRequiredPrimaryType(requiredPrimaryType);
-        form.setOriginalFileName(document.getProperties().getString(getBinaryNameProperty()));
     }
 
 
@@ -117,15 +118,15 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
         if (form.isCreation()) {
             // Creation
-            if (form.getTemporaryFile() == null) {
+            if ((form.getTemporaryFile() == null) || (form.getTemporaryFile().getFile() == null)) {
                 // Binary file is mandatory
                 errors.rejectValue("upload", "NotEmpty");
             }
         } else {
             // Edition
-            if ((form.getTemporaryFile() != null) && StringUtils.isNotEmpty(form.getRequiredPrimaryType())) {
+            if ((form.getTemporaryFile() != null) && (form.getTemporaryFile().getFile() != null) && StringUtils.isNotEmpty(form.getRequiredPrimaryType())) {
                 // Check primary type
-                MimeType mimeType = form.getTemporaryFileMimeType();
+                MimeType mimeType = form.getTemporaryFile().getMimeType();
 
                 if (mimeType == null) {
                     // Unknown MIME type
@@ -142,30 +143,18 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
     @Override
     public void customizeUpload(PortalControllerContext portalControllerContext, FileEditionForm form) throws IOException {
         // Delete previous temporary file
-        if (form.getTemporaryFile() != null && !form.getTemporaryFile().delete()) {
-            form.getTemporaryFile().deleteOnExit();
+        if ((form.getTemporaryFile() != null) && (form.getTemporaryFile().getFile() != null) && !form.getTemporaryFile().getFile().delete()) {
+            form.getTemporaryFile().getFile().deleteOnExit();
         }
 
         // Upload
         MultipartFile upload = form.getUpload();
-        File temporaryFile = File.createTempFile("document-edition-file-", ".tmp");
-        temporaryFile.deleteOnExit();
-        upload.transferTo(temporaryFile);
+        UploadTemporaryFile temporaryFile = this.createTemporaryFile(upload);
         form.setTemporaryFile(temporaryFile);
-        form.setTemporaryFileName(upload.getOriginalFilename());
-
-        // MIME type
-        MimeType mimeType;
-        try {
-            mimeType = new MimeType(upload.getContentType());
-        } catch (MimeTypeParseException e) {
-            mimeType = null;
-        }
-        form.setTemporaryFileMimeType(mimeType);
 
         // Title
         if (StringUtils.isBlank(form.getTitle())) {
-            form.setTitle(form.getTemporaryFileName());
+            form.setTitle(form.getTemporaryFile().getFileName());
         }
     }
 
@@ -173,59 +162,33 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
     @Override
     public void customizeRestore(PortalControllerContext portalControllerContext, FileEditionForm form) {
         // Delete previous temporary file
-        if (form.getTemporaryFile() != null && !form.getTemporaryFile().delete()) {
-            form.getTemporaryFile().deleteOnExit();
+        if ((form.getTemporaryFile() != null) && (form.getTemporaryFile().getFile() != null) && !form.getTemporaryFile().getFile().delete()) {
+            form.getTemporaryFile().getFile().deleteOnExit();
         }
 
         // Update model
         form.setTemporaryFile(null);
-        form.setTemporaryFileName(null);
-        form.setTemporaryFileMimeType(null);
     }
 
 
     @Override
     protected void customizeProperties(PortalControllerContext portalControllerContext, FileEditionForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
-        if (form.getTemporaryFile() != null) {
+        if ((form.getTemporaryFile() != null) && (form.getTemporaryFile().getFile() != null)) {
             // File
-            File file = form.getTemporaryFile();
+            File file = form.getTemporaryFile().getFile();
             // File content type
             String contentType;
-            if (form.getTemporaryFileMimeType() == null) {
+            if (form.getTemporaryFile().getMimeType() == null) {
                 contentType = null;
             } else {
-                contentType = form.getTemporaryFileMimeType().toString();
+                contentType = form.getTemporaryFile().getMimeType().toString();
             }
 
-            String s = Normalizer.normalize(form.getTemporaryFileName(), Normalizer.Form.NFC);
+            String s = Normalizer.normalize(form.getTemporaryFile().getFileName(), Normalizer.Form.NFC);
 
             FileBlob blob = new FileBlob(file, s, contentType);
-            binaries.put(getBinaryProperty(), Collections.singletonList(blob));
+            binaries.put(BINARY_PROPERTY, Collections.singletonList(blob));
         }
     }
 
-
-    @Override
-    protected Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException {
-        // File binaries
-        List<Blob> blobs = binaries.get(getBinaryProperty());
-        if (CollectionUtils.isEmpty(blobs)) {
-            throw new PortletException("Empty file");
-        }
-
-        // Nuxeo command
-        ImportFilesCommand command = this.applicationContext.getBean(ImportFilesCommand.class);
-        command.setParentPath(parentPath);
-        command.setBinaries(blobs);
-
-        return (Document) nuxeoController.executeNuxeoCommand(command);
-    }
-
-    protected String getBinaryProperty() {
-    	return BINARY_PROPERTY;
-    }
-
-    protected String getBinaryNameProperty() {
-    	return BINARY_NAME_PROPERTY;
-    }
 }

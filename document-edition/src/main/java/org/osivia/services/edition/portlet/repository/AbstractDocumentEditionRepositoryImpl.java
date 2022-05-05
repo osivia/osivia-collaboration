@@ -13,6 +13,7 @@ import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
+import org.osivia.services.edition.portlet.model.UploadTemporaryFile;
 import org.osivia.services.edition.portlet.repository.command.CheckTitleAvailabilityCommand;
 import org.osivia.services.edition.portlet.repository.command.CreateDocumentCommand;
 import org.osivia.services.edition.portlet.repository.command.UpdateDocumentCommand;
@@ -20,10 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.context.PortletContextAware;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -217,6 +222,29 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
      */
     protected void customizeUpload(PortalControllerContext portalControllerContext, T form) throws PortletException, IOException {
         // Do nothing
+    }
+
+
+    protected UploadTemporaryFile createTemporaryFile(MultipartFile upload) throws IOException {
+        File file = File.createTempFile("uploaded-file-", ".tmp");
+        file.deleteOnExit();
+        upload.transferTo(file);
+
+        // MIME type
+        MimeType mimeType;
+        try {
+            mimeType = new MimeType(upload.getContentType());
+        } catch (MimeTypeParseException e) {
+            mimeType = null;
+        }
+
+        // Temporary file
+        UploadTemporaryFile temporaryFile = this.applicationContext.getBean(UploadTemporaryFile.class);
+        temporaryFile.setFile(file);
+        temporaryFile.setFileName(upload.getOriginalFilename());
+        temporaryFile.setMimeType(mimeType);
+
+        return temporaryFile;
     }
 
 

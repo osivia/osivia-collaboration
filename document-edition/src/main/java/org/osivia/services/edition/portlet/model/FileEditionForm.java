@@ -20,34 +20,21 @@ import java.io.File;
 public class FileEditionForm extends AbstractDocumentEditionForm {
 
     /**
-     * Upload max size.
+     * Existing file.
      */
-    private final long maxSize;
-
+    private ExistingFile existingFile;
     /**
      * Required primary type.
      */
     private String requiredPrimaryType;
     /**
-     * Original file name.
-     */
-    private String originalFileName;
-    /**
      * Upload.
      */
     private MultipartFile upload;
     /**
-     * Temporary file.
+     * Upload temporary file.
      */
-    private File temporaryFile;
-    /**
-     * Temporary file name.
-     */
-    private String temporaryFileName;
-    /**
-     * Temporary file MIME type.
-     */
-    private MimeType temporaryFileMimeType;
+    private UploadTemporaryFile temporaryFile;
 
 
     /**
@@ -55,12 +42,15 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
      */
     public FileEditionForm() {
         super();
-        this.maxSize = DocumentEditionService.MAX_UPLOAD_SIZE;
     }
 
 
-    public long getMaxSize() {
-        return maxSize;
+    public ExistingFile getExistingFile() {
+        return existingFile;
+    }
+
+    public void setExistingFile(ExistingFile existingFile) {
+        this.existingFile = existingFile;
     }
 
     public String getRequiredPrimaryType() {
@@ -71,14 +61,6 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
         this.requiredPrimaryType = requiredPrimaryType;
     }
 
-    public String getOriginalFileName() {
-        return originalFileName;
-    }
-
-    public void setOriginalFileName(String originalFileName) {
-        this.originalFileName = originalFileName;
-    }
-
     public MultipartFile getUpload() {
         return upload;
     }
@@ -87,27 +69,11 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
         this.upload = upload;
     }
 
-    public File getTemporaryFile() {
+    public UploadTemporaryFile getTemporaryFile() {
         return temporaryFile;
     }
 
-    public void setTemporaryFile(File temporaryFile) {
+    public void setTemporaryFile(UploadTemporaryFile temporaryFile) {
         this.temporaryFile = temporaryFile;
-    }
-
-    public String getTemporaryFileName() {
-        return temporaryFileName;
-    }
-
-    public void setTemporaryFileName(String temporaryFileName) {
-        this.temporaryFileName = temporaryFileName;
-    }
-
-    public MimeType getTemporaryFileMimeType() {
-        return temporaryFileMimeType;
-    }
-
-    public void setTemporaryFileMimeType(MimeType temporaryFileMimeType) {
-        this.temporaryFileMimeType = temporaryFileMimeType;
     }
 }
