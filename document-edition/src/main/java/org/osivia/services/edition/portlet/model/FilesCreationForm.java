@@ -21,11 +21,6 @@ import java.util.List;
 public class FilesCreationForm extends AbstractDocumentEditionForm {
 
     /**
-     * Upload max size.
-     */
-    private final long maxSize;
-
-    /**
      * Upload.
      */
     private List<MultipartFile> upload;
@@ -40,13 +35,8 @@ public class FilesCreationForm extends AbstractDocumentEditionForm {
      */
     public FilesCreationForm() {
         super();
-        this.maxSize = DocumentEditionService.MAX_UPLOAD_SIZE;
     }
 
-
-    public long getMaxSize() {
-        return maxSize;
-    }
 
     public List<MultipartFile> getUpload() {
         return upload;

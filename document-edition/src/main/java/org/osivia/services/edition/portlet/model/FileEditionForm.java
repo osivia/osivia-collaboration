@@ -20,10 +20,9 @@ import java.io.File;
 public class FileEditionForm extends AbstractDocumentEditionForm {
 
     /**
-     * Upload max size.
+     * Existing file.
      */
-    private final long maxSize;
-
+    private ExistingFile existingFile;
     /**
      * Existing file.
      */
@@ -47,12 +46,15 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
      */
     public FileEditionForm() {
         super();
-        this.maxSize = DocumentEditionService.MAX_UPLOAD_SIZE;
     }
 
 
-    public long getMaxSize() {
-        return maxSize;
+    public ExistingFile getExistingFile() {
+        return existingFile;
+    }
+
+    public void setExistingFile(ExistingFile existingFile) {
+        this.existingFile = existingFile;
     }
 
     public ExistingFile getExistingFile() {

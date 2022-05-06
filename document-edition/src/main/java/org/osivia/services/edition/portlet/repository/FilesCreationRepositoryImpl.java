@@ -20,10 +20,8 @@ import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
-import java.io.File;
 import java.io.IOException;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -190,7 +188,7 @@ public class FilesCreationRepositoryImpl extends AbstractDocumentEditionReposito
 
 
     @Override
-    protected Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException {
+    protected Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
         // File binaries
         List<Blob> blobs = binaries.get(StringUtils.EMPTY);
         if (CollectionUtils.isEmpty(blobs)) {

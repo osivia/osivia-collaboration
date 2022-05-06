@@ -1,7 +1,5 @@
 package org.osivia.services.edition.portlet.repository;
 
-import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -11,7 +9,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.ExistingFile;
 import org.osivia.services.edition.portlet.model.FileEditionForm;
 import org.osivia.services.edition.portlet.model.UploadTemporaryFile;
-import org.osivia.services.edition.portlet.repository.command.ImportFilesCommand;
+import org.osivia.services.edition.portlet.model.UploadTemporaryFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
@@ -193,23 +191,6 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
             FileBlob blob = new FileBlob(file, s, contentType);
             binaries.put(BINARY_PROPERTY, Collections.singletonList(blob));
         }
-    }
-
-
-    @Override
-    protected Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException {
-        // File binaries
-        List<Blob> blobs = binaries.get(BINARY_PROPERTY);
-        if (CollectionUtils.isEmpty(blobs)) {
-            throw new PortletException("Empty file");
-        }
-
-        // Nuxeo command
-        ImportFilesCommand command = this.applicationContext.getBean(ImportFilesCommand.class);
-        command.setParentPath(parentPath);
-        command.setBinaries(blobs);
-
-        return (Document) nuxeoController.executeNuxeoCommand(command);
     }
 
 }

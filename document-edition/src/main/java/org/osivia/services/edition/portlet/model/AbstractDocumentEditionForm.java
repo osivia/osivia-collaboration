@@ -54,11 +54,6 @@ public abstract class AbstractDocumentEditionForm {
     private DocumentEditionMetadata metadata;
 
     /**
-     * Extract archive indicator.
-     */
-    private Boolean extractArchive;
-
-    /**
      * Remote user (for logging in validation)
      */
     private String remoteUser;

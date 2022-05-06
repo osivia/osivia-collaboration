@@ -259,11 +259,13 @@ public class LocalGroupsRepositoryImpl implements LocalGroupsRepository {
 
         for (String identifier : identifiers) {
             this.workspaceService.removeLocalGroup(workspaceId, identifier);
+            
+            // Nuxeo command
+            INuxeoCommand command = this.applicationContext.getBean(UpdateRemovedLocalGroupLinkedInvitationsCommand.class, workspaceId, identifier);
+            nuxeoController.executeNuxeoCommand(command);
         }
 
-        // Nuxeo command
-        INuxeoCommand command = this.applicationContext.getBean(UpdateRemovedLocalGroupLinkedInvitationsCommand.class, workspaceId, identifiers);
-        nuxeoController.executeNuxeoCommand(command);
+
     }
 
 
