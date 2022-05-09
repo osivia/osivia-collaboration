@@ -4,7 +4,7 @@
 
     <groupId>org.osivia.services</groupId>
     <artifactId>osivia-services-collaboration-parent</artifactId>
-    <version>4.4-SNAPSHOT</version>
+    <version>4.4.29.2</version>
     <packaging>pom</packaging>
 
     <name>OSIVIA Services - Collaboration parent</name>
