@@ -128,12 +128,26 @@ public class QuotaComputer extends NuxeoBatch {
 								if (quotaExceeded) {
 									addQuotaInfo(quotaContent, treeSize, quota, variables);
 
-									proceed(uuid, "updateWarning", variables);
+									try {
+										proceed(uuid, "updateWarning", variables);
+									} catch (FormFilterException | CMSException e) {
+										
+										logger.error("Quota : " + workspace.getTitle() + " Impossible de mettre à jour la procédure de quota");
+
+										
+										uuid = null; // If problme with procedure, renew procedure
+									}
 									
 								}
 								// - if problem is solved, delete the procedure
 								else {
-									proceed(uuid, "stopWarning", variables);
+									try {
+										proceed(uuid, "stopWarning", variables);
+									
+									}
+									catch (FormFilterException | CMSException e) {
+										logger.error("Quota : " + workspace.getTitle() + " Impossible de supprimer la procédure de quota");
+									}
 									uuid = null;
 	
 								}
@@ -157,7 +171,11 @@ public class QuotaComputer extends NuxeoBatch {
 						
 						addQuotaInfo(quotaContent, treeSize, quota, variables);
 
-						variables = startProcedure("quota_exceeding", variables);
+						try {
+							variables = startProcedure("quota_exceeding", variables);
+						} catch (PortalException | FormFilterException e) {
+							logger.error("Quota : " + workspace.getTitle() + " Impossible de démarrer la procédure de quota");
+						}
 						uuid = variables.get("uuid");
 
 					}
@@ -168,10 +186,6 @@ public class QuotaComputer extends NuxeoBatch {
 
 				}
 			} catch (IOException e) {
-				throw new PortalException(e);
-			} catch (FormFilterException e) {
-				throw new PortalException(e);
-			} catch (CMSException e) {
 				throw new PortalException(e);
 			}
 		}
