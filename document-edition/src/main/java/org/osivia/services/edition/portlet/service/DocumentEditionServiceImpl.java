@@ -2,8 +2,10 @@ package org.osivia.services.edition.portlet.service;
 
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.editor.EditorService;
@@ -16,6 +18,7 @@ import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
+import org.osivia.services.edition.portlet.repository.DocumentEditionMetadataRepository;
 import org.osivia.services.edition.portlet.repository.DocumentEditionRepository;
 import org.osivia.services.edition.portlet.repository.ZipExtractionRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import javax.portlet.*;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,6 +48,12 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
      */
     @Autowired
     private ApplicationContext applicationContext;
+
+    /**
+     * Document metadata edition repository.
+     */
+    @Autowired
+    private DocumentEditionMetadataRepository metadataRepository;
 
     /**
      * Portal URL factory.
@@ -135,8 +145,6 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         boolean creation = StringUtils.isEmpty(path);
         form.setCreation(creation);
 
-        form.setExtractArchive(windowProperties.isExtractArchive());
-
         // for logging in validation phase
         form.setRemoteUser(portalControllerContext.getRequest().getRemoteUser());
 
@@ -199,11 +207,31 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
 
     @Override
+    public void uploadVignette(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
+        this.metadataRepository.uploadVignette(portalControllerContext, form.getMetadata());
+    }
+
+
+    @Override
+    public void deleteVignette(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
+        this.metadataRepository.deleteVignette(portalControllerContext, form.getMetadata());
+    }
+
+
+    @Override
+    public void restoreVignette(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
+        this.metadataRepository.restoreVignette(portalControllerContext, form.getMetadata());
+    }
+
+
+    @Override
     public void validate(AbstractDocumentEditionForm form, Errors errors) {
         // Repository
         DocumentEditionRepository<?> repository = this.getRepository(form.getName());
 
         repository.validate(form, errors);
+
+        this.metadataRepository.validate(form.getMetadata(), errors);
     }
 
 
@@ -326,6 +354,39 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         }
 
         return repositoryName;
+    }
+
+
+    @Override
+    public void vignettePreview(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Resource response
+        ResourceResponse response = (ResourceResponse) portalControllerContext.getResponse();
+
+        // Temporary file
+        File temporaryFile = form.getMetadata().getVignetteTemporaryFile().getFile();
+
+        // Upload size
+        int size = Long.valueOf(temporaryFile.length()).intValue();
+        response.setContentLength(size);
+
+        // Content type
+        String contentType = response.getContentType();
+        response.setContentType(contentType);
+
+        // Character encoding
+        response.setCharacterEncoding(CharEncoding.UTF_8);
+
+        // No cache
+        response.getCacheControl().setExpirationTime(0);
+
+
+        // Input steam
+        InputStream inputSteam = Files.newInputStream(temporaryFile.toPath());
+        // Output stream
+        OutputStream outputStream = response.getPortletOutputStream();
+        // Copy
+        IOUtils.copy(inputSteam, outputStream);
+        outputStream.close();
     }
 
 

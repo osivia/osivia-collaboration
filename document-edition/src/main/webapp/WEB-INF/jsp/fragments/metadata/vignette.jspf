@@ -1,37 +1,70 @@
 <c:set var="namespace"><portlet:namespace/></c:set>
 
+<jsp:useBean id="currentDate" class="java.util.Date"/>
 
-<div class="form-group">
-    <form:label path="upload" cssClass="control-label"><op:translate key="DOCUMENT_EDITION_FORM_FILE_LABEL"/></form:label>
-    <div>
-        <div class="media-left">
-            <label class="btn btn-default btn-file">
+
+<%--@elvariable id="form" type="org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm"--%>
+<spring:bind path="metadata.vignetteUpload">
+    <div class="form-group ${status.error ? 'has-error' : ''}">
+        <form:label path="metadata.vignetteUpload" cssClass="control-label"><op:translate
+                key="DOCUMENT_EDITION_FORM_METADATA_VIGNETTE_LABEL"/></form:label>
+        <c:choose>
+            <c:when test="${not empty form.metadata.vignetteTemporaryFile}">
+                <%--Upload preview--%>
+                <portlet:resourceURL id="vignette-preview" var="previewUrl">
+                    <portlet:param name="t" value="${currentDate.time}"/>
+                </portlet:resourceURL>
+                <p>
+                    <img src="${previewUrl}" alt="" class="vignette img-responsive">
+                </p>
+            </c:when>
+
+            <c:when test="${form.metadata.vignetteDeleted}">
+                <%--Deleted vignette--%>
+                <p class="text-muted">
+                    <span><op:translate key="DOCUMENT_EDITION_FORM_METADATA_VIGNETTE_DELETED"/></span>
+                </p>
+            </c:when>
+
+            <c:when test="${empty form.metadata.vignette.downloadUrl}">
+                <%--No vignette--%>
+                <p class="text-muted">
+                    <span><op:translate key="DOCUMENT_EDITION_FORM_METADATA_NO_VIGNETTE"/></span>
+                </p>
+            </c:when>
+
+            <c:otherwise>
+                <%--Existing vignette--%>
+                <p>
+                    <img src="${form.metadata.vignette.downloadUrl}" alt="" class="img-responsive">
+                </p>
+            </c:otherwise>
+        </c:choose>
+        <div>
+            <label class="btn btn-default btn-sm btn-file">
                 <i class="glyphicons glyphicons-folder-open"></i>
                 <span><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_ACTION"/></span>
-                <c:set var="maxSize"><ttc:fileSize size="${form.maxSize}" escapeHtml="false"/></c:set>
-                <c:set var="fileSizeLimitExceededMessage"><op:translate key="DOCUMENT_EDITION_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
-                <form:input path="upload" type="file" data-max-size="${form.maxSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-file-upload-submit"/>
+                <c:set var="maxSize"><ttc:fileSize size="${form.uploadMaxSize}" escapeHtml="false"/></c:set>
+                <c:set var="fileSizeLimitExceededMessage"><op:translate
+                        key="DOCUMENT_EDITION_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
+                <form:input path="metadata.vignetteUpload" type="file" data-max-size="${form.uploadMaxSize}"
+                            data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}"
+                            data-submit="${namespace}-vignette-upload-submit"/>
             </label>
-        </div>
 
-        <div class="media-body">
-            <p class="form-control-static text-muted">
-                <c:choose>
-                    <c:when test="${not empty form.temporaryFileName}">${form.temporaryFileName}</c:when>
-                    <c:when test="${form.creation}"><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_TEXT"/></c:when>
-                    <c:when test="${not empty form.originalFileName}">${form.originalFileName}</c:when>
-                </c:choose>
-            </p>
-        </div>
-
-        <c:if test="${not empty form.temporaryFileName and not form.creation}">
-            <div class="media-right">
-                <button type="submit" name="restore" class="btn btn-link">
-                    <span><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_RESTORE"/></span>
+            <c:if test="${(not empty form.metadata.vignette or not empty form.metadata.vignetteTemporaryFile) and not form.metadata.vignetteDeleted}">
+                <button type="submit" name="delete-vignette" class="btn btn-link btn-sm">
+                    <span><op:translate key="DOCUMENT_EDITION_FORM_METADATA_VIGNETTE_DELETE"/></span>
                 </button>
-            </div>
-        </c:if>
+            </c:if>
+
+            <c:if test="${not empty form.metadata.vignette and (not empty form.metadata.vignetteTemporaryFile or form.metadata.vignetteDeleted)}">
+                <button type="submit" name="restore-vignette" class="btn btn-link btn-sm">
+                    <span><op:translate key="DOCUMENT_EDITION_FORM_METADATA_VIGNETTE_RESTORE"/></span>
+                </button>
+            </c:if>
+        </div>
+        <form:errors path="metadata.vignetteUpload" cssClass="help-block"/>
+        <input id="${namespace}-vignette-upload-submit" type="submit" name="upload-vignette" class="hidden">
     </div>
-    <form:errors path="upload" cssClass="help-block"/>
-    <input id="${namespace}-file-upload-submit" type="submit" name="upload" class="hidden">
-</div>
+</spring:bind>

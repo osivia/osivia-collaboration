@@ -14,10 +14,10 @@
 
 
 <%--@elvariable id="form" type="org.osivia.services.edition.portlet.model.FolderEditionForm"--%>
-<form:form action="${url}" method="post" modelAttribute="form">
+<form:form action="${url}" method="post" enctype="multipart/form-data" modelAttribute="form">
     <%--Title--%>
-    <%@include file="fragments/title.jspf"%>
+    <%@ include file="fragments/title.jspf" %>
 
     <%--Buttons--%>
-    <%@include file="fragments/buttons.jspf"%>
+    <%@ include file="fragments/buttons.jspf" %>
 </form:form>

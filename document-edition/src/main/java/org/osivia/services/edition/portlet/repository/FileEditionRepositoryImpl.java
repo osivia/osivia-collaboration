@@ -9,7 +9,6 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.ExistingFile;
 import org.osivia.services.edition.portlet.model.FileEditionForm;
 import org.osivia.services.edition.portlet.model.UploadTemporaryFile;
-import org.osivia.services.edition.portlet.model.UploadTemporaryFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
@@ -17,7 +16,6 @@ import org.springframework.validation.Errors;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.activation.MimeType;
-import javax.portlet.PortletException;
 import java.io.File;
 import java.io.IOException;
 import java.text.Normalizer;

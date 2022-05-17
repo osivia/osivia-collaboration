@@ -1,5 +1,7 @@
 package org.osivia.services.edition.portlet.controller;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.validator.DocumentEditionFormValidator;
@@ -17,7 +19,7 @@ import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
 import javax.portlet.*;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Document edition portlet controller.
@@ -110,6 +112,54 @@ public class DocumentEditionController implements PortletContextAware {
 
 
     /**
+     * Upload document vignette action mapping.
+     *
+     * @param request  action request
+     * @param response action response
+     * @param form     document edition form model attribute
+     */
+    @ActionMapping(name = "submit", params = "upload-vignette")
+    public void uploadVignette(ActionRequest request, ActionResponse response, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.uploadVignette(portalControllerContext, form);
+    }
+
+
+    /**
+     * Delete document vignette action mapping.
+     *
+     * @param request  action request
+     * @param response action response
+     * @param form     document edition form model attribute
+     */
+    @ActionMapping(name = "submit", params = "delete-vignette")
+    public void deleteVignette(ActionRequest request, ActionResponse response, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.deleteVignette(portalControllerContext, form);
+    }
+
+
+    /**
+     * Restore document vignette action mapping.
+     *
+     * @param request  action request
+     * @param response action response
+     * @param form     document edition form model attribute
+     */
+    @ActionMapping(name = "submit", params = "restore-vignette")
+    public void restoreVignette(ActionRequest request, ActionResponse response, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.restoreVignette(portalControllerContext, form);
+    }
+
+
+    /**
      * Save document edition action mapping.
      *
      * @param request       action request
@@ -146,6 +196,22 @@ public class DocumentEditionController implements PortletContextAware {
         sessionStatus.setComplete();
 
         this.service.cancel(portalControllerContext);
+    }
+
+
+    /**
+     * Vignette preview ressource mapping.
+     *
+     * @param request  resource request
+     * @param response resource response
+     * @param form     document edition form model attribute
+     */
+    @ResourceMapping("vignette-preview")
+    public void vignettePreview(ResourceRequest request, ResourceResponse response, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.vignettePreview(portalControllerContext, form);
     }
 
 

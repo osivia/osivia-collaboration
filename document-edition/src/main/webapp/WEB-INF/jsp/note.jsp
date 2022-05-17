@@ -14,7 +14,7 @@
 
 
 <%--@elvariable id="form" type="org.osivia.services.edition.portlet.model.NoteEditionForm"--%>
-<form:form action="${url}" method="post" modelAttribute="form">
+<form:form action="${url}" method="post" enctype="multipart/form-data" modelAttribute="form">
     <%--Title--%>
     <%@ include file="fragments/title.jspf" %>
 
@@ -23,6 +23,11 @@
 
     <%--Attachments--%>
     <%@ include file="fragments/attachments.jspf" %>
+
+    <c:if test="${not form.creation}">
+        <%--Metadata--%>
+        <%@ include file="fragments/metadata.jspf" %>
+    </c:if>
 
     <%--Buttons--%>
     <%@ include file="fragments/buttons.jspf" %>

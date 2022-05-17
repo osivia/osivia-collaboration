@@ -24,10 +24,6 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
      */
     private ExistingFile existingFile;
     /**
-     * Existing file.
-     */
-    private ExistingFile existingFile;
-    /**
      * Required primary type.
      */
     private String requiredPrimaryType;
@@ -48,14 +44,6 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
         super();
     }
 
-
-    public ExistingFile getExistingFile() {
-        return existingFile;
-    }
-
-    public void setExistingFile(ExistingFile existingFile) {
-        this.existingFile = existingFile;
-    }
 
     public ExistingFile getExistingFile() {
         return existingFile;

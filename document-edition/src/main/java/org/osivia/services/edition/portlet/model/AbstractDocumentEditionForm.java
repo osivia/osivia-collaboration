@@ -144,14 +144,6 @@ public abstract class AbstractDocumentEditionForm {
         this.metadata = metadata;
     }
 
-    public Boolean getExtractArchive() {
-        return extractArchive;
-    }
-
-    public void setExtractArchive(Boolean extractArchive) {
-        this.extractArchive = extractArchive;
-    }
-
     public String getRemoteUser() {
         return remoteUser;
     }

@@ -330,7 +330,7 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
         Map<String, List<Blob>> binaries = new HashMap<>();
 
         // Metadata
-        this.metadataRepository.customizeProperties(form.getMetadata(), properties);
+        this.metadataRepository.customizeProperties(portalControllerContext, form.getMetadata(), properties, binaries);
 
         // Customization
         this.customizeProperties(portalControllerContext, this.castForm(form), properties, binaries);

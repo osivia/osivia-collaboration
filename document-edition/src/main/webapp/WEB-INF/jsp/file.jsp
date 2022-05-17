@@ -12,16 +12,22 @@
 
 <portlet:actionURL name="submit" var="url"/>
 
+
 <%--@elvariable id="form" type="org.osivia.services.edition.portlet.model.FileEditionForm"--%>
 <form:form action="${url}" method="post" enctype="multipart/form-data" modelAttribute="form">
     <c:if test="${not form.creation}">
         <%--Title--%>
-        <%@include file="fragments/title.jspf" %>
+        <%@ include file="fragments/title.jspf" %>
     </c:if>
 
     <%--File--%>
-    <%@include file="fragments/file.jspf" %>
+    <%@ include file="fragments/file.jspf" %>
+
+    <c:if test="${not form.creation}">
+        <%--Metadata--%>
+        <%@ include file="fragments/metadata.jspf" %>
+    </c:if>
 
     <%--Buttons--%>
-    <%@include file="fragments/buttons.jspf" %>
+    <%@ include file="fragments/buttons.jspf" %>
 </form:form>

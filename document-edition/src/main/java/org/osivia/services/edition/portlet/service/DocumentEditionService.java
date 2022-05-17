@@ -10,6 +10,7 @@ import org.springframework.validation.Errors;
 
 import javax.portlet.PortletException;
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Document edition portlet service interface.
@@ -42,6 +43,7 @@ public interface DocumentEditionService {
      * Fullscreen indicator window property.
      */
     String FULLSCREEN_WINDOW_PROPERTY = "osivia.document.edition.fullscreen";
+
 
     /**
      * Max upload size.
@@ -104,6 +106,33 @@ public interface DocumentEditionService {
 
 
     /**
+     * Upload document vignette.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     */
+    void uploadVignette(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+
+
+    /**
+     * Delete document vignette.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     */
+    void deleteVignette(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+
+
+    /**
+     * Restore document vignette.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     */
+    void restoreVignette(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+
+
+    /**
      * Validate document edition form.
      *
      * @param form   document edition form
@@ -127,6 +156,15 @@ public interface DocumentEditionService {
      * @param portalControllerContext portal controller context
      */
     void cancel(PortalControllerContext portalControllerContext) throws PortletException, IOException;
+
+
+    /**
+     * Vignette preview.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     */
+    void vignettePreview(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
 
 
     /**

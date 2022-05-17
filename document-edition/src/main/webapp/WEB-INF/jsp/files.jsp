@@ -12,6 +12,7 @@
 
 <portlet:actionURL name="submit" var="url"/>
 
+
 <%--@elvariable id="form" type="org.osivia.services.edition.portlet.model.FilesCreationForm"--%>
 <form:form action="${url}" method="post" enctype="multipart/form-data" modelAttribute="form">
     <%--Files--%>
