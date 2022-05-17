@@ -37,11 +37,11 @@ public class DocumentEditionMetadataRepositoryImpl implements DocumentEditionMet
     /**
      * Description Nuxeo document property.
      */
-    private static final String DESCRIPTION_PROPERTY = "dc:description";
+    protected static final String DESCRIPTION_PROPERTY = "dc:description";
     /**
      * Vignette Nuxeo document property.
      */
-    private static final String VIGNETTE_PROPERTY = "ttc:vignette";
+    protected static final String VIGNETTE_PROPERTY = "ttc:vignette";
 
 
     /**

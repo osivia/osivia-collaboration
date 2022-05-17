@@ -18,6 +18,7 @@ import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
+import org.osivia.services.edition.portlet.repository.DocumentEditionAttachmentsRepository;
 import org.osivia.services.edition.portlet.repository.DocumentEditionMetadataRepository;
 import org.osivia.services.edition.portlet.repository.DocumentEditionRepository;
 import org.osivia.services.edition.portlet.repository.ZipExtractionRepositoryImpl;
@@ -48,6 +49,12 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
      */
     @Autowired
     private ApplicationContext applicationContext;
+
+    /**
+     * Document attachments edition repository.
+     */
+    @Autowired
+    private DocumentEditionAttachmentsRepository attachmentsRepository;
 
     /**
      * Document metadata edition repository.
@@ -207,6 +214,24 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
 
     @Override
+    public void uploadAttachments(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
+        this.attachmentsRepository.uploadAttachments(portalControllerContext, form.getAttachments());
+    }
+
+
+    @Override
+    public void deleteAttachment(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String value) throws PortletException, IOException {
+        this.attachmentsRepository.deleteAttachment(portalControllerContext, form.getAttachments(), value);
+    }
+
+
+    @Override
+    public void restoreAttachment(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String value) throws PortletException, IOException {
+        this.attachmentsRepository.restoreAttachment(portalControllerContext, form.getAttachments(), value);
+    }
+
+
+    @Override
     public void uploadVignette(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
         this.metadataRepository.uploadVignette(portalControllerContext, form.getMetadata());
     }
@@ -229,8 +254,11 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
         // Repository
         DocumentEditionRepository<?> repository = this.getRepository(form.getName());
 
+        // Related validation
         repository.validate(form, errors);
-
+        // Attachments validation
+        this.attachmentsRepository.validate(form.getAttachments(), errors);
+        // Metadata validation
         this.metadataRepository.validate(form.getMetadata(), errors);
     }
 

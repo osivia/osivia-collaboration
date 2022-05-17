@@ -8,7 +8,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -29,8 +28,8 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,10 +47,6 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
      * Title Nuxeo document property.
      */
     protected static final String TITLE_PROPERTY = "dc:title";
-    /**
-     * Attachements Nuxeo document property.
-     */
-    protected static final String ATTACHMENTS_PROPERTY = "files:files";
 
 
     /**
@@ -59,11 +54,18 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
      */
     private PortletContext portletContext;
 
+
     /**
      * Application context.
      */
     @Autowired
     private ApplicationContext applicationContext;
+
+    /**
+     * Document attachments edition repository.
+     */
+    @Autowired
+    private DocumentEditionAttachmentsRepository attachmentsRepository;
 
     /**
      * Document metadata edition repository.
@@ -110,6 +112,10 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
             // Attachments
             Attachments attachments = this.applicationContext.getBean(Attachments.class);
             form.setAttachments(attachments);
+
+            // Metadata
+            DocumentEditionMetadata metadata = this.applicationContext.getBean(DocumentEditionMetadata.class);
+            form.setMetadata(metadata);
         } else {
             // Document context
             NuxeoDocumentContext documentContext = this.getDocumentContext(portalControllerContext, windowProperties.getDocumentPath());
@@ -122,7 +128,7 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
             form.setOriginalTitle(title);
 
             // Attachments
-            Attachments attachments = this.loadExistingAttachments(document);
+            Attachments attachments = this.attachmentsRepository.getAttachments(portalControllerContext, document);
             form.setAttachments(attachments);
 
             // Metadata
@@ -134,49 +140,6 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
         }
 
         return form;
-    }
-
-
-    /**
-     * Load existing attachements.
-     *
-     * @param document document
-     * @return attachments
-     */
-    private Attachments loadExistingAttachments(Document document) {
-        // Existing files
-        List<ExistingFile> existingFiles;
-        PropertyList attachmentsList = document.getProperties().getList(ATTACHMENTS_PROPERTY);
-        if ((attachmentsList == null) || attachmentsList.isEmpty()) {
-            existingFiles = null;
-        } else {
-            existingFiles = new ArrayList<>(attachmentsList.size());
-            for (int i = 0; i < attachmentsList.size(); i++) {
-                PropertyMap attachmentMap = attachmentsList.getMap(i);
-                PropertyMap attachmentFileMap = attachmentMap.getMap("file");
-                String fileName = attachmentFileMap.getString("name");
-                MimeType mimeType;
-                try {
-                    mimeType = new MimeType(attachmentFileMap.getString("mime-type"));
-                } catch (MimeTypeParseException e) {
-                    mimeType = null;
-                }
-
-                // Existing file
-                ExistingFile file = this.applicationContext.getBean(ExistingFile.class);
-                file.setIndex(i);
-                file.setFileName(fileName);
-                file.setMimeType(mimeType);
-
-                existingFiles.add(file);
-            }
-        }
-
-        // Attachments
-        Attachments attachments = this.applicationContext.getBean(Attachments.class);
-        attachments.setExistingFiles(existingFiles);
-
-        return attachments;
     }
 
 
@@ -300,7 +263,7 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
         temporaryFile.setFile(file);
         temporaryFile.setFileName(upload.getOriginalFilename());
         temporaryFile.setMimeType(mimeType);
-        
+
         return temporaryFile;
     }
 
@@ -327,7 +290,10 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
         properties.set(TITLE_PROPERTY, form.getTitle());
 
         // Binaries
-        Map<String, List<Blob>> binaries = new HashMap<>();
+        Map<String, List<Blob>> binaries = new LinkedHashMap<>();
+
+        // Attachments
+        this.attachmentsRepository.customizeProperties(portalControllerContext, form.getAttachments(), properties, binaries);
 
         // Metadata
         this.metadataRepository.customizeProperties(portalControllerContext, form.getMetadata(), properties, binaries);

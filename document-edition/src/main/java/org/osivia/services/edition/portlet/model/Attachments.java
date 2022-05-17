@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 
 /**
  * Attachments.
@@ -19,7 +21,7 @@ public class Attachments {
     /**
      * Existing files.
      */
-    private List<ExistingFile> existingFiles;
+    private SortedMap<ExistingFile, Boolean> existingFiles;
     /**
      * Upload.
      */
@@ -38,11 +40,11 @@ public class Attachments {
     }
 
 
-    public List<ExistingFile> getExistingFiles() {
+    public SortedMap<ExistingFile, Boolean> getExistingFiles() {
         return existingFiles;
     }
 
-    public void setExistingFiles(List<ExistingFile> existingFiles) {
+    public void setExistingFiles(SortedMap<ExistingFile, Boolean> existingFiles) {
         this.existingFiles = existingFiles;
     }
 

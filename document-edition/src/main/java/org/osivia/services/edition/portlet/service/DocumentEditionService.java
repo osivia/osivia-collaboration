@@ -106,6 +106,35 @@ public interface DocumentEditionService {
 
 
     /**
+     * Upload document attachments.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     */
+    void uploadAttachments(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+
+
+    /**
+     * Delete document attachment.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     * @param value                   parameter value
+     */
+    void deleteAttachment(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String value) throws PortletException, IOException;
+
+
+    /**
+     * Restore attachment.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     * @param value                   parameter value
+     */
+    void restoreAttachment(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String value) throws PortletException, IOException;
+
+
+    /**
      * Upload document vignette.
      *
      * @param portalControllerContext portal controller context

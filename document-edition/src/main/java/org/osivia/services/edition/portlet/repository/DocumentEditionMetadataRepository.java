@@ -21,11 +21,11 @@ import java.util.Map;
 public interface DocumentEditionMetadataRepository {
 
     /**
-     * Get metadata.
+     * Get document metadata.
      *
      * @param portalControllerContext portlet controller context
-     * @param document                document
-     * @return metadata
+     * @param document                related Nuxeo document
+     * @return document metadata
      */
     DocumentEditionMetadata getMetadata(PortalControllerContext portalControllerContext, Document document) throws PortletException;
 
@@ -58,7 +58,7 @@ public interface DocumentEditionMetadataRepository {
 
 
     /**
-     * Validate document edition form.
+     * Validate document metadata.
      *
      * @param metadata document metadata
      * @param errors   validation errors
@@ -69,8 +69,10 @@ public interface DocumentEditionMetadataRepository {
     /**
      * Customize metadata properties.
      *
-     * @param metadata   metadata
-     * @param properties document properties
+     * @param portalControllerContext portal controller context
+     * @param metadata                document metadata
+     * @param properties              document properties
+     * @param binaries                document binaries
      */
     void customizeProperties(PortalControllerContext portalControllerContext, DocumentEditionMetadata metadata, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException;
 

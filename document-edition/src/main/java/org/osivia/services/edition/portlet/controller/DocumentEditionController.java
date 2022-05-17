@@ -1,7 +1,6 @@
 package org.osivia.services.edition.portlet.controller;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.validator.DocumentEditionFormValidator;
@@ -19,7 +18,7 @@ import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
 import javax.portlet.*;
-import java.io.*;
+import java.io.IOException;
 
 /**
  * Document edition portlet controller.
@@ -108,6 +107,56 @@ public class DocumentEditionController implements PortletContextAware {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         this.service.restore(portalControllerContext, form);
+    }
+
+
+    /**
+     * Upload document attachments action mapping.
+     *
+     * @param request  action request
+     * @param response action response
+     * @param form     document edition form model attribute
+     */
+    @ActionMapping(name = "submit", params = "upload-attachments")
+    public void uploadAttachments(ActionRequest request, ActionResponse response, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.uploadAttachments(portalControllerContext, form);
+    }
+
+
+    /**
+     * Delete document attachment action mapping.
+     *
+     * @param request  action request
+     * @param response action response
+     * @param value    deleted attachment request parameter value
+     * @param form     document edition form model attribute
+     */
+    @ActionMapping(name = "submit", params = "delete-attachment")
+    public void deleteAttachment(ActionRequest request, ActionResponse response, @RequestParam("delete-attachment") String value, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.deleteAttachment(portalControllerContext, form, value);
+    }
+
+
+    /**
+     * Restore document attachment action mapping.
+     *
+     * @param request  action request
+     * @param response action response
+     * @param value    restored attachment request parameter value
+     * @param form     document edition form model attribute
+     */
+    @ActionMapping(name = "submit", params = "restore-attachment")
+    public void restoreAttachment(ActionRequest request, ActionResponse response, @RequestParam("restore-attachment") String value, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.restoreAttachment(portalControllerContext, form, value);
     }
 
 
