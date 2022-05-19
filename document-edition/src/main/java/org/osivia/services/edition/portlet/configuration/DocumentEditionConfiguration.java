@@ -9,7 +9,6 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.portlet.PortletAppUtils;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.services.edition.portlet.repository.FileEditionRepositoryImpl;
 import org.osivia.services.edition.portlet.service.DocumentEditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

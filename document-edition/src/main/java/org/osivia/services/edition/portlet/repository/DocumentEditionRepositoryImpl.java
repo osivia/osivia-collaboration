@@ -11,7 +11,10 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.edition.portlet.model.*;
+import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
+import org.osivia.services.edition.portlet.model.Attachments;
+import org.osivia.services.edition.portlet.model.DocumentEditionMetadata;
+import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
 import org.osivia.services.edition.portlet.repository.command.CheckTitleAvailabilityCommand;
 import org.osivia.services.edition.portlet.repository.command.CreateDocumentCommand;
 import org.osivia.services.edition.portlet.repository.command.UpdateDocumentCommand;
@@ -19,16 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.context.PortletContextAware;
 
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,10 +36,11 @@ import java.util.Map;
  *
  * @param <T> document edition form type
  * @author Cédric Krommenhoek
+ * @see DocumentEditionCommonRepositoryImpl
  * @see PortletContextAware
  * @see DocumentEditionRepository
  */
-public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDocumentEditionForm> implements PortletContextAware, DocumentEditionRepository<T> {
+public abstract class DocumentEditionRepositoryImpl<T extends AbstractDocumentEditionForm> extends DocumentEditionCommonRepositoryImpl<T> implements PortletContextAware, DocumentEditionRepository<T> {
 
     /**
      * Title Nuxeo document property.
@@ -77,7 +76,7 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
     /**
      * Constructor.
      */
-    protected AbstractDocumentEditionRepositoryImpl() {
+    protected DocumentEditionRepositoryImpl() {
         super();
     }
 
@@ -104,11 +103,11 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
 
 
     @Override
-    public T getForm(PortalControllerContext portalControllerContext, DocumentEditionWindowProperties windowProperties) throws PortletException, IOException {
+    public T get(PortalControllerContext portalControllerContext, Document document) throws PortletException, IOException {
         Class<T> type = this.getParameterizedType();
         T form = this.applicationContext.getBean(type);
 
-        if (StringUtils.isEmpty(windowProperties.getDocumentPath())) {
+        if (document == null) {
             // Attachments
             Attachments attachments = this.applicationContext.getBean(Attachments.class);
             form.setAttachments(attachments);
@@ -117,22 +116,17 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
             DocumentEditionMetadata metadata = this.applicationContext.getBean(DocumentEditionMetadata.class);
             form.setMetadata(metadata);
         } else {
-            // Document context
-            NuxeoDocumentContext documentContext = this.getDocumentContext(portalControllerContext, windowProperties.getDocumentPath());
-            // Document
-            Document document = documentContext.getDocument();
-
             // Title
             String title = document.getTitle();
             form.setTitle(title);
             form.setOriginalTitle(title);
 
             // Attachments
-            Attachments attachments = this.attachmentsRepository.getAttachments(portalControllerContext, document);
+            Attachments attachments = this.attachmentsRepository.get(portalControllerContext, document);
             form.setAttachments(attachments);
 
             // Metadata
-            DocumentEditionMetadata metadata = this.metadataRepository.getMetadata(portalControllerContext, document);
+            DocumentEditionMetadata metadata = this.metadataRepository.get(portalControllerContext, document);
             form.setMetadata(metadata);
 
             // Customization
@@ -140,6 +134,23 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
         }
 
         return form;
+    }
+
+
+    @Override
+    public T getForm(PortalControllerContext portalControllerContext, DocumentEditionWindowProperties windowProperties) throws PortletException, IOException {
+        // Document
+        Document document;
+        if (StringUtils.isEmpty(windowProperties.getDocumentPath())) {
+            document = null;
+        } else {
+            // Document context
+            NuxeoDocumentContext documentContext = this.getDocumentContext(portalControllerContext, windowProperties.getDocumentPath());
+
+            document = documentContext.getDocument();
+        }
+
+        return this.get(portalControllerContext, document);
     }
 
 
@@ -245,29 +256,6 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
     }
 
 
-    protected UploadTemporaryFile createTemporaryFile(MultipartFile upload) throws IOException {
-        File file = File.createTempFile("uploaded-file-", ".tmp");
-        file.deleteOnExit();
-        upload.transferTo(file);
-
-        // MIME type
-        MimeType mimeType;
-        try {
-            mimeType = new MimeType(upload.getContentType());
-        } catch (MimeTypeParseException e) {
-            mimeType = null;
-        }
-
-        // Temporary file
-        UploadTemporaryFile temporaryFile = this.applicationContext.getBean(UploadTemporaryFile.class);
-        temporaryFile.setFile(file);
-        temporaryFile.setFileName(upload.getOriginalFilename());
-        temporaryFile.setMimeType(mimeType);
-
-        return temporaryFile;
-    }
-
-
     @Override
     public void restore(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
         this.customizeRestore(portalControllerContext, this.castForm(form));
@@ -329,15 +317,8 @@ public abstract class AbstractDocumentEditionRepositoryImpl<T extends AbstractDo
     }
 
 
-    /**
-     * Customize document properties.
-     *
-     * @param portalControllerContext portal controller context
-     * @param form                    document edition form
-     * @param properties              document properties
-     * @param binaries                document updated binaries
-     */
-    protected void customizeProperties(PortalControllerContext portalControllerContext, T form, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
+    @Override
+    public void customizeProperties(PortalControllerContext portalControllerContext, T form, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
         // Do nothing
     }
 

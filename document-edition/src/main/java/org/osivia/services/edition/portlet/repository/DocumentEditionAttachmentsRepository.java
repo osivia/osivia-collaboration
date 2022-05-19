@@ -16,8 +16,10 @@ import java.util.Map;
  * Document edition attachments repository interface.
  *
  * @author Cédric Krommenhoek
+ * @see DocumentEditionCommonRepository
+ * @see Attachments
  */
-public interface DocumentEditionAttachmentsRepository {
+public interface DocumentEditionAttachmentsRepository extends DocumentEditionCommonRepository<Attachments> {
 
     /**
      * Get document attachments.
@@ -26,7 +28,7 @@ public interface DocumentEditionAttachmentsRepository {
      * @param document                related Nuxeo document
      * @return document attachments
      */
-    Attachments getAttachments(PortalControllerContext portalControllerContext, Document document) throws PortletException;
+    Attachments get(PortalControllerContext portalControllerContext, Document document) throws PortletException;
 
 
     /**

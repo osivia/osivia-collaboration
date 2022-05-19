@@ -31,11 +31,11 @@ import java.util.stream.Stream;
  * File edition portlet repository implementation.
  *
  * @author Cédric Krommenhoek
- * @see AbstractDocumentEditionRepositoryImpl
+ * @see DocumentEditionRepositoryImpl
  * @see FileEditionForm
  */
 @Repository
-public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepositoryImpl<FileEditionForm> {
+public class FileEditionRepositoryImpl extends DocumentEditionRepositoryImpl<FileEditionForm> {
 
     /**
      * File binary Nuxeo document property.
@@ -172,7 +172,7 @@ public class FileEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
 
     @Override
-    protected void customizeProperties(PortalControllerContext portalControllerContext, FileEditionForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
+    public void customizeProperties(PortalControllerContext portalControllerContext, FileEditionForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
         if ((form.getTemporaryFile() != null) && (form.getTemporaryFile().getFile() != null)) {
             // File
             File file = form.getTemporaryFile().getFile();

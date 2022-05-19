@@ -4,7 +4,6 @@ import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.DocumentEditionMetadata;
 import org.springframework.validation.Errors;
 
@@ -18,7 +17,7 @@ import java.util.Map;
  *
  * @author Cédric Krommenhoek
  */
-public interface DocumentEditionMetadataRepository {
+public interface DocumentEditionMetadataRepository extends DocumentEditionCommonRepository<DocumentEditionMetadata> {
 
     /**
      * Get document metadata.
@@ -27,7 +26,7 @@ public interface DocumentEditionMetadataRepository {
      * @param document                related Nuxeo document
      * @return document metadata
      */
-    DocumentEditionMetadata getMetadata(PortalControllerContext portalControllerContext, Document document) throws PortletException;
+    DocumentEditionMetadata get(PortalControllerContext portalControllerContext, Document document) throws PortletException;
 
 
     /**

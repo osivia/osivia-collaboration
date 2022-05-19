@@ -17,11 +17,11 @@ import java.util.Map;
  * Note edition portlet repository implementation.
  *
  * @author Cédric Krommenhoek
- * @see AbstractDocumentEditionRepositoryImpl
+ * @see DocumentEditionRepositoryImpl
  * @see NoteEditionForm
  */
 @Repository
-public class NoteEditionRepositoryImpl extends AbstractDocumentEditionRepositoryImpl<NoteEditionForm> {
+public class NoteEditionRepositoryImpl extends DocumentEditionRepositoryImpl<NoteEditionForm> {
 
     /**
      * Constructor.
@@ -69,7 +69,7 @@ public class NoteEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
 
     @Override
-    protected void customizeProperties(PortalControllerContext portalControllerContext, NoteEditionForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
+    public void customizeProperties(PortalControllerContext portalControllerContext, NoteEditionForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
         // Content
         properties.set("note:note", StringUtils.trimToNull(form.getContent()));
     }

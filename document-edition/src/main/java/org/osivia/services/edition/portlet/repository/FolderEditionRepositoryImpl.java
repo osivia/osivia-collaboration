@@ -8,11 +8,11 @@ import org.springframework.stereotype.Repository;
  * Folder edition portlet repository implementation.
  *
  * @author Cédric Krommenhoek
- * @see AbstractDocumentEditionRepositoryImpl
+ * @see DocumentEditionRepositoryImpl
  * @see FolderEditionForm
  */
 @Repository
-public class FolderEditionRepositoryImpl extends AbstractDocumentEditionRepositoryImpl<FolderEditionForm> {
+public class FolderEditionRepositoryImpl extends DocumentEditionRepositoryImpl<FolderEditionForm> {
 
     /**
      * Constructor.

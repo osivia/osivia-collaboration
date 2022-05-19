@@ -35,11 +35,11 @@ import java.util.stream.Stream;
  * Files creation portlet repository implementation.
  *
  * @author Cédric Krommenhoek
- * @see AbstractDocumentEditionRepositoryImpl
+ * @see DocumentEditionRepositoryImpl
  * @see FilesCreationForm
  */
 @Repository
-public class FilesCreationRepositoryImpl extends AbstractDocumentEditionRepositoryImpl<FilesCreationForm> {
+public class FilesCreationRepositoryImpl extends DocumentEditionRepositoryImpl<FilesCreationForm> {
 
     /**
      * Accepted document types.
@@ -162,7 +162,7 @@ public class FilesCreationRepositoryImpl extends AbstractDocumentEditionReposito
 
 
     @Override
-    protected void customizeProperties(PortalControllerContext portalControllerContext, FilesCreationForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
+    public void customizeProperties(PortalControllerContext portalControllerContext, FilesCreationForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
         if (CollectionUtils.isNotEmpty(form.getTemporaryFiles())) {
             List<Blob> blobs = new ArrayList<>();
 

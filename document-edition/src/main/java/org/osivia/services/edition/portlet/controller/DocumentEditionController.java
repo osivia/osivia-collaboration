@@ -1,6 +1,5 @@
 package org.osivia.services.edition.portlet.controller;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.validator.DocumentEditionFormValidator;

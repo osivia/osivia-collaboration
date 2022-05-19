@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import javax.portlet.PortletException;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,10 +27,12 @@ import java.util.stream.Collectors;
  * Document edition attachments repository implementation.
  *
  * @author Cédric Krommenhoek
+ * @see DocumentEditionCommonRepositoryImpl
+ * @see Attachments
  * @see DocumentEditionAttachmentsRepository
  */
 @Repository
-public class DocumentEditionAttachmentsRepositoryImpl implements DocumentEditionAttachmentsRepository {
+public class DocumentEditionAttachmentsRepositoryImpl extends DocumentEditionCommonRepositoryImpl<Attachments> implements DocumentEditionAttachmentsRepository {
 
     /**
      * Attachements Nuxeo document property.
@@ -55,7 +56,7 @@ public class DocumentEditionAttachmentsRepositoryImpl implements DocumentEdition
 
 
     @Override
-    public Attachments getAttachments(PortalControllerContext portalControllerContext, Document document) throws PortletException {
+    public Attachments get(PortalControllerContext portalControllerContext, Document document) throws PortletException {
         // Existing files
         SortedMap<ExistingFile, Boolean> existingFiles;
         PropertyList attachmentsList = document.getProperties().getList(ATTACHMENTS_PROPERTY);
@@ -102,24 +103,8 @@ public class DocumentEditionAttachmentsRepositoryImpl implements DocumentEdition
         }
 
         // Upload
-        for (MultipartFile upload : attachments.getUpload()) {
-            File file = File.createTempFile("uploaded-attachment-", ".tmp");
-            file.deleteOnExit();
-            upload.transferTo(file);
-
-            // MIME type
-            MimeType mimeType;
-            try {
-                mimeType = new MimeType(upload.getContentType());
-            } catch (MimeTypeParseException e) {
-                mimeType = null;
-            }
-
-            // Temporary file
-            UploadTemporaryFile temporaryFile = this.applicationContext.getBean(UploadTemporaryFile.class);
-            temporaryFile.setFile(file);
-            temporaryFile.setFileName(upload.getOriginalFilename());
-            temporaryFile.setMimeType(mimeType);
+        for (MultipartFile multipartFile : attachments.getUpload()) {
+            UploadTemporaryFile temporaryFile = this.createTemporaryFile(multipartFile);
             temporaryFiles.add(temporaryFile);
         }
     }

@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.Errors;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 import javax.portlet.PortletException;
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +29,7 @@ import java.util.Map;
  * @see DocumentEditionMetadataRepository
  */
 @Repository
-public class DocumentEditionMetadataRepositoryImpl implements DocumentEditionMetadataRepository {
+public class DocumentEditionMetadataRepositoryImpl extends DocumentEditionCommonRepositoryImpl<DocumentEditionMetadata> implements DocumentEditionMetadataRepository {
 
     /**
      * Description Nuxeo document property.
@@ -60,7 +57,7 @@ public class DocumentEditionMetadataRepositoryImpl implements DocumentEditionMet
 
 
     @Override
-    public DocumentEditionMetadata getMetadata(PortalControllerContext portalControllerContext, Document document) {
+    public DocumentEditionMetadata get(PortalControllerContext portalControllerContext, Document document) {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -92,27 +89,10 @@ public class DocumentEditionMetadataRepositoryImpl implements DocumentEditionMet
     @Override
     public void uploadVignette(PortalControllerContext portalControllerContext, DocumentEditionMetadata metadata) throws PortletException, IOException {
         // Delete previous temporary file
-        this.deleteVignetteTemporaryFile(metadata);
+        this.deleteTemporaryFile(metadata.getVignetteTemporaryFile());
 
         // Upload
-        MultipartFile upload = metadata.getVignetteUpload();
-        File file = File.createTempFile("uploaded-vignette-", ".tmp");
-        file.deleteOnExit();
-        upload.transferTo(file);
-
-        // MIME type
-        MimeType mimeType;
-        try {
-            mimeType = new MimeType(upload.getContentType());
-        } catch (MimeTypeParseException e) {
-            mimeType = null;
-        }
-
-        // Update temporary file
-        UploadTemporaryFile temporaryFile = this.applicationContext.getBean(UploadTemporaryFile.class);
-        temporaryFile.setFile(file);
-        temporaryFile.setFileName(upload.getOriginalFilename());
-        temporaryFile.setMimeType(mimeType);
+        UploadTemporaryFile temporaryFile = this.createTemporaryFile(metadata.getVignetteUpload());
         metadata.setVignetteTemporaryFile(temporaryFile);
 
         metadata.setVignetteDeleted(false);
@@ -122,7 +102,7 @@ public class DocumentEditionMetadataRepositoryImpl implements DocumentEditionMet
     @Override
     public void deleteVignette(PortalControllerContext portalControllerContext, DocumentEditionMetadata metadata) throws PortletException, IOException {
         // Delete previous temporary file
-        this.deleteVignetteTemporaryFile(metadata);
+        this.deleteTemporaryFile(metadata.getVignetteTemporaryFile());
 
         metadata.setVignetteTemporaryFile(null);
         metadata.setVignetteDeleted(true);
@@ -132,23 +112,10 @@ public class DocumentEditionMetadataRepositoryImpl implements DocumentEditionMet
     @Override
     public void restoreVignette(PortalControllerContext portalControllerContext, DocumentEditionMetadata metadata) throws PortletException, IOException {
         // Delete previous temporary file
-        this.deleteVignetteTemporaryFile(metadata);
+        this.deleteTemporaryFile(metadata.getVignetteTemporaryFile());
 
         metadata.setVignetteTemporaryFile(null);
         metadata.setVignetteDeleted(false);
-    }
-
-
-    /**
-     * Delete vignette temporary file.
-     *
-     * @param metadata document metadata
-     */
-    protected void deleteVignetteTemporaryFile(DocumentEditionMetadata metadata) {
-        UploadTemporaryFile temporaryFile = metadata.getVignetteTemporaryFile();
-        if ((temporaryFile != null) && (temporaryFile.getFile() != null) && !temporaryFile.getFile().delete()) {
-            temporaryFile.getFile().deleteOnExit();
-        }
     }
 
 

@@ -10,7 +10,6 @@ import org.springframework.validation.Errors;
 
 import javax.portlet.PortletException;
 import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * Document edition portlet service interface.
