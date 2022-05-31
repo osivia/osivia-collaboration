@@ -186,7 +186,8 @@ public class CreateWorkspaceFormFilter implements FormFilter {
         }
 
         // Granted user indicator
-        boolean granted = this.roleService.hasRole(dn, "role_workspace-management");
+        //boolean granted = this.roleService.hasRole(dn, "role_workspace-management");
+        boolean granted = true; // Always validate space
         
         if (granted) {
             // Description
