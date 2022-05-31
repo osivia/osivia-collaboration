@@ -18,7 +18,7 @@
                     <i class="glyphicons glyphicons-folder-open"></i>
                     <span><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_ACTION"/></span>
                     <c:set var="maxSize"><ttc:fileSize size="${form.uploadMaxSize}" escapeHtml="false"/></c:set>
-                    <c:set var="fileSizeLimitExceededMessage"><op:translate key="DOCUMENT_EDITION_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
+                    <c:set var="fileSizeLimitExceededMessage"><op:translate key="DOCUMENT_EDITION_MESSAGE_FILES_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
                     <input id="upload" type="file" name="upload" multiple="" data-max-size="${form.uploadMaxSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-files-upload-submit">
                 </label>
             </div>
