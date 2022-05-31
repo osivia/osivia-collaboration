@@ -12,8 +12,8 @@
 <spring:bind path="upload">
     <div class="form-group required ${status.error ? 'has-error' : ''}">
         <form:label path="upload" cssClass="control-label"><op:translate key="DOCUMENT_EDITION_FORM_FILES_LABEL"/></form:label>
-        <div>
-            <div class="media-left">
+        <div style="display: flex">
+            <div style="margin-right: 1rem">
                 <label class="btn btn-default btn-file">
                     <i class="glyphicons glyphicons-folder-open"></i>
                     <span><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_ACTION"/></span>
@@ -23,7 +23,7 @@
                 </label>
             </div>
 
-            <div class="media-body">
+            <div style="flex-grow: 1; min-width: 0">
                 <c:choose>
                     <c:when test="${empty form.temporaryFiles}">
                         <p class="form-control-static text-muted">
@@ -31,12 +31,12 @@
                         </p>
                     </c:when>
                     <c:otherwise>
-                        <ul class="list-inline form-control-static text-muted">
+                        <ul class="list-inline form-control-static text-muted" style="display: flex; flex-wrap: wrap">
                             <c:set var="title"><op:translate key="DELETE"/></c:set>
                             <c:forEach var="temporaryFile" items="${form.temporaryFiles}" varStatus="status">
-                                <li>
-                                    <span class="btn-group btn-group-xs">
-                                        <a href="#" class="btn btn-default disabled">
+                                <li style="min-width: 0; margin-bottom: .25rem">
+                                    <span class="btn-group btn-group-xs" style="display: flex; min-width: 0">
+                                        <a href="#" class="btn btn-default disabled text-overflow">
                                             <span>${temporaryFile.fileName}</span>
                                         </a>
                                         <button type="submit" name="restore" value="${status.index}" class="btn btn-default" title="${title}">
