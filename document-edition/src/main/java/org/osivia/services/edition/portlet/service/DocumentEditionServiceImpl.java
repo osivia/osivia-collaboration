@@ -1,6 +1,7 @@
 package org.osivia.services.edition.portlet.service;
 
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -15,6 +16,7 @@ import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
+import org.osivia.services.edition.portlet.model.FilesCreationForm;
 import org.osivia.services.edition.portlet.repository.DocumentEditionRepository;
 import org.osivia.services.edition.portlet.repository.ZipExtractionRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,11 +202,6 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
     @Override
     public void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
-        // Portlet request
-        PortletRequest request = portalControllerContext.getRequest();
-        // Internationalization bundle
-        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
-
         // Repository
         DocumentEditionRepository<?> repository = this.getRepository(form.getName());
         // Save document
@@ -212,16 +209,42 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
 
         // Notification
+        this.addNotification(portalControllerContext, form);
+
+        // Redirect
+        this.redirect(portalControllerContext);
+    }
+
+
+    /**
+     * Add notification.
+     * @param portalControllerContext portal controller context
+     * @param form document edition form
+     */
+    protected void addNotification(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) {
+        // Portlet request
+        PortletRequest request = portalControllerContext.getRequest();
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
+
+        // Message
         String message;
-        if (form.isCreation()) {
+        if (form instanceof FilesCreationForm) {
+            FilesCreationForm filesCreationForm = (FilesCreationForm) form;
+
+            int size = CollectionUtils.size(filesCreationForm.getTemporaryFiles());
+            if (size == 1) {
+                message = bundle.getString("DOCUMENT_EDITION_MESSAGE_ADD_ONE_FILE_SUCCESS");
+            } else {
+                message = bundle.getString("DOCUMENT_EDITION_MESSAGE_ADD_N_FILES_SUCCESS", size);
+            }
+        } else if (form.isCreation()) {
             message = bundle.getString("DOCUMENT_EDITION_MESSAGE_CREATION_SUCCESS");
         } else {
             message = bundle.getString("DOCUMENT_EDITION_MESSAGE_EDITION_SUCCESS");
         }
-        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
 
-        // Redirect
-        this.redirect(portalControllerContext);
+        this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
     }
 
 
@@ -237,7 +260,7 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
      *
      * @param portalControllerContext portal controller context
      */
-    private void redirect(PortalControllerContext portalControllerContext) throws IOException {
+    protected void redirect(PortalControllerContext portalControllerContext) throws IOException {
         // Portlet response
         PortletResponse portletResponse = portalControllerContext.getResponse();
 
