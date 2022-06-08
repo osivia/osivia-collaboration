@@ -40,11 +40,11 @@ public class FileEditionRepositoryImpl extends DocumentEditionRepositoryImpl<Fil
     /**
      * File binary Nuxeo document property.
      */
-    private static final String BINARY_PROPERTY = "file:content";
+    public static final String BINARY_PROPERTY = "file:content";
     /**
      * File binary name Nuxeo document property.
      */
-    private static final String BINARY_NAME_PROPERTY = "file:filename";
+    public static final String BINARY_NAME_PROPERTY = "file:filename";
 
 
     /**
@@ -95,14 +95,16 @@ public class FileEditionRepositoryImpl extends DocumentEditionRepositoryImpl<Fil
 
     @Override
     protected void customizeForm(PortalControllerContext portalControllerContext, Document document, FileEditionForm form) {
-        // Existing file
-        ExistingFile existingFile = this.applicationContext.getBean(ExistingFile.class);
-        existingFile.setFileName(document.getProperties().getString(BINARY_NAME_PROPERTY));
-        form.setExistingFile(existingFile);
+        if (document != null) {
+            // Existing file
+            ExistingFile existingFile = this.applicationContext.getBean(ExistingFile.class);
+            existingFile.setFileName(document.getProperties().getString(BINARY_NAME_PROPERTY));
+            form.setExistingFile(existingFile);
 
-        // Required primary type
-        String requiredPrimaryType = this.requiredPrimaryTypes.get(document.getType());
-        form.setRequiredPrimaryType(requiredPrimaryType);
+            // Required primary type
+            String requiredPrimaryType = this.requiredPrimaryTypes.get(document.getType());
+            form.setRequiredPrimaryType(requiredPrimaryType);
+        }
     }
 
 
@@ -172,7 +174,7 @@ public class FileEditionRepositoryImpl extends DocumentEditionRepositoryImpl<Fil
 
 
     @Override
-    public void customizeProperties(PortalControllerContext portalControllerContext, FileEditionForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
+    public void customizeProperties(PortalControllerContext portalControllerContext, FileEditionForm form, boolean creation, PropertyMap properties, Map<String, List<Blob>> binaries) {
         if ((form.getTemporaryFile() != null) && (form.getTemporaryFile().getFile() != null)) {
             // File
             File file = form.getTemporaryFile().getFile();

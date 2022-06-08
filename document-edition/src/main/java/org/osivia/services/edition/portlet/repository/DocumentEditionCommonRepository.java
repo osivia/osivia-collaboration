@@ -4,7 +4,9 @@ import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.services.edition.portlet.model.UploadTemporaryFile;
 import org.springframework.validation.Errors;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.portlet.PortletException;
 import java.io.IOException;
@@ -43,9 +45,27 @@ public interface DocumentEditionCommonRepository<T> {
      *
      * @param portalControllerContext portal controller context
      * @param object                  related object
+     * @param creation                document creation indicator
      * @param properties              document properties
      * @param binaries                document binaries
      */
-    void customizeProperties(PortalControllerContext portalControllerContext, T object, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException;
+    void customizeProperties(PortalControllerContext portalControllerContext, T object, boolean creation, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException;
+
+
+    /**
+     * Delete temporary file.
+     *
+     * @param temporaryFile temporary file
+     */
+    void deleteTemporaryFile(UploadTemporaryFile temporaryFile) throws PortletException, IOException;
+
+
+    /**
+     * Create temporary file from upload.
+     *
+     * @param multipartFile multipart file
+     * @return temporary file
+     */
+    UploadTemporaryFile createTemporaryFile(MultipartFile multipartFile) throws PortletException, IOException;
 
 }

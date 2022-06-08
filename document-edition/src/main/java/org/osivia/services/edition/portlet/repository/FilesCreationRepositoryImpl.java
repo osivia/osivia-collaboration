@@ -162,7 +162,7 @@ public class FilesCreationRepositoryImpl extends DocumentEditionRepositoryImpl<F
 
 
     @Override
-    public void customizeProperties(PortalControllerContext portalControllerContext, FilesCreationForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
+    public void customizeProperties(PortalControllerContext portalControllerContext, FilesCreationForm form, boolean creation, PropertyMap properties, Map<String, List<Blob>> binaries) {
         if (CollectionUtils.isNotEmpty(form.getTemporaryFiles())) {
             List<Blob> blobs = new ArrayList<>();
 
@@ -188,7 +188,7 @@ public class FilesCreationRepositoryImpl extends DocumentEditionRepositoryImpl<F
 
 
     @Override
-    protected Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
+    public Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
         // File binaries
         List<Blob> blobs = binaries.get(StringUtils.EMPTY);
         if (CollectionUtils.isEmpty(blobs)) {

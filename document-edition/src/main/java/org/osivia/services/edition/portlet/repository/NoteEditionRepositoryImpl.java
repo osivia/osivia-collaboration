@@ -24,6 +24,12 @@ import java.util.Map;
 public class NoteEditionRepositoryImpl extends DocumentEditionRepositoryImpl<NoteEditionForm> {
 
     /**
+     * Note content Nuxeo document property.
+     */
+    public static final String CONTENT_PROPERTY = "note:note";
+
+
+    /**
      * Constructor.
      */
     public NoteEditionRepositoryImpl() {
@@ -48,9 +54,11 @@ public class NoteEditionRepositoryImpl extends DocumentEditionRepositoryImpl<Not
         // Fullscreen indicator
         form.setFullscreen(true);
 
-        // Content
-        String content = document.getString("note:note");
-        form.setContent(content);
+        if (document != null) {
+            // Content
+            String content = document.getString(CONTENT_PROPERTY);
+            form.setContent(content);
+        }
     }
 
 
@@ -69,9 +77,9 @@ public class NoteEditionRepositoryImpl extends DocumentEditionRepositoryImpl<Not
 
 
     @Override
-    public void customizeProperties(PortalControllerContext portalControllerContext, NoteEditionForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
+    public void customizeProperties(PortalControllerContext portalControllerContext, NoteEditionForm form, boolean creation, PropertyMap properties, Map<String, List<Blob>> binaries) {
         // Content
-        properties.set("note:note", StringUtils.trimToNull(form.getContent()));
+        properties.set(CONTENT_PROPERTY, StringUtils.trimToNull(form.getContent()));
     }
 
 }

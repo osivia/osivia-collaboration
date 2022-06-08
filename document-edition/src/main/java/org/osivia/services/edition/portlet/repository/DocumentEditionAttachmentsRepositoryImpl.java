@@ -59,29 +59,33 @@ public class DocumentEditionAttachmentsRepositoryImpl extends DocumentEditionCom
     public Attachments get(PortalControllerContext portalControllerContext, Document document) throws PortletException {
         // Existing files
         SortedMap<ExistingFile, Boolean> existingFiles;
-        PropertyList attachmentsList = document.getProperties().getList(ATTACHMENTS_PROPERTY);
-        if ((attachmentsList == null) || attachmentsList.isEmpty()) {
+        if (document == null) {
             existingFiles = null;
         } else {
-            existingFiles = new TreeMap<>(Comparator.comparingInt(ExistingFile::getIndex));
-            for (int i = 0; i < attachmentsList.size(); i++) {
-                PropertyMap attachmentMap = attachmentsList.getMap(i);
-                PropertyMap attachmentFileMap = attachmentMap.getMap("file");
-                String fileName = attachmentFileMap.getString("name");
-                MimeType mimeType;
-                try {
-                    mimeType = new MimeType(attachmentFileMap.getString("mime-type"));
-                } catch (MimeTypeParseException e) {
-                    mimeType = null;
+            PropertyList attachmentsList = document.getProperties().getList(ATTACHMENTS_PROPERTY);
+            if ((attachmentsList == null) || attachmentsList.isEmpty()) {
+                existingFiles = null;
+            } else {
+                existingFiles = new TreeMap<>(Comparator.comparingInt(ExistingFile::getIndex));
+                for (int i = 0; i < attachmentsList.size(); i++) {
+                    PropertyMap attachmentMap = attachmentsList.getMap(i);
+                    PropertyMap attachmentFileMap = attachmentMap.getMap("file");
+                    String fileName = attachmentFileMap.getString("name");
+                    MimeType mimeType;
+                    try {
+                        mimeType = new MimeType(attachmentFileMap.getString("mime-type"));
+                    } catch (MimeTypeParseException e) {
+                        mimeType = null;
+                    }
+
+                    // Existing file
+                    ExistingFile file = this.applicationContext.getBean(ExistingFile.class);
+                    file.setIndex(i);
+                    file.setFileName(fileName);
+                    file.setMimeType(mimeType);
+
+                    existingFiles.put(file, false);
                 }
-
-                // Existing file
-                ExistingFile file = this.applicationContext.getBean(ExistingFile.class);
-                file.setIndex(i);
-                file.setFileName(fileName);
-                file.setMimeType(mimeType);
-
-                existingFiles.put(file, false);
             }
         }
 
@@ -156,7 +160,7 @@ public class DocumentEditionAttachmentsRepositoryImpl extends DocumentEditionCom
 
 
     @Override
-    public void customizeProperties(PortalControllerContext portalControllerContext, Attachments attachments, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException {
+    public void customizeProperties(PortalControllerContext portalControllerContext, Attachments attachments, boolean creation, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException {
         // Delete existing attachments
         SortedMap<ExistingFile, Boolean> existingFiles = attachments.getExistingFiles();
         if (MapUtils.isNotEmpty(existingFiles)) {

@@ -110,8 +110,9 @@ public interface DocumentEditionRepository<T extends AbstractDocumentEditionForm
      *
      * @param portalControllerContext portal controller context
      * @param form                    document edition form
+     * @param creation                document creation indicator
      * @param properties              document properties
      * @param binaries                document updated binaries
      */
-    void customizeProperties(PortalControllerContext portalControllerContext, T form, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException;
+    void customizeProperties(PortalControllerContext portalControllerContext, T form, boolean creation, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException;
 }

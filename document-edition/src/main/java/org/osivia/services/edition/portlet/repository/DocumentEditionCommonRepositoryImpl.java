@@ -34,25 +34,16 @@ public abstract class DocumentEditionCommonRepositoryImpl<T> implements Document
     }
 
 
-    /**
-     * Delete temporary file.
-     *
-     * @param temporaryFile temporary file
-     */
-    protected void deleteTemporaryFile(UploadTemporaryFile temporaryFile) {
+    @Override
+    public void deleteTemporaryFile(UploadTemporaryFile temporaryFile) {
         if ((temporaryFile != null) && (temporaryFile.getFile() != null) && !temporaryFile.getFile().delete()) {
             temporaryFile.getFile().deleteOnExit();
         }
     }
 
 
-    /**
-     * Create temporary file from upload.
-     *
-     * @param multipartFile multipart file
-     * @return temporary file
-     */
-    protected UploadTemporaryFile createTemporaryFile(MultipartFile multipartFile) throws IOException {
+    @Override
+    public UploadTemporaryFile createTemporaryFile(MultipartFile multipartFile) throws IOException {
         // Upload
         File file = File.createTempFile("uploaded-file-", ".tmp");
         file.deleteOnExit();

@@ -74,9 +74,10 @@ public interface DocumentEditionAttachmentsRepository extends DocumentEditionCom
      *
      * @param portalControllerContext portal controller context
      * @param attachments             document attachments
+     * @param creation                document creation indicator
      * @param properties              document properties
      * @param binaries                document binaries
      */
-    void customizeProperties(PortalControllerContext portalControllerContext, Attachments attachments, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException;
+    void customizeProperties(PortalControllerContext portalControllerContext, Attachments attachments, boolean creation, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException;
 
 }

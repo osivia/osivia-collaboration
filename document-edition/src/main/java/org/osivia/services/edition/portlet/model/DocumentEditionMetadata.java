@@ -21,19 +21,7 @@ public class DocumentEditionMetadata {
     /**
      * Vignette.
      */
-    private ExistingFile vignette;
-    /**
-     * Vignette upload.
-     */
-    private MultipartFile vignetteUpload;
-    /**
-     * Vignette temporary file.
-     */
-    private UploadTemporaryFile vignetteTemporaryFile;
-    /**
-     * Vignette deleted indicator.
-     */
-    private boolean vignetteDeleted;
+    private Picture vignette;
 
 
     /**
@@ -52,35 +40,11 @@ public class DocumentEditionMetadata {
         this.description = description;
     }
 
-    public ExistingFile getVignette() {
+    public Picture getVignette() {
         return vignette;
     }
 
-    public void setVignette(ExistingFile vignette) {
+    public void setVignette(Picture vignette) {
         this.vignette = vignette;
-    }
-
-    public MultipartFile getVignetteUpload() {
-        return vignetteUpload;
-    }
-
-    public void setVignetteUpload(MultipartFile vignetteUpload) {
-        this.vignetteUpload = vignetteUpload;
-    }
-
-    public UploadTemporaryFile getVignetteTemporaryFile() {
-        return vignetteTemporaryFile;
-    }
-
-    public void setVignetteTemporaryFile(UploadTemporaryFile vignetteTemporaryFile) {
-        this.vignetteTemporaryFile = vignetteTemporaryFile;
-    }
-
-    public boolean isVignetteDeleted() {
-        return vignetteDeleted;
-    }
-
-    public void setVignetteDeleted(boolean vignetteDeleted) {
-        this.vignetteDeleted = vignetteDeleted;
     }
 }

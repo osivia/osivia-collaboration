@@ -134,30 +134,33 @@ public interface DocumentEditionService {
 
 
     /**
-     * Upload document vignette.
+     * Upload document picture.
      *
      * @param portalControllerContext portal controller context
      * @param form                    document edition form
+     * @param pictureType             picture type
      */
-    void uploadVignette(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+    void uploadPicture(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String pictureType) throws PortletException, IOException;
 
 
     /**
-     * Delete document vignette.
+     * Delete document picture.
      *
      * @param portalControllerContext portal controller context
      * @param form                    document edition form
+     * @param pictureType             picture type
      */
-    void deleteVignette(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+    void deletePicture(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String pictureType) throws PortletException, IOException;
 
 
     /**
-     * Restore document vignette.
+     * Restore document picture.
      *
      * @param portalControllerContext portal controller context
      * @param form                    document edition form
+     * @param pictureType             picture type
      */
-    void restoreVignette(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+    void restorePicture(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String pictureType) throws PortletException, IOException;
 
 
     /**
@@ -187,12 +190,13 @@ public interface DocumentEditionService {
 
 
     /**
-     * Vignette preview.
+     * Picture preview.
      *
      * @param portalControllerContext portal controller context
      * @param form                    document edition form
+     * @param pictureType             picture type
      */
-    void vignettePreview(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+    void picturePreview(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String pictureType) throws PortletException, IOException;
 
 
     /**

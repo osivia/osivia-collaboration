@@ -1,5 +1,6 @@
 package org.osivia.services.edition.portlet.service;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoException;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
@@ -18,10 +19,9 @@ import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
-import org.osivia.services.edition.portlet.repository.DocumentEditionAttachmentsRepository;
-import org.osivia.services.edition.portlet.repository.DocumentEditionMetadataRepository;
-import org.osivia.services.edition.portlet.repository.DocumentEditionRepository;
-import org.osivia.services.edition.portlet.repository.ZipExtractionRepositoryImpl;
+import org.osivia.services.edition.portlet.model.Picture;
+import org.osivia.services.edition.portlet.model.UploadTemporaryFile;
+import org.osivia.services.edition.portlet.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
@@ -49,6 +49,12 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
      */
     @Autowired
     private ApplicationContext applicationContext;
+
+    /**
+     * Document edition default repository.
+     */
+    @Autowired
+    private DocumentEditionDefaultRepository defaultRepository;
 
     /**
      * Document attachments edition repository.
@@ -232,20 +238,50 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
 
     @Override
-    public void uploadVignette(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
-        this.metadataRepository.uploadVignette(portalControllerContext, form.getMetadata());
+    public void uploadPicture(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String pictureType) throws PortletException, IOException {
+        // Picture
+        Picture picture = this.getPicture(portalControllerContext, form, pictureType);
+
+        if (picture != null) {
+            // Delete previous temporary file
+            this.defaultRepository.deleteTemporaryFile(picture.getTemporaryFile());
+
+            // Upload
+            UploadTemporaryFile temporaryFile = defaultRepository.createTemporaryFile(picture.getUpload());
+            picture.setTemporaryFile(temporaryFile);
+
+            picture.setDeleted(false);
+        }
     }
 
 
     @Override
-    public void deleteVignette(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
-        this.metadataRepository.deleteVignette(portalControllerContext, form.getMetadata());
+    public void deletePicture(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String pictureType) throws PortletException, IOException {
+        // Picture
+        Picture picture = this.getPicture(portalControllerContext, form, pictureType);
+
+        if (picture != null) {
+            // Delete previous temporary file
+            this.defaultRepository.deleteTemporaryFile(picture.getTemporaryFile());
+
+            picture.setTemporaryFile(null);
+            picture.setDeleted(true);
+        }
     }
 
 
     @Override
-    public void restoreVignette(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
-        this.metadataRepository.restoreVignette(portalControllerContext, form.getMetadata());
+    public void restorePicture(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String pictureType) throws PortletException, IOException {
+        // Picture
+        Picture picture = this.getPicture(portalControllerContext, form, pictureType);
+
+        if (picture != null) {
+            // Delete previous temporary file
+            this.defaultRepository.deleteTemporaryFile(picture.getTemporaryFile());
+
+            picture.setTemporaryFile(null);
+            picture.setDeleted(false);
+        }
     }
 
 
@@ -346,16 +382,8 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
                 documentType = windowProperties.getDocumentType();
                 creation = true;
             } else {
-                // Default repository
-                DocumentEditionRepository<?> defaultRepository = this.applicationContext.getBeansOfType(DocumentEditionRepository.class).values().stream().findFirst().orElse(null);
-
                 // Document context
-                NuxeoDocumentContext documentContext;
-                if (defaultRepository == null) {
-                    documentContext = null;
-                } else {
-                    documentContext = defaultRepository.getDocumentContext(portalControllerContext, windowProperties.getDocumentPath());
-                }
+                NuxeoDocumentContext documentContext = this.defaultRepository.getDocumentContext(portalControllerContext, windowProperties.getDocumentPath());
 
                 if ((documentContext == null) || (documentContext.getDocumentType() == null)) {
                     documentType = null;
@@ -386,35 +414,61 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
 
     @Override
-    public void vignettePreview(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
+    public void picturePreview(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String pictureType) throws PortletException, IOException {
         // Resource response
         ResourceResponse response = (ResourceResponse) portalControllerContext.getResponse();
 
-        // Temporary file
-        File temporaryFile = form.getMetadata().getVignetteTemporaryFile().getFile();
+        // Picture
+        Picture picture = this.getPicture(portalControllerContext, form, pictureType);
 
-        // Upload size
-        int size = Long.valueOf(temporaryFile.length()).intValue();
-        response.setContentLength(size);
+        if (picture == null) {
+            throw new NuxeoException(NuxeoException.ERROR_NOTFOUND);
+        } else {
+            // Temporary file
+            File temporaryFile = picture.getTemporaryFile().getFile();
 
-        // Content type
-        String contentType = response.getContentType();
-        response.setContentType(contentType);
+            // Upload size
+            int size = Long.valueOf(temporaryFile.length()).intValue();
+            response.setContentLength(size);
 
-        // Character encoding
-        response.setCharacterEncoding(CharEncoding.UTF_8);
+            // Content type
+            String contentType = response.getContentType();
+            response.setContentType(contentType);
 
-        // No cache
-        response.getCacheControl().setExpirationTime(0);
+            // Character encoding
+            response.setCharacterEncoding(CharEncoding.UTF_8);
+
+            // No cache
+            response.getCacheControl().setExpirationTime(0);
+
+            // Input steam
+            InputStream inputSteam = Files.newInputStream(temporaryFile.toPath());
+            // Output stream
+            OutputStream outputStream = response.getPortletOutputStream();
+            // Copy
+            IOUtils.copy(inputSteam, outputStream);
+            outputStream.close();
+        }
+    }
 
 
-        // Input steam
-        InputStream inputSteam = Files.newInputStream(temporaryFile.toPath());
-        // Output stream
-        OutputStream outputStream = response.getPortletOutputStream();
-        // Copy
-        IOUtils.copy(inputSteam, outputStream);
-        outputStream.close();
+    /**
+     * Get picture.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     * @param pictureType             picture type
+     * @return picture
+     */
+    protected Picture getPicture(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String pictureType) {
+        Picture picture;
+        if ("vignette".equals(pictureType)) {
+            picture = form.getMetadata().getVignette();
+        } else {
+            picture = null;
+        }
+
+        return picture;
     }
 
 

@@ -45,7 +45,7 @@ public abstract class DocumentEditionRepositoryImpl<T extends AbstractDocumentEd
     /**
      * Title Nuxeo document property.
      */
-    protected static final String TITLE_PROPERTY = "dc:title";
+    public static final String TITLE_PROPERTY = "dc:title";
 
 
     /**
@@ -107,31 +107,23 @@ public abstract class DocumentEditionRepositoryImpl<T extends AbstractDocumentEd
         Class<T> type = this.getParameterizedType();
         T form = this.applicationContext.getBean(type);
 
-        if (document == null) {
-            // Attachments
-            Attachments attachments = this.applicationContext.getBean(Attachments.class);
-            form.setAttachments(attachments);
-
-            // Metadata
-            DocumentEditionMetadata metadata = this.applicationContext.getBean(DocumentEditionMetadata.class);
-            form.setMetadata(metadata);
-        } else {
+        if (document != null) {
             // Title
             String title = document.getTitle();
             form.setTitle(title);
             form.setOriginalTitle(title);
-
-            // Attachments
-            Attachments attachments = this.attachmentsRepository.get(portalControllerContext, document);
-            form.setAttachments(attachments);
-
-            // Metadata
-            DocumentEditionMetadata metadata = this.metadataRepository.get(portalControllerContext, document);
-            form.setMetadata(metadata);
-
-            // Customization
-            this.customizeForm(portalControllerContext, document, form);
         }
+
+        // Attachments
+        Attachments attachments = this.attachmentsRepository.get(portalControllerContext, document);
+        form.setAttachments(attachments);
+
+        // Metadata
+        DocumentEditionMetadata metadata = this.metadataRepository.get(portalControllerContext, document);
+        form.setMetadata(metadata);
+
+        // Customization
+        this.customizeForm(portalControllerContext, document, form);
 
         return form;
     }
@@ -281,13 +273,13 @@ public abstract class DocumentEditionRepositoryImpl<T extends AbstractDocumentEd
         Map<String, List<Blob>> binaries = new LinkedHashMap<>();
 
         // Attachments
-        this.attachmentsRepository.customizeProperties(portalControllerContext, form.getAttachments(), properties, binaries);
+        this.attachmentsRepository.customizeProperties(portalControllerContext, form.getAttachments(), form.isCreation(), properties, binaries);
 
         // Metadata
-        this.metadataRepository.customizeProperties(portalControllerContext, form.getMetadata(), properties, binaries);
+        this.metadataRepository.customizeProperties(portalControllerContext, form.getMetadata(), form.isCreation(), properties, binaries);
 
         // Customization
-        this.customizeProperties(portalControllerContext, this.castForm(form), properties, binaries);
+        this.customizeProperties(portalControllerContext, this.castForm(form), form.isCreation(), properties, binaries);
 
         if (form.isCreation()) {
             // Window properties
@@ -318,7 +310,7 @@ public abstract class DocumentEditionRepositoryImpl<T extends AbstractDocumentEd
 
 
     @Override
-    public void customizeProperties(PortalControllerContext portalControllerContext, T form, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
+    public void customizeProperties(PortalControllerContext portalControllerContext, T form, boolean creation, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
         // Do nothing
     }
 
@@ -333,7 +325,7 @@ public abstract class DocumentEditionRepositoryImpl<T extends AbstractDocumentEd
      * @param binaries        document updated binaries
      * @return created document
      */
-    protected Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
+    public Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
         CreateDocumentCommand command = this.applicationContext.getBean(CreateDocumentCommand.class);
         command.setParentPath(parentPath);
         command.setType(type);
@@ -352,7 +344,7 @@ public abstract class DocumentEditionRepositoryImpl<T extends AbstractDocumentEd
      * @param properties      document properties
      * @param binaries        document updated binaries
      */
-    protected void update(NuxeoController nuxeoController, String path, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
+    public void update(NuxeoController nuxeoController, String path, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException, IOException {
         UpdateDocumentCommand command = this.applicationContext.getBean(UpdateDocumentCommand.class);
         command.setPath(path);
         command.setProperties(properties);

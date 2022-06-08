@@ -160,50 +160,53 @@ public class DocumentEditionController implements PortletContextAware {
 
 
     /**
-     * Upload document vignette action mapping.
+     * Upload document picture action mapping.
      *
-     * @param request  action request
-     * @param response action response
-     * @param form     document edition form model attribute
+     * @param request     action request
+     * @param response    action response
+     * @param pictureType picture type request parameter
+     * @param form        document edition form model attribute
      */
-    @ActionMapping(name = "submit", params = "upload-vignette")
-    public void uploadVignette(ActionRequest request, ActionResponse response, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+    @ActionMapping(name = "submit", params = "upload-picture")
+    public void uploadPicture(ActionRequest request, ActionResponse response, @RequestParam("upload-picture") String pictureType, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.uploadVignette(portalControllerContext, form);
+        this.service.uploadPicture(portalControllerContext, form, pictureType);
     }
 
 
     /**
-     * Delete document vignette action mapping.
+     * Delete document picture action mapping.
      *
-     * @param request  action request
-     * @param response action response
-     * @param form     document edition form model attribute
+     * @param request     action request
+     * @param response    action response
+     * @param pictureType picture type request parameter
+     * @param form        document edition form model attribute
      */
-    @ActionMapping(name = "submit", params = "delete-vignette")
-    public void deleteVignette(ActionRequest request, ActionResponse response, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+    @ActionMapping(name = "submit", params = "delete-picture")
+    public void deletePicture(ActionRequest request, ActionResponse response, @RequestParam("delete-picture") String pictureType, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.deleteVignette(portalControllerContext, form);
+        this.service.deletePicture(portalControllerContext, form, pictureType);
     }
 
 
     /**
-     * Restore document vignette action mapping.
+     * Restore document picture action mapping.
      *
-     * @param request  action request
-     * @param response action response
-     * @param form     document edition form model attribute
+     * @param request     action request
+     * @param response    action response
+     * @param pictureType picture type request parameter
+     * @param form        document edition form model attribute
      */
-    @ActionMapping(name = "submit", params = "restore-vignette")
-    public void restoreVignette(ActionRequest request, ActionResponse response, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+    @ActionMapping(name = "submit", params = "restore-picture")
+    public void restorePicture(ActionRequest request, ActionResponse response, @RequestParam("restore-picture") String pictureType, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.restoreVignette(portalControllerContext, form);
+        this.service.restorePicture(portalControllerContext, form, pictureType);
     }
 
 
@@ -248,18 +251,19 @@ public class DocumentEditionController implements PortletContextAware {
 
 
     /**
-     * Vignette preview ressource mapping.
+     * Picture preview ressource mapping.
      *
-     * @param request  resource request
-     * @param response resource response
-     * @param form     document edition form model attribute
+     * @param request     resource request
+     * @param response    resource response
+     * @param pictureType picture type request parameter
+     * @param form        document edition form model attribute
      */
-    @ResourceMapping("vignette-preview")
-    public void vignettePreview(ResourceRequest request, ResourceResponse response, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+    @ResourceMapping("picture-preview")
+    public void picturePreview(ResourceRequest request, ResourceResponse response, @RequestParam("type") String pictureType, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        this.service.vignettePreview(portalControllerContext, form);
+        this.service.picturePreview(portalControllerContext, form, pictureType);
     }
 
 
