@@ -8,7 +8,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.cms.UniversalID;
-import org.osivia.portal.api.cms.service.UpdateScope;
+import org.osivia.portal.api.cms.UpdateScope;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.editor.EditorService;
 import org.osivia.portal.api.internationalization.Bundle;
