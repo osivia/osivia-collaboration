@@ -173,8 +173,7 @@ public class CalendarMenubarModule implements MenubarModule {
         // Window properties
         Map<String, String> properties = new HashMap<>();
         properties.put(Constants.WINDOW_PROP_URI, document.getPath());
-        properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
-        properties.put("osivia.ajaxLink", "1");
+
 
         // Creation indicator
         properties.put(CalendarEditionService.CREATION_PROPERTY, String.valueOf(creation));

@@ -689,8 +689,6 @@ public class TrashServiceImpl implements TrashService, ApplicationContextAware {
 
         // Properties
         Map<String, String> properties = new HashMap<>();
-        properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
-        properties.put("osivia.ajaxLink", "1");
         player.setProperties(properties);
 
         return player;

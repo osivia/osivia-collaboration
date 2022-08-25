@@ -92,8 +92,7 @@ public class WorkspaceEditionMenubarModule implements MenubarModule {
                         // Window properties
                         Map<String, String> properties = new HashMap<String, String>();
                         properties.put("osivia.title", bundle.getString("WORKSPACE_EDITION_TITLE", fragment));
-                        properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
-                        properties.put("osivia.ajaxLink", "1");
+
                         properties.put("osivia.back.reset", String.valueOf(true));
                         properties.put("osivia.navigation.reset", String.valueOf(true));
 

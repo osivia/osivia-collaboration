@@ -67,7 +67,6 @@ public class CalendarPlayer implements INuxeoPlayerModule {
             windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
             windowProperties.put("osivia.title", document.getTitle());
             windowProperties.put("osivia.hideTitle", "1");
-            windowProperties.put("osivia.ajaxLink", "1");
             windowProperties.put("osivia.cms.hideMetaDatas", "1");
             windowProperties.put(CalendarViewRepository.CMS_PATH_WINDOW_PROPERTY, "${contentPath}");
             windowProperties.put(CalendarViewRepository.READ_ONLY_WINDOW_PROPERTY, String.valueOf(!publicationInfos.isLiveSpace()));
@@ -82,7 +81,6 @@ public class CalendarPlayer implements INuxeoPlayerModule {
             Map<String, String> windowProperties = new HashMap<>();
             windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
             windowProperties.put("osivia.title", document.getTitle());
-            windowProperties.put("osivia.ajaxLink", "1");
 
             Player props = new Player();
             props.setWindowProperties(windowProperties);

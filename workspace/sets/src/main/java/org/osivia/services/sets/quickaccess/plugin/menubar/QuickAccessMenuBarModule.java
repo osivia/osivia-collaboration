@@ -95,8 +95,6 @@ public class QuickAccessMenuBarModule implements MenubarModule {
 
 							// --------- EDIT Workspace metadata
 							Map<String, String> windowProperties = new HashMap<String, String>();
-							windowProperties.put("osivia.ajaxLink", "1");
-							windowProperties.put("theme.dyna.partial_refresh_enabled", "true");
 							windowProperties.put("osivia.title", bundle.getString("MANAGE_QUICKACCESS_ACTION"));
 							windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
 							windowProperties.put("osivia.sets.id", "quickAccess");

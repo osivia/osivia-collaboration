@@ -178,8 +178,6 @@ public class ForumMenubarModule implements MenubarModule {
         // Window properties
         Map<String, String> properties = new HashMap<>();
         properties.put(Constants.WINDOW_PROP_URI, path);
-        properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
-        properties.put("osivia.ajaxLink", "1");
 
         properties.put(ForumEditionService.DOCUMENT_TYPE_PROPERTY, documentType);
         properties.put(ForumEditionService.MODE_PROPERTY, mode.getId());

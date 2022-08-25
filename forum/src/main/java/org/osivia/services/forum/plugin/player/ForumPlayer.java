@@ -85,8 +85,6 @@ public class ForumPlayer implements INuxeoPlayerModule {
         Map<String, String> properties = new HashMap<>();
         properties.put(Constants.WINDOW_PROP_URI, document.getPath());
         properties.put("osivia.hideDecorators", "1");
-        properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
-        properties.put("osivia.ajaxLink", "1");
         properties.put(Constants.WINDOW_PROP_SCOPE, documentContext.getScope());
         properties.put(Constants.WINDOW_PROP_VERSION, documentContext.getDocumentState().toString());
         properties.put(ViewList.NUXEO_REQUEST_WINDOW_PROPERTY, this.createForumPlayerRequest(documentContext));
@@ -117,8 +115,6 @@ public class ForumPlayer implements INuxeoPlayerModule {
         Map<String, String> properties = new HashMap<>();
         properties.put(Constants.WINDOW_PROP_URI, document.getPath());
         properties.put("osivia.hideDecorators", "1");
-        properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
-        properties.put("osivia.ajaxLink", "1");
         properties.put(InternalConstants.PROP_WINDOW_TITLE, document.getTitle());
         properties.put(InternalConstants.PROP_WINDOW_TITLE_METADATA, String.valueOf(true));
 

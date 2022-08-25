@@ -67,7 +67,6 @@ public class PictureBookPlayer extends PluginModule implements INuxeoPlayerModul
         windowProperties.put("osivia.title", document.getTitle());
         windowProperties.put("osivia.cms.uri", document.getPath());
         windowProperties.put("osivia.hideDecorators", "1");
-        windowProperties.put("osivia.ajaxLink", "1");
         windowProperties.put("osivia.cms.displayLiveVersion", documentContext.getDocumentState().toString());
         windowProperties.put("osivia.cms.style", WidgetsPlugin.STYLE_PICTUREBOOK);
         windowProperties.put("osivia.nuxeoRequest", NuxeoController.createFolderRequest(documentContext, false));

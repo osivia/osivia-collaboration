@@ -53,7 +53,6 @@ public class FaqPlayer implements INuxeoPlayerModule {
         if ("FaqFolder".equals(document.getType()) || "Question".equals(document.getType())) {
             Map<String, String> windowProperties = new HashMap<String, String>();
             windowProperties.put(Constants.WINDOW_PROP_URI, document.getPath());
-            windowProperties.put("osivia.ajaxLink", "1");
             windowProperties.put("osivia.hideDecorators", "1");
             Player linkProps = new Player();
             linkProps.setWindowProperties(windowProperties);

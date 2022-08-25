@@ -98,9 +98,6 @@ public class FileBrowserPluginServiceImpl implements FileBrowserPluginService {
         // Decorators
         properties.put("osivia.hideDecorators", "1");
 
-        // AJAX
-        properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
-        properties.put("osivia.ajaxLink", "1");
 
         if (document != null) {
             // Path
