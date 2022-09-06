@@ -13,8 +13,6 @@ import java.util.TimeZone;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
@@ -62,8 +60,6 @@ public class SynchronizationCommand implements INuxeoCommand {
      *
      * @param queryContext Nuxeo query filter context
      * @param contextPath context path
-     * @param startDate start date
-     * @param endDate end date
      */
     public SynchronizationCommand(NuxeoQueryFilterContext queryContext, String contextPath, String parentPath, Map<EventKey, EventToSync> mapVevent) {
         super();
@@ -185,8 +181,7 @@ public class SynchronizationCommand implements INuxeoCommand {
         return request.execute();
     }
     
-    private PropertyMap fillMap(EventToSync event) throws JsonGenerationException, JsonMappingException, IOException
-    {
+    private PropertyMap fillMap(EventToSync event) {
         PropertyMap map = new PropertyMap();
         //Les dates sont déjà au format UTC, donc on passe par DateFormatUtils.format sinon Nuxeo enlève 1 ou 2 heures en pensant qu'on lui passe des dates en GMT+1
         if (event.isAllDay())

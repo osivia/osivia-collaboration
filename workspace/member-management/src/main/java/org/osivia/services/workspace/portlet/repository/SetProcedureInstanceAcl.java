@@ -86,7 +86,7 @@ public class SetProcedureInstanceAcl implements INuxeoCommand {
         Document instance = getProcedureInstance(nuxeoSession);
 
         for (CollabProfile group : groups) {
-            documentService.addPermission(instance, group.getCn(), "Everything");
+            documentService.setPermission(instance, group.getCn(), "Everything");
         }
 
         return null;

@@ -51,12 +51,12 @@ public class UpdateWorkspaceTypeCommand implements INuxeoCommand {
 
         if (WorkspaceType.PUBLIC.equals(this.workspaceType) || WorkspaceType.PUBLIC_INVITATION.equals(this.workspaceType)) {
             // Grant read permission to everyone
-            documentService.addPermission(this.workspace, "Everyone", "Read");
+            documentService.setPermission(this.workspace, "Everyone", "Read");
         } else {
             // TODO pouvoir supprimer une permission unitairement
 
             // Remove all permissions to everyone, including inheritance blocking
-            documentService.removePermissions(this.workspace, "Everyone", null);
+            documentService.setPermission(this.workspace, "Everyone", null);
 
             // Maintain inheritance blocking
             documentService.setPermission(this.workspace, "Everyone", "Everything", false);

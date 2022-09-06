@@ -6,12 +6,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
-import org.nuxeo.ecm.automation.client.model.Blob;
-import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.FileBlob;
-import org.nuxeo.ecm.automation.client.model.NuxeoPropertyList;
-import org.nuxeo.ecm.automation.client.model.NuxeoPropertyMap;
-import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.nuxeo.ecm.automation.client.model.*;
 import org.osivia.services.calendar.common.model.CalendarColor;
 import org.osivia.services.calendar.edition.portlet.model.CalendarEditionForm;
 import org.osivia.services.calendar.edition.portlet.model.CalendarSynchronizationSource;
@@ -86,18 +81,18 @@ public abstract class AbstractCalendarCommand implements INuxeoCommand {
         if (CollectionUtils.isEmpty(sources)) {
             property = null;
         } else {
-            NuxeoPropertyList propertyList = new NuxeoPropertyList(sources.size());
+            PropertyList propertyList = new PropertyList(sources.size());
 
             for (CalendarSynchronizationSource source : sources) {
-                NuxeoPropertyMap propertyMap = new NuxeoPropertyMap();
+                PropertyMap propertyMap = new PropertyMap();
 
                 // Identifier
                 String id = source.getId();
-                propertyMap.put(CalendarEditionRepository.SYNCHRONIZATION_SOURCE_ID, id);
+                propertyMap.set(CalendarEditionRepository.SYNCHRONIZATION_SOURCE_ID, id);
 
                 // URL
                 String url = StringUtils.trimToNull(source.getUrl());
-                propertyMap.put(CalendarEditionRepository.SYNCHRONIZATION_SOURCE_URL, url);
+                propertyMap.set(CalendarEditionRepository.SYNCHRONIZATION_SOURCE_URL, url);
 
                 // Color
                 String colorId;
@@ -106,11 +101,11 @@ public abstract class AbstractCalendarCommand implements INuxeoCommand {
                 } else {
                     colorId = source.getColor().getId();
                 }
-                propertyMap.put(CalendarEditionRepository.SYNCHRONIZATION_SOURCE_COLOR, colorId);
+                propertyMap.set(CalendarEditionRepository.SYNCHRONIZATION_SOURCE_COLOR, colorId);
 
                 // Display name
                 String displayName = StringUtils.trimToNull(source.getDisplayName());
-                propertyMap.put(CalendarEditionRepository.SYNCHRONIZATION_SOURCE_DISPLAY_NAME, displayName);
+                propertyMap.set(CalendarEditionRepository.SYNCHRONIZATION_SOURCE_DISPLAY_NAME, displayName);
 
                 propertyList.add(propertyMap);
             }
