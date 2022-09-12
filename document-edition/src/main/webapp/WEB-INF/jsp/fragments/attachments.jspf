@@ -1,0 +1,63 @@
+<c:set var="namespace"><portlet:namespace/></c:set>
+
+<c:set var="restoreTitle"><op:translate key="RESTORE"/></c:set>
+<c:set var="deleteTitle"><op:translate key="DELETE"/></c:set>
+
+
+<%--@elvariable id="form" type="org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm"--%>
+<div class="form-group">
+    <form:label path="attachments.upload" cssClass="control-label"><op:translate key="DOCUMENT_EDITION_FORM_ATTACHMENTS_LABEL"/></form:label>
+    <c:if test="${not empty form.attachments.existingFiles or not empty form.attachments.uploadTemporaryFiles}">
+        <ul class="list-inline form-control-static text-muted">
+            <c:forEach var="entry" items="${form.attachments.existingFiles}">
+                <li>
+                    <span class="btn-group btn-group-xs">
+                        <c:choose>
+                            <c:when test="${entry.value}">
+                                <a href="#" class="btn btn-default disabled">
+                                    <del>${entry.key.fileName}</del>
+                                </a>
+                                <button type="submit" name="restore-attachment" value="${entry.key.index}" class="btn btn-default" title="${restoreTitle}">
+                                    <i class="glyphicons glyphicons-undo"></i>
+                                    <span class="sr-only">${restoreTitle}</span>
+                                </button>
+                            </c:when>
+                            <c:otherwise>
+                                <a href="#" class="btn btn-default disabled">
+                                    <span>${entry.key.fileName}</span>
+                                </a>
+                                <button type="submit" name="delete-attachment" value="existing-${entry.key.index}" class="btn btn-default" title="${deleteTitle}">
+                                    <i class="glyphicons glyphicons-remove"></i>
+                                    <span class="sr-only">${deleteTitle}</span>
+                                </button>
+                            </c:otherwise>
+                        </c:choose>
+                    </span>
+                </li>
+            </c:forEach>
+            <c:forEach var="temporaryFile" items="${form.attachments.uploadTemporaryFiles}" varStatus="status">
+                <li>
+                    <span class="btn-group btn-group-xs">
+                        <a href="#" class="btn btn-default disabled">
+                            <span>${temporaryFile.fileName}</span>
+                        </a>
+                        <button type="submit" name="delete-attachment" value="temporary-${status.index}" class="btn btn-default" title="${deleteTitle}">
+                            <i class="glyphicons glyphicons-remove"></i>
+                            <span class="sr-only">${deleteTitle}</span>
+                        </button>
+                    </span>
+                </li>
+            </c:forEach>
+        </ul>
+    </c:if>
+    <div>
+        <label class="btn btn-default btn-sm btn-file">
+            <i class="glyphicons glyphicons-folder-open"></i>
+            <span><op:translate key="DOCUMENT_EDITION_FORM_FILE_BROWSE_ACTION"/></span>
+            <c:set var="maxSize"><ttc:fileSize size="${form.uploadMaxSize}" escapeHtml="false"/></c:set>
+            <c:set var="fileSizeLimitExceededMessage"><op:translate key="DOCUMENT_EDITION_MESSAGE_FILE_SIZE_LIMIT_EXCEEDED" args="${maxSize}"/></c:set>
+            <input id="attachments.upload" type="file" name="attachments.upload" multiple="" data-max-size="${form.uploadMaxSize}" data-size-limit-exceeded-message="${fileSizeLimitExceededMessage}" data-submit="${namespace}-attachments-upload-submit">
+        </label>
+    </div>
+    <input id="${namespace}-attachments-upload-submit" type="submit" name="upload-attachments" class="hidden">
+</div>

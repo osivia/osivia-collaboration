@@ -38,6 +38,11 @@ public interface DocumentEditionService {
      * Extract archive indicator window property.
      */
     String EXTRACT_ARCHIVE_WINDOW_PROPERTY = "osivia.document.edition.extract-archive";
+    /**
+     * Fullscreen indicator window property.
+     */
+    String FULLSCREEN_WINDOW_PROPERTY = "osivia.document.edition.fullscreen";
+
 
     /**
      * Max upload size.
@@ -100,6 +105,65 @@ public interface DocumentEditionService {
 
 
     /**
+     * Upload document attachments.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     */
+    void uploadAttachments(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+
+
+    /**
+     * Delete document attachment.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     * @param value                   parameter value
+     */
+    void deleteAttachment(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String value) throws PortletException, IOException;
+
+
+    /**
+     * Restore attachment.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     * @param value                   parameter value
+     */
+    void restoreAttachment(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String value) throws PortletException, IOException;
+
+
+    /**
+     * Upload document picture.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     * @param pictureType             picture type
+     */
+    void uploadPicture(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String pictureType) throws PortletException, IOException;
+
+
+    /**
+     * Delete document picture.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     * @param pictureType             picture type
+     */
+    void deletePicture(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String pictureType) throws PortletException, IOException;
+
+
+    /**
+     * Restore document picture.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     * @param pictureType             picture type
+     */
+    void restorePicture(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String pictureType) throws PortletException, IOException;
+
+
+    /**
      * Validate document edition form.
      *
      * @param form   document edition form
@@ -123,5 +187,24 @@ public interface DocumentEditionService {
      * @param portalControllerContext portal controller context
      */
     void cancel(PortalControllerContext portalControllerContext) throws PortletException, IOException;
+
+
+    /**
+     * Picture preview.
+     *
+     * @param portalControllerContext portal controller context
+     * @param form                    document edition form
+     * @param pictureType             picture type
+     */
+    void picturePreview(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, String pictureType) throws PortletException, IOException;
+
+
+    /**
+     * Serve editor.
+     *
+     * @param portalControllerContext portal controller context
+     * @param editorId                editor identifier
+     */
+    void serveEditor(PortalControllerContext portalControllerContext, String editorId) throws PortletException, IOException;
 
 }

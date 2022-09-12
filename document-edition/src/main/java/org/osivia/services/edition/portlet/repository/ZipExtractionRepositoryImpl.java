@@ -34,7 +34,7 @@ public class ZipExtractionRepositoryImpl extends FileEditionRepositoryImpl {
     /**
      * File binary Nuxeo document property.
      */
-    private static final String BINARY_PROPERTY = "file:content";
+    public static final String BINARY_PROPERTY = FileEditionRepositoryImpl.BINARY_PROPERTY;
 
 
     /**
@@ -90,14 +90,13 @@ public class ZipExtractionRepositoryImpl extends FileEditionRepositoryImpl {
                 } catch (IOException e) {
                     errors.rejectValue("upload", "InvalidFileType", null);
                 }
-
             }
         }
     }
 
 
     @Override
-    protected Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException {
+    public Document create(NuxeoController nuxeoController, String parentPath, String type, PropertyMap properties, Map<String, List<Blob>> binaries) throws PortletException {
         // File binaries
         List<Blob> blobs = binaries.get(BINARY_PROPERTY);
         if (CollectionUtils.isEmpty(blobs)) {
@@ -114,7 +113,6 @@ public class ZipExtractionRepositoryImpl extends FileEditionRepositoryImpl {
 
 
     private void checkLimits(FileEditionForm form, Errors errors) throws IOException {
-
         long startTime = new Date().getTime();
 
         int sizeLimit = 0;

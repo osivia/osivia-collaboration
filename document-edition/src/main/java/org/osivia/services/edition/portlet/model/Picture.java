@@ -6,37 +6,36 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * File edition form java-bean.
+ * Picture.
  *
  * @author Cédric Krommenhoek
- * @see AbstractDocumentEditionForm
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class FileEditionForm extends AbstractDocumentEditionForm {
+public class Picture {
 
     /**
      * Existing file.
      */
     private ExistingFile existingFile;
     /**
-     * Required primary type.
-     */
-    private String requiredPrimaryType;
-    /**
      * Upload.
      */
     private MultipartFile upload;
     /**
-     * Upload temporary file.
+     * Temporary file.
      */
     private UploadTemporaryFile temporaryFile;
+    /**
+     * Deleted indicator.
+     */
+    private boolean deleted;
 
 
     /**
      * Constructor.
      */
-    public FileEditionForm() {
+    public Picture() {
         super();
     }
 
@@ -47,14 +46,6 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
 
     public void setExistingFile(ExistingFile existingFile) {
         this.existingFile = existingFile;
-    }
-
-    public String getRequiredPrimaryType() {
-        return requiredPrimaryType;
-    }
-
-    public void setRequiredPrimaryType(String requiredPrimaryType) {
-        this.requiredPrimaryType = requiredPrimaryType;
     }
 
     public MultipartFile getUpload() {
@@ -71,5 +62,13 @@ public class FileEditionForm extends AbstractDocumentEditionForm {
 
     public void setTemporaryFile(UploadTemporaryFile temporaryFile) {
         this.temporaryFile = temporaryFile;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

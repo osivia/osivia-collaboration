@@ -1,29 +1,34 @@
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="op" uri="http://www.osivia.org/jsp/taglib/osivia-portal" %>
+<%@ taglib prefix="ttc" uri="http://www.toutatice.fr/jsp/taglib/toutatice" %>
 
 <%@ page isELIgnored="false" %>
 
 
 <portlet:defineObjects/>
 
-
 <portlet:actionURL name="submit" var="url"/>
 
 
 <%--@elvariable id="form" type="org.osivia.services.edition.portlet.model.NoteEditionForm"--%>
-<form:form action="${url}" method="post" modelAttribute="form">
+<form:form action="${url}" method="post" enctype="multipart/form-data" modelAttribute="form">
     <%--Title--%>
-    <%@include file="fragments/title.jspf"%>
+    <%@ include file="fragments/title.jspf" %>
 
     <%--Content--%>
-    <c:set var="placeholder"><op:translate key="DOCUMENT_EDITION_FORM_NOTE_CONTENT_PLACEHOLDER"/></c:set>
-    <div class="form-group">
-        <form:label path="content" cssClass="control-label"><op:translate key="DOCUMENT_EDITION_FORM_NOTE_CONTENT_LABEL"/></form:label>
-        <form:textarea path="content" cssClass="form-control tinymce tinymce-simple" placeholder="${placeholder}"/>
-    </div>
+    <%@ include file="fragments/note-content.jspf" %>
+
+    <%--Attachments--%>
+    <%@ include file="fragments/attachments.jspf" %>
+
+    <c:if test="${not form.creation}">
+        <%--Metadata--%>
+        <%@ include file="fragments/metadata.jspf" %>
+    </c:if>
 
     <%--Buttons--%>
-    <%@include file="fragments/buttons.jspf"%>
+    <%@ include file="fragments/buttons.jspf" %>
 </form:form>

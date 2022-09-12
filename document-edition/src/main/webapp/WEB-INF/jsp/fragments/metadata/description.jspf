@@ -1,0 +1,8 @@
+<c:set var="placeholder"><op:translate key="DOCUMENT_EDITION_FORM_METADATA_DESCRIPTION_PLACEHOLDER"/></c:set>
+
+
+<div class="form-group">
+    <form:label path="metadata.description" cssClass="control-label"><op:translate
+            key="DOCUMENT_EDITION_FORM_METADATA_DESCRIPTION_LABEL"/></form:label>
+    <form:textarea path="metadata.description" cssClass="form-control" placeholder="${placeholder}"/>
+</div>

@@ -31,6 +31,10 @@ public abstract class AbstractDocumentEditionForm {
      * Document creation indicator.
      */
     private boolean creation;
+    /**
+     * Fullscreen indicator.
+     */
+    private boolean fullscreen;
 
     /**
      * Title.
@@ -41,9 +45,13 @@ public abstract class AbstractDocumentEditionForm {
      */
     private String originalTitle;
     /**
-     * Description.
+     * Attachments.
      */
-    private String description;
+    private Attachments attachments;
+    /**
+     * Metadata.
+     */
+    private DocumentEditionMetadata metadata;
 
     /**
      * Remote user (for logging in validation)
@@ -96,6 +104,14 @@ public abstract class AbstractDocumentEditionForm {
         this.creation = creation;
     }
 
+    public boolean isFullscreen() {
+        return fullscreen;
+    }
+
+    public void setFullscreen(boolean fullscreen) {
+        this.fullscreen = fullscreen;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -112,12 +128,20 @@ public abstract class AbstractDocumentEditionForm {
         this.originalTitle = originalTitle;
     }
 
-    public String getDescription() {
-        return description;
+    public Attachments getAttachments() {
+        return attachments;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setAttachments(Attachments attachments) {
+        this.attachments = attachments;
+    }
+
+    public DocumentEditionMetadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(DocumentEditionMetadata metadata) {
+        this.metadata = metadata;
     }
 
     public String getRemoteUser() {

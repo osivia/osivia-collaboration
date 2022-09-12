@@ -9,13 +9,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
 import javax.portlet.*;
@@ -112,6 +110,107 @@ public class DocumentEditionController implements PortletContextAware {
 
 
     /**
+     * Upload document attachments action mapping.
+     *
+     * @param request  action request
+     * @param response action response
+     * @param form     document edition form model attribute
+     */
+    @ActionMapping(name = "submit", params = "upload-attachments")
+    public void uploadAttachments(ActionRequest request, ActionResponse response, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.uploadAttachments(portalControllerContext, form);
+    }
+
+
+    /**
+     * Delete document attachment action mapping.
+     *
+     * @param request  action request
+     * @param response action response
+     * @param value    deleted attachment request parameter value
+     * @param form     document edition form model attribute
+     */
+    @ActionMapping(name = "submit", params = "delete-attachment")
+    public void deleteAttachment(ActionRequest request, ActionResponse response, @RequestParam("delete-attachment") String value, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.deleteAttachment(portalControllerContext, form, value);
+    }
+
+
+    /**
+     * Restore document attachment action mapping.
+     *
+     * @param request  action request
+     * @param response action response
+     * @param value    restored attachment request parameter value
+     * @param form     document edition form model attribute
+     */
+    @ActionMapping(name = "submit", params = "restore-attachment")
+    public void restoreAttachment(ActionRequest request, ActionResponse response, @RequestParam("restore-attachment") String value, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.restoreAttachment(portalControllerContext, form, value);
+    }
+
+
+    /**
+     * Upload document picture action mapping.
+     *
+     * @param request     action request
+     * @param response    action response
+     * @param pictureType picture type request parameter
+     * @param form        document edition form model attribute
+     */
+    @ActionMapping(name = "submit", params = "upload-picture")
+    public void uploadPicture(ActionRequest request, ActionResponse response, @RequestParam("upload-picture") String pictureType, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.uploadPicture(portalControllerContext, form, pictureType);
+    }
+
+
+    /**
+     * Delete document picture action mapping.
+     *
+     * @param request     action request
+     * @param response    action response
+     * @param pictureType picture type request parameter
+     * @param form        document edition form model attribute
+     */
+    @ActionMapping(name = "submit", params = "delete-picture")
+    public void deletePicture(ActionRequest request, ActionResponse response, @RequestParam("delete-picture") String pictureType, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.deletePicture(portalControllerContext, form, pictureType);
+    }
+
+
+    /**
+     * Restore document picture action mapping.
+     *
+     * @param request     action request
+     * @param response    action response
+     * @param pictureType picture type request parameter
+     * @param form        document edition form model attribute
+     */
+    @ActionMapping(name = "submit", params = "restore-picture")
+    public void restorePicture(ActionRequest request, ActionResponse response, @RequestParam("restore-picture") String pictureType, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.restorePicture(portalControllerContext, form, pictureType);
+    }
+
+
+    /**
      * Save document edition action mapping.
      *
      * @param request       action request
@@ -148,6 +247,39 @@ public class DocumentEditionController implements PortletContextAware {
         sessionStatus.setComplete();
 
         this.service.cancel(portalControllerContext);
+    }
+
+
+    /**
+     * Picture preview ressource mapping.
+     *
+     * @param request     resource request
+     * @param response    resource response
+     * @param pictureType picture type request parameter
+     * @param form        document edition form model attribute
+     */
+    @ResourceMapping("picture-preview")
+    public void picturePreview(ResourceRequest request, ResourceResponse response, @RequestParam("type") String pictureType, @ModelAttribute("form") AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.picturePreview(portalControllerContext, form, pictureType);
+    }
+
+
+    /**
+     * Editor resource mapping.
+     *
+     * @param request  resource request
+     * @param response resource response
+     * @param editorId editor identifier request parameter
+     */
+    @ResourceMapping("editor")
+    public void editor(ResourceRequest request, ResourceResponse response, @RequestParam("editorId") String editorId) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.serveEditor(portalControllerContext, editorId);
     }
 
 

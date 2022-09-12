@@ -7,6 +7,8 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.services.edition.portlet.model.NoteEditionForm;
 import org.springframework.stereotype.Repository;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -15,11 +17,17 @@ import java.util.Map;
  * Note edition portlet repository implementation.
  *
  * @author Cédric Krommenhoek
- * @see AbstractDocumentEditionRepositoryImpl
+ * @see DocumentEditionRepositoryImpl
  * @see NoteEditionForm
  */
 @Repository
-public class NoteEditionRepositoryImpl extends AbstractDocumentEditionRepositoryImpl<NoteEditionForm> {
+public class NoteEditionRepositoryImpl extends DocumentEditionRepositoryImpl<NoteEditionForm> {
+
+    /**
+     * Note content Nuxeo document property.
+     */
+    public static final String CONTENT_PROPERTY = "note:note";
+
 
     /**
      * Constructor.
@@ -43,9 +51,22 @@ public class NoteEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
     @Override
     protected void customizeForm(PortalControllerContext portalControllerContext, Document document, NoteEditionForm form) {
-        // Content
-        String content = document.getString("note:note");
-        form.setContent(content);
+        // Fullscreen indicator
+        form.setFullscreen(true);
+
+        if (document != null) {
+            // Content
+            String content = document.getString(CONTENT_PROPERTY);
+            form.setContent(content);
+        }
+    }
+
+
+    @Override
+    protected void customizeValidation(NoteEditionForm form, Errors errors) {
+        super.customizeValidation(form, errors);
+
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "content", "NotEmpty");
     }
 
 
@@ -56,9 +77,9 @@ public class NoteEditionRepositoryImpl extends AbstractDocumentEditionRepository
 
 
     @Override
-    protected void customizeProperties(PortalControllerContext portalControllerContext, NoteEditionForm form, PropertyMap properties, Map<String, List<Blob>> binaries) {
+    public void customizeProperties(PortalControllerContext portalControllerContext, NoteEditionForm form, boolean creation, PropertyMap properties, Map<String, List<Blob>> binaries) {
         // Content
-        properties.set("note:note", StringUtils.trimToNull(form.getContent()));
+        properties.set(CONTENT_PROPERTY, StringUtils.trimToNull(form.getContent()));
     }
 
 }
