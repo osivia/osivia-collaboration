@@ -57,7 +57,7 @@ public class WorkspaceEditionForm {
     /** Workspace root type indicator. */
     private final boolean root;
     /** delete permission. */
-    private boolean deletable = true;
+    private boolean deletable = false;
 
     /**
      * Constructor.
