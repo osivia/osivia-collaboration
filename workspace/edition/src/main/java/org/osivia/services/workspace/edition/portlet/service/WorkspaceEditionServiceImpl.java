@@ -12,7 +12,10 @@ import javax.portlet.PortletException;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.directory.v2.model.ext.WorkspaceMember;
+import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.directory.v2.service.RoleService;
+import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.service.PersonService;
@@ -78,6 +81,8 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
     @Autowired
     protected RoleService roleService;
 
+    @Autowired
+    private WorkspaceService workspaceService;
 
     /** Application context. */
     protected ApplicationContext applicationContext;
@@ -107,7 +112,10 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         Name dn = this.personService.getEmptyPerson().buildDn(user);
         
         // Administrator indicator
-        boolean admin = this.roleService.hasRole(dn, "role_workspace-management");
+        boolean admin = Boolean.TRUE.equals(portalControllerContext.getRequest().getAttribute("osivia.isAdministrator"));
+        if(!admin) {
+            admin = this.roleService.hasRole(dn, "role_workspace-management");
+        }
 
         // Form
         WorkspaceEditionForm form = this.applicationContext.getBean(WorkspaceEditionForm.class, workspace, admin, root);
@@ -143,6 +151,28 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
             form.setWorkspaceTypes(workspaceTypes);
         }
 
+        if(root) {
+
+            if(admin) {
+                form.setDeletable(true);
+            }
+            else {
+                // Compute owner rights
+                String workspaceId = workspace.getProperties().getString("webc:url");
+                WorkspaceMember currentMember = workspaceService.getMember(workspaceId, user);
+
+                // A workspace is deletable if current user is owner
+                if(currentMember != null && currentMember.getRole() == WorkspaceRole.OWNER) {
+                    form.setDeletable(true);
+                }
+            }
+
+        }
+        else {
+            // Rooms are always deletable
+            form.setDeletable(true);
+        }
+
         // Visual
         Image visual = this.repository.getVisual(portalControllerContext, workspace);
         form.setVisual(visual);
@@ -160,7 +190,6 @@ public class WorkspaceEditionServiceImpl implements WorkspaceEditionService, App
         List<Task> otherTasks = this.repository.getOtherTasks(portalControllerContext, workspace);
         form.setOtherTasks(otherTasks);
 
-        
         return form;
     }
 
