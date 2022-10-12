@@ -57,7 +57,7 @@
 					   <!-- Creator -->
 					   <td><ttc:user name="${version.properties['dc:lastContributor']}" linkable="false" /></td>
 					   <!-- Size -->
-					   <td><ttc:fileSize size="${version.properties['common:size']}" /></td>
+					   <td><ttc:fileSize size="${version.properties['file:content']['length']}" /></td>
 					   <!-- Download -->
 					   <td><a href="${link}" target="_blank"><op:translate key='VERSION_DOWNLOAD' /></a></td>
 					</tr>

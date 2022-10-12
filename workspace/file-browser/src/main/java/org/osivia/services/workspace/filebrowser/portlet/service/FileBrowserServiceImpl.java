@@ -430,18 +430,19 @@ public class FileBrowserServiceImpl implements FileBrowserService {
         String lastContributor = nuxeoDocument.getString("dc:lastContributor");
         item.setLastContributor(lastContributor);
 
-        // File size
-        Long size = nuxeoDocument.getLong("common:size");
-        item.setSize(size);
-
         // Folderish indicator
         boolean folderish = ((type != null) && type.isFolderish());
         item.setFolderish(folderish);
 
-        // File MIME type
+
         if ((type != null) && type.isFile()) {
             PropertyMap fileContent = nuxeoDocument.getProperties().getMap("file:content");
             if (fileContent != null) {
+                // File size
+                Long size = fileContent.getLong("length");
+                item.setSize(size);
+
+                // File MIME type
                 String mimeType = fileContent.getString("mime-type");
                 item.setMimeType(mimeType);
             }
