@@ -1,16 +1,13 @@
 package org.osivia.services.editor.image.portlet.repository;
 
-import org.nuxeo.ecm.automation.client.model.Document;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.cms.CMSBinaryContent;
-import org.osivia.services.editor.common.model.SearchScope;
 import org.osivia.services.editor.common.repository.CommonRepository;
 import org.osivia.services.editor.image.portlet.model.AttachedImage;
 
 import javax.portlet.PortletException;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.SortedSet;
 
 /**
@@ -30,10 +27,6 @@ public interface EditorImageRepository extends CommonRepository {
      * Attached image URL prefix.
      */
     String ATTACHED_IMAGE_URL_PREFIX = "/nuxeo/nxfile/default/attachedImages/";
-    /**
-     * Nuxeo document URL suffix.
-     */
-    String DOCUMENT_URL_SUFFIX = "?content=Original";
 
 
     /**
@@ -90,13 +83,13 @@ public interface EditorImageRepository extends CommonRepository {
 
 
     /**
-     * Get image document URL.
+     * Get source preview binary content.
      *
      * @param portalControllerContext portal controller context
-     * @param path                    document path
-     * @return URL
+     * @param path                    source path
+     * @return binary content
      */
-    String getImageDocumentUrl(PortalControllerContext portalControllerContext, String path) throws PortletException, IOException;
+    CMSBinaryContent getSourcePreviewBinaryContent(PortalControllerContext portalControllerContext, String path) throws PortletException, IOException;
 
 
     /**
@@ -118,5 +111,14 @@ public interface EditorImageRepository extends CommonRepository {
      * @return binary content
      */
     CMSBinaryContent getAttachedImagePreviewBinaryContent(PortalControllerContext portalControllerContext, int index) throws PortletException;
+
+
+    /**
+     * Get current path.
+     *
+     * @param portalControllerContext portal controller context
+     * @return path
+     */
+    String getCurrentPath(PortalControllerContext portalControllerContext) throws PortletException;
 
 }

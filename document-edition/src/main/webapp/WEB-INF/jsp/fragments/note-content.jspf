@@ -1,4 +1,6 @@
-<portlet:resourceURL id="editor" var="editorUrl"/>
+<portlet:resourceURL id="editor" var="editorUrl">
+    <portlet:param name="creation" value="${form.creation}"/>
+</portlet:resourceURL>
 
 <c:set var="placeholder"><op:translate key="DOCUMENT_EDITION_FORM_NOTE_CONTENT_PLACEHOLDER"/></c:set>
 

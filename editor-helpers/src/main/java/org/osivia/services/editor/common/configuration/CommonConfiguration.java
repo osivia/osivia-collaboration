@@ -3,6 +3,7 @@ package org.osivia.services.editor.common.configuration;
 import fr.toutatice.portail.cms.nuxeo.api.CMSPortlet;
 import fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService;
 import fr.toutatice.portail.cms.nuxeo.api.services.dao.DocumentDAO;
+import org.osivia.portal.api.editor.EditorService;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -114,6 +115,17 @@ public abstract class CommonConfiguration extends CMSPortlet implements PortletC
     @Bean
     public IWebIdService getWebIdService() {
         return Locator.findMBean(IWebIdService.class, IWebIdService.MBEAN_NAME);
+    }
+
+
+    /**
+     * Get editor service.
+     *
+     * @return editor service
+     */
+    @Bean
+    public EditorService getEditorService() {
+        return Locator.findMBean(EditorService.class, EditorService.MBEAN_NAME);
     }
 
 

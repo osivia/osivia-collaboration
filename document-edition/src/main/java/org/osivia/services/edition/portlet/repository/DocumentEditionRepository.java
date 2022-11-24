@@ -4,6 +4,7 @@ import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.editor.EditorTemporaryAttachedPicture;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
 import org.springframework.validation.Errors;
@@ -101,8 +102,9 @@ public interface DocumentEditionRepository<T extends AbstractDocumentEditionForm
      *
      * @param portalControllerContext portal controller context
      * @param form                    document edition form
+     * @param pictures                temporary attached pictures
      */
-    void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException;
+    void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, List<EditorTemporaryAttachedPicture> pictures) throws PortletException, IOException;
 
 
     /**

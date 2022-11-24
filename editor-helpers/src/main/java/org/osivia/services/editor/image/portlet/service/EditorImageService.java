@@ -85,7 +85,7 @@ public interface EditorImageService extends CommonService {
      * @param portalControllerContext portal controller context
      * @param form                    form
      */
-    void save(PortalControllerContext portalControllerContext, EditorImageForm form) throws PortletException;
+    void save(PortalControllerContext portalControllerContext, EditorImageForm form) throws PortletException, IOException;
 
 
     /**
@@ -94,7 +94,7 @@ public interface EditorImageService extends CommonService {
      * @param portalControllerContext portal controller context
      * @return attached image form
      */
-    EditorImageSourceAttachedForm getAttachedForm(PortalControllerContext portalControllerContext) throws PortletException;
+    EditorImageSourceAttachedForm getAttachedForm(PortalControllerContext portalControllerContext) throws PortletException, IOException;
 
 
     /**

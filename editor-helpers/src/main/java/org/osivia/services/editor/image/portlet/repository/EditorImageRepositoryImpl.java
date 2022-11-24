@@ -132,14 +132,11 @@ public class EditorImageRepositoryImpl extends CommonRepositoryImpl implements E
 
 
     @Override
-    public String getImageDocumentUrl(PortalControllerContext portalControllerContext, String path) {
-        // Document
-        Document document = this.getDocument(portalControllerContext, path);
+    public CMSBinaryContent getSourcePreviewBinaryContent(PortalControllerContext portalControllerContext, String path) {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
-        // WebId
-        String webId = document.getString(WEB_ID_PROPERTY);
-
-        return DOCUMENT_URL_PREFIX + webId + DOCUMENT_URL_SUFFIX;
+        return nuxeoController.fetchFileContent(path, "file:content");
     }
 
 
@@ -164,6 +161,16 @@ public class EditorImageRepositoryImpl extends CommonRepositoryImpl implements E
         String path = nuxeoController.getContentPath();
 
         return nuxeoController.fetchAttachedPicture(path, String.valueOf(index));
+    }
+
+
+    @Override
+    public String getCurrentPath(PortalControllerContext portalControllerContext) {
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+
+        // Current document path
+        return nuxeoController.getContentPath();
     }
 
 }

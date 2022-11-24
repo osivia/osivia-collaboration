@@ -44,7 +44,7 @@ public class UpdateDocumentCommand extends AbstractDocumentCommand {
         document = documentService.update(document, this.getProperties());
 
         // Binaries
-        this.updateBinaries(documentService, document);
+        this.updateBinaries(session, documentService, document);
 
         return document;
     }

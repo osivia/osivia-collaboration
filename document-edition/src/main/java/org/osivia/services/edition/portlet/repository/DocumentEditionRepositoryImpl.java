@@ -4,13 +4,13 @@ import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.cms.NuxeoDocumentContext;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.automation.client.model.Blob;
-import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.nuxeo.ecm.automation.client.model.*;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.editor.EditorTemporaryAttachedPicture;
 import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
 import org.osivia.services.edition.portlet.model.Attachments;
 import org.osivia.services.edition.portlet.model.DocumentEditionMetadata;
@@ -28,6 +28,7 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -260,7 +261,7 @@ public abstract class DocumentEditionRepositoryImpl<T extends AbstractDocumentEd
 
 
     @Override
-    public void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
+    public void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form, List<EditorTemporaryAttachedPicture> pictures) throws PortletException, IOException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
 
@@ -271,6 +272,9 @@ public abstract class DocumentEditionRepositoryImpl<T extends AbstractDocumentEd
 
         // Binaries
         Map<String, List<Blob>> binaries = new LinkedHashMap<>();
+
+        // Temporary attached pictures
+        this.addTemporaryAttachedPictures(portalControllerContext, pictures, binaries);
 
         // Attachments
         this.attachmentsRepository.customizeProperties(portalControllerContext, form.getAttachments(), form.isCreation(), properties, binaries);
@@ -305,6 +309,45 @@ public abstract class DocumentEditionRepositoryImpl<T extends AbstractDocumentEd
         } else {
             // Update
             this.update(nuxeoController, form.getPath(), properties, binaries);
+        }
+    }
+
+
+    /**
+     * Add temporary attached pictures to document binaries.
+     *
+     * @param portalControllerContext portal controller context
+     * @param pictures                temporary attached pictures
+     * @param binaries                document binaries
+     */
+    private void addTemporaryAttachedPictures(PortalControllerContext portalControllerContext, List<EditorTemporaryAttachedPicture> pictures, Map<String, List<Blob>> binaries) {
+        if (CollectionUtils.isNotEmpty(pictures)) {
+            List<Blob> blobs = new LinkedList<>();
+            for (EditorTemporaryAttachedPicture picture : pictures) {
+                if (picture.getFile() != null) {
+                    FileBlob blob = new FileBlob(picture.getFile(), picture.getFileName(), picture.getContentType());
+                    blobs.add(blob);
+                } else if (StringUtils.isNotEmpty(picture.getSourcePath())) {
+                    // Source document
+                    NuxeoDocumentContext documentContext = this.getDocumentContext(portalControllerContext, picture.getSourcePath());
+                    Document document = documentContext.getDocument();
+
+                    // Source data
+                    String data;
+                    PropertyMap fileContent = document.getProperties().getMap("file:content");
+                    if (fileContent == null) {
+                        data = null;
+                    } else {
+                        data = fileContent.getString("data");
+                    }
+
+                    if (StringUtils.isNotEmpty(data)) {
+                        BlobRef blob = new BlobRef(data);
+                        blobs.add(blob);
+                    }
+                }
+            }
+            binaries.put("ttc:images", blobs);
         }
     }
 

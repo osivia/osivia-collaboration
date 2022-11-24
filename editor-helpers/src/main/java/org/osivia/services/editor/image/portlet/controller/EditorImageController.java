@@ -17,7 +17,7 @@ import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 
 import javax.portlet.*;
-import java.util.List;
+import java.io.IOException;
 
 /**
  * Editor image portlet controller.
@@ -78,7 +78,7 @@ public class EditorImageController {
      * @param bindingResult binding result
      */
     @ActionMapping(name = "submit", params = "save")
-    public void save(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("form") EditorImageForm form, BindingResult bindingResult) throws PortletException {
+    public void save(ActionRequest request, ActionResponse response, @Validated @ModelAttribute("form") EditorImageForm form, BindingResult bindingResult) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 

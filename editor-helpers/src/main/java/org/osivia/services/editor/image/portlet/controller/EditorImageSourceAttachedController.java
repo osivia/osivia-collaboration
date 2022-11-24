@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.portlet.bind.annotation.ActionMapping;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 import javax.portlet.*;
 import java.io.IOException;
@@ -114,6 +115,21 @@ public class EditorImageSourceAttachedController {
 
 
     /**
+     * Image preview resource mapping.
+     *
+     * @param request  resource request
+     * @param response resource response
+     */
+    @ResourceMapping("image-preview")
+    public void imagePreview(ResourceRequest request, ResourceResponse response) throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        this.service.serveImagePreview(portalControllerContext);
+    }
+
+
+    /**
      * Get attached image form model attribute.
      *
      * @param request  portlet request
@@ -121,7 +137,7 @@ public class EditorImageSourceAttachedController {
      * @return attached image form
      */
     @ModelAttribute("attachedForm")
-    public EditorImageSourceAttachedForm getAttachedForm(PortletRequest request, PortletResponse response) throws PortletException {
+    public EditorImageSourceAttachedForm getAttachedForm(PortletRequest request, PortletResponse response) throws PortletException, IOException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 

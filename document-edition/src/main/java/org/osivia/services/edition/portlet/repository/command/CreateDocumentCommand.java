@@ -48,7 +48,7 @@ public class CreateDocumentCommand extends AbstractDocumentCommand {
         DocRef document = documentService.createDocument(parent, this.type, null, this.getProperties());
 
         // Binaries
-        this.updateBinaries(documentService, document);
+        this.updateBinaries(session, documentService, document);
 
         return document;
     }

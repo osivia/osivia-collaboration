@@ -9,8 +9,10 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.editor.EditorService;
+import org.osivia.portal.api.editor.EditorTemporaryAttachedPicture;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
@@ -18,11 +20,7 @@ import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
-import org.osivia.services.edition.portlet.model.AbstractDocumentEditionForm;
-import org.osivia.services.edition.portlet.model.DocumentEditionWindowProperties;
-import org.osivia.services.edition.portlet.model.FilesCreationForm;
-import org.osivia.services.edition.portlet.model.Picture;
-import org.osivia.services.edition.portlet.model.UploadTemporaryFile;
+import org.osivia.services.edition.portlet.model.*;
 import org.osivia.services.edition.portlet.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -31,7 +29,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import javax.portlet.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
@@ -303,11 +304,33 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
     @Override
     public void save(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) throws PortletException, IOException {
+        // Window properties
+        DocumentEditionWindowProperties windowProperties = form.getWindowProperties();
+
         // Repository
         DocumentEditionRepository<?> repository = this.getRepository(form.getName());
-        // Save document
-        repository.save(portalControllerContext, form);
 
+        // Temporary attached pictures
+        List<EditorTemporaryAttachedPicture> pictures;
+        if (form.isCreation()) {
+            try {
+                pictures = this.editorService.getTemporaryAttachedPictures(portalControllerContext, windowProperties.getParentDocumentPath());
+            } catch (PortalException e) {
+                throw new PortletException(e);
+            }
+        } else {
+            pictures = null;
+        }
+
+        // Save document
+        repository.save(portalControllerContext, form, pictures);
+
+        // Remove temporary attached pictures
+        try {
+            this.editorService.clearTemporaryAttachedPictures(portalControllerContext, windowProperties.getParentDocumentPath());
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
 
         // Notification
         this.addNotification(portalControllerContext, form);
@@ -319,8 +342,9 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
     /**
      * Add notification.
+     *
      * @param portalControllerContext portal controller context
-     * @param form document edition form
+     * @param form                    document edition form
      */
     protected void addNotification(PortalControllerContext portalControllerContext, AbstractDocumentEditionForm form) {
         // Portlet request
@@ -350,7 +374,18 @@ public class DocumentEditionServiceImpl implements DocumentEditionService {
 
 
     @Override
-    public void cancel(PortalControllerContext portalControllerContext) throws IOException {
+    public void cancel(PortalControllerContext portalControllerContext) throws PortletException, IOException {
+        // Window properties
+        DocumentEditionWindowProperties windowProperties = this.getWindowProperties(portalControllerContext);
+
+        if (StringUtils.isEmpty(windowProperties.getDocumentPath())) {
+            try {
+                this.editorService.clearTemporaryAttachedPictures(portalControllerContext, windowProperties.getParentDocumentPath());
+            } catch (PortalException e) {
+                throw new PortletException(e);
+            }
+        }
+
         // Redirect
         this.redirect(portalControllerContext);
     }

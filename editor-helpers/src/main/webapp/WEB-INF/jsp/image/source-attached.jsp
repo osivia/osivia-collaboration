@@ -52,7 +52,19 @@
 
                             <div class="col-xs-6 col-sm-4">
                                 <a href="${selectUrl}" class="thumbnail" title="${attachedImage.fileName}">
-                                    <img src="${attachedImage.url}" alt="">
+                                    <c:choose>
+                                        <c:when test="${attachedImage.temporary}">
+                                            <portlet:resourceURL var="imageUrl" id="image-preview">
+                                                <portlet:param name="creation" value="true"/>
+                                                <portlet:param name="index" value="${attachedImage.index}"/>
+                                            </portlet:resourceURL>
+
+                                            <img src="${imageUrl}" alt="">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img src="${attachedImage.url}" alt="">
+                                        </c:otherwise>
+                                    </c:choose>
                                     <span>${attachedImage.fileName}</span>
                                 </a>
                             </div>

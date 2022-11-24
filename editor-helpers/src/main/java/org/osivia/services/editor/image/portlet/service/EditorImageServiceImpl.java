@@ -7,7 +7,11 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.editor.EditorService;
+import org.osivia.portal.api.editor.EditorTemporaryAttachedPicture;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
 import org.osivia.portal.core.cms.CMSBinaryContent;
@@ -23,10 +27,8 @@ import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.SortedSet;
+import java.nio.file.Files;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,6 +66,12 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
     @Autowired
     private EditorImageRepository repository;
 
+    /**
+     * Editor service.
+     */
+    @Autowired
+    private EditorService editorService;
+
 
     /**
      * Constructor.
@@ -83,7 +91,7 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
 
 
     @Override
-    public EditorImageForm getForm(PortalControllerContext portalControllerContext) throws PortletException {
+    public EditorImageForm getForm(PortalControllerContext portalControllerContext) {
         // Form
         EditorImageForm form = this.applicationContext.getBean(EditorImageForm.class);
 
@@ -118,21 +126,7 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
             form.setWidth(width);
 
             // Available image source types
-            boolean attachments;
-            if (creation) {
-                attachments = false;
-            } else {
-                Document document = this.repository.getDocument(portalControllerContext, window.getProperty(PATH_WINDOW_PROPERTY));
-                attachments = (document.getProperties().getList(EditorImageRepository.ATTACHED_IMAGES_PROPERTY) != null);
-            }
-            List<ImageSourceType> availableSourceTypes;
-            if (attachments) {
-                availableSourceTypes = new ArrayList<>();
-                availableSourceTypes.add(ImageSourceType.ATTACHED);
-                availableSourceTypes.add(ImageSourceType.DOCUMENT);
-            } else {
-                availableSourceTypes = null;
-            }
+            List<ImageSourceType> availableSourceTypes = Arrays.asList(ImageSourceType.ATTACHED, ImageSourceType.DOCUMENT);
             form.setAvailableSourceTypes(availableSourceTypes);
 
             // Loaded indicator
@@ -144,7 +138,7 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
 
 
     @Override
-    public void save(PortalControllerContext portalControllerContext, EditorImageForm form) throws PortletException {
+    public void save(PortalControllerContext portalControllerContext, EditorImageForm form) throws PortletException, IOException {
         // Window
         PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
 
@@ -154,7 +148,39 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
         if (StringUtils.equals(form.getTemporaryUrl(), form.getUrl())) {
             // Temporary attached image
             TemporaryAttachedImage temporaryAttachedImage = form.getTemporaryAttachedImage();
-            if ((temporaryAttachedImage != null) && (temporaryAttachedImage.getFile() != null)) {
+
+            if (form.isCreation()) {
+                if ((temporaryAttachedImage != null) && (temporaryAttachedImage.getFile() != null)) {
+                    // Editor temporary attached picture
+                    EditorTemporaryAttachedPicture picture = new EditorTemporaryAttachedPicture();
+                    picture.setFile(temporaryAttachedImage.getFile());
+                    picture.setFileName(temporaryAttachedImage.getFileName());
+                    picture.setContentType(temporaryAttachedImage.getContentType());
+
+                    try {
+                        this.editorService.addTemporaryAttachedPicture(portalControllerContext, path, picture);
+                    } catch (PortalException e) {
+                        throw new PortletException(e);
+                    }
+                } else if (StringUtils.isNotEmpty(form.getTemporaryImagePath())) {
+                    Document source = this.repository.getDocument(portalControllerContext, form.getTemporaryImagePath());
+                    PropertyMap fileContent = source.getProperties().getMap("file:content");
+
+                    // Editor temporary attached picture
+                    EditorTemporaryAttachedPicture picture = new EditorTemporaryAttachedPicture();
+                    picture.setSourcePath(source.getPath());
+                    picture.setFileName(source.getTitle());
+                    if (fileContent != null) {
+                        picture.setContentType(fileContent.getString("mime-type"));
+                    }
+
+                    try {
+                        this.editorService.addTemporaryAttachedPicture(portalControllerContext, path, picture);
+                    } catch (PortalException e) {
+                        throw new PortletException(e);
+                    }
+                }
+            } else if ((temporaryAttachedImage != null) && (temporaryAttachedImage.getFile() != null)) {
                 this.repository.addAttachedImage(portalControllerContext, path, temporaryAttachedImage.getFile(), temporaryAttachedImage.getFileName(), temporaryAttachedImage.getContentType());
                 this.deleteTemporaryFile(temporaryAttachedImage);
             } else if (StringUtils.isNotEmpty(form.getTemporaryImagePath())) {
@@ -171,7 +197,7 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
 
 
     @Override
-    public EditorImageSourceAttachedForm getAttachedForm(PortalControllerContext portalControllerContext) throws PortletException {
+    public EditorImageSourceAttachedForm getAttachedForm(PortalControllerContext portalControllerContext) throws PortletException, IOException {
         // Window
         PortalWindow window = WindowFactory.getWindow(portalControllerContext.getRequest());
 
@@ -183,7 +209,34 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
         attachedForm.setMaxUploadSize(MAX_UPLOAD_SIZE);
 
         // Attached images
-        SortedSet<AttachedImage> attachedImages = this.repository.getAttachedImages(portalControllerContext, path);
+        SortedSet<AttachedImage> attachedImages;
+        if (BooleanUtils.toBoolean(window.getProperty(CREATION_WINDOW_PROPERTY))) {
+            List<EditorTemporaryAttachedPicture> temporaryAttachedPictures;
+            try {
+                temporaryAttachedPictures = this.editorService.getTemporaryAttachedPictures(portalControllerContext, path);
+            } catch (PortalException e) {
+                throw new PortletException(e);
+            }
+            if (CollectionUtils.isEmpty(temporaryAttachedPictures)) {
+                attachedImages = null;
+            } else {
+                attachedImages = new TreeSet<>();
+                for (int i = 0; i < temporaryAttachedPictures.size(); i++) {
+                    // Temporary attached picture
+                    EditorTemporaryAttachedPicture picture = temporaryAttachedPictures.get(i);
+
+                    // Attached image
+                    AttachedImage attachedImage = this.applicationContext.getBean(AttachedImage.class);
+                    attachedImage.setIndex(i);
+                    attachedImage.setFileName(picture.getFileName());
+                    attachedImage.setTemporary(true);
+
+                    attachedImages.add(attachedImage);
+                }
+            }
+        } else {
+            attachedImages = this.repository.getAttachedImages(portalControllerContext, path);
+        }
         attachedForm.setAttachedImages(attachedImages);
 
         return attachedForm;
@@ -247,7 +300,7 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
 
         // Delete temporary attached image
         TemporaryAttachedImage temporaryAttachedImage = form.getTemporaryAttachedImage();
-        if (temporaryAttachedImage != null) {
+        if (!form.isCreation() && (temporaryAttachedImage != null)) {
             if (temporaryAttachedImage.getFile() != null) {
                 if (!temporaryAttachedImage.getFile().delete()) {
                     temporaryAttachedImage.getFile().deleteOnExit();
@@ -359,44 +412,106 @@ public class EditorImageServiceImpl extends CommonServiceImpl implements EditorI
 
         // Image source
         String source = request.getParameter("src");
-        // Binary content
-        CMSBinaryContent binaryContent;
 
-        Matcher attachedImageUrlMatcher = this.attachedImageUrlPattern.matcher(source);
+        // Input steam
+        InputStream inputStream;
 
-        if (StringUtils.startsWith(source, EditorImageRepository.DOCUMENT_URL_PREFIX)) {
-            String webId = StringUtils.substringAfterLast(StringUtils.substringBefore(source, "?"), "/");
-            String[] parameters = StringUtils.split(StringUtils.substringAfter(source, "?"), "&");
+        if (BooleanUtils.toBoolean(request.getParameter("creation"))) {
+            // Window
+            PortalWindow window = WindowFactory.getWindow(request);
 
-            // Image content
-            String content = "Original";
-            if (ArrayUtils.isNotEmpty(parameters)) {
-                for (String parameter : parameters) {
-                    String[] split = StringUtils.split(parameter, "=");
-                    if (ArrayUtils.getLength(split) == 2) {
-                        if (StringUtils.equals("content", split[0])) {
-                            content = split[1];
-                        }
-                    }
+            // Path
+            String path = StringUtils.defaultIfEmpty(window.getProperty(PATH_WINDOW_PROPERTY),  this.repository.getCurrentPath(portalControllerContext));
+
+            // Temporary attached pictures
+            List<EditorTemporaryAttachedPicture> pictures;
+            if (StringUtils.isEmpty(path)) {
+                pictures = null;
+            } else {
+                try {
+                    pictures = this.editorService.getTemporaryAttachedPictures(portalControllerContext, path);
+                } catch (PortalException e) {
+                    throw new PortletException(e);
                 }
             }
 
-            binaryContent = this.repository.getImageDocumentPreviewBinaryContent(portalControllerContext, webId, content);
-        } else if (attachedImageUrlMatcher.matches()) {
-            // Attached image index
-            int index = NumberUtils.toInt(attachedImageUrlMatcher.group("index"));
+            // Temporary attached picture index
+            int index = NumberUtils.toInt(request.getParameter("index"), -1);
+            if (index < 0) {
+                String[] split = StringUtils.splitByWholeSeparator(source, "/" + EditorImageRepository.ATTACHED_IMAGES_PROPERTY + "/");
+                if (ArrayUtils.getLength(split) == 2) {
+                    index = NumberUtils.toInt(StringUtils.substringBefore(split[1], "/"), -1);
+                } else {
+                    index = -1;
+                }
+            }
 
-            binaryContent = this.repository.getAttachedImagePreviewBinaryContent(portalControllerContext, index);
+            // Temporary attached picture
+            EditorTemporaryAttachedPicture picture;
+            if (CollectionUtils.isEmpty(pictures) || (index < 0) || (index >= pictures.size())) {
+                picture = null;
+            } else {
+                picture = pictures.get(index);
+            }
+
+            if (picture == null) {
+                throw new FileNotFoundException("Temporary attached picture not found");
+            } else if (picture.getFile() != null) {
+                response.setContentType(picture.getContentType());
+
+                inputStream = Files.newInputStream(picture.getFile().toPath());
+            } else if (StringUtils.isNotEmpty(picture.getSourcePath())) {
+                // Binary content
+                CMSBinaryContent binaryContent = this.repository.getSourcePreviewBinaryContent(portalControllerContext, picture.getSourcePath());
+
+                response.setContentType(binaryContent.getMimeType());
+                response.setContentLength(binaryContent.getFileSize().intValue());
+
+                inputStream = Files.newInputStream(binaryContent.getFile().toPath());
+            } else {
+                throw new FileNotFoundException("Unknown source: " + source);
+            }
         } else {
-            throw new FileNotFoundException("Unknown source: " + source);
+            // Binary content
+            CMSBinaryContent binaryContent;
+
+            Matcher attachedImageUrlMatcher = this.attachedImageUrlPattern.matcher(source);
+
+            if (StringUtils.startsWith(source, EditorImageRepository.DOCUMENT_URL_PREFIX)) {
+                String webId = StringUtils.substringAfterLast(StringUtils.substringBefore(source, "?"), "/");
+                String[] parameters = StringUtils.split(StringUtils.substringAfter(source, "?"), "&");
+
+                // Image content
+                String content = "Original";
+                if (ArrayUtils.isNotEmpty(parameters)) {
+                    for (String parameter : parameters) {
+                        String[] split = StringUtils.split(parameter, "=");
+                        if (ArrayUtils.getLength(split) == 2) {
+                            if (StringUtils.equals("content", split[0])) {
+                                content = split[1];
+                            }
+                        }
+                    }
+                }
+
+                binaryContent = this.repository.getImageDocumentPreviewBinaryContent(portalControllerContext, webId, content);
+            } else if (attachedImageUrlMatcher.matches()) {
+                // Attached image index
+                int index = NumberUtils.toInt(attachedImageUrlMatcher.group("index"));
+
+                binaryContent = this.repository.getAttachedImagePreviewBinaryContent(portalControllerContext, index);
+            } else {
+                throw new FileNotFoundException("Unknown source: " + source);
+            }
+
+            response.setContentType(binaryContent.getMimeType());
+            response.setContentLength(binaryContent.getFileSize().intValue());
+
+            inputStream = Files.newInputStream(binaryContent.getFile().toPath());
         }
 
-        response.setContentType(binaryContent.getMimeType());
-        response.setContentLength(binaryContent.getFileSize().intValue());
         response.getCacheControl().setExpirationTime(0);
 
-        // Input steam
-        FileInputStream inputStream = new FileInputStream(binaryContent.getFile());
         // Output stream
         OutputStream outputStream = response.getPortletOutputStream();
         // Copy

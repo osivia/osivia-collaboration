@@ -28,6 +28,10 @@ public class AttachedImage implements Comparable<AttachedImage> {
      * URL.
      */
     private String url;
+    /**
+     * Temporary attached image indicator.
+     */
+    private boolean temporary;
 
 
     /**
@@ -84,5 +88,13 @@ public class AttachedImage implements Comparable<AttachedImage> {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public boolean isTemporary() {
+        return temporary;
+    }
+
+    public void setTemporary(boolean temporary) {
+        this.temporary = temporary;
     }
 }

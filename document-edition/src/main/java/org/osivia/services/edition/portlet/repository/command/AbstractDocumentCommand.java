@@ -3,14 +3,13 @@ package org.osivia.services.edition.portlet.repository.command;
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
-import org.nuxeo.ecm.automation.client.model.Blob;
-import org.nuxeo.ecm.automation.client.model.Blobs;
-import org.nuxeo.ecm.automation.client.model.DocRef;
-import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.nuxeo.ecm.automation.client.model.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Document Nuxeo command abstract super-class.
@@ -47,10 +46,11 @@ public abstract class AbstractDocumentCommand implements INuxeoCommand {
     /**
      * Update document binaries.
      *
+     * @param session         Nuxeo session
      * @param documentService document service
      * @param document        document
      */
-    void updateBinaries(DocumentService documentService, DocRef document) throws Exception {
+    protected void updateBinaries(Session session, DocumentService documentService, DocRef document) throws Exception {
         if (MapUtils.isNotEmpty(this.binaries)) {
             for (Map.Entry<String, List<Blob>> entry : this.binaries.entrySet()) {
                 String xpath = entry.getKey();
@@ -59,12 +59,39 @@ public abstract class AbstractDocumentCommand implements INuxeoCommand {
                 if (CollectionUtils.isEmpty(blobs)) {
                     documentService.removeBlob(document, xpath);
                 } else if (blobs.size() == 1) {
-                    documentService.setBlob(document, blobs.get(0), xpath);
+                    Blob resolvedBlob = this.resolveBlobRef(session, blobs.get(0));
+                    documentService.setBlob(document, resolvedBlob, xpath);
                 } else {
-                    documentService.setBlobs(document, new Blobs(blobs), xpath);
+                    List<Blob> resolvedBlobs = blobs.stream().map(item -> this.resolveBlobRef(session, item)).collect(Collectors.toList());
+                    documentService.setBlobs(document, new Blobs(resolvedBlobs), xpath);
                 }
             }
         }
+    }
+
+
+    /**
+     * Resolve blob reference.
+     *
+     * @param session Nuxeo session
+     * @param blob    blob, maybe a blob reference
+     * @return blob
+     */
+    private Blob resolveBlobRef(Session session, Blob blob) {
+        Blob result;
+
+        if (blob instanceof BlobRef) {
+            BlobRef blobRef = (BlobRef) blob;
+            try {
+                result = session.getFile(blobRef.getRef());
+            } catch (Exception e) {
+                result = blob;
+            }
+        } else {
+            result = blob;
+        }
+
+        return result;
     }
 
 
