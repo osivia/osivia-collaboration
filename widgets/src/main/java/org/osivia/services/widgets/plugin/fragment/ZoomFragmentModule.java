@@ -128,7 +128,8 @@ public class ZoomFragmentModule extends FragmentModule {
 
                                     // URL
                                     String href = propertyMap.getString(HREF);
-                                    Link link = nuxeoController.getLinkFromNuxeoURL(href);
+                                    String url = nuxeoController.transformNuxeoLink(href);
+                                    Link link = nuxeoController.getLinkFromNuxeoURL(url);
                                     request.setAttribute("url", link.getUrl());
                                     request.setAttribute("external", link.isExternal());
 
