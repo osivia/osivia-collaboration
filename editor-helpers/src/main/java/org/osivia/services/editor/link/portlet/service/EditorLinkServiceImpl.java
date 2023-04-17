@@ -104,6 +104,10 @@ public class EditorLinkServiceImpl extends CommonServiceImpl implements EditorLi
             boolean onlyText = BooleanUtils.toBoolean(window.getProperty(ONLY_TEXT_WINDOW_PROPERTY));
             form.setDisplayText(onlyText);
 
+            // Force open in new window indicator
+            boolean forceNewWindow = BooleanUtils.toBoolean(window.getProperty(FORCE_NEW_WINDOW_WINDOW_PROPERTY));
+            form.setForceNewWindow(forceNewWindow);
+
             // Loaded indicator
             form.setLoaded(true);
         }

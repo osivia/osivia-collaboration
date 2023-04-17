@@ -1,6 +1,5 @@
 package org.osivia.services.editor.link.portlet.model;
 
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
@@ -30,6 +29,10 @@ public class EditorLinkForm {
      * Display text indicator.
      */
     private boolean displayText;
+    /**
+     * Force open in new window indicator.
+     */
+    private boolean forceNewWindow;
 
     /**
      * Done indicator.
@@ -79,6 +82,14 @@ public class EditorLinkForm {
 
     public void setDisplayText(boolean displayText) {
         this.displayText = displayText;
+    }
+
+    public boolean isForceNewWindow() {
+        return forceNewWindow;
+    }
+
+    public void setForceNewWindow(boolean forceNewWindow) {
+        this.forceNewWindow = forceNewWindow;
     }
 
     public boolean isDone() {

@@ -52,6 +52,14 @@ public interface EditorLinkService extends CommonService {
      * Only text indicator window property.
      */
     String ONLY_TEXT_WINDOW_PROPERTY = EditorService.WINDOW_PROPERTY_PREFIX + ONLY_TEXT_PARAMETER;
+    /**
+     * Force open in new window indicator parameter.
+     */
+    String FORCE_NEW_WINDOW_PARAMETER = "forceNewWindow";
+    /**
+     * Force open in new window indicator window property.
+     */
+    String FORCE_NEW_WINDOW_WINDOW_PROPERTY = EditorService.WINDOW_PROPERTY_PREFIX + FORCE_NEW_WINDOW_PARAMETER;
 
 
     /**

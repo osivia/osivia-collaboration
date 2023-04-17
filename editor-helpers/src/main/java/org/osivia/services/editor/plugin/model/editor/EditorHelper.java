@@ -18,7 +18,7 @@ public enum EditorHelper {
     /**
      * Link editor helper.
      */
-    LINK("link", EditorLinkService.PORTLET_INSTANCE, EditorLinkService.URL_PARAMETER, EditorLinkService.TEXT_PARAMETER, EditorLinkService.TITLE_PARAMETER, EditorLinkService.ONLY_TEXT_PARAMETER);
+    LINK("link", EditorLinkService.PORTLET_INSTANCE, EditorLinkService.URL_PARAMETER, EditorLinkService.TEXT_PARAMETER, EditorLinkService.TITLE_PARAMETER, EditorLinkService.ONLY_TEXT_PARAMETER, EditorLinkService.FORCE_NEW_WINDOW_PARAMETER);
 
 
     /**

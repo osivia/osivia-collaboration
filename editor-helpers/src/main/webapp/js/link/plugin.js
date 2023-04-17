@@ -18,7 +18,8 @@ tinymce.PluginManager.add("osivia-link", function (editor, url) {
         var anchorElm = getAnchorElement(editor, selectedElm);
 
         var text = anchorElm ? anchorElm.innerText || anchorElm.textContent : editor.selection.getContent({format: "text"}).replace(/\uFEFF/g, "");
-        var onlyText = isOnlyTextSelected(editor.selection.getContent())
+        var onlyText = isOnlyTextSelected(editor.selection.getContent());
+        var forceNewWindow = anchorElm ? editor.dom.getAttrib(anchorElm, "target") === "_blank" : false;
 
         jQuery.ajax({
             url: $textarea.data("editor-url"),
@@ -32,7 +33,8 @@ tinymce.PluginManager.add("osivia-link", function (editor, url) {
                 url: anchorElm ? editor.dom.getAttrib(anchorElm, "href") : "",
                 text: text,
                 title: anchorElm ? editor.dom.getAttrib(anchorElm, "title") : "",
-                onlyText: onlyText
+                onlyText: onlyText,
+                forceNewWindow: forceNewWindow
             },
             dataType: "json",
             success : function(data, status, xhr) {
@@ -86,13 +88,14 @@ function tinymceLinkModalCallback(arguments) {
     var $url = $form.find("input[name=url]"), url = $url.val();
     var $text = $form.find("input[name=text]"), text = $text.val();
     var $title = $form.find("input[name=title]"), title = $title.val();
+    var $forceNewWindow = $form.find("input[name=forceNewWindow]"), target = $forceNewWindow.is(":checked") ? "_blank" : null;
 
 
     if (done) {
         if (url) {
             var linkAttrs = {
                 "href": url,
-                "target": null,
+                "target": target,
                 "rel": null,
                 "class": null,
                 "title": title

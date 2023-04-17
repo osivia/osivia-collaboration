@@ -59,6 +59,17 @@
             <form:input path="title" cssClass="form-control" />
         </div>
 
+        <%--Force open in new window--%>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    <form:checkbox path="forceNewWindow"/>
+                    <span><op:translate key="EDITOR_LINK_FORM_FORCE_NEW_WINDOW_ACTION"/></span>
+                </label>
+                <span class="help-block"><op:translate key="EDITOR_LINK_FORM_FORCE_NEW_WINDOW_HELP"/></span>
+            </div>
+        </div>
+
         <%--Buttons--%>
         <div class="text-right">
             <%--Cancel--%>
