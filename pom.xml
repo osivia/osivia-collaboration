@@ -15,7 +15,7 @@
         <toutatice.version>4.7.50</toutatice.version>
 
         <!-- Directory -->
-        <directory.version>4.7.42</directory.version>
+        <directory.version>4.7.44</directory.version>
 
         <!-- JBoss -->
         <jboss-portal.version>2.7.2</jboss-portal.version>
