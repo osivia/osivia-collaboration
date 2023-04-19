@@ -118,7 +118,7 @@ public class IssuedPluginServiceImpl implements IssuedPluginService {
      * @param documentContext         document context
      * @return true if the document is accepted
      */
-    private boolean accept(PortalControllerContext portalControllerContext, DocumentContext documentContext) {
+    protected boolean accept(PortalControllerContext portalControllerContext, DocumentContext documentContext) {
         boolean accept;
 
         if (ContextualizationHelper.isCurrentDocContextualized(portalControllerContext) && (documentContext != null) && (documentContext.getDocumentType() != null) && !StringUtils.equals("PortalSite", documentContext.getDocumentType().getName())) {
