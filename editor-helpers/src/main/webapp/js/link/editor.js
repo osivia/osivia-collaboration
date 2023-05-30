@@ -4,16 +4,30 @@ $JQry(function() {
 
 
     if (!$container.data("loaded")) {
+        var $input = $container.find("input[name=filter]");
+
         search($container);
 
-
-        $container.find("input[name=filter]").keyup(function(event) {
+        $input.on("keyup", function(event) {
             // Clear timer
             clearTimeout(timer);
 
-            timer = setTimeout(function () {
+            if (event.key === "Enter") {
+                event.preventDefault();
+
                 search($container);
-            }, 500);
+            } else {
+                timer = setTimeout(function () {
+                    search($container);
+                }, 500);
+            }
+        });
+
+        $input.on("change", function() {
+            // Clear timer
+            clearTimeout(timer);
+
+            search($container);
         });
 
         $container.find("input:radio[name=scope]").change(function(event) {

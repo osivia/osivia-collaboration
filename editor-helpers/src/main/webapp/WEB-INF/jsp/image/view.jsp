@@ -21,6 +21,9 @@
 <div class="editor-image" data-close-modal="${form.done}">
     <%--@elvariable id="form" type="org.osivia.services.editor.image.portlet.model.EditorImageForm"--%>
     <form:form action="${submitUrl}" method="post" modelAttribute="form">
+        <%--Default submit--%>
+        <input type="submit" name="save" class="hidden">
+
         <%--Done indicator--%>
         <form:hidden path="done"/>
 

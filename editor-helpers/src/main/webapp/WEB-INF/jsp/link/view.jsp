@@ -24,6 +24,9 @@
 <div class="editor-link" data-close-modal="${form.done}">
     <%--@elvariable id="form" type="org.osivia.services.editor.link.portlet.model.EditorLinkForm"--%>
     <form:form action="${submitUrl}" method="post" modelAttribute="form" role="form">
+        <%--Default submit--%>
+        <input type="submit" name="save" class="hidden">
+
         <%--Done indicator--%>
         <form:hidden path="done"/>
 

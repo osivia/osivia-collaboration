@@ -8,11 +8,11 @@
 
 
 <portlet:renderURL var="backUrl"/>
-<portlet:actionURL name="submit" var="submitUrl" copyCurrentRenderParameters="true"/>
 <portlet:resourceURL id="search" var="searchUrl"/>
 
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<c:set var="namespace"><portlet:namespace/></c:set>
 
 
 <link rel="stylesheet" type="text/css" href="${contextPath}/css/image/style.min.css">
@@ -21,11 +21,10 @@
 
 <div class="editor-image">
     <%--@elvariable id="documentForm" type="org.osivia.services.editor.image.portlet.model.EditorImageSourceDocumentForm"--%>
-    <form:form action="${submitUrl}" method="post" modelAttribute="documentForm">
+    <form onsubmit="return false;">
         <div class="form-group">
-            <form:label path="filter" cssClass="control-label"><op:translate
-                    key="EDITOR_IMAGE_DOCUMENT_FORM_FILTER_LABEL"/></form:label>
-            <form:input path="filter" type="search" cssClass="form-control"/>
+            <label for="${namespace}-filter" class="control-label"><op:translate key="EDITOR_IMAGE_DOCUMENT_FORM_FILTER_LABEL"/></label>
+            <input id="${namespace}-filter" type="search" name="filter" class="form-control"/>
         </div>
 
         <div class="form-group">
@@ -41,5 +40,5 @@
                 <span><op:translate key="BACK"/></span>
             </a>
         </div>
-    </form:form>
+    </form>
 </div>
