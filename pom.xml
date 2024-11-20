@@ -12,7 +12,7 @@
 
     <properties>
         <!-- Toutatice -->
-        <toutatice.version>4.7.51</toutatice.version>
+        <toutatice.version>4.7.53.1</toutatice.version>
 
         <!-- Directory -->
         <directory.version>4.7.45</directory.version>
@@ -277,10 +277,10 @@
 
  	<profiles>
     	<profile>
-            <id>forge-ci</id>       
+            <id>forge-ci</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
-            </activation>            
+            </activation>
             <distributionManagement>
                 <repository>
                     <id>${releaseRepoId}</id>
@@ -295,7 +295,7 @@
                     <url>${snapshotRepoUrl}</url>
                 </snapshotRepository>
             </distributionManagement>
-        </profile>    	
+        </profile>
     </profiles>
 
     <organization>

@@ -102,7 +102,7 @@
                                         <c:forEach var="type" items="${editionForm.workspaceTypes}">
                                             <div class="radio">
                                                 <label>
-                                                    <form:radiobutton path="workspaceType" value="${type.id}" />
+                                                    <form:radiobutton path="workspaceType" value="${type.id}" data-original-value="${editionForm.workspaceType.id}" />
                                                     <span class="label label-${type.color}">
                                                         <i class="${type.icon}"></i>
                                                         <span><op:translate key="${type.key}" /></span>
@@ -130,6 +130,44 @@
                                     </c:otherwise>
                                 </c:choose>
                             </div>
+
+                            <!-- Change visibility confirmation modal -->
+                            <div id="change-visibility-modal" class="modal fade" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <i class="glyphicons glyphicons-remove"></i>
+                                                <span class="sr-only"><op:translate key="CLOSE" /></span>
+                                            </button>
+
+                                            <h4 class="modal-title"><op:translate key="WORKSPACE_CHANGE_VISIB_MODAL_TITLE" /></h4>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <p>
+                                                <span><op:translate key="WORKSPACE_CHANGE_VISIB_MODAL_MESSAGE"  /></span>
+                                            </p>
+                                            <p class="alert alert-danger">
+                                                <span><op:translate key="WORKSPACE_CHANGE_VISIB_MODAL_MESSAGE_ALERT"  /></span>
+                                            </p>
+                                        </div>
+
+                                        <div class="modal-footer">
+
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                                <i class="glyphicons glyphicons-unlock"></i>
+                                                <span><op:translate key="CHANGE_VISIB" /></span>
+                                            </button>
+
+                                            <button id="keepPrivateBtn" type="button" class="btn btn-default" data-dismiss="modal">
+                                                <span><op:translate key="CANCEL" /></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </spring:bind>
                     
