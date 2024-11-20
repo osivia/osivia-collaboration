@@ -14,6 +14,14 @@
     <!-- Tabs -->
     <%@ include file="../commons/tabs.jspf" %>
 
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-info">
+                <op:translate key="REQUESTS_PURGE_INFO"/>
+            </div>
+        </div>
+    </div>
+
     <!-- Requests -->
     <div class="panel panel-default">
         <div class="panel-body">

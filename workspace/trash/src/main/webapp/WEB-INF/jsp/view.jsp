@@ -37,6 +37,11 @@
 
 
 <div class="trash">
+
+    <div class="alert alert-info">
+        <op:translate key="TRASH_PURGE_INFO"/>
+    </div>
+
     <form:form action="${updateUrl}" method="post" modelAttribute="trashForm" role="form">
         <div class="table" data-location-url="${locationBreadcrumbUrl}">
             <!-- Header -->

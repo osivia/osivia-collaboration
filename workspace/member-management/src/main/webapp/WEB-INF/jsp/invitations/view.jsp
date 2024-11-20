@@ -29,7 +29,15 @@
         
             <!-- Invitations creation -->
             <%@ include file="creation.jspf" %>
-                
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="alert alert-info">
+                        <op:translate key="INVITATIONS_PURGE_INFO"/>
+                    </div>
+                </div>
+            </div>
+
             <!-- Invitations list -->
             <%@ include file="table.jspf" %>
         </div>
