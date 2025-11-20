@@ -40,7 +40,6 @@ import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.directory.v2.model.CollabProfile;
 import org.osivia.directory.v2.model.ext.WorkspaceMember;
-import org.osivia.directory.v2.model.ext.WorkspaceRole;
 import org.osivia.directory.v2.service.PersonUpdateService;
 import org.osivia.directory.v2.service.WorkspaceService;
 import org.osivia.portal.api.PortalException;
@@ -49,14 +48,12 @@ import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.services.workspace.portlet.model.InvitationState;
 import org.osivia.services.workspace.portlet.repository.GetInvitationsCommand;
 import org.osivia.services.workspace.portlet.repository.MemberManagementRepository;
-import org.osivia.services.workspace.portlet.repository.SetProcedureInstanceAcl;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.sun.mail.smtp.SMTPTransport;
 
-import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.batch.NuxeoBatch;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
@@ -271,17 +268,17 @@ public class ImportInvitationsBatch extends NuxeoBatch {
 
 		                        // Update ACL
 		                        // Workspace admin & owner groups
-		                        List<CollabProfile> groups = new ArrayList<>();
-		                        CollabProfile criteria = this.workspaceService.getEmptyProfile();
-		                        criteria.setWorkspaceId(dto.getWorkspaceId());
-		                        criteria.setRole(WorkspaceRole.ADMIN);
-		                        groups.addAll(this.workspaceService.findByCriteria(criteria));
-		                        criteria.setRole(WorkspaceRole.OWNER);
-		                        groups.addAll(this.workspaceService.findByCriteria(criteria));
-
-		                        // Update ACL
-		                        INuxeoCommand command =  new SetProcedureInstanceAcl(dto.getWorkspaceId(), false, uid, groups);
-		                        getNuxeoController().executeNuxeoCommand(command);
+//		                        List<CollabProfile> groups = new ArrayList<>();
+//		                        CollabProfile criteria = this.workspaceService.getEmptyProfile();
+//		                        criteria.setWorkspaceId(dto.getWorkspaceId());
+//		                        criteria.setRole(WorkspaceRole.ADMIN);
+//		                        groups.addAll(this.workspaceService.findByCriteria(criteria));
+//		                        criteria.setRole(WorkspaceRole.OWNER);
+//		                        groups.addAll(this.workspaceService.findByCriteria(criteria));
+//
+//		                        // Update ACL
+//		                        INuxeoCommand command =  new SetProcedureInstanceAcl(dto.getWorkspaceId(), false, uid, groups);
+//		                        getNuxeoController().executeNuxeoCommand(command);
 		                        
 		                        invitationsValidated.add(uid);
 		                        

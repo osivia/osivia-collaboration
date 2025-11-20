@@ -153,6 +153,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
     public int getInvitationsCount(PortalControllerContext portalControllerContext, String workspaceId) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
 
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, workspaceId, InvitationState.SENT);
@@ -169,6 +170,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
     public int getRequestsCount(PortalControllerContext portalControllerContext, String workspaceId) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
 
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, workspaceId, InvitationState.SENT, true);
@@ -368,6 +370,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
 
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, workspaceId);
@@ -540,6 +543,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
     public void updateInvitations(PortalControllerContext portalControllerContext, List<Invitation> invitations) throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
 
         // Nuxeo command
@@ -672,8 +676,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
                     String modelWebId = IFormsService.FORMS_WEB_ID_PREFIX + INVITATION_MODEL_ID;
                     this.formsService.start(portalControllerContext, modelWebId, variables);
 
-                    // Update ACL
-                    this.updateInvitationAcl(portalControllerContext, workspaceId, false, uid);
+                    //// Update ACL
+                    //this.updateInvitationAcl(portalControllerContext, workspaceId, false, uid);
 
                     result = true;
                 } catch (PortalException | FormFilterException e) {
@@ -733,6 +737,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             throws PortletException {
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
 
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(GetInvitationsCommand.class, workspaceId, true);
@@ -819,6 +824,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
         nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
 
         // Nuxeo command
         INuxeoCommand command = this.applicationContext.getBean(UpdateInvitationRequestsCommand.class, portalControllerContext, invitationRequests);
@@ -909,6 +915,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
         // Reload Nuxeo session
         INuxeoCommand command = this.applicationContext.getBean(ReloadNuxeoSessionCommand.class);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
         nuxeoController.executeNuxeoCommand(command);
     }
 
@@ -963,7 +970,7 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
             this.formsService.start(portalControllerContext, modelWebId, variables);
 
             // Update ACL
-            this.updateInvitationAcl(portalControllerContext, workspaceId, true, uid);
+            //this.updateInvitationAcl(portalControllerContext, workspaceId, true, uid);
 
             // Notification
             String message = bundle.getString("MESSAGE_WORKSPACE_REQUEST_CREATION_SUCCESS");
@@ -1041,35 +1048,35 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
         return workspace;
     }
 
-
-    /**
-     * Update invitation ACL.
-     *
-     * @param portalControllerContext portal controller context
-     * @param workspaceId workspace identifier
-     * @param request request indicator
-     * @param uid user identifier
-     */
-    protected void updateInvitationAcl(PortalControllerContext portalControllerContext, String workspaceId, boolean request, String uid) {
-        // Nuxeo controller
-        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
-
-        // Workspace admin & owner groups
-        List<CollabProfile> groups = new ArrayList<>();
-        CollabProfile criteria = this.workspaceService.getEmptyProfile();
-        criteria.setWorkspaceId(workspaceId);
-        criteria.setRole(WorkspaceRole.ADMIN);
-        groups.addAll(this.workspaceService.findByCriteria(criteria));
-        criteria.setRole(WorkspaceRole.OWNER);
-        groups.addAll(this.workspaceService.findByCriteria(criteria));
-
-        // Update ACL
-        INuxeoCommand command = this.applicationContext.getBean(SetProcedureInstanceAcl.class, workspaceId, request, uid, groups);
-        nuxeoController.executeNuxeoCommand(command);
-    }
-
+//
+//    /**
+//     * Update invitation ACL.
+//     *
+//     * @param portalControllerContext portal controller context
+//     * @param workspaceId workspace identifier
+//     * @param request request indicator
+//     * @param uid user identifier
+//     */
+//    protected void updateInvitationAcl(PortalControllerContext portalControllerContext, String workspaceId, boolean request, String uid) {
+//        // Nuxeo controller
+//        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+//        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+//        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
+//
+//        // Workspace admin & owner groups
+//        List<CollabProfile> groups = new ArrayList<>();
+//        CollabProfile criteria = this.workspaceService.getEmptyProfile();
+//        criteria.setWorkspaceId(workspaceId);
+//        criteria.setRole(WorkspaceRole.ADMIN);
+//        groups.addAll(this.workspaceService.findByCriteria(criteria));
+//        criteria.setRole(WorkspaceRole.OWNER);
+//        groups.addAll(this.workspaceService.findByCriteria(criteria));
+//
+//        // Update ACL
+//        INuxeoCommand command = this.applicationContext.getBean(SetProcedureInstanceAcl.class, workspaceId, request, uid, groups);
+//        nuxeoController.executeNuxeoCommand(command);
+//    }
+//
 
     /**
      * {@inheritDoc}
@@ -1191,6 +1198,8 @@ public class MemberManagementRepositoryImpl implements MemberManagementRepositor
 
         // Nuxeo controller
         NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+
         boolean status = true;
 
         // Nuxeo command
